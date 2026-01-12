@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "gradle",
+			"id": "2026-frc-rebuilt-build",
+			"script": "build",
+			"description": "Assembles and tests this project.",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"project": "2026-frc-rebuilt",
+			"buildFile": "${workspaceFolder}/build.gradle",
+			"rootProject": "2026-frc-rebuilt",
+			"projectFolder": "${workspaceFolder}",
+			"workspaceFolder": "${workspaceFolder}",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: build"
+		}
+	]
+}
