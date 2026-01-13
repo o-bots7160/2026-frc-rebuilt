@@ -186,5 +186,8 @@ compile_commands.json
 # Eclipse generated file for annotation processors
 .factorypath
 
-#Gversion generated files
+# Gversion generated files
 src/main/java/frc/robot/BuildConstants.java
+
+# Draw.io backup files
+.$7160-frc-rebuilt.drawio.svg.bkp

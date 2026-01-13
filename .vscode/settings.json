@@ -70,6 +70,13 @@
     "source.formatOnSave": "always"
   },
   "java.debug.settings.onBuildFailureProceed": true,
+  "[markdown]": {
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 80,
+    "editor.wrappingIndent": "same",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
   "wpilib.autoStartRioLog": false,
   "wpilib.skipTests": true,
 }
