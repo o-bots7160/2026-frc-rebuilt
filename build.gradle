@@ -9,6 +9,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+sourceSets {
+    main {
+        java {
+            // Surface AutoLog-generated sources to IDEs and incremental compilers.
+            srcDir "$buildDir/generated/sources/annotationProcessor/java/main"
+        }
+    }
+}
+
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 project.compileJava.dependsOn(createVersionFile)

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.drivebase;
 
 import java.io.File;
 import java.util.Optional;
@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.config.DriveBaseSubsystemConfig;
+import frc.robot.subsystems.AbstractSubsystem;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
@@ -28,21 +29,25 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
  */
 public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConfig> {
 
-    private final Translation2d            centerOfRotationMeters = new Translation2d();
+    private final Translation2d               centerOfRotationMeters = new Translation2d();
 
-    private final PIDController            xController;
+    private final PIDController               xController;
 
-    private final PIDController            yController;
+    private final PIDController               yController;
 
-    private final ProfiledPIDController    thetaController;
+    private final ProfiledPIDController       thetaController;
 
-    private final HolonomicDriveController holonomicController;
+    private final HolonomicDriveController    holonomicController;
 
-    private SwerveDrive                    swerveDrive;
+    private final DriveBaseIO                 io;
 
-    private SwerveController               swerveController;
+    private final DriveBaseIOInputsAutoLogged inputs                 = new DriveBaseIOInputsAutoLogged();
 
-    private Optional<Pose2d>               targetPose             = Optional.empty();
+    private SwerveDrive                       swerveDrive;
+
+    private SwerveController                  swerveController;
+
+    private Optional<Pose2d>                  targetPose             = Optional.empty();
 
     public DriveBaseSubsystem(DriveBaseSubsystemConfig config) {
         super(config);
@@ -56,12 +61,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                         new Translation2d(config.getTranslationToleranceMeters(), config.getTranslationToleranceMeters()),
                         Rotation2d.fromRadians(config.getRotationToleranceRadians())));
 
-        if (isDisabled()) {
+        if (isSubsystemDisabled()) {
             log.verbose("DriveBaseSubsystem disabled; skipping hardware init.");
+            this.io = inputs -> {
+            };
             return;
         }
 
         configureSwerveDrive();
+        this.io = swerveDrive != null ? new DriveBaseIOYagsl(swerveDrive) : inputs -> {
+        };
     }
 
     /**
@@ -69,12 +78,12 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     @Override
     public void periodic() {
-        if (isDisabled() || swerveDrive == null) {
+        if (isSubsystemDisabled() || swerveDrive == null) {
             return;
         }
 
-        Pose2d pose = getPose();
-        Logger.recordOutput("DriveBase/Pose", pose);
+        io.updateInputs(inputs);
+        Logger.processInputs("DriveBase", inputs);
         Logger.recordOutput("DriveBase/HasTarget", targetPose.isPresent());
         targetPose.ifPresent(goal -> Logger.recordOutput("DriveBase/TargetPose", goal));
     }
@@ -98,7 +107,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @param pose Desired pose for the robot to assume immediately.
      */
     public void resetPose(Pose2d pose) {
-        if (checkDisabled() || swerveDrive == null) {
+        if (isSubsystemDisabled() || swerveDrive == null) {
             return;
         }
 
@@ -111,7 +120,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @param pose Pose that should be reported going forward.
      */
     public void setPose(Pose2d pose) {
-        if (checkDisabled() || swerveDrive == null) {
+        if (isSubsystemDisabled() || swerveDrive == null) {
             return;
         }
 
@@ -167,7 +176,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @param targetHeading     Desired field heading to hold or reach.
      */
     public void driveFieldRelativeHeading(double vxMetersPerSecond, double vyMetersPerSecond, Rotation2d targetHeading) {
-        if (checkDisabled()) {
+        if (isSubsystemDisabled()) {
             return;
         }
 
@@ -176,18 +185,19 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
-    Translation2d translation = clampTranslation(new Translation2d(vxMetersPerSecond, vyMetersPerSecond));
-    double        omega        = clampRotation(
-        swerveController.headingCalculate(targetHeading.getRadians(), getPose().getRotation().getRadians()));
+        Translation2d translation = clampTranslation(new Translation2d(vxMetersPerSecond, vyMetersPerSecond));
+        double        omega       = clampRotation(
+                swerveController.headingCalculate(targetHeading.getRadians(), getPose().getRotation().getRadians()));
 
         swerveDrive.drive(translation, omega, true, false, centerOfRotationMeters);
+        Logger.recordOutput("DriveBase/RequestedHeading", targetHeading);
     }
 
     /**
      * Stops all motion and locks the modules in their current orientation.
      */
     public void stop() {
-        if (checkDisabled()) {
+        if (isSubsystemDisabled()) {
             return;
         }
 
@@ -203,7 +213,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @param pose Target pose expressed in field coordinates.
      */
     public void setTargetPose(Pose2d pose) {
-        if (checkDisabled()) {
+        if (isSubsystemDisabled()) {
             return;
         }
 
@@ -253,7 +263,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * Drives toward the target pose using the holonomic controller.
      */
     public void seekTarget() {
-        if (checkDisabled()) {
+        if (isSubsystemDisabled()) {
             return;
         }
 
@@ -276,6 +286,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         Pose2d        currentPose = getPose();
         ChassisSpeeds speeds      = holonomicController.calculate(currentPose, goal, 0.0, goal.getRotation());
 
+        Logger.recordOutput("DriveBase/RequestedSpeeds", speeds);
         driveRobotRelative(speeds);
     }
 
@@ -323,7 +334,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     private void configureSwerveDrive() {
         try {
             File configDirectory = new File(Filesystem.getDeployDirectory(), config.getSwerveDirectory());
-            swerveDrive = new SwerveParser(configDirectory).createSwerveDrive(config.getMaximumLinearSpeedMetersPerSecond());
+            swerveDrive      = new SwerveParser(configDirectory).createSwerveDrive(config.getMaximumLinearSpeedMetersPerSecond());
             swerveController = swerveDrive.swerveController;
             swerveController.thetaController.setTolerance(config.getRotationToleranceRadians(), 0.1);
             swerveController.thetaController.setPID(config.getHeadingKp(), config.getHeadingKi(), config.getHeadingKd());
@@ -338,7 +349,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     private void requestDrive(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond, boolean fieldRelative) {
-        if (isDisabled()) {
+        if (isSubsystemDisabled()) {
             return;
         }
 

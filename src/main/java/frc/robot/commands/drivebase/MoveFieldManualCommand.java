@@ -3,7 +3,7 @@ package frc.robot.commands.drivebase;
 import java.util.function.DoubleSupplier;
 
 import frc.robot.commands.AbstractSubsystemCommand;
-import frc.robot.subsystems.DriveBaseSubsystem;
+import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 
 /**
  * Drives the robot field-relative using continuously supplied chassis speeds. Forward/left translation and counter-clockwise rotation requests

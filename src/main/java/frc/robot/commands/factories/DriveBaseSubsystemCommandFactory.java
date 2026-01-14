@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.drivebase.MoveFieldManualCommand;
 import frc.robot.config.DriveBaseSubsystemConfig;
 import frc.robot.helpers.Logger;
-import frc.robot.subsystems.DriveBaseSubsystem;
+import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 
 public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFactory<DriveBaseSubsystem> {
 

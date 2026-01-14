@@ -12,7 +12,7 @@ import frc.robot.commands.factories.DriveBaseSubsystemCommandFactory;
 import frc.robot.config.ConfigurationLoader;
 import frc.robot.config.SubsystemsConfig;
 import frc.robot.helpers.TriggerBindings;
-import frc.robot.subsystems.DriveBaseSubsystem;
+import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 
 public class RobotContainer {
 
