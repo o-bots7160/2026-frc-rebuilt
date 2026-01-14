@@ -3,36 +3,84 @@
 Robot software for the Ludington O-Bots 7160, powering our 2026 FIRST Robotics
 Competition "REBUILT" season codebase.
 
+## Contents
+
+- [2026-frc-rebuilt](#2026-frc-rebuilt)
+  - [Contents](#contents)
+  - [Prerequisites](#prerequisites)
+  - [Getting started](#getting-started)
+  - [Build and test](#build-and-test)
+  - [Simulation](#simulation)
+  - [Deployment](#deployment)
+  - [Development reference](#development-reference)
+    - [Project structure](#project-structure)
+    - [Dependencies](#dependencies)
+
+## Prerequisites
+
+1. **Install [Git for Windows](https://git-scm.com/download/win)** if you are on
+   Windows. This is required to clone the repository and manage code. (macOS
+   users already have Git pre-installed.)
+2. **Install the
+   [WPILib 2026 release](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html)**
+   (bundles Java 17, GradleRIO, and the VS Code extensions). Ensure the WPILib
+   command-line tools are on your `PATH`.
+
 ## Getting started
 
-1. **Install the
-   [WPILib 2026 release](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html)**
-   (this bundles Java 17, GradleRIO, and the VS Code extensions) and ensure the
-   WPILib command-line tools are on your `PATH`.
-2. **Clone the repository** and let WPILib import vendordep JSON files
+1. **Clone the repository** (see GitHub's guide on
+   [cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+   for step-by-step instructions) and let WPILib import vendordep JSON files
    automatically when you first open the project.
-3. **Build and test locally** with `./gradlew build` to verify the code compiles
-   and unit tests (if present) pass. Inside WPILib VS Code you can trigger the
-   same Gradle build with **Ctrl+Shift+B** (or **Cmd+Shift+B** on macOS) or run
-   **“WPILib: Build Robot Code”** from the Command Palette.
-4. **Run the simulator** via `./gradlew simulateJava` when you want to iterate
-   on subsystems or commands without hardware.
-5. **Deploy to the roboRIO** using `./gradlew deploy` (ensure the team number in
-   `wpilib_preferences.json` matches 7160 before deploying).
+2. **Open the repo folder using the WPILib-installed VS Code** (the WPILib build
+   of VS Code is required; standard VS Code will not have the WPILib extensions
+   and dependencies bundled).
+3. **Install the recommended extensions** when VS Code prompts you. If you don’t
+   see a “Recommended” view, open the Command Palette (**Ctrl+Shift+P** or
+   **Cmd+Shift+P**), run **“Extensions: Show Recommended Extensions”**, and
+   install the workspace recommendations (the WPILib VS Code bundle provides the
+   FRC extensions needed for builds and simulation).
 
-## Deploying robot code
+## Build and test
 
-When you're ready to push the latest build to hardware, you have two convenient
-options inside WPILib VS Code:
+1. **Build and test locally** to verify the code compiles and unit tests (if
+   present) pass:
+   - Terminal: run `./gradlew build`.
+   - WPILib Command Palette: run **“WPILib: Build Robot Code”**.
+   - Keyboard shortcuts: press **Ctrl+Shift+B** (Windows/Linux) or
+     **Cmd+Shift+B** (macOS).
 
-- Open the Command Palette and run **“WPILib: Deploy Robot Code”** (this is also
-  listed under the deploy robot commands menu).
-- Press **F5** to invoke the same deploy action without opening the palette.
+## Simulation
 
-Both drive the GradleRIO deploy target, so you'll get identical behavior to
-running `./gradlew deploy` in a terminal.
+1. **Launch the simulator** to exercise subsystems and commands without
+   hardware:
+   - Terminal: `./gradlew simulateJava`.
+   - WPILib Command Palette: **“WPILib: Simulate Robot Code”**.
+2. **Use the WPILib simulator UI** to view NetworkTables, control inputs, and
+   AdvantageKit logs while iterating.
 
-## Project structure
+## Deployment
+
+1. **Connect to the robot** so the roboRIO is reachable:
+   - USB tether from the laptop to the roboRIO (fastest for pits).
+   - Ethernet from the laptop to the field/test router (wired is preferred for
+     reliability).
+   - Team Wi‑Fi (ensure you’re on the robot or practice network and have good
+     signal).
+2. **Deploy using one of these options** (all run the same GradleRIO deploy
+   target):
+   - Terminal: `./gradlew deploy`.
+   - WPILib Command Palette: **“WPILib: Deploy Robot Code”**.
+   - Keyboard shortcut: press **F5** in the WPILib-installed VS Code.
+3. **After deployment, bring up your tools to drive and monitor telemetry:**
+   - Open the FRC Driver Station to enable the robot and map
+     joysticks/controllers.
+   - Launch Advantage Scope to visualize logs and signals.
+   - Open the Elastic dashboard to watch live telemetry and key widgets.
+
+## Development reference
+
+### Project structure
 
 The notable pieces under `src/main` that extend the stock WPILib template are:
 
@@ -53,7 +101,7 @@ This architecture diagram lives in `7160-frc-rebuilt.drawio.svg`; open and edit
 it with [draw.io](https://www.drawio.com/download) to keep the visuals current
 as the robot evolves.
 
-## Dependencies
+### Dependencies
 
 All third-party libraries live in `vendordeps/` and are versioned alongside the
 code so WPILib will automatically pull the right artifacts:
