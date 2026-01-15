@@ -1,74 +1,62 @@
 package frc.robot.helpers;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.factories.DriveBaseSubsystemCommandFactory;
 import frc.robot.config.DriveBaseSubsystemConfig;
 import frc.robot.devices.GameController;
 import frc.robot.devices.GameController.GameControllerAxes;
 
 /**
- * Maps driver and operator controllers to robot commands so RobotContainer stays lean. Currently wires the drive controller to the default manual
- * drive command.
+ * Maps the driver controller to robot commands so RobotContainer stays lean. Currently wires the drive controller to the default manual drive
+ * command.
  */
 public class TriggerBindings {
 
-    private static final int                       DEFAULT_DRIVE_CONTROLLER_PORT  = 0;
-
-    private static final int                       DEFAULT_ACTION_CONTROLLER_PORT = 1;
+    private static final int                       DEFAULT_DRIVE_CONTROLLER_PORT = 0;
 
     private final GameController                   driverController;
 
-    private final GameController                   operatorController;
-
     private final DriveBaseSubsystemCommandFactory driveBaseCommandFactory;
 
-    private final DriveBaseSubsystemConfig         driveBaseConfig;
-
     /**
-     * Creates trigger bindings with default controller ports (0 for drive, 1 for action).
+    * Creates trigger bindings with the default drive controller port (0).
      *
-     * @param driveBaseSubsystem      drive base subsystem to command
      * @param driveBaseCommandFactory factory for creating drive base commands
      * @param driveBaseConfig         configuration used to scale joystick inputs into real speeds
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
             DriveBaseSubsystemConfig driveBaseConfig) {
-        this(driveBaseCommandFactory, driveBaseConfig, DEFAULT_DRIVE_CONTROLLER_PORT, DEFAULT_ACTION_CONTROLLER_PORT);
+        this(driveBaseCommandFactory, driveBaseConfig, DEFAULT_DRIVE_CONTROLLER_PORT);
     }
 
     /**
-     * Creates trigger bindings using explicit controller ports.
+     * Creates trigger bindings using an explicit drive controller port.
      *
-     * @param driveBaseSubsystem      drive base subsystem to command
      * @param driveBaseCommandFactory factory for creating drive base commands
      * @param driveBaseConfig         configuration used to scale joystick inputs into real speeds
      * @param driveControllerPort     USB port for the driver controller
-     * @param actionControllerPort    USB port for the operator controller
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
             DriveBaseSubsystemConfig driveBaseConfig,
-            int driveControllerPort,
-            int actionControllerPort) {
+            int driveControllerPort) {
         this.driveBaseCommandFactory = driveBaseCommandFactory;
-        this.driveBaseConfig         = driveBaseConfig;
         this.driverController        = new GameController(driveControllerPort);
-        this.operatorController      = new GameController(actionControllerPort);
+
+        driveBaseCommandFactory.getSubsystem().setTranslationScaleSupplier(
+        () -> SmartDashboard.getNumber("DriveBaseSubsystem/translationScale", driveBaseConfig.getTranslationScale().get()));
+        driveBaseCommandFactory.getSubsystem().setAngularSpeedScaleSupplier(
+                () -> SmartDashboard.getNumber("DriveBaseSubsystem/omegaScale", 1.0));
 
         configureDriveControllerBindings();
-        configureActionControllerBindings();
     }
 
     private void configureDriveControllerBindings() {
         driveBaseCommandFactory.setDefaultManualDriveCommand(
                 () -> driverController.getRawAxis(GameControllerAxes.LeftStickY.getValue()),
                 () -> driverController.getRawAxis(GameControllerAxes.LeftStickX.getValue()),
-                () -> driverController.getRawAxis(GameControllerAxes.RightStickX.getValue()),
-                driveBaseConfig);
-    }
-
-    private void configureActionControllerBindings() {
-        // Operator bindings will be added as mechanisms and commands come online.
+                () -> driverController.getRawAxis(GameControllerAxes.RightStickX.getValue()));
     }
 
 }

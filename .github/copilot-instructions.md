@@ -114,6 +114,9 @@ Follow them whenever you add code, documentation, or tests.
   `subsystems.json` entry so that future adjustments happen in one location.
 - Centralize repeated tuning parameters in config classes so that changes
   propagate consistently across autonomous and teleop code.
+- SmartDashboard keys should be prefixed with the subsystem name (e.g.,
+  `DriveBaseSubsystem/headingKp`), not the config class name (`*Config`). Apply
+  this pattern for all subsystems and configs going forward.
 - When adding device wrappers or helpers, provide a brief usage example in the
   class-level Javadoc.
 - Keep TODOs actionable and include an owner or link so they do not linger

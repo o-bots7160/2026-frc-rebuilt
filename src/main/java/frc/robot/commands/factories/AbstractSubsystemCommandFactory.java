@@ -14,4 +14,13 @@ public abstract class AbstractSubsystemCommandFactory<TSubsystem extends Abstrac
     protected AbstractSubsystemCommandFactory(TSubsystem subsystem) {
         this.subsystem = subsystem;
     }
+
+    /**
+     * Exposes the shared subsystem instance so callers can apply configuration or tuning hooks.
+     *
+     * @return subsystem that generated commands will operate on
+     */
+    public TSubsystem getSubsystem() {
+        return subsystem;
+    }
 }
