@@ -57,6 +57,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
     private SwerveController                  swerveController;
 
+    private boolean                           odometryWarningEmitted    = false;
+
     private Optional<Pose2d>                  targetPose                = Optional.empty();
 
     private Supplier<Double>                  translationScaleSupplier  = config.getTranslationScale();
@@ -104,11 +106,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
-        try {
-            swerveDrive.updateOdometry();
-        } catch (NullPointerException npe) {
-            log.warning("Odometry update skipped because telemetry arrays are not initialized yet.");
-        }
+        updateOdometrySafely();
 
         io.updateInputs(inputs);
         Logger.processInputs("DriveBase", inputs);
@@ -463,7 +461,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                     .createSwerveDrive(config.getMaximumLinearSpeedMetersPerSecond().get());
 
             if (RobotBase.isSimulation()) {
-                SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
                 swerveDrive.setHeadingCorrection(false);
                 swerveDrive.setCosineCompensator(false);
             }
@@ -514,5 +511,24 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     private double clampRotation(double omegaRadiansPerSecond) {
         double maxRotationSpeed = config.getMaximumAngularSpeedRadiansPerSecond().get();
         return MathUtil.clamp(omegaRadiansPerSecond, -maxRotationSpeed, maxRotationSpeed);
+    }
+
+    private void updateOdometrySafely() {
+        if (swerveDrive == null) {
+            return;
+        }
+
+        try {
+            swerveDrive.updateOdometry();
+            if (odometryWarningEmitted) {
+                log.info("Odometry telemetry initialized; updates resumed.");
+                odometryWarningEmitted = false;
+            }
+        } catch (NullPointerException npe) {
+            if (!odometryWarningEmitted) {
+                log.warning("Odometry update skipped because telemetry arrays are not initialized yet.");
+                odometryWarningEmitted = true;
+            }
+        }
     }
 }
