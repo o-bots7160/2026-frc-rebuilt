@@ -16,6 +16,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.AbstractSubsystem;
 import swervelib.SwerveController;
@@ -43,6 +45,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     private final DriveBaseIO                 io;
 
     private final DriveBaseIOInputsAutoLogged inputs                 = new DriveBaseIOInputsAutoLogged();
+
+    private final Field2d                     fieldDisplay           = new Field2d();
 
     private SwerveDrive                       swerveDrive;
 
@@ -72,6 +76,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         configureSwerveDrive();
         this.io = swerveDrive != null ? new DriveBaseIOYagsl(swerveDrive) : inputs -> {
         };
+
+        SmartDashboard.putData("Field", fieldDisplay);
     }
 
     /**
@@ -83,10 +89,21 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
+        try {
+            swerveDrive.updateOdometry();
+        } catch (NullPointerException npe) {
+            log.warning("Odometry update skipped because telemetry arrays are not initialized yet.");
+        }
+
         io.updateInputs(inputs);
         Logger.processInputs("DriveBase", inputs);
+        Logger.recordOutput("Odometry/Robot", getPose());
+        Logger.recordOutput("SwerveStates/Measured", inputs.moduleStates);
+        Logger.recordOutput("SwerveStates/Target", inputs.moduleTargets);
         Logger.recordOutput("DriveBase/HasTarget", targetPose.isPresent());
         targetPose.ifPresent(goal -> Logger.recordOutput("DriveBase/TargetPose", goal));
+
+        fieldDisplay.setRobotPose(getPose());
     }
 
     /**

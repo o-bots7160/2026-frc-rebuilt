@@ -4,11 +4,13 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.drivebase.MoveFieldManualCommand;
 import frc.robot.config.DriveBaseSubsystemConfig;
 import frc.robot.helpers.Logger;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
+import swervelib.math.SwerveMath;
 
 public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFactory<DriveBaseSubsystem> {
 
@@ -54,24 +56,43 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
             Supplier<Double> leftAxis,
             Supplier<Double> omegaAxis,
             DriveBaseSubsystemConfig driveBaseConfig) {
-        Command manualDriveCommand = createMoveManualCommand(
-                () -> scaleLinear("forward", forwardAxis.get(), driveBaseConfig),
-                () -> scaleLinear("left", leftAxis.get(), driveBaseConfig),
-                () -> scaleAngular("omega", omegaAxis.get(), driveBaseConfig));
+    Command manualDriveCommand = createMoveManualCommand(
+        () -> computeScaledTranslation(forwardAxis, leftAxis, driveBaseConfig).getX(),
+        () -> computeScaledTranslation(forwardAxis, leftAxis, driveBaseConfig).getY(),
+        () -> scaleAngular("omega", omegaAxis.get(), driveBaseConfig));
 
         subsystem.setDefaultCommand(manualDriveCommand);
         return manualDriveCommand;
     }
 
-    private double scaleLinear(String axisName, double rawAxisValue, DriveBaseSubsystemConfig config) {
-        double processed          = MathUtil.applyDeadband(-rawAxisValue, JOYSTICK_DEADBAND);
-        double metersPerSecond    = processed * config.getMaximumLinearSpeedMetersPerSecond();
+    private Translation2d computeScaledTranslation(
+            Supplier<Double> forwardAxis,
+            Supplier<Double> leftAxis,
+            DriveBaseSubsystemConfig config) {
 
-        log.recordOutput("DriverInputs/" + axisName + "/raw", rawAxisValue);
-        log.recordOutput("DriverInputs/" + axisName + "/deadbanded", processed);
-        log.recordOutput("DriverInputs/" + axisName + "/metersPerSecond", metersPerSecond);
+        double rawForward = -forwardAxis.get();
+        double rawLeft    = -leftAxis.get();
 
-        return metersPerSecond;
+        double deadbandedForward = MathUtil.applyDeadband(rawForward, JOYSTICK_DEADBAND);
+        double deadbandedLeft    = MathUtil.applyDeadband(rawLeft, JOYSTICK_DEADBAND);
+
+        Translation2d rawVector    = new Translation2d(deadbandedForward, deadbandedLeft);
+        Translation2d scaledVector = SwerveMath.scaleTranslation(rawVector, config.getTranslationScale());
+
+        Translation2d commanded = new Translation2d(
+                scaledVector.getX() * config.getMaximumLinearSpeedMetersPerSecond(),
+                scaledVector.getY() * config.getMaximumLinearSpeedMetersPerSecond());
+
+        log.recordOutput("DriverInputs/forward/raw", rawForward);
+        log.recordOutput("DriverInputs/forward/deadbanded", deadbandedForward);
+        log.recordOutput("DriverInputs/left/raw", rawLeft);
+        log.recordOutput("DriverInputs/left/deadbanded", deadbandedLeft);
+        log.recordOutput("DriverInputs/translation/scaledX", scaledVector.getX());
+        log.recordOutput("DriverInputs/translation/scaledY", scaledVector.getY());
+        log.recordOutput("DriverInputs/translation/commandedX", commanded.getX());
+        log.recordOutput("DriverInputs/translation/commandedY", commanded.getY());
+
+        return commanded;
     }
 
     private double scaleAngular(String axisName, double rawAxisValue, DriveBaseSubsystemConfig config) {

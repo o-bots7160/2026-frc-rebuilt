@@ -41,6 +41,8 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
 
     public double rotationToleranceDegrees                          = 2.0;
 
+    public double translationScale                                  = 0.8;
+
     public String getSwerveDirectory() {
         return SmartDashboard.getString("DriveBaseSubsystemConfig/swerveDirectory", swerveDirectory);
     }
@@ -103,6 +105,10 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
 
     public double getHeadingKd() {
         return SmartDashboard.getNumber("DriveBaseSubsystemConfig/headingKd", headingKd);
+    }
+
+    public double getTranslationScale() {
+        return SmartDashboard.getNumber("DriveBaseSubsystemConfig/translationScale", translationScale);
     }
 
     public double getTranslationToleranceMeters() {
