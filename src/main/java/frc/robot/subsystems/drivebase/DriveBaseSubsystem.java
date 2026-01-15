@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.config.DriveBaseSubsystemConfig;
@@ -58,6 +59,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     private SwerveController                  swerveController;
 
     private boolean                           odometryWarningEmitted    = false;
+
+    private double                            lastOdometryWarningTime   = -1.0;
 
     private Optional<Pose2d>                  targetPose                = Optional.empty();
 
@@ -525,10 +528,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 odometryWarningEmitted = false;
             }
         } catch (NullPointerException npe) {
-            if (!odometryWarningEmitted) {
-                log.warning("Odometry update skipped because telemetry arrays are not initialized yet.");
-                odometryWarningEmitted = true;
-            }
+            emitOdometryWarningOncePerSecond();
+        }
+    }
+
+    private void emitOdometryWarningOncePerSecond() {
+        double now = Timer.getFPGATimestamp();
+        if (!odometryWarningEmitted || now - lastOdometryWarningTime >= 1.0) {
+            log.warning("Odometry update skipped because telemetry arrays are not initialized yet.");
+            odometryWarningEmitted  = true;
+            lastOdometryWarningTime = now;
         }
     }
 }
