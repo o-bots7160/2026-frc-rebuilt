@@ -26,6 +26,8 @@ Follow them whenever you add code, documentation, or tests.
   - Commands must end with `Command` (e.g., `MoveFieldManualCommand`).
   - Subsystems must end with `Subsystem` (e.g., `DriveBaseSubsystem`).
   - Factories/helpers should use descriptive nouns that reveal purpose.
+- Subsystems should not manufacture commands. Keep command implementations under the relevant `commands` packages; for set-and-seek style mechanisms, use
+  `AbstractSetAndSeekCommand` (or a concrete subclass) to drive an `AbstractSetAndSeekSubsystem`.
 - Organize class members by visibility and role: public API at the top, followed
   by protected, package-private, and private helpers. Group overloads together.
 - Keep methods cohesive and self-descriptive. If logic is hard to infer from

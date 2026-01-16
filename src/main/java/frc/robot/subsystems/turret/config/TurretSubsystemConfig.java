@@ -1,7 +1,7 @@
 package frc.robot.subsystems.turret.config;
 
-import frc.robot.shared.config.AbstractSubsystemConfig;
+import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
 
-public class TurretSubsystemConfig extends AbstractSubsystemConfig {
-    
+public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
+
 }

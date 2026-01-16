@@ -48,7 +48,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      */
     public Supplier<Double> getMaximumLinearSpeedMetersPerSecond() {
         return () -> Units.feetToMeters(
-                readTunableNumber("DriveBaseSubsystem/maximumLinearSpeedFeetPerSecond", maximumLinearSpeedFeetPerSecond));
+                readTunableNumber("maximumLinearSpeedFeetPerSecond", maximumLinearSpeedFeetPerSecond));
     }
 
     /**
@@ -58,7 +58,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      */
     public Supplier<Double> getMaximumAngularSpeedRadiansPerSecond() {
         return () -> Units.degreesToRadians(
-                readTunableNumber("DriveBaseSubsystem/maximumAngularSpeedDegreesPerSecond", maximumAngularSpeedDegreesPerSecond));
+                readTunableNumber("maximumAngularSpeedDegreesPerSecond", maximumAngularSpeedDegreesPerSecond));
     }
 
     /**
@@ -69,7 +69,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
     public Supplier<Double> getMaximumAngularAccelerationRadiansPerSecondSquared() {
         return () -> Units.degreesToRadians(
                 readTunableNumber(
-                        "DriveBaseSubsystem/maximumAngularAccelerationDegreesPerSecondSquared",
+                        "maximumAngularAccelerationDegreesPerSecondSquared",
                         maximumAngularAccelerationDegreesPerSecondSquared));
     }
 
@@ -79,7 +79,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current translation Kp
      */
     public Supplier<Double> getTranslationKp() {
-        return () -> readTunableNumber("DriveBaseSubsystem/translationKp", translationKp);
+        return () -> readTunableNumber("translationKp", translationKp);
     }
 
     /**
@@ -88,7 +88,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current translation Ki
      */
     public Supplier<Double> getTranslationKi() {
-        return () -> readTunableNumber("DriveBaseSubsystem/translationKi", translationKi);
+        return () -> readTunableNumber("translationKi", translationKi);
     }
 
     /**
@@ -97,7 +97,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current translation Kd
      */
     public Supplier<Double> getTranslationKd() {
-        return () -> readTunableNumber("DriveBaseSubsystem/translationKd", translationKd);
+        return () -> readTunableNumber("translationKd", translationKd);
     }
 
     /**
@@ -106,7 +106,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current rotation Kp
      */
     public Supplier<Double> getRotationKp() {
-        return () -> readTunableNumber("DriveBaseSubsystem/rotationKp", rotationKp);
+        return () -> readTunableNumber("rotationKp", rotationKp);
     }
 
     /**
@@ -115,7 +115,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current rotation Ki
      */
     public Supplier<Double> getRotationKi() {
-        return () -> readTunableNumber("DriveBaseSubsystem/rotationKi", rotationKi);
+        return () -> readTunableNumber("rotationKi", rotationKi);
     }
 
     /**
@@ -124,7 +124,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current rotation Kd
      */
     public Supplier<Double> getRotationKd() {
-        return () -> readTunableNumber("DriveBaseSubsystem/rotationKd", rotationKd);
+        return () -> readTunableNumber("rotationKd", rotationKd);
     }
 
     /**
@@ -133,7 +133,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current heading Kp
      */
     public Supplier<Double> getHeadingKp() {
-        return () -> readTunableNumber("DriveBaseSubsystem/headingKp", headingKp);
+        return () -> readTunableNumber("headingKp", headingKp);
     }
 
     /**
@@ -142,7 +142,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current heading Ki
      */
     public Supplier<Double> getHeadingKi() {
-        return () -> readTunableNumber("DriveBaseSubsystem/headingKi", headingKi);
+        return () -> readTunableNumber("headingKi", headingKi);
     }
 
     /**
@@ -151,7 +151,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current heading Kd
      */
     public Supplier<Double> getHeadingKd() {
-        return () -> readTunableNumber("DriveBaseSubsystem/headingKd", headingKd);
+        return () -> readTunableNumber("headingKd", headingKd);
     }
 
     /**
@@ -160,7 +160,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * @return supplier yielding the current translation scale (0–1)
      */
     public Supplier<Double> getTranslationScale() {
-        return () -> readTunableNumber("DriveBaseSubsystem/translationScale", translationScale);
+        return () -> readTunableNumber("translationScale", translationScale);
     }
 
     /**
@@ -170,7 +170,7 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      */
     public Supplier<Double> getTranslationToleranceMeters() {
         return () -> Units.inchesToMeters(
-                readTunableNumber("DriveBaseSubsystem/translationToleranceInches", translationToleranceInches));
+                readTunableNumber("translationToleranceInches", translationToleranceInches));
     }
 
     /**
@@ -180,6 +180,6 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      */
     public Supplier<Double> getRotationToleranceRadians() {
         return () -> Units.degreesToRadians(
-                readTunableNumber("DriveBaseSubsystem/rotationToleranceDegrees", rotationToleranceDegrees));
+                readTunableNumber("rotationToleranceDegrees", rotationToleranceDegrees));
     }
 }
