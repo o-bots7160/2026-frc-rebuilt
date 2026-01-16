@@ -121,20 +121,6 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
-     * Resets the internal profile state to a measured pose. Call this before starting a new profile to avoid jumps when encoders drift.
-     *
-     * @param position Current measured position in mechanism units.
-     * @param velocity Current measured velocity in mechanism units per second.
-     */
-    public void synchronizeToMeasurement(double position, double velocity) {
-        setpointState = new TrapezoidProfile.State(position, velocity);
-        goalState     = new TrapezoidProfile.State(position, 0.0);
-
-        controller.reset(position, velocity);
-        controller.setGoal(goalState);
-    }
-
-    /**
      * States whether the mechanism is within the configured tolerance of the goal position.
      *
      * @return True when the measured position is at the goal.
