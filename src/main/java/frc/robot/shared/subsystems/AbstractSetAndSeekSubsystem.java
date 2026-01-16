@@ -144,6 +144,22 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
+     * Retargets the motion profile to the current measured position so the profiled controller decelerates to a stop.
+     */
+    public void holdCurrentPosition() {
+        setTarget(getMeasuredPosition());
+    }
+
+    /**
+     * States whether the profiled controller is within both position and velocity tolerances of its goal.
+     *
+     * @return True when the profile reports settled.
+     */
+    public boolean isProfileSettled() {
+        return controller.atGoal();
+    }
+
+    /**
      * Hook for subclasses to respond when a seek command is interrupted. Default implementation stops the motor.
      */
     public void handleSeekInterrupted() {

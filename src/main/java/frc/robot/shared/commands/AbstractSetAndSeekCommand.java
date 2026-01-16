@@ -2,6 +2,7 @@ package frc.robot.shared.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
 
 /**
@@ -15,6 +16,9 @@ import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
  * @param <TSubsystem> concrete set-and-seek subsystem type
  */
 public class AbstractSetAndSeekCommand<TSubsystem extends AbstractSetAndSeekSubsystem<?>> extends AbstractSubsystemCommand<TSubsystem> {
+    // TODO: this should be in configuration instead of hardcoded
+    private static final double    SETTLE_TIMEOUT_SECONDS = 1.0;
+
     private final Supplier<Double> targetSupplier;
 
     /**
@@ -37,15 +41,19 @@ public class AbstractSetAndSeekCommand<TSubsystem extends AbstractSetAndSeekSubs
     public void end(boolean interrupted) {
         if (interrupted) {
             log.warning("Ending " + getName() + " due to interruption");
-            subsystem.handleSeekInterrupted();
+            CommandScheduler.getInstance()
+                    .schedule(new SetAndSeekSettleCommand<>(subsystem).withTimeout(SETTLE_TIMEOUT_SECONDS));
         } else {
             log.info("Ending " + getName() + " after reaching target");
         }
+
+        // Always stop after completion so the motor does not drift once the command exits
+        subsystem.handleSeekInterrupted();
     }
 
     @Override
     public boolean isFinished() {
-        return subsystem.atTarget();
+        return subsystem.isProfileSettled();
     }
 
     @Override
