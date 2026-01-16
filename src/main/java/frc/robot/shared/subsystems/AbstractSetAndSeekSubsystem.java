@@ -3,6 +3,7 @@ package frc.robot.shared.subsystems;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.devices.Motor;
 import frc.robot.devices.motor.MotorIOInputsAutoLogged;
 import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
@@ -16,20 +17,21 @@ import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
  * </p>
  */
 public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAndSeekSubsystemConfig> extends AbstractSubsystem<TConfig> {
-    protected final Motor                        motor;
+    protected final Motor                   motor;
 
-    protected final MotorIOInputsAutoLogged      motorInputs = new MotorIOInputsAutoLogged();
+    protected final MotorIOInputsAutoLogged motorInputs = new MotorIOInputsAutoLogged();
 
-    protected TrapezoidProfile.Constraints       constraints;
+    protected TrapezoidProfile.Constraints  constraints;
 
-    protected final ProfiledPIDController        controller;
+    protected final ProfiledPIDController   controller;
 
-    protected final SimpleMotorFeedforward       feedforward;
+    protected final SimpleMotorFeedforward  feedforward;
 
-    protected TrapezoidProfile.State             goalState;
+    protected TrapezoidProfile.State        goalState;
 
-    protected TrapezoidProfile.State             setpointState;
+    protected TrapezoidProfile.State        setpointState;
 
+    private final SysIdRoutine              sysIdRoutine;
 
     /**
      * Creates a profiled subsystem with bounded setpoints, motion constraints, and a single motor.
@@ -41,22 +43,22 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         super(config);
         this.motor  = motor;
 
-    constraints = new TrapezoidProfile.Constraints(config.getMaximumVelocitySupplier().get(),
-        config.getMaximumAccelerationSupplier().get());
+        constraints = new TrapezoidProfile.Constraints(config.getMaximumVelocitySupplier().get(),
+                config.getMaximumAccelerationSupplier().get());
 
-    controller = new ProfiledPIDController(
-        config.getkPSupplier().get(),
-        config.getkISupplier().get(),
-        config.getkDSupplier().get(),
-        constraints,
-        kDt);
-    controller.setTolerance(config.getPositionToleranceSupplier().get(),
-        config.getMaximumVelocitySupplier().get() * 0.05);
+        controller  = new ProfiledPIDController(
+                config.getkPSupplier().get(),
+                config.getkISupplier().get(),
+                config.getkDSupplier().get(),
+                constraints,
+                kDt);
+        controller.setTolerance(config.getPositionToleranceSupplier().get(),
+                config.getMaximumVelocitySupplier().get() * 0.05);
 
-    feedforward = new SimpleMotorFeedforward(
-        config.getkSSupplier().get(),
-        config.getkVSupplier().get(),
-        config.getkASupplier().get());
+        feedforward = new SimpleMotorFeedforward(
+                config.getkSSupplier().get(),
+                config.getkVSupplier().get(),
+                config.getkASupplier().get());
 
         double initialPosition = config.getInitialPositionSupplier().get();
         double initialVelocity = config.getInitialVelocitySupplier().get();
@@ -66,6 +68,14 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
 
         controller.reset(initialPosition, initialVelocity);
         controller.setGoal(goalState);
+
+        sysIdRoutine = SysIdHelper.createSimpleRoutine(
+                this,
+                className + "/motor",
+                motor::setVoltage,
+                motor::getVoltage,
+                this::getMeasuredPosition,
+                this::getMeasuredVelocity);
     }
 
     /**
@@ -82,7 +92,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 config.getMaximumSetpointSupplier().get());
         goalState = new TrapezoidProfile.State(clampedTarget, 0.0);
 
-    controller.setGoal(goalState);
+        controller.setGoal(goalState);
     }
 
     /**
@@ -136,6 +146,15 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
 
         double error = Math.abs(goalState.position - getMeasuredPosition());
         return error <= config.getPositionToleranceSupplier().get();
+    }
+
+    /**
+     * Exposes the underlying SysId routine so command factories can build characterization commands without subsystems manufacturing commands.
+     *
+     * @return configured SysId routine for the primary motor
+     */
+    public SysIdRoutine getSysIdRoutine() {
+        return sysIdRoutine;
     }
 
     /**

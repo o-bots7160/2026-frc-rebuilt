@@ -5,8 +5,12 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.shared.commands.AbstractSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
+import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
 
 public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFactory<DriveBaseSubsystem> {
 
@@ -56,5 +60,43 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
 
         subsystem.setDefaultCommand(manualDriveCommand);
         return manualDriveCommand;
+    }
+
+    /**
+     * Creates a SysId command that exercises the drive motors using the configured YAGSL characterization routine.
+     *
+     * @return command suitable for binding to a dashboard/button for on-robot testing
+     */
+    public Command createDriveSysIdCommand() {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Drive SysId skipped: drive base disabled.");
+        }
+
+        SwerveDrive drive = subsystem.getSwerveDrive();
+        if (drive == null) {
+            return Commands.print("Drive SysId skipped: swerve drive not configured.");
+        }
+
+        SysIdRoutine routine = SwerveDriveTest.setDriveSysIdRoutine(new SysIdRoutine.Config(), subsystem, drive, 6.0, false);
+        return SwerveDriveTest.generateSysIdCommand(routine, 3.0, 3.0, 3.0);
+    }
+
+    /**
+     * Creates a SysId command that exercises the steer (angle) motors using the configured YAGSL characterization routine.
+     *
+     * @return command suitable for binding to a dashboard/button for on-robot testing
+     */
+    public Command createAngleSysIdCommand() {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Angle SysId skipped: drive base disabled.");
+        }
+
+        SwerveDrive drive = subsystem.getSwerveDrive();
+        if (drive == null) {
+            return Commands.print("Angle SysId skipped: swerve drive not configured.");
+        }
+
+        SysIdRoutine routine = SwerveDriveTest.setAngleSysIdRoutine(new SysIdRoutine.Config(), subsystem, drive);
+        return SwerveDriveTest.generateSysIdCommand(routine, 3.0, 4.0, 4.0);
     }
 }

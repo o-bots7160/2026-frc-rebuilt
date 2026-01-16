@@ -319,6 +319,15 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
+     * Provides access to the configured swerve drive for command factories and testing helpers.
+     *
+     * @return configured {@link SwerveDrive} instance, or {@code null} if initialization failed or subsystem is disabled
+     */
+    public SwerveDrive getSwerveDrive() {
+        return swerveDrive;
+    }
+
+    /**
      * Drives toward the target pose using the holonomic controller.
      */
     public void seekTarget() {
