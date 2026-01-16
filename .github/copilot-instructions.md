@@ -26,8 +26,10 @@ Follow them whenever you add code, documentation, or tests.
   - Commands must end with `Command` (e.g., `MoveFieldManualCommand`).
   - Subsystems must end with `Subsystem` (e.g., `DriveBaseSubsystem`).
   - Factories/helpers should use descriptive nouns that reveal purpose.
-- Subsystems should not manufacture commands. Keep command implementations under the relevant `commands` packages; for set-and-seek style mechanisms, use
-  `AbstractSetAndSeekCommand` (or a concrete subclass) to drive an `AbstractSetAndSeekSubsystem`.
+- Subsystems should not manufacture commands. Keep command implementations under
+  the relevant `commands` packages; for set-and-seek style mechanisms, use
+  `AbstractSetAndSeekCommand` (or a concrete subclass) to drive an
+  `AbstractSetAndSeekSubsystem`.
 - Organize class members by visibility and role: public API at the top, followed
   by protected, package-private, and private helpers. Group overloads together.
 - Keep methods cohesive and self-descriptive. If logic is hard to infer from
@@ -40,14 +42,25 @@ Follow them whenever you add code, documentation, or tests.
 
 ## Project layout
 
-- Place all robot code under `src/main/java/frc/robot`, mirroring the existing
-  structure:
-  - `config` for configuration objects or loaders.
-  - `subsystems` for subsystem classes and their helpers.
-  - `helpers` for reusable utilities (logging, math helpers, etc.).
-- When creating new files, mirror the folder naming pattern so other
-  contributors can find code quickly.
-- Keep deployment assets (JSON configs, trajectories) under `src/main/deploy`.
+- Keep all Java code under `src/main/java/frc/robot` and mirror the current
+  layout so teammates can find things quickly:
+  - `devices/` holds reusable device wrappers (e.g., controllers).
+  - `shared/` contains cross-cutting pieces used by many mechanisms:
+    - `bindings/` for trigger/input helpers.
+    - `commands/` for abstract command bases.
+    - `config/` for shared config types/loaders.
+    - `logging/` for AdvantageKit and telemetry helpers.
+    - `subsystems/` for abstract subsystem bases.
+  - `subsystems/<mechanism>/` houses concrete mechanisms, each with:
+    - `commands/` for that subsystem’s commands.
+    - `config/` for mechanism-specific settings.
+    - `factories/` for wiring helpers/builders.
+    - `io/` for hardware/sim I/O implementations.
+- Keep deployment assets under `src/main/deploy` (e.g., `subsystems.json` and
+  mechanism configs like the swerve `controllerproperties.json`, module
+  definitions, and trajectories).
+- Subsystem folders may include a `README.md`; read it for a quick brief on
+  behavior, key classes, and configuration before editing or generating code.
 
 ## FRC and WPILib conventions
 
@@ -97,10 +110,9 @@ Follow them whenever you add code, documentation, or tests.
 - Default to AdvantageKit (`org.littletonrobotics.junction.Logger`,
   `LoggedDashboardValue`) for telemetry; record structured values with
   `Logger.recordOutput` instead of SmartDashboard calls.
-- Use SmartDashboard/Shuffleboard only for operator-critical values that
-  drivers need live; keep everything else AdvantageKit-only to reduce
-  NetworkTables noise, especially as we add more subsystems and generated
-  components.
+- Use SmartDashboard/Shuffleboard only for operator-critical values that drivers
+  need live; keep everything else AdvantageKit-only to reduce NetworkTables
+  noise, especially as we add more subsystems and generated components.
 - When adding detailed telemetry, wrap it in a verbose or debug flag so it can
   be disabled quickly for events; document how to toggle the flag in code or
   config.

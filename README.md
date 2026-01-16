@@ -82,18 +82,21 @@ Competition "REBUILT" season codebase.
 
 ### Project structure
 
-The notable pieces under `src/main` that extend the stock WPILib template are:
+The key folders under `src/main` you will touch most often are:
 
-- `deploy/subsystems.json` – declarative configuration that flags which
-  mechanisms are available when this build runs.
+- `deploy/` – JSON configs and paths the robot loads at startup, including
+  `subsystems.json` and swerve module/controller settings.
 - `java/frc/robot/BuildConstants.java` – build metadata (git hash, compile time,
   etc.) injected by Gradle for on-robot diagnostics.
-- `java/frc/robot/config/` – configuration loader/deserializers that translate
-  JSON configuration into strongly typed subsystem settings.
-- `java/frc/robot/helpers/Logger.java` – utility wrapper tying AdvantageKit and
-  WPILib logging together.
-- `java/frc/robot/subsystems/` – abstract subsystem base classes and concrete
-  subsystem implementations for the 2026 robot.
+- `java/frc/robot/devices/` – reusable device wrappers like controllers.
+- `java/frc/robot/shared/` – cross-cutting pieces many mechanisms share:
+  - `bindings/` for trigger/input helpers.
+  - `commands/` for abstract command bases.
+  - `config/` for shared config types/loaders.
+  - `logging/` for AdvantageKit and telemetry helpers.
+  - `subsystems/` for abstract subsystem bases.
+- `java/frc/robot/subsystems/<mechanism>/` – concrete mechanism code, each with
+  its own `commands/`, `config/`, `factories/`, and `io/` folders.
 
 ![System overview diagram for the 2026 robot](./7160-frc-rebuilt.drawio.svg)
 
