@@ -36,7 +36,10 @@ public class AbstractSetAndSeekCommand<TSubsystem extends AbstractSetAndSeekSubs
     @Override
     public void end(boolean interrupted) {
         if (interrupted) {
+            log.warning("Ending " + getName() + " due to interruption");
             subsystem.handleSeekInterrupted();
+        } else {
+            log.info("Ending " + getName() + " after reaching target");
         }
     }
 

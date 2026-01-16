@@ -64,10 +64,10 @@ public class TriggerBindings {
     }
 
     private void configureTurretBindings() {
-        driverController.onButtonPress(
+        driverController.onButtonHold(
                 GameControllerButton.A,
                 turretCommandFactory.createMoveToAngleCommand(-360.0));
-        driverController.onButtonPress(
+        driverController.onButtonHold(
                 GameControllerButton.B,
                 turretCommandFactory.createMoveToAngleCommand(360.0));
     }

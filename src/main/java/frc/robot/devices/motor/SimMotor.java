@@ -1,7 +1,6 @@
 package frc.robot.devices.motor;
 
 import java.util.function.DoubleSupplier;
-import java.util.function.DoubleUnaryOperator;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.util.Units;
@@ -19,62 +18,55 @@ import frc.robot.shared.logging.Logger;
  */
 public class SimMotor implements Motor {
 
-    private static final double       kDtSeconds                     = 0.02;
+    private static final double  kDtSeconds                     = 0.02;
 
-    private final Logger              log;
+    private final Logger         log;
 
-    private final double              gearRatio;
+    private final double         gearRatio;
 
-    private final double              mechanismFreeSpeedRadPerSec;
+    private final double         mechanismFreeSpeedRadPerSec;
 
-    private final DoubleSupplier      minimumPositionRadiansSupplier;
+    private final DoubleSupplier minimumPositionRadiansSupplier;
 
-    private final DoubleSupplier      maximumPositionRadiansSupplier;
+    private final DoubleSupplier maximumPositionRadiansSupplier;
 
-    private final DoubleUnaryOperator positionOutputConverter;
+    private final DoubleSupplier maximumVelocityRadiansPerSecondSupplier;
 
-    private final DoubleUnaryOperator velocityOutputConverter;
+    private final DoubleSupplier maximumAccelerationRadiansPerSecondSquaredSupplier;
 
-    private double                    lastCommandedVolts             = 0.0;
+    private double               lastCommandedVolts             = 0.0;
 
-    private double                    lastCommandedPositionRads      = Double.NaN;
+    private double               lastCommandedPositionRads      = Double.NaN;
 
-    private double                    lastCommandedVelocityRadPerSec = Double.NaN;
+    private double               lastCommandedVelocityRadPerSec = Double.NaN;
 
-    private double                    positionRadians                = 0.0;
+    private double               positionRadians                = 0.0;
 
-    private double                    velocityRadPerSec              = 0.0;
+    private double               velocityRadPerSec              = 0.0;
 
     /**
-     * Creates a simulated motor with supplier-backed motion bounds and custom output converters. Conversions from mechanism units to radians occur
-     * inside this wrapper so callers can provide friendlier units (e.g., degrees) via the suppliers.
-     *
-     * @param name                               friendly name for logging keys
-     * @param motorRotationsPerMechanismRotation gear ratio expressed as motor rotations per mechanism rotation
-     * @param minimumPositionSupplier            supplier for the lower motion bound in mechanism units
-     * @param maximumPositionSupplier            supplier for the upper motion bound in mechanism units
-     * @param mechanismToRadiansConverter        converter from mechanism units to radians
-     * @param positionOutputConverter            converter from mechanism radians to caller-facing units
-     * @param velocityOutputConverter            converter from mechanism radians/second to caller-facing units
+     * Creates a simulated motor with supplier-backed motion bounds. Mechanism units are treated as degrees externally; all internal math runs in
+     * radians and is converted for callers.
      */
     public SimMotor(
             String name,
             double motorRotationsPerMechanismRotation,
             Supplier<Double> minimumPositionSupplier,
             Supplier<Double> maximumPositionSupplier,
-            DoubleUnaryOperator mechanismToRadiansConverter,
-            DoubleUnaryOperator positionOutputConverter,
-            DoubleUnaryOperator velocityOutputConverter) {
-        DoubleSupplier minimumPositionRadiansSupplier = () -> mechanismToRadiansConverter.applyAsDouble(minimumPositionSupplier.get());
-        DoubleSupplier maximumPositionRadiansSupplier = () -> mechanismToRadiansConverter.applyAsDouble(maximumPositionSupplier.get());
+            Supplier<Double> maximumVelocitySupplier,
+            Supplier<Double> maximumAccelerationSupplier) {
+        DoubleSupplier minimumPositionRadiansSupplier                     = () -> Units.degreesToRadians(minimumPositionSupplier.get());
+        DoubleSupplier maximumPositionRadiansSupplier                     = () -> Units.degreesToRadians(maximumPositionSupplier.get());
+        DoubleSupplier maximumVelocityRadiansPerSecondSupplier            = () -> Units.degreesToRadians(maximumVelocitySupplier.get());
+        DoubleSupplier maximumAccelerationRadiansPerSecondSquaredSupplier = () -> Units.degreesToRadians(maximumAccelerationSupplier.get());
 
-        this.log                            = Logger.getInstance(name);
-        this.gearRatio                      = motorRotationsPerMechanismRotation;
-        this.mechanismFreeSpeedRadPerSec    = Units.rotationsToRadians((5676.0 / 60.0) / gearRatio);
-        this.minimumPositionRadiansSupplier = minimumPositionRadiansSupplier;
-        this.maximumPositionRadiansSupplier = maximumPositionRadiansSupplier;
-        this.positionOutputConverter        = positionOutputConverter;
-        this.velocityOutputConverter        = velocityOutputConverter;
+        this.log                                                = Logger.getInstance(name);
+        this.gearRatio                                          = motorRotationsPerMechanismRotation;
+        this.mechanismFreeSpeedRadPerSec                        = Units.rotationsToRadians((5676.0 / 60.0) / gearRatio);
+        this.minimumPositionRadiansSupplier                     = minimumPositionRadiansSupplier;
+        this.maximumPositionRadiansSupplier                     = maximumPositionRadiansSupplier;
+        this.maximumVelocityRadiansPerSecondSupplier            = maximumVelocityRadiansPerSecondSupplier;
+        this.maximumAccelerationRadiansPerSecondSquaredSupplier = maximumAccelerationRadiansPerSecondSquaredSupplier;
 
         log.verbose("Configuring SimMotor " + name + " (gear ratio " + gearRatio + ")");
 
@@ -124,7 +116,7 @@ public class SimMotor implements Motor {
      */
     @Override
     public double getEncoderPosition() {
-        return positionOutputConverter.applyAsDouble(getPositionRadiansUnconverted());
+        return Units.radiansToDegrees(getPositionRadiansUnconverted());
     }
 
     /**
@@ -132,7 +124,7 @@ public class SimMotor implements Motor {
      */
     @Override
     public double getEncoderVelocity() {
-        return velocityOutputConverter.applyAsDouble(getVelocityRadiansPerSecondUnconverted());
+        return Units.radiansToDegrees(getVelocityRadiansPerSecondUnconverted());
     }
 
     /**
@@ -140,7 +132,7 @@ public class SimMotor implements Motor {
      */
     @Override
     public double getMaximumTargetPosition() {
-        return positionOutputConverter.applyAsDouble(maximumPositionRadiansSupplier.getAsDouble());
+        return Units.radiansToDegrees(maximumPositionRadiansSupplier.getAsDouble());
     }
 
     /**
@@ -148,7 +140,7 @@ public class SimMotor implements Motor {
      */
     @Override
     public double getMinimumTargetPosition() {
-        return positionOutputConverter.applyAsDouble(minimumPositionRadiansSupplier.getAsDouble());
+        return Units.radiansToDegrees(minimumPositionRadiansSupplier.getAsDouble());
     }
 
     /**
@@ -208,13 +200,16 @@ public class SimMotor implements Motor {
     }
 
     private void stepSimulation() {
-        double duty           = clamp(lastCommandedVolts / 12.0, -1.0, 1.0);
+        double duty                  = clamp(lastCommandedVolts / 12.0, -1.0, 1.0);
 
-        // Simple first-order response toward free speed; adequate for exercising profiles without detailed physics.
-        double targetVelocity = duty * mechanismFreeSpeedRadPerSec;
-        double accel          = (targetVelocity - velocityRadPerSec) * 5.0; // basic smoothing factor
+        double maxVelocityRadPerSec  = maximumVelocityRadiansPerSecondSupplier.getAsDouble();
+        double maxAccelRadPerSecSq   = maximumAccelerationRadiansPerSecondSquaredSupplier.getAsDouble();
+        double targetVelocityRadPerS = clamp(duty * mechanismFreeSpeedRadPerSec, -maxVelocityRadPerSec, maxVelocityRadPerSec);
 
-        velocityRadPerSec += accel * kDtSeconds;
+        double maxDeltaV             = maxAccelRadPerSecSq * kDtSeconds;
+        double deltaV                = clamp(targetVelocityRadPerS - velocityRadPerSec, -maxDeltaV, maxDeltaV);
+
+        velocityRadPerSec += deltaV;
         positionRadians   += velocityRadPerSec * kDtSeconds;
 
         // Enforce motion bounds to mirror the hardware wrapper behavior.

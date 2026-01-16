@@ -1,6 +1,5 @@
 package frc.robot.subsystems.turret;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.devices.Motor;
 import frc.robot.devices.motor.SimMotor;
@@ -21,9 +20,8 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         motorRotationsPerMechanismRotation,
         config.getMinimumSetpointSupplier(),
         config.getMaximumSetpointSupplier(),
-        Units::degreesToRadians,
-        Units::radiansToDegrees,
-        velocityRadPerSec -> Units.radiansToDegrees(velocityRadPerSec));
+        config.getMaximumVelocitySupplier(),
+        config.getMaximumAccelerationSupplier());
     }
 
     /**
