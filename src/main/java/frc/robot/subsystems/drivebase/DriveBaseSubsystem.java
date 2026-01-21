@@ -39,41 +39,88 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
  */
 public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConfig> {
 
-    private static final double               JOYSTICK_DEADBAND       = 0.08;
+    /**
+     * Deadband size for joystick inputs.
+     * <p>
+     * Values inside this range are treated as zero to ignore tiny stick noise.
+     * </p>
+     */
+    private static final double               JOYSTICK_DEADBAND      = 0.08;
 
-    private final Translation2d               centerOfRotationMeters  = new Translation2d();
+    private final Translation2d               centerOfRotationMeters = new Translation2d();
 
+    /**
+     * PID controller for X (forward/back) translation.
+     * <p>
+     * PID (Proportional, Integral, Derivative) corrects position error over time.
+     * </p>
+     */
     private final PIDController               xController;
 
+    /**
+     * PID controller for Y (left/right) translation.
+     * <p>
+     * PID (Proportional, Integral, Derivative) corrects position error over time.
+     * </p>
+     */
     private final PIDController               yController;
 
+    /**
+     * Profiled PID controller for theta (robot heading angle) control.
+     * <p>
+     * Theta is the robot's rotation around the vertical axis, measured in radians.
+     * </p>
+     */
     private final ProfiledPIDController       thetaController;
 
+    /**
+     * Holonomic drive controller that combines X, Y, and theta control.
+     * <p>
+     * Holonomic means the robot can translate in any direction while rotating.
+     * </p>
+     */
     private final HolonomicDriveController    holonomicController;
 
     private final DriveBaseIO                 io;
 
-    private final DriveBaseIOInputsAutoLogged inputs                  = new DriveBaseIOInputsAutoLogged();
+    private final DriveBaseIOInputsAutoLogged inputs                 = new DriveBaseIOInputsAutoLogged();
 
-    private final Field2d                     fieldDisplay            = new Field2d();
+    private final Field2d                     fieldDisplay           = new Field2d();
 
+    /**
+     * YAGSL swerve drive instance that handles kinematics, odometry, and module commands.
+     * <p>
+     * Swerve means each wheel can steer and drive, allowing the robot to move in any direction while rotating.
+     * </p>
+     */
     private SwerveDrive                       swerveDrive;
 
+    /**
+     * High-level swerve controller used for heading and motion control helpers.
+     * <p>
+     * Uses the swerve model to turn chassis speed requests into wheel states.
+     * </p>
+     */
     private SwerveController                  swerveController;
 
-    private Optional<Pose2d>                  targetPose              = Optional.empty();
+    private Optional<Pose2d>                  targetPose             = Optional.empty();
 
-    private ChassisSpeeds                     lastRequestedSpeeds     = new ChassisSpeeds();
+    private ChassisSpeeds                     lastRequestedSpeeds    = new ChassisSpeeds();
 
-    private SwerveModuleState[]               lastRequestedStates     = new SwerveModuleState[0];
+    private SwerveModuleState[]               lastRequestedStates    = new SwerveModuleState[0];
 
     public DriveBaseSubsystem(DriveBaseSubsystemConfig config) {
         super(config);
 
+        // Build the translation and heading controllers used by holonomic path tracking.
         this.xController         = createTranslationController();
         this.yController         = createTranslationController();
         this.thetaController     = createThetaController();
+
+        // Combine the axis controllers into a single holonomic controller.
         this.holonomicController = new HolonomicDriveController(xController, yController, thetaController);
+
+        // Apply position/heading tolerances so the controller knows when it is “close enough.”
         this.holonomicController.setTolerance(
                 new Pose2d(
                         new Translation2d(
@@ -81,6 +128,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                                 config.getTranslationToleranceMeters().get()),
                         Rotation2d.fromRadians(config.getRotationToleranceRadians().get())));
 
+        // If the subsystem is disabled in config, skip all hardware setup.
         if (isSubsystemDisabled()) {
             log.verbose("DriveBaseSubsystem disabled; skipping hardware init.");
             this.io = inputs -> {
@@ -88,6 +136,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
+        // Initialize the swerve hardware from deploy configs and bind the IO layer.
         configureSwerveDrive();
         this.io = swerveDrive != null ? new DriveBaseIOYagsl(swerveDrive) : inputs -> {
         };
@@ -184,26 +233,37 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return translation request in meters per second for field-relative driving
      */
     public Translation2d mapDriverTranslation(double forwardAxis, double leftAxis) {
+        // Raw inputs: invert for driver preference and clamp to the joystick's legal range.
         double        rawForward        = MathUtil.clamp(-forwardAxis, -1.0, 1.0);
         double        rawLeft           = MathUtil.clamp(-leftAxis, -1.0, 1.0);
 
+        // Deadband: ignore tiny stick noise near center so the robot stays still when hands are off.
         double        deadbandedForward = MathUtil.applyDeadband(rawForward, JOYSTICK_DEADBAND);
         double        deadbandedLeft    = MathUtil.applyDeadband(rawLeft, JOYSTICK_DEADBAND);
 
+        // Vectorize: combine forward/left into a 2D translation request in joystick space.
         Translation2d rawVector         = new Translation2d(deadbandedForward, deadbandedLeft);
+
+        // Scaling: limit how aggressive the driver translation feels (0 = no motion, 1 = full speed).
         double        translationScale  = MathUtil.clamp(config.getTranslationScale().get(), 0.0, 1.0);
         double        simulationScale   = 1.0;
 
+        // Simulation: optionally tone down speeds and increase telemetry detail to help debugging.
         if (RobotBase.isSimulation()) {
             simulationScale                = MathUtil.clamp(config.getSimulationTranslationScale().get(), 0.0, 1.0);
             translationScale               = translationScale * simulationScale;
             SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         }
+
+        // Shape and scale the translation while preserving direction (prevents diagonal overspeed).
         Translation2d scaledVector    = SwerveMath.scaleTranslation(rawVector, translationScale);
+
+        // Convert the unitless vector into real robot speeds in meters per second.
         Translation2d commandedSpeeds = new Translation2d(
                 scaledVector.getX() * config.getMaximumLinearSpeedMetersPerSecond().get(),
                 scaledVector.getY() * config.getMaximumLinearSpeedMetersPerSecond().get());
 
+        // Telemetry: record all driver input stages for tuning and debugging.
         log.recordOutput("DriverInputs/forward/raw", rawForward);
         log.recordOutput("DriverInputs/forward/deadbanded", deadbandedForward);
         log.recordOutput("DriverInputs/left/raw", rawLeft);
@@ -215,6 +275,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         log.recordOutput("DriverInputs/translation/commandedX", commandedSpeeds.getX());
         log.recordOutput("DriverInputs/translation/commandedY", commandedSpeeds.getY());
 
+        // Return the final translation request in meters per second.
         return commandedSpeeds;
     }
 
@@ -234,28 +295,38 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Converts a raw driver omega axis into a scaled angular speed in radians per second. Use this so all deadbanding and scaling stays in the
      * subsystem.
+     * <p>
+     * Omega is the robot's rotational velocity around the vertical axis, measured in radians per second.
+     * </p>
      *
      * @param omegaAxis rotation stick value (positive for counter-clockwise)
      * @return angular velocity request in radians per second
      */
     public double mapDriverOmega(double omegaAxis) {
+        // Raw input: invert for driver preference and clamp to the joystick's legal range.
         double rawAxis         = MathUtil.clamp(-omegaAxis, -1.0, 1.0);
+
+        // Deadband: ignore tiny twist noise so the robot does not spin when the stick is centered.
         double processed       = MathUtil.applyDeadband(rawAxis, JOYSTICK_DEADBAND);
         double simulationScale = 1.0;
 
+        // Simulation: optionally reduce angular speed for safer testing.
         if (RobotBase.isSimulation()) {
             simulationScale = MathUtil.clamp(config.getSimulationOmegaScale().get(), 0.0, 1.0);
         }
 
+        // Convert the unitless stick value into real angular speed (radians per second).
         double radiansPerSecond = processed
                 * simulationScale
                 * config.getMaximumAngularSpeedRadiansPerSecond().get();
 
+        // Telemetry: record all driver input stages for tuning and debugging.
         log.recordOutput("DriverInputs/omega/raw", rawAxis);
         log.recordOutput("DriverInputs/omega/deadbanded", processed);
         log.recordOutput("DriverInputs/omega/simulationScale", simulationScale);
         log.recordOutput("DriverInputs/omega/radiansPerSecond", radiansPerSecond);
 
+        // Return the final angular velocity request in radians per second.
         return radiansPerSecond;
     }
 
@@ -353,26 +424,35 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return PID controller configured for translation in meters
      */
     private PIDController createTranslationController() {
+        // PID gains: tuning for how strongly the robot corrects translation error.
         PIDController controller = new PIDController(
                 config.getTranslationKp().get(),
                 config.getTranslationKi().get(),
                 config.getTranslationKd().get());
+
+        // Tolerance: how close (in meters) we consider the target reached.
         controller.setTolerance(config.getTranslationToleranceMeters().get());
+
+        // Integrator range: cap I-term to prevent windup beyond max linear speed.
         controller.setIntegratorRange(
                 -config.getMaximumLinearSpeedMetersPerSecond().get(),
                 config.getMaximumLinearSpeedMetersPerSecond().get());
+
+        // Return the configured controller.
         return controller;
     }
 
     /**
      * Builds a profiled PID controller for heading control.
      * <p>
-     * The controller enforces angular speed and acceleration limits so rotation stays smooth.
+     * Theta is the robot's heading angle (rotation) around the vertical axis, measured in radians. The controller enforces angular speed and
+     * acceleration limits so rotation stays smooth.
      * </p>
      *
      * @return profiled PID controller configured for radians
      */
     private ProfiledPIDController createThetaController() {
+        // PID gains: tuning for how strongly the robot corrects heading error.
         ProfiledPIDController controller = new ProfiledPIDController(
                 config.getRotationKp().get(),
                 config.getRotationKi().get(),
@@ -380,8 +460,14 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 new TrapezoidProfile.Constraints(
                         config.getMaximumAngularSpeedRadiansPerSecond().get(),
                         config.getMaximumAngularAccelerationRadiansPerSecondSquared().get()));
+
+        // Continuous input: treat -π and +π as the same angle so the controller picks the shortest turn.
         controller.enableContinuousInput(-Math.PI, Math.PI);
+
+        // Tolerance: how close (in radians) we consider the heading target reached.
         controller.setTolerance(config.getRotationToleranceRadians().get());
+
+        // Return the configured controller.
         return controller;
     }
 
@@ -493,10 +579,10 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         double        rotation    = clampRotation(omegaRadiansPerSecond);
 
         lastRequestedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            translation.getX(),
-            translation.getY(),
-            rotation,
-            swerveDrive.getOdometryHeading());
+                translation.getX(),
+                translation.getY(),
+                rotation,
+                swerveDrive.getOdometryHeading());
         lastRequestedStates = swerveDrive.toServeModuleStates(lastRequestedSpeeds, true);
 
         swerveDrive.drive(translation, rotation, true, false, centerOfRotationMeters);

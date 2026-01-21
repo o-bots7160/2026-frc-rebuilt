@@ -20,6 +20,18 @@ support scoring and navigation.
 - Drives toward target poses using PID when commands request autonomous-style
   aiming.
 
+## Terminology glossary
+
+- **Deadband**: A small input range around zero that is treated as zero to
+  ignore joystick noise.
+- **Holonomic**: The robot can translate in any direction while also rotating.
+- **Omega**: Rotational velocity around the vertical axis (radians per second).
+- **PID**: Proportional-Integral-Derivative control that corrects error over
+  time.
+- **Swerve**: Each wheel can steer and drive, allowing omnidirectional motion
+  while rotating.
+- **Theta**: The robot's heading angle around the vertical axis (radians).
+
 ## Code structure and maintenance
 
 - Classes:
