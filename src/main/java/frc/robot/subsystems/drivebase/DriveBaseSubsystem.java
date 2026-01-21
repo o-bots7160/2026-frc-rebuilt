@@ -14,11 +14,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.subsystems.AbstractSubsystem;
@@ -61,11 +61,11 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
     private SwerveController                  swerveController;
 
-    private boolean                           odometryWarningEmitted  = false;
-
-    private double                            lastOdometryWarningTime = -1.0;
-
     private Optional<Pose2d>                  targetPose              = Optional.empty();
+
+    private ChassisSpeeds                     lastRequestedSpeeds     = new ChassisSpeeds();
+
+    private SwerveModuleState[]               lastRequestedStates     = new SwerveModuleState[0];
 
     public DriveBaseSubsystem(DriveBaseSubsystemConfig config) {
         super(config);
@@ -92,6 +92,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         this.io = swerveDrive != null ? new DriveBaseIOYagsl(swerveDrive) : inputs -> {
         };
 
+        // Publish the field visualization so dashboards can render the live robot pose.
         SmartDashboard.putData("Field", fieldDisplay);
     }
 
@@ -108,13 +109,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
-        updateOdometrySafely();
-
         io.updateInputs(inputs);
         Logger.processInputs("DriveBase", inputs);
         Logger.recordOutput("Odometry/Robot", getPose());
         Logger.recordOutput("SwerveStates/Measured", inputs.moduleStates);
-        Logger.recordOutput("SwerveStates/Target", inputs.moduleTargets);
+        Logger.recordOutput("SwerveStates/Target", lastRequestedStates);
+        Logger.recordOutput("SwerveStates/CurrentStates", inputs.moduleStates);
+        Logger.recordOutput("SwerveStates/DesiredStates", lastRequestedStates);
+        Logger.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
+        Logger.recordOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
+        Logger.recordOutput("Swerve/RobotRotation", getPose().getRotation());
         Logger.recordOutput("DriveBase/HasTarget", targetPose.isPresent());
         targetPose.ifPresent(goal -> Logger.recordOutput("DriveBase/TargetPose", goal));
 
@@ -180,16 +184,23 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return translation request in meters per second for field-relative driving
      */
     public Translation2d mapDriverTranslation(double forwardAxis, double leftAxis) {
-        double        rawForward        = -forwardAxis;
-        double        rawLeft           = -leftAxis;
+        double        rawForward        = MathUtil.clamp(-forwardAxis, -1.0, 1.0);
+        double        rawLeft           = MathUtil.clamp(-leftAxis, -1.0, 1.0);
 
         double        deadbandedForward = MathUtil.applyDeadband(rawForward, JOYSTICK_DEADBAND);
         double        deadbandedLeft    = MathUtil.applyDeadband(rawLeft, JOYSTICK_DEADBAND);
 
         Translation2d rawVector         = new Translation2d(deadbandedForward, deadbandedLeft);
-        double        translationScale  = config.getTranslationScale().get();
-        Translation2d scaledVector      = SwerveMath.scaleTranslation(rawVector, translationScale);
-        Translation2d commandedSpeeds   = new Translation2d(
+        double        translationScale  = MathUtil.clamp(config.getTranslationScale().get(), 0.0, 1.0);
+        double        simulationScale   = 1.0;
+
+        if (RobotBase.isSimulation()) {
+            simulationScale                = MathUtil.clamp(config.getSimulationTranslationScale().get(), 0.0, 1.0);
+            translationScale               = translationScale * simulationScale;
+            SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+        }
+        Translation2d scaledVector    = SwerveMath.scaleTranslation(rawVector, translationScale);
+        Translation2d commandedSpeeds = new Translation2d(
                 scaledVector.getX() * config.getMaximumLinearSpeedMetersPerSecond().get(),
                 scaledVector.getY() * config.getMaximumLinearSpeedMetersPerSecond().get());
 
@@ -198,6 +209,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         log.recordOutput("DriverInputs/left/raw", rawLeft);
         log.recordOutput("DriverInputs/left/deadbanded", deadbandedLeft);
         log.recordOutput("DriverInputs/translation/scale", translationScale);
+        log.recordOutput("DriverInputs/translation/simulationScale", simulationScale);
         log.recordOutput("DriverInputs/translation/scaledX", scaledVector.getX());
         log.recordOutput("DriverInputs/translation/scaledY", scaledVector.getY());
         log.recordOutput("DriverInputs/translation/commandedX", commandedSpeeds.getX());
@@ -227,11 +239,21 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return angular velocity request in radians per second
      */
     public double mapDriverOmega(double omegaAxis) {
-        double processed        = MathUtil.applyDeadband(-omegaAxis, JOYSTICK_DEADBAND);
-        double radiansPerSecond = processed * config.getMaximumAngularSpeedRadiansPerSecond().get();
+        double rawAxis         = MathUtil.clamp(-omegaAxis, -1.0, 1.0);
+        double processed       = MathUtil.applyDeadband(rawAxis, JOYSTICK_DEADBAND);
+        double simulationScale = 1.0;
 
-        log.recordOutput("DriverInputs/omega/raw", omegaAxis);
+        if (RobotBase.isSimulation()) {
+            simulationScale = MathUtil.clamp(config.getSimulationOmegaScale().get(), 0.0, 1.0);
+        }
+
+        double radiansPerSecond = processed
+                * simulationScale
+                * config.getMaximumAngularSpeedRadiansPerSecond().get();
+
+        log.recordOutput("DriverInputs/omega/raw", rawAxis);
         log.recordOutput("DriverInputs/omega/deadbanded", processed);
+        log.recordOutput("DriverInputs/omega/simulationScale", simulationScale);
         log.recordOutput("DriverInputs/omega/radiansPerSecond", radiansPerSecond);
 
         return radiansPerSecond;
@@ -323,57 +345,13 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Drives toward the target pose using the holonomic controller.
-     */
-    public void seekTarget() {
-        if (isSubsystemDisabled()) {
-            return;
-        }
-
-        if (targetPose.isEmpty()) {
-            log.warning("seekTarget called without a configured target pose.");
-            return;
-        }
-
-        if (swerveDrive == null) {
-            log.warning("Swerve drive not configured; cannot seek target pose.");
-            return;
-        }
-
-        if (atTarget()) {
-            stop();
-            return;
-        }
-
-        Pose2d        goal        = targetPose.get();
-        Pose2d        currentPose = getPose();
-        ChassisSpeeds speeds      = holonomicController.calculate(currentPose, goal, 0.0, goal.getRotation());
-        ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, currentPose.getRotation());
-
-        Logger.recordOutput("DriveBase/RequestedSpeeds", speeds);
-        Logger.recordOutput("DriveBase/RequestedFieldSpeeds", fieldSpeeds);
-        driveFieldRelative(fieldSpeeds.vxMetersPerSecond, fieldSpeeds.vyMetersPerSecond, fieldSpeeds.omegaRadiansPerSecond);
-    }
-
-    /**
-     * Reports whether the robot pose is within the configured tolerances of the active target.
+     * Builds a PID controller for X/Y translation.
+     * <p>
+     * Use this for holonomic motion so the controller uses the current drivebase tuning.
+     * </p>
      *
-     * @return True when the robot is at the requested pose or no target exists.
+     * @return PID controller configured for translation in meters
      */
-    public boolean atTarget() {
-        if (targetPose.isEmpty()) {
-            return true;
-        }
-
-        Pose2d goal             = targetPose.get();
-        Pose2d currentPose      = getPose();
-        double translationError = currentPose.getTranslation().getDistance(goal.getTranslation());
-        double rotationError    = Math.abs(MathUtil.angleModulus(currentPose.getRotation().minus(goal.getRotation()).getRadians()));
-
-        return translationError <= config.getTranslationToleranceMeters().get()
-                && rotationError <= config.getRotationToleranceRadians().get();
-    }
-
     private PIDController createTranslationController() {
         PIDController controller = new PIDController(
                 config.getTranslationKp().get(),
@@ -386,6 +364,14 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         return controller;
     }
 
+    /**
+     * Builds a profiled PID controller for heading control.
+     * <p>
+     * The controller enforces angular speed and acceleration limits so rotation stays smooth.
+     * </p>
+     *
+     * @return profiled PID controller configured for radians
+     */
     private ProfiledPIDController createThetaController() {
         ProfiledPIDController controller = new ProfiledPIDController(
                 config.getRotationKp().get(),
@@ -399,6 +385,12 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         return controller;
     }
 
+    /**
+     * Refreshes PID gains and tolerances from tunable config values.
+     * <p>
+     * Call this when tuning so any SmartDashboard changes take effect without a redeploy.
+     * </p>
+     */
     private void refreshTunables() {
         xController.setPID(
                 config.getTranslationKp().get(),
@@ -443,6 +435,12 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         }
     }
 
+    /**
+     * Loads the YAGSL swerve configuration and wires up the controllers.
+     * <p>
+     * This method configures telemetry and handles simulation-only settings.
+     * </p>
+     */
     private void configureSwerveDrive() {
         try {
             File configDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
@@ -471,6 +469,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         }
     }
 
+    /**
+     * Sends a field-relative drive request to the swerve drive.
+     * <p>
+     * Inputs are clamped to configured limits before commanding the hardware.
+     * </p>
+     *
+     * @param vxMetersPerSecond     field-forward velocity in meters per second
+     * @param vyMetersPerSecond     field-left velocity in meters per second
+     * @param omegaRadiansPerSecond counter-clockwise rotation rate in radians per second
+     */
     private void requestDrive(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond) {
         if (isSubsystemDisabled()) {
             return;
@@ -484,9 +492,25 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         Translation2d translation = clampTranslation(new Translation2d(vxMetersPerSecond, vyMetersPerSecond));
         double        rotation    = clampRotation(omegaRadiansPerSecond);
 
+        lastRequestedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            translation.getX(),
+            translation.getY(),
+            rotation,
+            swerveDrive.getOdometryHeading());
+        lastRequestedStates = swerveDrive.toServeModuleStates(lastRequestedSpeeds, true);
+
         swerveDrive.drive(translation, rotation, true, false, centerOfRotationMeters);
     }
 
+    /**
+     * Limits translation commands to the maximum linear speed.
+     * <p>
+     * This keeps diagonal requests within the configured speed cap.
+     * </p>
+     *
+     * @param requestedVelocity translation request in meters per second
+     * @return possibly scaled translation request in meters per second
+     */
     private Translation2d clampTranslation(Translation2d requestedVelocity) {
         double magnitude = requestedVelocity.getNorm();
         double maxSpeed  = config.getMaximumLinearSpeedMetersPerSecond().get();
@@ -499,33 +523,18 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         return requestedVelocity.times(scale);
     }
 
+    /**
+     * Limits rotation commands to the maximum angular speed.
+     * <p>
+     * Use this to prevent the robot from spinning faster than the configured cap.
+     * </p>
+     *
+     * @param omegaRadiansPerSecond desired rotation rate in radians per second
+     * @return clamped rotation rate in radians per second
+     */
     private double clampRotation(double omegaRadiansPerSecond) {
         double maxRotationSpeed = config.getMaximumAngularSpeedRadiansPerSecond().get();
         return MathUtil.clamp(omegaRadiansPerSecond, -maxRotationSpeed, maxRotationSpeed);
     }
 
-    private void updateOdometrySafely() {
-        if (swerveDrive == null) {
-            return;
-        }
-
-        try {
-            swerveDrive.updateOdometry();
-            if (odometryWarningEmitted) {
-                log.info("Odometry telemetry initialized; updates resumed.");
-                odometryWarningEmitted = false;
-            }
-        } catch (NullPointerException npe) {
-            emitOdometryWarningOncePerSecond();
-        }
-    }
-
-    private void emitOdometryWarningOncePerSecond() {
-        double now = Timer.getFPGATimestamp();
-        if (!odometryWarningEmitted || now - lastOdometryWarningTime >= 1.0) {
-            log.warning("Odometry update skipped because telemetry arrays are not initialized yet.");
-            odometryWarningEmitted  = true;
-            lastOdometryWarningTime = now;
-        }
-    }
 }

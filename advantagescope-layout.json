@@ -4,7 +4,7 @@
       "x": 0,
       "y": 30,
       "width": 1920,
-      "height": 484,
+      "height": 1050,
       "state": {
         "sidebar": {
           "width": 500,
@@ -12,7 +12,6 @@
             "/RealOutputs/DriveBaseSubsystemCommandFactory/DriverInputs",
             "/RealOutputs/DriveBaseSubsystemCommandFactory/DriverInputs/forward",
             "/RealOutputs/DriveBaseSubsystemCommandFactory",
-            "/DriveBase",
             "/DriveBase/ChassisSpeeds",
             "/DriveBase/ModuleTargets",
             "/DriveBase/ModuleStates",
@@ -21,18 +20,28 @@
             "/DriveBase/Pose",
             "/DriveBase/Pose/translation",
             "/DriveBase/Pose/rotation",
-            "/RadioStatus",
-            "/SystemStats",
-            "/PowerDistribution",
-            "/DriverStation",
             "/DriverStation/Joystick0",
             "/DriverStation/Joystick0/AxisValues",
-            "/RealOutputs",
             "/RealOutputs/Odometry",
             "/RealOutputs/Odometry/Robot",
-            "/NetworkInputs",
             "/NetworkInputs/SmartDashboard",
-            "/NetworkInputs/SmartDashboard/DriveBaseSubsystem"
+            "/NetworkInputs/SmartDashboard/DriveBaseSubsystem",
+            "/TurretSubsystem/motor",
+            "/RealOutputs/TurretSubsystem",
+            "/SmartDashboard/swerve",
+            "/SmartDashboard/swerve/advantagescope",
+            "/SmartDashboard",
+            "/SmartDashboard/Swerve Drive",
+            "/SmartDashboard/Swerve Drive/errors",
+            "/AdvantageKit",
+            "/AdvantageKit/TurretSubsystem/motor",
+            "/AdvantageKit/RealOutputs/SwerveStates",
+            "/AdvantageKit/RealOutputs/SwerveStates/Measured",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/SwerveStates/Target",
+            "/AdvantageKit/RealOutputs/SwerveStates/CurrentStates",
+            "/AdvantageKit/RealOutputs/SwerveStates/DesiredStates",
+            "/AdvantageKit/RealOutputs/SwerveChassisSpeeds"
           ]
         },
         "tabs": {
@@ -43,7 +52,7 @@
               "title": "",
               "controller": null,
               "controllerUUID": "y95ej1ccq5p0h1epkos58zxw5x33kifz",
-              "renderer": "#/",
+              "renderer": "",
               "controlsHeight": 0
             },
             {
@@ -53,21 +62,11 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "/RealOutputs/Odometry/Robot/translation/x",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionRads",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "/RealOutputs/Odometry/Robot/translation/y",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#af2437",
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   }
@@ -75,11 +74,11 @@
                 "rightSources": [
                   {
                     "type": "stepped",
-                    "logKey": "/RealOutputs/Odometry/Robot/rotation/value",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/AppliedVolts",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#2b66a2",
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   }
@@ -98,9 +97,82 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "l3a53d020ydm4t50r0pl0k3dpjbknh7j",
+              "controllerUUID": "y7x16qlzztf384dkqe4gb0b5bxnt01f9",
               "renderer": null,
               "controlsHeight": 200
+            },
+            {
+              "type": 9,
+              "title": "Swerve",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/CurrentStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/DesiredStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Target",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Desired",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Measured",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff"
+                    }
+                  }
+                ],
+                "maxSpeed": 5,
+                "sizeX": 0.65,
+                "sizeY": 0.65,
+                "orientation": 1
+              },
+              "controllerUUID": "z3334p09qliwv4h9a3q39j0be6a31hoq",
+              "renderer": null,
+              "controlsHeight": 261
             },
             {
               "type": 4,

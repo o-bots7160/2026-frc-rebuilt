@@ -1,5 +1,6 @@
 package frc.robot.shared.bindings;
 
+import edu.wpi.first.math.MathUtil;
 import frc.robot.devices.GameController;
 import frc.robot.devices.GameController.GameControllerAxes;
 import frc.robot.devices.GameController.GameControllerButton;
@@ -57,10 +58,25 @@ public class TriggerBindings {
     }
 
     private void configureDriveControllerBindings() {
+        // Apply trigger-based throttle scaling to translation inputs (mirrors 2025 drive bindings).
         driveBaseCommandFactory.setDefaultManualDriveCommand(
-                () -> driverController.getRawAxis(GameControllerAxes.LeftStickY.getValue()),
-                () -> driverController.getRawAxis(GameControllerAxes.LeftStickX.getValue()),
+                () -> MathUtil.clamp(
+                        driverController.getRawAxis(GameControllerAxes.LeftStickY.getValue())
+                                * computeDriveThrottleScale(),
+                        -1.0,
+                        1.0),
+                () -> MathUtil.clamp(
+                        driverController.getRawAxis(GameControllerAxes.LeftStickX.getValue())
+                                * computeDriveThrottleScale(),
+                        -1.0,
+                        1.0),
                 () -> driverController.getRawAxis(GameControllerAxes.RightStickX.getValue()));
+    }
+
+    private double computeDriveThrottleScale() {
+        double speedUp  = 1.0 - driverController.getRawAxis(GameControllerAxes.RTrigger.getValue());
+        double slowDown = 1.0 - driverController.getRawAxis(GameControllerAxes.LTrigger.getValue());
+        return (speedUp + 0.001) / (slowDown + 0.001);
     }
 
     private void configureTurretBindings() {

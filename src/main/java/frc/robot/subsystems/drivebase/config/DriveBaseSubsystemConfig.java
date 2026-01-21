@@ -41,6 +41,10 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
 
     public double translationScale;
 
+    public double simulationTranslationScale;
+
+    public double simulationOmegaScale;
+
     /**
      * Supplies the maximum linear speed in meters per second.
      *
@@ -161,6 +165,24 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
      */
     public Supplier<Double> getTranslationScale() {
         return () -> readTunableNumber("translationScale", translationScale);
+    }
+
+    /**
+     * Supplies the additional joystick translation scale applied during simulation.
+     *
+     * @return supplier yielding the current simulation translation scale (0–1)
+     */
+    public Supplier<Double> getSimulationTranslationScale() {
+        return () -> readTunableNumber("simulationTranslationScale", simulationTranslationScale);
+    }
+
+    /**
+     * Supplies the additional joystick rotation scale applied during simulation.
+     *
+     * @return supplier yielding the current simulation rotation scale (0–1)
+     */
+    public Supplier<Double> getSimulationOmegaScale() {
+        return () -> readTunableNumber("simulationOmegaScale", simulationOmegaScale);
     }
 
     /**
