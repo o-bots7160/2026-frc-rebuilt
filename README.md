@@ -25,6 +25,14 @@ Competition "REBUILT" season codebase.
    [WPILib 2026 release](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html)**
    (bundles Java 17, GradleRIO, and the VS Code extensions). Ensure the WPILib
    command-line tools are on your `PATH`.
+3. **Install
+   [PathPlanner](https://pathplanner.dev/gui-getting-started.html#install-pathplanner)**
+   for trajectory authoring and visualization.
+   - macOS: install it into the current season’s WPILib folder under a
+     pathplanner subfolder.
+   - macOS: if you see a malware warning, allow it via System Settings → Privacy
+     & Security → Open Anyway, or run `sudo xattr -rd com.apple.quarantine`
+     followed by the PathPlanner app folder.
 
 ## Getting started
 
