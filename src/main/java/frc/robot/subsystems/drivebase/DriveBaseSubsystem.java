@@ -1,21 +1,15 @@
 package frc.robot.subsystems.drivebase;
 
 import java.io.File;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -48,38 +42,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
     private final Translation2d               centerOfRotationMeters = new Translation2d();
 
-    /**
-     * PID controller for X (forward/back) translation.
-     * <p>
-     * PID (Proportional, Integral, Derivative) corrects position error over time.
-     * </p>
-     */
-    private final PIDController               xController;
-
-    /**
-     * PID controller for Y (left/right) translation.
-     * <p>
-     * PID (Proportional, Integral, Derivative) corrects position error over time.
-     * </p>
-     */
-    private final PIDController               yController;
-
-    /**
-     * Profiled PID controller for theta (robot heading angle) control.
-     * <p>
-     * Theta is the robot's rotation around the vertical axis, measured in radians.
-     * </p>
-     */
-    private final ProfiledPIDController       thetaController;
-
-    /**
-     * Holonomic drive controller that combines X, Y, and theta control.
-     * <p>
-     * Holonomic means the robot can translate in any direction while rotating.
-     * </p>
-     */
-    private final HolonomicDriveController    holonomicController;
-
     private final DriveBaseIO                 io;
 
     private final DriveBaseIOInputsAutoLogged inputs                 = new DriveBaseIOInputsAutoLogged();
@@ -102,30 +64,12 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     private SwerveController                  swerveController;
 
-    private Optional<Pose2d>                  targetPose             = Optional.empty();
-
     private ChassisSpeeds                     lastRequestedSpeeds    = new ChassisSpeeds();
 
     private SwerveModuleState[]               lastRequestedStates    = new SwerveModuleState[0];
 
     public DriveBaseSubsystem(DriveBaseSubsystemConfig config) {
         super(config);
-
-        // Build the translation and heading controllers used by holonomic path tracking.
-        this.xController         = createTranslationController();
-        this.yController         = createTranslationController();
-        this.thetaController     = createThetaController();
-
-        // Combine the axis controllers into a single holonomic controller.
-        this.holonomicController = new HolonomicDriveController(xController, yController, thetaController);
-
-        // Apply position/heading tolerances so the controller knows when it is “close enough.”
-        this.holonomicController.setTolerance(
-                new Pose2d(
-                        new Translation2d(
-                                config.getTranslationToleranceMeters().get(),
-                                config.getTranslationToleranceMeters().get()),
-                        Rotation2d.fromRadians(config.getRotationToleranceRadians().get())));
 
         // If the subsystem is disabled in config, skip all hardware setup.
         if (isSubsystemDisabled()) {
@@ -167,9 +111,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         Logger.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
         Logger.recordOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
         Logger.recordOutput("Swerve/RobotRotation", getPose().getRotation());
-        Logger.recordOutput("DriveBase/HasTarget", targetPose.isPresent());
-        targetPose.ifPresent(goal -> Logger.recordOutput("DriveBase/TargetPose", goal));
-
         fieldDisplay.setRobotPose(getPose());
     }
 
@@ -353,58 +294,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Sets a target pose for the holonomic controller to chase.
-     *
-     * @param pose Target pose expressed in field coordinates.
-     */
-    public void setTargetPose(Pose2d pose) {
-        if (isSubsystemDisabled()) {
-            return;
-        }
-
-        targetPose = Optional.ofNullable(pose);
-        xController.reset();
-        yController.reset();
-        thetaController.reset(getPose().getRotation().getRadians());
-    }
-
-    /**
-     * Sets only the translation portion of the target while preserving the desired heading.
-     *
-     * @param translation Translation to move toward.
-     */
-    public void setTargetTranslation(Translation2d translation) {
-        Rotation2d rotation = targetPose.map(Pose2d::getRotation).orElseGet(() -> getPose().getRotation());
-        setTargetPose(new Pose2d(translation, rotation));
-    }
-
-    /**
-     * Sets only the rotation portion of the target while preserving the desired translation.
-     *
-     * @param rotation Desired field heading.
-     */
-    public void setTargetRotation(Rotation2d rotation) {
-        Translation2d translation = targetPose.map(Pose2d::getTranslation).orElseGet(() -> getPose().getTranslation());
-        setTargetPose(new Pose2d(translation, rotation));
-    }
-
-    /**
-     * Clears any pending pose target so manual control can resume.
-     */
-    public void clearTargetPose() {
-        targetPose = Optional.empty();
-    }
-
-    /**
-     * Returns the currently configured target pose, if one exists.
-     *
-     * @return Optional pose of the active target.
-     */
-    public Optional<Pose2d> getTargetPose() {
-        return targetPose;
-    }
-
-    /**
      * Provides access to the configured swerve drive for command factories and testing helpers.
      *
      * @return configured {@link SwerveDrive} instance, or {@code null} if initialization failed or subsystem is disabled
@@ -414,102 +303,12 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Builds a PID controller for X/Y translation.
-     * <p>
-     * Use this for holonomic motion so the controller uses the current drivebase tuning.
-     * </p>
-     *
-     * @return PID controller configured for translation in meters
-     */
-    private PIDController createTranslationController() {
-        // PID gains: tuning for how strongly the robot corrects translation error.
-        PIDController controller = new PIDController(
-                config.getTranslationKp().get(),
-                config.getTranslationKi().get(),
-                config.getTranslationKd().get());
-
-        // Tolerance: how close (in meters) we consider the target reached.
-        controller.setTolerance(config.getTranslationToleranceMeters().get());
-
-        // Integrator range: cap I-term to prevent windup beyond max linear speed.
-        controller.setIntegratorRange(
-                -config.getMaximumLinearSpeedMetersPerSecond().get(),
-                config.getMaximumLinearSpeedMetersPerSecond().get());
-
-        // Return the configured controller.
-        return controller;
-    }
-
-    /**
-     * Builds a profiled PID controller for heading control.
-     * <p>
-     * Theta is the robot's heading angle (rotation) around the vertical axis, measured in radians. The controller enforces angular speed and
-     * acceleration limits so rotation stays smooth.
-     * </p>
-     *
-     * @return profiled PID controller configured for radians
-     */
-    private ProfiledPIDController createThetaController() {
-        // PID gains: tuning for how strongly the robot corrects heading error.
-        ProfiledPIDController controller = new ProfiledPIDController(
-                config.getRotationKp().get(),
-                config.getRotationKi().get(),
-                config.getRotationKd().get(),
-                new TrapezoidProfile.Constraints(
-                        config.getMaximumAngularSpeedRadiansPerSecond().get(),
-                        config.getMaximumAngularAccelerationRadiansPerSecondSquared().get()));
-
-        // Continuous input: treat -π and +π as the same angle so the controller picks the shortest turn.
-        controller.enableContinuousInput(-Math.PI, Math.PI);
-
-        // Tolerance: how close (in radians) we consider the heading target reached.
-        controller.setTolerance(config.getRotationToleranceRadians().get());
-
-        // Return the configured controller.
-        return controller;
-    }
-
-    /**
      * Refreshes PID gains and tolerances from tunable config values.
      * <p>
      * Call this when tuning so any SmartDashboard changes take effect without a redeploy.
      * </p>
      */
     private void refreshTunables() {
-        xController.setPID(
-                config.getTranslationKp().get(),
-                config.getTranslationKi().get(),
-                config.getTranslationKd().get());
-        xController.setTolerance(config.getTranslationToleranceMeters().get());
-        xController.setIntegratorRange(
-                -config.getMaximumLinearSpeedMetersPerSecond().get(),
-                config.getMaximumLinearSpeedMetersPerSecond().get());
-
-        yController.setPID(
-                config.getTranslationKp().get(),
-                config.getTranslationKi().get(),
-                config.getTranslationKd().get());
-        yController.setTolerance(config.getTranslationToleranceMeters().get());
-        yController.setIntegratorRange(
-                -config.getMaximumLinearSpeedMetersPerSecond().get(),
-                config.getMaximumLinearSpeedMetersPerSecond().get());
-
-        thetaController.setPID(
-                config.getRotationKp().get(),
-                config.getRotationKi().get(),
-                config.getRotationKd().get());
-        thetaController.setConstraints(new TrapezoidProfile.Constraints(
-                config.getMaximumAngularSpeedRadiansPerSecond().get(),
-                config.getMaximumAngularAccelerationRadiansPerSecondSquared().get()));
-        thetaController.setTolerance(config.getRotationToleranceRadians().get());
-
-        holonomicController.setTolerance(
-                new Pose2d(
-                        new Translation2d(
-                                config.getTranslationToleranceMeters().get(),
-                                config.getTranslationToleranceMeters().get()),
-                        Rotation2d.fromRadians(config.getRotationToleranceRadians().get())));
-
         if (swerveController != null) {
             swerveController.thetaController.setTolerance(config.getRotationToleranceRadians().get(), 0.1);
             swerveController.thetaController.setPID(
@@ -545,6 +344,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                     config.getHeadingKp().get(),
                     config.getHeadingKi().get(),
                     config.getHeadingKd().get());
+
+            swerveDrive.setMotorIdleMode(true);
 
             log.info("Drive base configured from " + configDirectory.getAbsolutePath());
         } catch (Throwable e) {

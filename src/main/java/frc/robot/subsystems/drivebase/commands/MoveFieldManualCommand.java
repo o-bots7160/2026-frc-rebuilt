@@ -62,6 +62,6 @@ public class MoveFieldManualCommand extends AbstractSubsystemCommand<DriveBaseSu
      */
     @Override
     protected void onInitialize() {
-        subsystem.clearTargetPose();
+        // no op
     }
 }

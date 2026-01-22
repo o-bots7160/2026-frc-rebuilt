@@ -15,27 +15,11 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
 
     public double maximumAngularSpeedDegreesPerSecond;
 
-    public double maximumAngularAccelerationDegreesPerSecondSquared;
-
-    public double translationKp;
-
-    public double translationKi;
-
-    public double translationKd;
-
-    public double rotationKp;
-
-    public double rotationKi;
-
-    public double rotationKd;
-
     public double headingKp;
 
     public double headingKi;
 
     public double headingKd;
-
-    public double translationToleranceInches;
 
     public double rotationToleranceDegrees;
 
@@ -63,72 +47,6 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
     public Supplier<Double> getMaximumAngularSpeedRadiansPerSecond() {
         return () -> Units.degreesToRadians(
                 readTunableNumber("maximumAngularSpeedDegreesPerSecond", maximumAngularSpeedDegreesPerSecond));
-    }
-
-    /**
-     * Supplies the maximum angular acceleration in radians per second squared.
-     *
-     * @return supplier yielding the current max angular acceleration (rad/s^2)
-     */
-    public Supplier<Double> getMaximumAngularAccelerationRadiansPerSecondSquared() {
-        return () -> Units.degreesToRadians(
-                readTunableNumber(
-                        "maximumAngularAccelerationDegreesPerSecondSquared",
-                        maximumAngularAccelerationDegreesPerSecondSquared));
-    }
-
-    /**
-     * Supplies the translation proportional gain.
-     *
-     * @return supplier yielding the current translation Kp
-     */
-    public Supplier<Double> getTranslationKp() {
-        return () -> readTunableNumber("translationKp", translationKp);
-    }
-
-    /**
-     * Supplies the translation integral gain.
-     *
-     * @return supplier yielding the current translation Ki
-     */
-    public Supplier<Double> getTranslationKi() {
-        return () -> readTunableNumber("translationKi", translationKi);
-    }
-
-    /**
-     * Supplies the translation derivative gain.
-     *
-     * @return supplier yielding the current translation Kd
-     */
-    public Supplier<Double> getTranslationKd() {
-        return () -> readTunableNumber("translationKd", translationKd);
-    }
-
-    /**
-     * Supplies the rotation proportional gain.
-     *
-     * @return supplier yielding the current rotation Kp
-     */
-    public Supplier<Double> getRotationKp() {
-        return () -> readTunableNumber("rotationKp", rotationKp);
-    }
-
-    /**
-     * Supplies the rotation integral gain.
-     *
-     * @return supplier yielding the current rotation Ki
-     */
-    public Supplier<Double> getRotationKi() {
-        return () -> readTunableNumber("rotationKi", rotationKi);
-    }
-
-    /**
-     * Supplies the rotation derivative gain.
-     *
-     * @return supplier yielding the current rotation Kd
-     */
-    public Supplier<Double> getRotationKd() {
-        return () -> readTunableNumber("rotationKd", rotationKd);
     }
 
     /**
@@ -183,16 +101,6 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
      */
     public Supplier<Double> getSimulationOmegaScale() {
         return () -> readTunableNumber("simulationOmegaScale", simulationOmegaScale);
-    }
-
-    /**
-     * Supplies the translation tolerance in meters.
-     *
-     * @return supplier yielding the current translation tolerance (m)
-     */
-    public Supplier<Double> getTranslationToleranceMeters() {
-        return () -> Units.inchesToMeters(
-                readTunableNumber("translationToleranceInches", translationToleranceInches));
     }
 
     /**
