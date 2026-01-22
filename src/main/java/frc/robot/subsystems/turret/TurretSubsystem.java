@@ -2,10 +2,10 @@ package frc.robot.subsystems.turret;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.devices.Motor;
-import frc.robot.devices.motor.SimMotor;
 import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
 import frc.robot.subsystems.turret.devices.TurretMotor;
+import frc.robot.subsystems.turret.devices.TurretSimMotor;
 
 /**
  * Turret subsystem with a single profiled motor. Exposes the set-and-seek API so callers can drive to angles in degrees while the superclass handles
@@ -17,19 +17,7 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
             return null;
         }
 
-        if (RobotBase.isReal()) {
-            return new TurretMotor(config);
-        }
-
-        double motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
-
-        return new SimMotor(
-                "TurretMotorSim",
-                motorRotationsPerMechanismRotation,
-                config.getMinimumSetpointSupplier(),
-                config.getMaximumSetpointSupplier(),
-                config.getMaximumVelocitySupplier(),
-                config.getMaximumAccelerationSupplier());
+        return RobotBase.isReal() ? new TurretMotor(config) : new TurretSimMotor(config);
     }
 
     /**

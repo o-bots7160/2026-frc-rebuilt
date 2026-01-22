@@ -83,4 +83,8 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
     protected boolean isFMSAttached() {
         return RobotBase.isReal() && DriverStation.isFMSAttached();
     }
+
+    protected void logDisabled(String methodName) {
+        log.verbose(methodName + " called, but subsystem is disabled.");
+    }
 }

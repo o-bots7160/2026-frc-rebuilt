@@ -268,8 +268,4 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 config.getMaximumAccelerationSupplier().get());
         controller.setConstraints(constraints);
     }
-
-    private void logDisabled(String methodName) {
-        log.verbose(methodName + " called, but subsystem is disabled.");
-    }
 }
