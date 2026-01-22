@@ -21,7 +21,7 @@
     "rotationToleranceDegrees": 2.0
   },
   "turretSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": false,
     "motorCanId": 0,
     "motorInverted": false,
