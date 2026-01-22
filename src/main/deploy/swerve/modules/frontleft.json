@@ -1,9 +1,18 @@
 {
   "location": {
-    "front": 12.5,
-    "left": 12.5
+    "front": 11,
+    "left": 11.5
   },
-  "absoluteEncoderOffset": 325.283203125,
+  "conversionFactors": {
+    "angle": {
+      "gearRatio": 18.75
+    },
+    "drive": {
+      "gearRatio": 5.9,
+      "diameter": 4
+    }
+  },
+  "absoluteEncoderOffset": 324.66796875,
   "drive": {
     "type": "sparkflex_vortex",
     "id": 12,

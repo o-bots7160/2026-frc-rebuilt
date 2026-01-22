@@ -528,7 +528,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     private void configureSwerveDrive() {
         try {
             File configDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
-            SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+            SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
             swerveDrive                    = new SwerveParser(configDirectory)
                     .createSwerveDrive(config.getMaximumLinearSpeedMetersPerSecond().get());
