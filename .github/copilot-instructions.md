@@ -97,6 +97,10 @@ Follow them whenever you add code, documentation, or tests.
 
 - Favor expressive code over comments. Only add comments when the intent cannot
   be captured by naming alone.
+- When introducing robotics, mechanics, or other domain jargon, add a short
+  explanation in Javadoc or a nearby comment so students can learn the term.
+- When a subsystem is disabled, add a log message for any public method that
+  gets called so operators can see the call was skipped.
 - Place comments on their own lines directly **before** the code block they
   describe—avoid end-of-line commentary.
 - Remove obsolete or redundant comments during refactors to prevent drift.

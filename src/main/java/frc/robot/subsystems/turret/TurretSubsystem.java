@@ -13,6 +13,10 @@ import frc.robot.subsystems.turret.devices.TurretMotor;
  */
 public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystemConfig> {
     private static Motor buildMotor(TurretSubsystemConfig config) {
+        if (!config.enabled) {
+            return null;
+        }
+
         if (RobotBase.isReal()) {
             return new TurretMotor(config);
         }

@@ -5,6 +5,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.devices.Motor;
+import frc.robot.devices.motor.DisabledMotor;
 import frc.robot.devices.motor.MotorIOInputsAutoLogged;
 import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
 
@@ -37,43 +38,52 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      * Creates a profiled subsystem with bounded setpoints, motion constraints, and a single motor.
      *
      * @param config Configuration values that define the allowable range, motion limits, and initial state.
-     * @param motor  Motor controller that reports position/velocity and accepts duty-cycle commands.
+     * @param motor  Motor controller that reports position/velocity and accepts duty-cycle commands, or null to use a disabled no-op motor.
      */
     protected AbstractSetAndSeekSubsystem(TConfig config, Motor motor) {
         super(config);
-        this.motor  = motor;
+        // Use a no-op motor when hardware is absent so the subsystem can still run safely in sim or disabled mode.
+        this.motor  = motor != null ? motor : new DisabledMotor();
 
+        // Trapezoid profile constraints define the max cruise speed and acceleration for smooth motion.
         constraints = new TrapezoidProfile.Constraints(config.getMaximumVelocitySupplier().get(),
                 config.getMaximumAccelerationSupplier().get());
 
+        // Profiled PID drives the mechanism toward the goal while respecting the trapezoid limits.
         controller  = new ProfiledPIDController(
                 config.getkPSupplier().get(),
                 config.getkISupplier().get(),
                 config.getkDSupplier().get(),
                 constraints,
                 kDt);
+        // Position tolerance is in mechanism units; velocity tolerance is a small fraction of max speed.
         controller.setTolerance(config.getPositionToleranceSupplier().get(),
                 config.getMaximumVelocitySupplier().get() * 0.05);
 
+        // Feedforward estimates the voltage needed to maintain a desired velocity/acceleration.
         feedforward = new SimpleMotorFeedforward(
                 config.getkSSupplier().get(),
                 config.getkVSupplier().get(),
                 config.getkASupplier().get());
 
+        // Seed the profile with the configured starting position/velocity so the first update is stable.
         double initialPosition = config.getInitialPositionSupplier().get();
         double initialVelocity = config.getInitialVelocitySupplier().get();
 
+        // The goal state is where we want to end; the setpoint state is the next step along the profile.
         goalState     = new TrapezoidProfile.State(initialPosition, 0.0);
         setpointState = new TrapezoidProfile.State(initialPosition, initialVelocity);
 
+        // Reset the controller to the current state and then give it the initial goal.
         controller.reset(initialPosition, initialVelocity);
         controller.setGoal(goalState);
 
+        // SysId routine is used by characterization commands to identify feedforward gains.
         sysIdRoutine = SysIdHelper.createSimpleRoutine(
                 this,
                 className + "/motor",
-                motor::setVoltage,
-                motor::getVoltage,
+                this.motor::setVoltage,
+                this.motor::getVoltage,
                 this::getMeasuredPosition,
                 this::getMeasuredVelocity);
     }
@@ -85,6 +95,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     public void setTarget(double targetPosition) {
         if (isSubsystemDisabled()) {
+            logDisabled("setTarget");
             return;
         }
 
@@ -100,6 +111,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     public void seekTarget() {
         if (isSubsystemDisabled()) {
+            logDisabled("seekTarget");
             return;
         }
 
@@ -127,6 +139,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     public boolean atTarget() {
         if (isSubsystemDisabled()) {
+            logDisabled("atTarget");
             return true;
         }
 
@@ -158,6 +171,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     public void settleAtCurrentPosition() {
         if (isSubsystemDisabled()) {
+            logDisabled("settleAtCurrentPosition");
             return;
         }
 
@@ -178,6 +192,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     public void settleAtTarget(double targetPosition) {
         if (isSubsystemDisabled()) {
+            logDisabled("settleAtTarget");
             return;
         }
 
@@ -252,5 +267,9 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         constraints = new TrapezoidProfile.Constraints(config.getMaximumVelocitySupplier().get(),
                 config.getMaximumAccelerationSupplier().get());
         controller.setConstraints(constraints);
+    }
+
+    private void logDisabled(String methodName) {
+        log.verbose(methodName + " called, but subsystem is disabled.");
     }
 }

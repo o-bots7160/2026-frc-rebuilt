@@ -250,9 +250,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
         // Simulation: optionally tone down speeds and increase telemetry detail to help debugging.
         if (RobotBase.isSimulation()) {
-            simulationScale                = MathUtil.clamp(config.getSimulationTranslationScale().get(), 0.0, 1.0);
-            translationScale               = translationScale * simulationScale;
-            SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+            simulationScale  = MathUtil.clamp(config.getSimulationTranslationScale().get(), 0.0, 1.0);
+            translationScale = translationScale * simulationScale;
         }
 
         // Shape and scale the translation while preserving direction (prevents diagonal overspeed).
@@ -535,9 +534,10 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             swerveDrive                    = new SwerveParser(configDirectory)
                     .createSwerveDrive(config.getMaximumLinearSpeedMetersPerSecond().get());
 
-            if (RobotBase.isSimulation()) {
+            if (isSimulation) {
                 swerveDrive.setHeadingCorrection(false);
                 swerveDrive.setCosineCompensator(false);
+                SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
             }
 
             swerveController = swerveDrive.swerveController;
