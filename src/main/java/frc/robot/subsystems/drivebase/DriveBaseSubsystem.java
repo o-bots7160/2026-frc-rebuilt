@@ -94,15 +94,19 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     @Override
     public void periodic() {
         if (!isFMSAttached()) {
+            // Only allow live tuning when we are not connected to the official field system.
             refreshTunables();
         }
 
         if (isSubsystemDisabled() || swerveDrive == null) {
+            // No hardware to talk to, so skip the rest of the telemetry pipeline.
             return;
         }
 
+        // Pull the latest sensor data from the IO layer before logging.
         io.updateInputs(inputs);
         Logger.processInputs("DriveBase", inputs);
+        // Publish odometry, module states, and chassis speeds for analysis.
         Logger.recordOutput("Odometry/Robot", getPose());
         Logger.recordOutput("SwerveStates/Measured", inputs.moduleStates);
         Logger.recordOutput("SwerveStates/Target", lastRequestedStates);
@@ -111,6 +115,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         Logger.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
         Logger.recordOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
         Logger.recordOutput("Swerve/RobotRotation", getPose().getRotation());
+        // Update the on-dashboard field widget so drivers can see pose changes.
         fieldDisplay.setRobotPose(getPose());
     }
 
@@ -121,6 +126,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     public Pose2d getPose() {
         if (swerveDrive == null) {
+            // Return a safe default when the swerve drive has not been initialized.
             return new Pose2d();
         }
 
@@ -137,6 +143,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
+        // Use the swerve library helper to reset odometry and the gyro together.
         swerveDrive.resetOdometry(pose);
     }
 
@@ -150,6 +157,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
+        // Directly update the pose estimator without rewinding wheel encoders.
         swerveDrive.swerveDrivePoseEstimator.resetPose(pose);
     }
 
@@ -161,6 +169,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @param omegaRadiansPerSecond Counter-clockwise rotational rate.
      */
     public void driveFieldRelative(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond) {
+        // Forward the request to the shared helper that clamps and logs values.
         requestDrive(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
     }
 
@@ -228,6 +237,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     public Supplier<Translation2d> mapDriverTranslationSupplier(
             Supplier<Double> forwardAxisSupplier,
             Supplier<Double> leftAxisSupplier) {
+        // Wrap the mapping logic so commands can call it lazily every loop.
         return () -> mapDriverTranslation(forwardAxisSupplier.get(), leftAxisSupplier.get());
     }
 
@@ -276,6 +286,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return supplier that produces a scaled angular velocity in radians per second
      */
     public Supplier<Double> mapDriverOmegaSupplier(Supplier<Double> omegaAxisSupplier) {
+        // Keep the supplier lightweight so it can be polled each scheduler tick.
         return () -> mapDriverOmega(omegaAxisSupplier.get());
     }
 
@@ -287,8 +298,10 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
+        // Request zero speeds so the drive controller stops issuing motion.
         requestDrive(0.0, 0.0, 0.0);
         if (swerveDrive != null) {
+            // Lock the wheels in place to resist being pushed.
             swerveDrive.lockPose();
         }
     }
@@ -299,6 +312,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return configured {@link SwerveDrive} instance, or {@code null} if initialization failed or subsystem is disabled
      */
     public SwerveDrive getSwerveDrive() {
+        // Expose the raw drive for advanced commands or testing helpers.
         return swerveDrive;
     }
 
@@ -310,6 +324,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     private void refreshTunables() {
         if (swerveController != null) {
+            // Apply live-tuned heading gains so changes take effect immediately.
             swerveController.thetaController.setTolerance(config.getRotationToleranceRadians().get(), 0.1);
             swerveController.thetaController.setPID(
                     config.getHeadingKp().get(),
@@ -327,17 +342,23 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     private void configureSwerveDrive() {
         try {
             File configDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
+
+            // Load the swerve JSONs from the deploy folder so the robot and sim use the same hardware model.
             SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
+            // Build the swerve drive using the maximum speed limit from config.
             swerveDrive                    = new SwerveParser(configDirectory)
                     .createSwerveDrive(config.getMaximumLinearSpeedMetersPerSecond().get());
 
             if (isSimulation()) {
+                // Simulation safety: disable corrections that assume real-world friction and inertia.
                 swerveDrive.setHeadingCorrection(false);
                 swerveDrive.setCosineCompensator(false);
+                // Keep telemetry verbose in sim to help students see more detail.
                 SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
             }
 
+            // Cache the controller so we can tune its PID gains at runtime.
             swerveController = swerveDrive.swerveController;
             swerveController.thetaController.setTolerance(config.getRotationToleranceRadians().get(), 0.1);
             swerveController.thetaController.setPID(
@@ -345,6 +366,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                     config.getHeadingKi().get(),
                     config.getHeadingKd().get());
 
+            // Default to brake mode so the robot resists rolling when no command is active.
             swerveDrive.setMotorIdleMode(true);
 
             log.info("Drive base configured from " + configDirectory.getAbsolutePath());
@@ -375,16 +397,20 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
+        // Clamp the requested speeds so driver commands stay within safe limits.
         Translation2d translation = clampTranslation(new Translation2d(vxMetersPerSecond, vyMetersPerSecond));
         double        rotation    = clampRotation(omegaRadiansPerSecond);
 
+        // Convert the field-relative request into robot-relative chassis speeds.
         lastRequestedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 translation.getX(),
                 translation.getY(),
                 rotation,
                 swerveDrive.getOdometryHeading());
+        // Compute the desired module states so we can log what the drive wants each wheel to do.
         lastRequestedStates = swerveDrive.toServeModuleStates(lastRequestedSpeeds, true);
 
+        // Send the final request to the swerve library (field-relative, no open-loop).
         swerveDrive.drive(translation, rotation, true, false, centerOfRotationMeters);
     }
 
@@ -398,13 +424,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return possibly scaled translation request in meters per second
      */
     private Translation2d clampTranslation(Translation2d requestedVelocity) {
+        // Compute the vector length so we can cap diagonal speeds correctly.
         double magnitude = requestedVelocity.getNorm();
         double maxSpeed  = config.getMaximumLinearSpeedMetersPerSecond().get();
 
         if (magnitude == 0.0 || magnitude <= maxSpeed) {
+            // No scaling needed if we are already within the configured limit.
             return requestedVelocity;
         }
 
+        // Scale the vector back to the max speed while preserving direction.
         double scale = maxSpeed / magnitude;
         return requestedVelocity.times(scale);
     }
@@ -419,6 +448,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return clamped rotation rate in radians per second
      */
     private double clampRotation(double omegaRadiansPerSecond) {
+        // Clamp the spin rate so we never exceed the configured maximum.
         double maxRotationSpeed = config.getMaximumAngularSpeedRadiansPerSecond().get();
         return MathUtil.clamp(omegaRadiansPerSecond, -maxRotationSpeed, maxRotationSpeed);
     }
