@@ -17,6 +17,8 @@ import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
+import frc.robot.subsystems.vision.AprilTagVisionSubsystem;
+import frc.robot.subsystems.vision.DriverCameraSubsystem;
 
 public class RobotContainer {
 
@@ -31,6 +33,12 @@ public class RobotContainer {
     private final DriveBaseSubsystem               driveBaseSubsystem;
 
     private final TurretSubsystem                  turretSubsystem;
+
+    @SuppressWarnings("unused")
+    private final AprilTagVisionSubsystem          aprilTagVisionSubsystem;
+
+    @SuppressWarnings("unused")
+    private final DriverCameraSubsystem            driverCameraSubsystem;
 
     // Command factories
     private final DriveBaseSubsystemCommandFactory driveBaseCommandFactory;
@@ -50,6 +58,12 @@ public class RobotContainer {
             // Subsystems
             driveBaseSubsystem          = new DriveBaseSubsystem(subsystemsConfig.driveBaseSubsystem);
             turretSubsystem             = new TurretSubsystem(subsystemsConfig.turretSubsystem);
+            aprilTagVisionSubsystem     = new AprilTagVisionSubsystem(
+                    subsystemsConfig.aprilTagVisionSubsystem,
+                    aprilTagFieldLayoutSupplier.get(),
+                    /* vision-based pose consumer */ driveBaseSubsystem::addVisionMeasurement,
+                    /* pose provider for simulations */ driveBaseSubsystem::getPose);
+            driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
 
             // Command factories
             driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
