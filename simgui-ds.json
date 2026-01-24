@@ -1,14 +1,4 @@
 {
-  "Keyboard 0 Settings": {
-    "window": {
-      "visible": true
-    }
-  },
-  "Keyboard 1 Settings": {
-    "window": {
-      "visible": true
-    }
-  },
   "System Joysticks": {
     "window": {
       "visible": false
@@ -104,10 +94,12 @@
   ],
   "robotJoysticks": [
     {
-      "guid": "Keyboard0"
+      "guid": "Keyboard0",
+      "name": "Driver"
     },
     {
-      "guid": "Keyboard1"
+      "guid": "Keyboard1",
+      "name": "Operator"
     }
   ]
 }
