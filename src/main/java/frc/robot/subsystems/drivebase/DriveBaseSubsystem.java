@@ -6,10 +6,13 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -314,6 +317,21 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     public SwerveDrive getSwerveDrive() {
         // Expose the raw drive for advanced commands or testing helpers.
         return swerveDrive;
+    }
+
+    /**
+     * Pass-through method for injecting vision-based pose estimates into the
+     * drivetrain pose estimator.
+     *
+     * <p>This method is typically invoked via a
+     * {@link frc.robot.subsystems.vision.AprilTagVisionConsumer} supplied to the
+     * Vision subsystem during wiring in {@code RobotContainer}.</p>
+     */
+    public void addVisionMeasurement(
+            Pose2d robotPose,
+            double timestamp,
+            Matrix<N3, N1> standardDeviations) {
+        swerveDrive.addVisionMeasurement(robotPose, timestamp, standardDeviations);
     }
 
     /**

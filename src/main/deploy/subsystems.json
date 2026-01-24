@@ -39,5 +39,28 @@
     "kS": 0.21727,
     "kV": 5.948,
     "kA": 1.0735
+  },
+  "aprilTagVisionSubsystem": {
+    "enabled": true,
+    "verbose": true,
+    "linearStandardDeviationBaseline": 0.08,
+    "angularStandardDeviationBaseline": 1.0,
+    "maximumAmbiguity": 0.3,
+    "cameras": {
+      "Arducam_OV9281_USB1": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "roll": 0.0,
+        "pitch": 0.0,
+        "yaw": 0.0
+      }
+    }
+  },
+  "driverCameraSubsystem": {
+    "enabled": true,
+    "verbose": false,
+    "cameraName": "limelight",
+    "pipelineIndex": 0
   }
 }
