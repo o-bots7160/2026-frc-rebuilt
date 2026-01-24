@@ -63,13 +63,16 @@ public class TurretMotor extends AbstractMotor {
     @Override
     protected SparkMaxConfig configureMotor(SparkMaxConfig sparkConfig) {
         sparkConfig
-                .inverted(config.getMotorInvertedSupplier().get())
-                .smartCurrentLimit(config.getSmartCurrentLimitSupplier().get())
+                // .inverted(config.getMotorInvertedSupplier().get())
+                // .smartCurrentLimit(config.getSmartCurrentLimitSupplier().get())
+                .inverted(false)
+                .smartCurrentLimit(40)
                 .idleMode(IdleMode.kBrake)
                 .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
 
         double positionFactor = Units.rotationsToRadians(1.0)
-                / config.getMotorRotationsPerMechanismRotationSupplier().get();
+                / 72;
+                // / config.getMotorRotationsPerMechanismRotationSupplier().get();
         double velocityFactor = positionFactor / 60.0;
 
         // Apply encoder scaling so SparkMax position/velocity already report mechanism radians.

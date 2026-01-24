@@ -89,13 +89,13 @@ public abstract class AbstractMotor implements Motor {
         this.motor                           = new SparkMax(deviceId, motorType);
         log.verbose("Configuring SparkMax motor " + name + " (device ID " + deviceId + ")");
 
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
+        SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
+        sparkMaxConfig.voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
 
         // Allow subclasses to append hardware-specific settings.
-        config = configureMotor(config);
+        sparkMaxConfig = configureMotor(sparkMaxConfig);
 
-        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     /**

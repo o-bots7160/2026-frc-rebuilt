@@ -116,10 +116,10 @@ public class TriggerBindings {
 
     private void configureTurretBindings() {
         // Hold A/B to spin the turret to the configured angles (for testing and alignment).
-        operatorController.onButtonHold(
+        driverController.onButtonHold(
                 GameControllerButton.A,
                 turretCommandFactory.createMoveToAngleCommand(-360.0));
-        operatorController.onButtonHold(
+        driverController.onButtonHold(
                 GameControllerButton.B,
                 turretCommandFactory.createMoveToAngleCommand(360.0));
     }

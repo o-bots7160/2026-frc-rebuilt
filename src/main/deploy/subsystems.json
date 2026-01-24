@@ -1,6 +1,6 @@
 {
   "driveBaseSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": false,
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
@@ -13,9 +13,9 @@
     "rotationToleranceDegrees": 2.0
   },
   "turretSubsystem": {
-    "enabled": false,
-    "verbose": false,
-    "motorCanId": 0,
+    "enabled": true,
+    "verbose": true,
+    "motorCanId": 55,
     "motorInverted": false,
     "smartCurrentLimitAmps": 40,
     "motorRotationsPerMechanismRotation": 72.0,
