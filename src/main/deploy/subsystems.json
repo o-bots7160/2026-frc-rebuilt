@@ -15,12 +15,14 @@
   "turretSubsystem": {
     "enabled": true,
     "verbose": true,
-    "motorCanId": 55,
-    "motorInverted": false,
-    "smartCurrentLimitAmps": 40,
-    "motorRotationsPerMechanismRotation": 72.0,
-    "minimumSetpoint": -270.0,
-    "maximumSetpoint": 270.0,
+    "turretMotorConfig": {
+      "motorCanId": 55,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 72.0,
+      "minimumSetpoint": -270.0,
+      "maximumSetpoint": 270.0
+    },
     "maximumVelocity": 1.0,
     "maximumAcceleration": 0.2,
     "positionTolerance": 2.0,

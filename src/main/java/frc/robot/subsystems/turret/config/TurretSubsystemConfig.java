@@ -9,71 +9,44 @@ import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
  */
 public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
 
-    /** CAN device ID of the turret SparkMax. */
-    public int     motorCanId;
-
-    /** True if the turret motor output should be inverted. */
-    public boolean motorInverted;
-
-    /** Smart current limit for the turret motor in amps. */
-    public int     smartCurrentLimitAmps;
+    /** Motor configuration bundle for the turret mechanism. */
+    public TurretMotorConfig turretMotorConfig = new TurretMotorConfig();
 
     /**
-     * Gear ratio expressed as motor rotations per one turret rotation. Example: a 100:1 reduction should be written as 100.0.
-     */
-    public double  motorRotationsPerMechanismRotation;
-
-    /**
-     * Supplies the CAN ID (not typically tuned, but exposed for consistency/logging).
+     * Supplies the motor configuration bundle for the turret.
+     * <p>
+     * Use this when constructing hardware wrappers so they only depend on motor-specific settings.
+     * </p>
      *
-     * @return supplier that yields the turret SparkMax CAN ID
+     * @return turret motor configuration bundle
      */
-    public Supplier<Integer> getMotorCanIdSupplier() {
-        return () -> (int) readTunableNumber("motorCanId", motorCanId);
-    }
-
-    /**
-     * Supplies whether the turret motor output is inverted.
-     *
-     * @return supplier that indicates whether to invert motor output
-     */
-    public Supplier<Boolean> getMotorInvertedSupplier() {
-        return () -> readTunableBoolean("motorInverted", motorInverted);
-    }
-
-    /**
-     * Supplies the smart current limit in amps.
-     *
-     * @return supplier that yields the current limit in amps
-     */
-    public Supplier<Integer> getSmartCurrentLimitSupplier() {
-        return () -> (int) readTunableNumber("smartCurrentLimitAmps", smartCurrentLimitAmps);
-    }
-
-    /**
-     * Supplies the gear ratio (motor rotations per mechanism rotation).
-     *
-     * @return supplier that yields the motor rotations per one turret rotation
-     */
-    public Supplier<Double> getMotorRotationsPerMechanismRotationSupplier() {
-        return () -> readTunableNumber("motorRotationsPerMechanismRotation", motorRotationsPerMechanismRotation);
+    public TurretMotorConfig getTurretMotorConfig() {
+        return turretMotorConfig;
     }
 
     /**
      * Supplies the minimum turret angle in degrees.
+     * <p>
+     * Delegates to {@link TurretMotorConfig} so motion bounds live alongside motor settings.
+     * </p>
      *
      * @return supplier that yields the minimum turret setpoint in degrees
      */
+    @Override
     public Supplier<Double> getMinimumSetpointSupplier() {
-        return () -> readTunableNumber("minimumSetpoint", minimumSetpoint);
+        return turretMotorConfig.getMinimumSetpointSupplier();
     }
 
     /**
      * Supplies the maximum turret angle in degrees.
+     * <p>
+     * Delegates to {@link TurretMotorConfig} so motion bounds live alongside motor settings.
+     * </p>
      *
      * @return supplier that yields the maximum turret setpoint in degrees
      */
+    @Override
     public Supplier<Double> getMaximumSetpointSupplier() {
-        return () -> readTunableNumber("maximumSetpoint", maximumSetpoint);
+        return turretMotorConfig.getMaximumSetpointSupplier();
     }
 }

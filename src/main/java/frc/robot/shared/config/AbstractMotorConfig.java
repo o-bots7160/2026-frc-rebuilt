@@ -1,0 +1,85 @@
+package frc.robot.shared.config;
+
+import java.util.function.Supplier;
+
+/**
+ * Base configuration bundle for a single motor controller and its mechanism limits.
+ * <p>
+ * Use subclasses to provide tunable motor settings without coupling device wrappers to a full subsystem config. All values are surfaced through
+ * AdvantageKit-backed tunables, so changes can be made live without redeploying.
+ * </p>
+ */
+public abstract class AbstractMotorConfig extends AbstractConfig {
+
+    /** CAN device ID of the motor controller. */
+    public int     motorCanId;
+
+    /** True when the motor output should be inverted. */
+    public boolean motorInverted;
+
+    /** Smart current limit for the motor in amps. */
+    public int     smartCurrentLimitAmps;
+
+    /** Gear ratio expressed as motor rotations per one mechanism rotation. */
+    public double  motorRotationsPerMechanismRotation;
+
+    /** Minimum allowed mechanism setpoint in mechanism units (typically degrees). */
+    public double  minimumSetpoint;
+
+    /** Maximum allowed mechanism setpoint in mechanism units (typically degrees). */
+    public double  maximumSetpoint;
+
+    /**
+     * Supplies the CAN ID (not typically tuned, but exposed for consistency/logging).
+     *
+     * @return supplier that yields the motor controller CAN ID
+     */
+    public Supplier<Integer> getMotorCanIdSupplier() {
+        return () -> (int) readTunableNumber("motorCanId", motorCanId);
+    }
+
+    /**
+     * Supplies whether the motor output is inverted.
+     *
+     * @return supplier that indicates whether to invert motor output
+     */
+    public Supplier<Boolean> getMotorInvertedSupplier() {
+        return () -> readTunableBoolean("motorInverted", motorInverted);
+    }
+
+    /**
+     * Supplies the smart current limit in amps.
+     *
+     * @return supplier that yields the current limit in amps
+     */
+    public Supplier<Integer> getSmartCurrentLimitSupplier() {
+        return () -> (int) readTunableNumber("smartCurrentLimitAmps", smartCurrentLimitAmps);
+    }
+
+    /**
+     * Supplies the gear ratio (motor rotations per mechanism rotation).
+     *
+     * @return supplier that yields the motor rotations per one mechanism rotation
+     */
+    public Supplier<Double> getMotorRotationsPerMechanismRotationSupplier() {
+        return () -> readTunableNumber("motorRotationsPerMechanismRotation", motorRotationsPerMechanismRotation);
+    }
+
+    /**
+     * Supplies the minimum mechanism setpoint in mechanism units.
+     *
+     * @return supplier that yields the minimum setpoint
+     */
+    public Supplier<Double> getMinimumSetpointSupplier() {
+        return () -> readTunableNumber("minimumSetpoint", minimumSetpoint);
+    }
+
+    /**
+     * Supplies the maximum mechanism setpoint in mechanism units.
+     *
+     * @return supplier that yields the maximum setpoint
+     */
+    public Supplier<Double> getMaximumSetpointSupplier() {
+        return () -> readTunableNumber("maximumSetpoint", maximumSetpoint);
+    }
+}

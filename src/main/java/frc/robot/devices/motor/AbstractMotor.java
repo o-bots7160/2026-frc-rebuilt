@@ -29,6 +29,8 @@ public abstract class AbstractMotor implements Motor {
 
     protected final SparkMax      motor;
 
+    private final SparkMaxConfig  baseConfig;
+
     private final double          minimumPositionRadians;
 
     private final double          maximumPositionRadians;
@@ -42,6 +44,10 @@ public abstract class AbstractMotor implements Motor {
     private double                lastCommandedPositionRads      = Double.NaN;
 
     private double                lastCommandedVelocityRadPerSec = Double.NaN;
+
+    private boolean               initialized                    = false;
+
+    private boolean               warnedNotInitialized           = false;
 
     /**
      * Creates a motor wrapper with motion limits and a position conversion factor.
@@ -87,15 +93,11 @@ public abstract class AbstractMotor implements Motor {
         this.velocityRadPerSecPerMotorRpm    = mechanismRadiansPerMotorRotation / 60.0;
 
         this.motor                           = new SparkMax(deviceId, motorType);
-        log.verbose("Configuring SparkMax motor " + name + " (device ID " + deviceId + ")");
+        log.verbose("Creating SparkMax motor " + name + " (device ID " + deviceId + ")");
 
         SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
         sparkMaxConfig.voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
-
-        // Allow subclasses to append hardware-specific settings.
-        sparkMaxConfig = configureMotor(sparkMaxConfig);
-
-        motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        this.baseConfig = sparkMaxConfig;
     }
 
     /**
@@ -111,12 +113,42 @@ public abstract class AbstractMotor implements Motor {
     }
 
     /**
+     * Applies hardware configuration after the subclass has finished assigning its config.
+     * <p>
+     * Call this once in the concrete motor constructor, after any config fields are assigned. Subsequent calls are ignored.
+     * </p>
+     */
+    public final void init() {
+        if (initialized) {
+            return;
+        }
+
+        log.verbose("Configuring SparkMax motor " + name + " after initialization");
+
+        SparkMaxConfig sparkMaxConfig = configureMotor(baseConfig);
+        motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        initialized = true;
+    }
+
+    /**
+     * Reports whether the motor has been initialized with hardware configuration.
+     *
+     * @return true when {@link #init()} has completed successfully
+     */
+    public final boolean isInitialized() {
+        return initialized;
+    }
+
+    /**
      * Applies an open-loop voltage command to the motor controller.
      *
      * @param volts desired voltage to apply
      */
     @Override
     public void setVoltage(double volts) {
+        if (!ensureInitialized("setVoltage")) {
+            return;
+        }
         lastCommandedVolts = volts;
         motor.setVoltage(volts);
     }
@@ -132,6 +164,9 @@ public abstract class AbstractMotor implements Motor {
      * @param percent duty cycle request, where 1.0 equals full forward
      */
     public void setDutyCycle(double percent) {
+        if (!ensureInitialized("setDutyCycle")) {
+            return;
+        }
         double clampedPercent = clamp(percent, -1.0, 1.0);
         lastCommandedVolts = clampedPercent * DEFAULT_VOLTAGE_COMPENSATION;
         motor.set(clampedPercent);
@@ -147,6 +182,9 @@ public abstract class AbstractMotor implements Motor {
      */
     @Override
     public void stop() {
+        if (!ensureInitialized("stop")) {
+            return;
+        }
         motor.stopMotor();
     }
 
@@ -156,6 +194,9 @@ public abstract class AbstractMotor implements Motor {
      * @return mechanism position (radians)
      */
     public double getPositionRadians() {
+        if (!ensureInitialized("getPositionRadians")) {
+            return 0.0;
+        }
         return motor.getEncoder().getPosition() * positionRadiansPerMotorRotation;
     }
 
@@ -179,6 +220,9 @@ public abstract class AbstractMotor implements Motor {
      * @return mechanism velocity (radians/second)
      */
     public double getVelocityRadPerSec() {
+        if (!ensureInitialized("getVelocityRadPerSec")) {
+            return 0.0;
+        }
         return motor.getEncoder().getVelocity() * velocityRadPerSecPerMotorRpm;
     }
 
@@ -248,6 +292,9 @@ public abstract class AbstractMotor implements Motor {
      * @return applied voltage in volts
      */
     public double getAppliedVolts() {
+        if (!ensureInitialized("getAppliedVolts")) {
+            return 0.0;
+        }
         return motor.getBusVoltage() * motor.getAppliedOutput();
     }
 
@@ -263,11 +310,25 @@ public abstract class AbstractMotor implements Motor {
      */
     @Override
     public SparkMax getMotor() {
+        if (!ensureInitialized("getMotor")) {
+            return motor;
+        }
         return motor;
     }
 
     @Override
     public void updateInputs(MotorIOInputs inputs) {
+        if (!ensureInitialized("updateInputs")) {
+            inputs.positionRads            = 0.0;
+            inputs.velocityRadPerSec       = 0.0;
+            inputs.appliedVolts            = 0.0;
+            inputs.commandedVolts          = 0.0;
+            inputs.supplyCurrentAmps       = 0.0;
+            inputs.temperatureCelsius      = 0.0;
+            inputs.targetPositionRads      = Double.NaN;
+            inputs.targetVelocityRadPerSec = Double.NaN;
+            return;
+        }
         inputs.positionRads            = getPositionRadians();
         inputs.velocityRadPerSec       = getVelocityRadPerSec();
         inputs.appliedVolts            = getAppliedVolts();
@@ -306,6 +367,18 @@ public abstract class AbstractMotor implements Motor {
      * @return configured {@link SparkMaxConfig} ready for {@link SparkMax#configure}
      */
     protected abstract SparkMaxConfig configureMotor(SparkMaxConfig config);
+
+    private boolean ensureInitialized(String action) {
+        if (initialized) {
+            return true;
+        }
+
+        if (!warnedNotInitialized) {
+            warnedNotInitialized = true;
+            log.warning("Motor " + name + " ignored " + action + " before init(); call init() after assigning config.");
+        }
+        return false;
+    }
 
     private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
