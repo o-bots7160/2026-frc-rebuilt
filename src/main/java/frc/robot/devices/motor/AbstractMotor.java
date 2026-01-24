@@ -31,13 +31,13 @@ public abstract class AbstractMotor implements Motor {
 
     private final SparkMaxConfig  baseConfig;
 
-    private final double          minimumPositionRadians;
+    private double                minimumPositionRadians;
 
-    private final double          maximumPositionRadians;
+    private double                maximumPositionRadians;
 
-    private final double          positionRadiansPerMotorRotation;
+    private double                positionRadiansPerMotorRotation;
 
-    private final double          velocityRadPerSecPerMotorRpm;
+    private double                velocityRadPerSecPerMotorRpm;
 
     private double                lastCommandedVolts             = 0.0;
 
@@ -128,6 +128,25 @@ public abstract class AbstractMotor implements Motor {
         SparkMaxConfig sparkMaxConfig = configureMotor(baseConfig);
         motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         initialized = true;
+    }
+
+    /**
+     * Reapplies configuration to the controller using the latest config-backed values.
+     * <p>
+     * Call this after tuning values in Elastic/NetworkTables that affect controller settings (inversion, current limits, encoder scaling, etc.).
+     * This does not recreate the SparkMax; it simply reconfigures the existing hardware instance.
+     * </p>
+     */
+    public final void reconfigure() {
+        if (!initialized) {
+            init();
+            return;
+        }
+
+        log.verbose("Reconfiguring SparkMax motor " + name + " after config change");
+
+        SparkMaxConfig sparkMaxConfig = configureMotor(baseConfig);
+        motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     /**
@@ -337,6 +356,26 @@ public abstract class AbstractMotor implements Motor {
         inputs.temperatureCelsius      = motor.getMotorTemperature();
         inputs.targetPositionRads      = lastCommandedPositionRads;
         inputs.targetVelocityRadPerSec = lastCommandedVelocityRadPerSec;
+    }
+
+    /**
+     * Updates the motion bounds and conversion factors used for unit conversions and clamping.
+     * <p>
+     * Use this when tunable configuration updates change limits or gear ratios so internal conversions stay aligned with the hardware.
+     * </p>
+     *
+     * @param minimumPositionRadians           minimum allowed position in radians
+     * @param maximumPositionRadians           maximum allowed position in radians
+     * @param mechanismRadiansPerMotorRotation mechanism radians per motor rotation (gear ratio applied)
+     */
+    protected final void updateMotionConstraints(
+            double minimumPositionRadians,
+            double maximumPositionRadians,
+            double mechanismRadiansPerMotorRotation) {
+        this.minimumPositionRadians          = minimumPositionRadians;
+        this.maximumPositionRadians          = maximumPositionRadians;
+        this.positionRadiansPerMotorRotation = mechanismRadiansPerMotorRotation;
+        this.velocityRadPerSecPerMotorRpm    = mechanismRadiansPerMotorRotation / 60.0;
     }
 
     /**

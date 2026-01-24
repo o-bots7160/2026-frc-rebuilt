@@ -16,6 +16,8 @@ import frc.robot.subsystems.turret.config.TurretMotorConfig;
  */
 public class TurretMotor extends AbstractMotor {
 
+    private static final double CONFIG_EPSILON = 1e-6;
+
     /**
      * Creates a turret motor wrapper using values from the turret motor config.
      * <p>
@@ -40,6 +42,18 @@ public class TurretMotor extends AbstractMotor {
 
     private final TurretMotorConfig config;
 
+    private int                     lastMotorCanId;
+
+    private boolean                 lastMotorInverted;
+
+    private int                     lastSmartCurrentLimitAmps;
+
+    private double                  lastMinimumSetpointDegrees;
+
+    private double                  lastMaximumSetpointDegrees;
+
+    private double                  lastMotorRotationsPerMechanismRotation;
+
     /**
      * Builds a turret motor wrapper using values from the turret motor config.
      *
@@ -53,6 +67,50 @@ public class TurretMotor extends AbstractMotor {
                 Units.degreesToRadians(config.getMaximumSetpointSupplier().get()),
                 computeMechanismRadiansPerMotorRotation(config.getMotorRotationsPerMechanismRotationSupplier().get()));
         this.config = config;
+        cacheConfigSnapshot();
+    }
+
+    /**
+     * Reapplies SparkMax configuration when tunable values change in Elastic.
+     * <p>
+     * Call this periodically (for example, from the subsystem {@link #periodic()} hook) so updates to inversion, current limit, gear ratio, or
+     * setpoint bounds take effect without restarting the robot. Changes to the CAN ID are logged but require a reboot to take effect.
+     * </p>
+     */
+    public void refreshConfiguration() {
+        if (!isInitialized()) {
+            return;
+        }
+
+        int     motorCanId                         = config.getMotorCanIdSupplier().get();
+        boolean motorInverted                      = config.getMotorInvertedSupplier().get();
+        int     smartCurrentLimit                  = config.getSmartCurrentLimitSupplier().get();
+        double  minimumSetpointDegrees             = config.getMinimumSetpointSupplier().get();
+        double  maximumSetpointDegrees             = config.getMaximumSetpointSupplier().get();
+        double  motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
+
+        boolean configChanged                      = motorCanId != lastMotorCanId
+                || motorInverted != lastMotorInverted
+                || smartCurrentLimit != lastSmartCurrentLimitAmps
+                || hasChanged(minimumSetpointDegrees, lastMinimumSetpointDegrees)
+                || hasChanged(maximumSetpointDegrees, lastMaximumSetpointDegrees)
+                || hasChanged(motorRotationsPerMechanismRotation, lastMotorRotationsPerMechanismRotation);
+
+        if (!configChanged) {
+            return;
+        }
+
+        if (motorCanId != lastMotorCanId) {
+            log.warning("TurretMotor CAN ID changed from " + lastMotorCanId + " to " + motorCanId
+                    + "; restart required to recreate the controller.");
+        }
+
+        updateMotionConstraints(
+                Units.degreesToRadians(minimumSetpointDegrees),
+                Units.degreesToRadians(maximumSetpointDegrees),
+                computeMechanismRadiansPerMotorRotation(motorRotationsPerMechanismRotation));
+        reconfigure();
+        cacheConfigSnapshot();
     }
 
     @Override
@@ -98,5 +156,18 @@ public class TurretMotor extends AbstractMotor {
                 .velocityConversionFactor(velocityFactor);
 
         return sparkConfig;
+    }
+
+    private void cacheConfigSnapshot() {
+        lastMotorCanId                         = config.getMotorCanIdSupplier().get();
+        lastMotorInverted                      = config.getMotorInvertedSupplier().get();
+        lastSmartCurrentLimitAmps              = config.getSmartCurrentLimitSupplier().get();
+        lastMinimumSetpointDegrees             = config.getMinimumSetpointSupplier().get();
+        lastMaximumSetpointDegrees             = config.getMaximumSetpointSupplier().get();
+        lastMotorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
+    }
+
+    private boolean hasChanged(double currentValue, double lastValue) {
+        return Math.abs(currentValue - lastValue) > CONFIG_EPSILON;
     }
 }
