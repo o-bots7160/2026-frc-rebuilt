@@ -35,6 +35,7 @@ public class SetAndSeekSettleCommand<TSubsystem extends AbstractSetAndSeekSubsys
 
     @Override
     protected void onInitialize() {
+        log.warning("Attempting to settle " + getName() + " after interruption.");
         subsystem.settleAtCurrentPosition();
     }
 }
