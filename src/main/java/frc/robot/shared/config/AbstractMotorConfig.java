@@ -25,6 +25,9 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
     /** Gear ratio expressed as motor rotations per one mechanism rotation. */
     public double  motorRotationsPerMechanismRotation;
 
+    /** True when the motor should enforce minimum/maximum setpoint limits. */
+    public boolean useSetpointLimits = true;
+
     /** Minimum allowed mechanism setpoint in degrees. */
     public double  minimumSetpointDegrees;
 
@@ -65,6 +68,15 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      */
     public Supplier<Double> getMotorRotationsPerMechanismRotationSupplier() {
         return () -> readTunableNumber("motorRotationsPerMechanismRotation", motorRotationsPerMechanismRotation);
+    }
+
+    /**
+     * Supplies whether the motor should enforce minimum and maximum setpoint limits.
+     *
+     * @return supplier that indicates whether setpoint limits are enforced
+     */
+    public Supplier<Boolean> getUseSetpointLimitsSupplier() {
+        return () -> readTunableBoolean("useSetpointLimits", useSetpointLimits);
     }
 
     /**

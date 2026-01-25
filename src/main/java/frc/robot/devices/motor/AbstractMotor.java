@@ -83,10 +83,15 @@ public abstract class AbstractMotor implements Motor {
             String name,
             AbstractMotorConfig config,
             MotorType motorType) {
-        this.name                            = name;
-        this.log                             = Logger.getInstance(this.getClass());
-        this.minimumPositionRadians          = config.getMinimumSetpointRadiansSupplier().get();
-        this.maximumPositionRadians          = config.getMaximumSetpointRadiansSupplier().get();
+        this.name = name;
+        this.log  = Logger.getInstance(this.getClass());
+        if (config.getUseSetpointLimitsSupplier().get()) {
+            this.minimumPositionRadians = config.getMinimumSetpointRadiansSupplier().get();
+            this.maximumPositionRadians = config.getMaximumSetpointRadiansSupplier().get();
+        } else {
+            this.minimumPositionRadians = Double.NEGATIVE_INFINITY;
+            this.maximumPositionRadians = Double.POSITIVE_INFINITY;
+        }
         this.positionRadiansPerMotorRotation = computeMechanismRadiansPerMotorRotation(
                 config.getMotorRotationsPerMechanismRotationSupplier().get());
         this.velocityRadPerSecPerMotorRpm    = positionRadiansPerMotorRotation / 60.0;
