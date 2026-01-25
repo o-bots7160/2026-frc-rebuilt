@@ -18,9 +18,9 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         }
 
         return RobotBase.isReal()
-                ? TurretMotor.create(config.getTurretMotorConfig())
+                ? TurretMotor.create(config.turretMotorConfig)
                 : TurretSimMotor.create(
-                        config.getTurretMotorConfig(),
+                        config.turretMotorConfig,
                         config.getMaximumVelocitySupplier(),
                         config.getMaximumAccelerationSupplier());
     }
