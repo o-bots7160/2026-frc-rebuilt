@@ -23,8 +23,8 @@
       "minimumSetpoint": -270.0,
       "maximumSetpoint": 270.0
     },
-    "maximumVelocity": 1.0,
-    "maximumAcceleration": 0.2,
+    "maximumVelocity": 180.0,
+    "maximumAcceleration": 180.0,
     "positionTolerance": 2.0,
     "initialPosition": 0.0,
     "initialVelocity": 0.0,
