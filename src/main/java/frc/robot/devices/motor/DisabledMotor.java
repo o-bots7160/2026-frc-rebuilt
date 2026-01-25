@@ -4,7 +4,6 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.devices.Motor;
 
 /**
  * No-op motor implementation used when a subsystem is disabled or has no hardware.

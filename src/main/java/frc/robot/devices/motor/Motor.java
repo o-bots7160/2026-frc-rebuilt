@@ -1,9 +1,8 @@
-package frc.robot.devices;
+package frc.robot.devices.motor;
 
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.devices.motor.MotorIO;
 
 /**
  * Minimal motor control surface for set-and-seek style mechanisms.

@@ -4,8 +4,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.devices.Motor;
 import frc.robot.devices.motor.DisabledMotor;
+import frc.robot.devices.motor.Motor;
 import frc.robot.devices.motor.MotorIOInputsAutoLogged;
 import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
 

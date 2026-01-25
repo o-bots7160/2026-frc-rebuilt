@@ -8,7 +8,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.devices.Motor;
 import frc.robot.shared.logging.Logger;
 
 /**
@@ -133,8 +132,8 @@ public abstract class AbstractMotor implements Motor {
     /**
      * Reapplies configuration to the controller using the latest config-backed values.
      * <p>
-     * Call this after tuning values in Elastic/NetworkTables that affect controller settings (inversion, current limits, encoder scaling, etc.).
-     * This does not recreate the SparkMax; it simply reconfigures the existing hardware instance.
+     * Call this after tuning values in Elastic/NetworkTables that affect controller settings (inversion, current limits, encoder scaling, etc.). This
+     * does not recreate the SparkMax; it simply reconfigures the existing hardware instance.
      * </p>
      */
     public final void reconfigure() {

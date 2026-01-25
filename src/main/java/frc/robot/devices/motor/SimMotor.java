@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.devices.Motor;
 import frc.robot.shared.logging.Logger;
 
 /**
