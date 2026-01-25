@@ -8,6 +8,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.shared.config.AbstractMotorConfig;
 import frc.robot.shared.logging.Logger;
 
 /**
@@ -20,95 +21,83 @@ import frc.robot.shared.logging.Logger;
 public abstract class AbstractMotor implements Motor {
 
     /** Default voltage compensation target applied to the controller. */
-    protected static final double DEFAULT_VOLTAGE_COMPENSATION   = 12.0;
-
-    protected final String        name;
-
-    protected final Logger        log;
-
-    protected final SparkMax      motor;
-
-    private final SparkMaxConfig  baseConfig;
-
-    private double                minimumPositionRadians;
-
-    private double                maximumPositionRadians;
-
-    private double                positionRadiansPerMotorRotation;
-
-    private double                velocityRadPerSecPerMotorRpm;
-
-    private double                lastCommandedVolts             = 0.0;
-
-    private double                lastCommandedPositionRads      = Double.NaN;
-
-    private double                lastCommandedVelocityRadPerSec = Double.NaN;
-
-    private boolean               initialized                    = false;
-
-    private boolean               warnedNotInitialized           = false;
+    protected static final double DEFAULT_VOLTAGE_COMPENSATION = 12.0;
 
     /**
-     * Creates a motor wrapper with motion limits and a position conversion factor.
+     * Converts a gear ratio in motor rotations per mechanism rotation into mechanism radians per motor rotation.
      *
-     * @param name                             friendly name for logging and dashboard keys
-     * @param deviceId                         CAN device ID for the SparkMax
-     * @param minimumPositionRadians           lowest allowed mechanism position (radians)
-     * @param maximumPositionRadians           highest allowed mechanism position (radians)
-     * @param mechanismRadiansPerMotorRotation conversion factor from one motor rotation to mechanism radians (includes gear ratio)
+     * @param motorRotationsPerMechanismRotation motor rotations per one mechanism rotation
+     * @return mechanism radians per motor rotation (defaults to 1:1 when the ratio is invalid)
      */
-    protected AbstractMotor(
-            String name,
-            int deviceId,
-            double minimumPositionRadians,
-            double maximumPositionRadians,
-            double mechanismRadiansPerMotorRotation) {
-        this(name, deviceId, MotorType.kBrushless, minimumPositionRadians, maximumPositionRadians,
-                mechanismRadiansPerMotorRotation);
+    protected static double computeMechanismRadiansPerMotorRotation(double motorRotationsPerMechanismRotation) {
+        if (motorRotationsPerMechanismRotation <= 0.0) {
+            return Units.rotationsToRadians(1.0);
+        }
+        return Units.rotationsToRadians(1.0 / motorRotationsPerMechanismRotation);
+    }
+
+    protected final String       name;
+
+    protected final Logger       log;
+
+    protected final SparkMax     motor;
+
+    private final SparkMaxConfig baseConfig;
+
+    private double               minimumPositionRadians;
+
+    private double               maximumPositionRadians;
+
+    private double               positionRadiansPerMotorRotation;
+
+    private double               velocityRadPerSecPerMotorRpm;
+
+    private double               lastCommandedVolts             = 0.0;
+
+    private double               lastCommandedPositionRads      = Double.NaN;
+
+    private double               lastCommandedVelocityRadPerSec = Double.NaN;
+
+    private boolean              initialized                    = false;
+
+    private boolean              warnedNotInitialized           = false;
+
+    /**
+     * Creates a motor wrapper backed by a shared motor config using the default brushless SparkMax type.
+     *
+     * @param name   friendly name for logging and dashboard keys
+     * @param config motor configuration bundle providing CAN ID, inversion, and bounds
+     */
+    protected AbstractMotor(String name, AbstractMotorConfig config) {
+        this(name, config, MotorType.kBrushless);
     }
 
     /**
-     * Creates a motor wrapper with motion limits, explicit motor type, and position conversion factor.
+     * Creates a motor wrapper backed by a shared motor config and explicit motor type.
      *
-     * @param name                             friendly name for logging and dashboard keys
-     * @param deviceId                         CAN device ID for the SparkMax
-     * @param motorType                        motor type (brushed or brushless)
-     * @param minimumPositionRadians           lowest allowed mechanism position (radians)
-     * @param maximumPositionRadians           highest allowed mechanism position (radians)
-     * @param mechanismRadiansPerMotorRotation conversion factor from one motor rotation to mechanism radians (includes gear ratio)
+     * @param name      friendly name for logging and dashboard keys
+     * @param config    motor configuration bundle providing CAN ID, inversion, and bounds
+     * @param motorType motor type (brushed or brushless)
      */
     protected AbstractMotor(
             String name,
-            int deviceId,
-            MotorType motorType,
-            double minimumPositionRadians,
-            double maximumPositionRadians,
-            double mechanismRadiansPerMotorRotation) {
+            AbstractMotorConfig config,
+            MotorType motorType) {
         this.name                            = name;
         this.log                             = Logger.getInstance(this.getClass());
-        this.minimumPositionRadians          = minimumPositionRadians;
-        this.maximumPositionRadians          = maximumPositionRadians;
-        this.positionRadiansPerMotorRotation = mechanismRadiansPerMotorRotation;
-        this.velocityRadPerSecPerMotorRpm    = mechanismRadiansPerMotorRotation / 60.0;
+        this.minimumPositionRadians          = config.getMinimumSetpointRadiansSupplier().get();
+        this.maximumPositionRadians          = config.getMaximumSetpointRadiansSupplier().get();
+        this.positionRadiansPerMotorRotation = computeMechanismRadiansPerMotorRotation(
+                config.getMotorRotationsPerMechanismRotationSupplier().get());
+        this.velocityRadPerSecPerMotorRpm    = positionRadiansPerMotorRotation / 60.0;
 
-        this.motor                           = new SparkMax(deviceId, motorType);
+        int deviceId = config.getMotorCanIdSupplier().get();
+        this.motor = new SparkMax(deviceId, motorType);
         log.verbose("Creating SparkMax motor " + name + " (device ID " + deviceId + ")");
 
         SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
         sparkMaxConfig.voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
         this.baseConfig = sparkMaxConfig;
-    }
-
-    /**
-     * Creates a motor wrapper without motion bounds. Positions are still reported in radians.
-     *
-     * @param name                             friendly name for logging and dashboard keys
-     * @param deviceId                         CAN device ID for the SparkMax
-     * @param mechanismRadiansPerMotorRotation conversion factor from one motor rotation to mechanism radians (includes gear ratio)
-     */
-    protected AbstractMotor(String name, int deviceId, double mechanismRadiansPerMotorRotation) {
-        this(name, deviceId, MotorType.kBrushless, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
-                mechanismRadiansPerMotorRotation);
     }
 
     /**

@@ -33,13 +33,6 @@ public class TurretMotor extends AbstractMotor {
         return motor;
     }
 
-    private static double computeMechanismRadiansPerMotorRotation(double motorRotationsPerMechanismRotation) {
-        if (motorRotationsPerMechanismRotation <= 0.0) {
-            return Units.rotationsToRadians(1.0); // Safe fallback: 1:1
-        }
-        return Units.rotationsToRadians(1.0 / motorRotationsPerMechanismRotation);
-    }
-
     private final TurretMotorConfig config;
 
     private int                     lastMotorCanId;
@@ -60,12 +53,7 @@ public class TurretMotor extends AbstractMotor {
      * @param config turret motor configuration containing CAN ID, gear ratio, inversion, and motion bounds (degrees)
      */
     private TurretMotor(TurretMotorConfig config) {
-        super(
-                "TurretMotor",
-                config.getMotorCanIdSupplier().get(),
-                Units.degreesToRadians(config.getMinimumSetpointSupplier().get()),
-                Units.degreesToRadians(config.getMaximumSetpointSupplier().get()),
-                computeMechanismRadiansPerMotorRotation(config.getMotorRotationsPerMechanismRotationSupplier().get()));
+        super("TurretMotor", config);
         this.config = config;
         cacheConfigSnapshot();
     }
@@ -85,8 +73,8 @@ public class TurretMotor extends AbstractMotor {
         int     motorCanId                         = config.getMotorCanIdSupplier().get();
         boolean motorInverted                      = config.getMotorInvertedSupplier().get();
         int     smartCurrentLimit                  = config.getSmartCurrentLimitSupplier().get();
-        double  minimumSetpointDegrees             = config.getMinimumSetpointSupplier().get();
-        double  maximumSetpointDegrees             = config.getMaximumSetpointSupplier().get();
+        double  minimumSetpointDegrees             = config.getMinimumSetpointDegreesSupplier().get();
+        double  maximumSetpointDegrees             = config.getMaximumSetpointDegreesSupplier().get();
         double  motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
 
         boolean configChanged                      = motorCanId != lastMotorCanId
@@ -125,12 +113,12 @@ public class TurretMotor extends AbstractMotor {
 
     @Override
     public double getMaximumTargetPosition() {
-        return config.getMaximumSetpointSupplier().get();
+        return config.getMaximumSetpointDegreesSupplier().get();
     }
 
     @Override
     public double getMinimumTargetPosition() {
-        return config.getMinimumSetpointSupplier().get();
+        return config.getMinimumSetpointDegreesSupplier().get();
     }
 
     @Override
@@ -142,12 +130,7 @@ public class TurretMotor extends AbstractMotor {
                 .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
 
         double motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
-        if (motorRotationsPerMechanismRotation <= 0.0) {
-            motorRotationsPerMechanismRotation = 1.0;
-        }
-
-        double positionFactor = Units.rotationsToRadians(1.0)
-                / motorRotationsPerMechanismRotation;
+        double positionFactor                     = computeMechanismRadiansPerMotorRotation(motorRotationsPerMechanismRotation);
         double velocityFactor = positionFactor / 60.0;
 
         // Apply encoder scaling so SparkMax position/velocity already report mechanism radians.
@@ -162,8 +145,8 @@ public class TurretMotor extends AbstractMotor {
         lastMotorCanId                         = config.getMotorCanIdSupplier().get();
         lastMotorInverted                      = config.getMotorInvertedSupplier().get();
         lastSmartCurrentLimitAmps              = config.getSmartCurrentLimitSupplier().get();
-        lastMinimumSetpointDegrees             = config.getMinimumSetpointSupplier().get();
-        lastMaximumSetpointDegrees             = config.getMaximumSetpointSupplier().get();
+        lastMinimumSetpointDegrees             = config.getMinimumSetpointDegreesSupplier().get();
+        lastMaximumSetpointDegrees             = config.getMaximumSetpointDegreesSupplier().get();
         lastMotorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
     }
 

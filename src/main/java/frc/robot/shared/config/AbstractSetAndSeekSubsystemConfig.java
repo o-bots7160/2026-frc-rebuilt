@@ -5,31 +5,31 @@ import java.util.function.Supplier;
 /**
  * Configuration values for subsystems that follow a trapezoidal motion profile.
  * <p>
- * Values are stored in native units for the mechanism (e.g., rotations, meters, degrees) and should be kept consistent across commands that target
- * the subsystem. Every field is mirrored to the dashboard so it can be tuned live without redeploying.
+ * Values are stored in degrees (and degrees per second) for readability and should be kept consistent across commands that target the subsystem.
+ * Every field is mirrored to the dashboard so it can be tuned live without redeploying.
  * </p>
  */
 public abstract class AbstractSetAndSeekSubsystemConfig extends AbstractConfig {
-    /** Minimum allowed setpoint for the profile, in mechanism units. */
-    public double minimumSetpoint;
+    /** Minimum allowed setpoint for the profile, in degrees. */
+    public double minimumSetpointDegrees;
 
-    /** Maximum allowed setpoint for the profile, in mechanism units. */
-    public double maximumSetpoint;
+    /** Maximum allowed setpoint for the profile, in degrees. */
+    public double maximumSetpointDegrees;
 
-    /** Maximum velocity for the trapezoidal profile, in mechanism units per second. */
-    public double maximumVelocity;
+    /** Maximum velocity for the trapezoidal profile, in degrees per second. */
+    public double maximumVelocityDegreesPerSecond;
 
-    /** Maximum acceleration for the trapezoidal profile, in mechanism units per second squared. */
-    public double maximumAcceleration;
+    /** Maximum acceleration for the trapezoidal profile, in degrees per second squared. */
+    public double maximumAccelerationDegreesPerSecondSquared;
 
-    /** Acceptable position error when deciding if the mechanism is at its goal, in mechanism units. */
-    public double positionTolerance;
+    /** Acceptable position error when deciding if the mechanism is at its goal, in degrees. */
+    public double positionToleranceDegrees;
 
-    /** Starting position used to seed the initial profile state, in mechanism units. */
-    public double initialPosition;
+    /** Starting position used to seed the initial profile state, in degrees. */
+    public double initialPositionDegrees;
 
-    /** Starting velocity used to seed the initial profile state, in mechanism units per second. */
-    public double initialVelocity;
+    /** Starting velocity used to seed the initial profile state, in degrees per second. */
+    public double initialVelocityDegreesPerSecond;
 
     /** Proportional gain for the profiled position controller. */
     public double kP;
@@ -55,64 +55,65 @@ public abstract class AbstractSetAndSeekSubsystemConfig extends AbstractConfig {
     /**
      * Supplies the minimum setpoint, tuned via SmartDashboard, to clamp incoming targets.
      *
-     * @return supplier yielding the minimum allowed setpoint (mechanism units)
+     * @return supplier yielding the minimum allowed setpoint (degrees)
      */
-    public Supplier<Double> getMinimumSetpointSupplier() {
-        return () -> readTunableNumber("minimumSetpoint", minimumSetpoint);
+    public Supplier<Double> getMinimumSetpointDegreesSupplier() {
+        return () -> readTunableNumber("minimumSetpointDegrees", minimumSetpointDegrees);
     }
 
     /**
      * Supplies the maximum setpoint, tuned via SmartDashboard, to clamp incoming targets.
      *
-     * @return supplier yielding the maximum allowed setpoint (mechanism units)
+     * @return supplier yielding the maximum allowed setpoint (degrees)
      */
-    public Supplier<Double> getMaximumSetpointSupplier() {
-        return () -> readTunableNumber("maximumSetpoint", maximumSetpoint);
+    public Supplier<Double> getMaximumSetpointDegreesSupplier() {
+        return () -> readTunableNumber("maximumSetpointDegrees", maximumSetpointDegrees);
     }
 
     /**
      * Supplies the maximum profile velocity, tuned via SmartDashboard.
      *
-     * @return supplier yielding the max velocity (mechanism units per second)
+     * @return supplier yielding the max velocity (degrees per second)
      */
-    public Supplier<Double> getMaximumVelocitySupplier() {
-        return () -> readTunableNumber("maximumVelocity", maximumVelocity);
+    public Supplier<Double> getMaximumVelocityDegreesPerSecondSupplier() {
+        return () -> readTunableNumber("maximumVelocityDegreesPerSecond", maximumVelocityDegreesPerSecond);
     }
 
     /**
      * Supplies the maximum profile acceleration, tuned via SmartDashboard.
      *
-     * @return supplier yielding the max acceleration (mechanism units per second squared)
+     * @return supplier yielding the max acceleration (degrees per second squared)
      */
-    public Supplier<Double> getMaximumAccelerationSupplier() {
-        return () -> readTunableNumber("maximumAcceleration", maximumAcceleration);
+    public Supplier<Double> getMaximumAccelerationDegreesPerSecondSquaredSupplier() {
+        return () -> readTunableNumber("maximumAccelerationDegreesPerSecondSquared",
+                maximumAccelerationDegreesPerSecondSquared);
     }
 
     /**
      * Supplies the allowed position error used to decide when the mechanism is at its goal.
      *
-     * @return supplier yielding the position tolerance (mechanism units)
+     * @return supplier yielding the position tolerance (degrees)
      */
-    public Supplier<Double> getPositionToleranceSupplier() {
-        return () -> readTunableNumber("positionTolerance", positionTolerance);
+    public Supplier<Double> getPositionToleranceDegreesSupplier() {
+        return () -> readTunableNumber("positionToleranceDegrees", positionToleranceDegrees);
     }
 
     /**
      * Supplies the initial position that seeds the profile state on startup.
      *
-     * @return supplier yielding the starting position (mechanism units)
+     * @return supplier yielding the starting position (degrees)
      */
-    public Supplier<Double> getInitialPositionSupplier() {
-        return () -> readTunableNumber("initialPosition", initialPosition);
+    public Supplier<Double> getInitialPositionDegreesSupplier() {
+        return () -> readTunableNumber("initialPositionDegrees", initialPositionDegrees);
     }
 
     /**
      * Supplies the initial velocity that seeds the profile state on startup.
      *
-     * @return supplier yielding the starting velocity (mechanism units per second)
+     * @return supplier yielding the starting velocity (degrees per second)
      */
-    public Supplier<Double> getInitialVelocitySupplier() {
-        return () -> readTunableNumber("initialVelocity", initialVelocity);
+    public Supplier<Double> getInitialVelocityDegreesPerSecondSupplier() {
+        return () -> readTunableNumber("initialVelocityDegreesPerSecond", initialVelocityDegreesPerSecond);
     }
 
     /**

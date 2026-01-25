@@ -46,8 +46,9 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         this.motor  = motor != null ? motor : new DisabledMotor();
 
         // Trapezoid profile constraints define the max cruise speed and acceleration for smooth motion.
-        constraints = new TrapezoidProfile.Constraints(config.getMaximumVelocitySupplier().get(),
-                config.getMaximumAccelerationSupplier().get());
+        constraints = new TrapezoidProfile.Constraints(
+            config.getMaximumVelocityDegreesPerSecondSupplier().get(),
+            config.getMaximumAccelerationDegreesPerSecondSquaredSupplier().get());
 
         // Profiled PID drives the mechanism toward the goal while respecting the trapezoid limits.
         controller  = new ProfiledPIDController(
@@ -57,8 +58,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 constraints,
                 kDt);
         // Position tolerance is in mechanism units; velocity tolerance is a small fraction of max speed.
-        controller.setTolerance(config.getPositionToleranceSupplier().get(),
-                config.getMaximumVelocitySupplier().get() * 0.05);
+        controller.setTolerance(config.getPositionToleranceDegreesSupplier().get(),
+            config.getMaximumVelocityDegreesPerSecondSupplier().get() * 0.05);
 
         // Feedforward estimates the voltage needed to maintain a desired velocity/acceleration.
         feedforward = new SimpleMotorFeedforward(
@@ -67,8 +68,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 config.getkASupplier().get());
 
         // Seed the profile with the configured starting position/velocity so the first update is stable.
-        double initialPosition = config.getInitialPositionSupplier().get();
-        double initialVelocity = config.getInitialVelocitySupplier().get();
+        double initialPosition = config.getInitialPositionDegreesSupplier().get();
+        double initialVelocity = config.getInitialVelocityDegreesPerSecondSupplier().get();
 
         // The goal state is where we want to end; the setpoint state is the next step along the profile.
         goalState     = new TrapezoidProfile.State(initialPosition, 0.0);
@@ -99,8 +100,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
             return;
         }
 
-        double clampedTarget = clamp(targetPosition, config.getMinimumSetpointSupplier().get(),
-                config.getMaximumSetpointSupplier().get());
+        double clampedTarget = clamp(targetPosition, config.getMinimumSetpointDegreesSupplier().get(),
+            config.getMaximumSetpointDegreesSupplier().get());
         goalState = new TrapezoidProfile.State(clampedTarget, 0.0);
 
         controller.setGoal(goalState);
@@ -144,7 +145,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         }
 
         double error = Math.abs(goalState.position - getMeasuredPosition());
-        return error <= config.getPositionToleranceSupplier().get();
+        return error <= config.getPositionToleranceDegreesSupplier().get();
     }
 
     /**
@@ -264,8 +265,9 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     private void refreshConstraints() {
-        constraints = new TrapezoidProfile.Constraints(config.getMaximumVelocitySupplier().get(),
-                config.getMaximumAccelerationSupplier().get());
+        constraints = new TrapezoidProfile.Constraints(
+            config.getMaximumVelocityDegreesPerSecondSupplier().get(),
+            config.getMaximumAccelerationDegreesPerSecondSquaredSupplier().get());
         controller.setConstraints(constraints);
     }
 }

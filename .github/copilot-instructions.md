@@ -105,6 +105,10 @@ Follow them whenever you add code, documentation, or tests.
   describe—avoid end-of-line commentary.
 - Remove obsolete or redundant comments during refactors to prevent drift.
 
+## Config naming and units
+
+- All config properties must state their units in the name when applicable (e.g., `maximumSetpointDegrees`, `maximumAngularSpeedDegreesPerSecond`).
+
 ## Testing and validation
 
 - When logic changes could affect runtime behavior, add or update

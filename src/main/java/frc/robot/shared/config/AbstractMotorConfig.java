@@ -2,6 +2,8 @@ package frc.robot.shared.config;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * Base configuration bundle for a single motor controller and its mechanism limits.
  * <p>
@@ -23,11 +25,11 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
     /** Gear ratio expressed as motor rotations per one mechanism rotation. */
     public double  motorRotationsPerMechanismRotation;
 
-    /** Minimum allowed mechanism setpoint in mechanism units (typically degrees). */
-    public double  minimumSetpoint;
+    /** Minimum allowed mechanism setpoint in degrees. */
+    public double  minimumSetpointDegrees;
 
-    /** Maximum allowed mechanism setpoint in mechanism units (typically degrees). */
-    public double  maximumSetpoint;
+    /** Maximum allowed mechanism setpoint in degrees. */
+    public double  maximumSetpointDegrees;
 
     /**
      * Supplies the CAN ID (not typically tuned, but exposed for consistency/logging).
@@ -66,20 +68,38 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
     }
 
     /**
-     * Supplies the minimum mechanism setpoint in mechanism units.
+     * Supplies the minimum mechanism setpoint in degrees.
      *
-     * @return supplier that yields the minimum setpoint
+     * @return supplier that yields the minimum setpoint in degrees
      */
-    public Supplier<Double> getMinimumSetpointSupplier() {
-        return () -> readTunableNumber("minimumSetpoint", minimumSetpoint);
+    public Supplier<Double> getMinimumSetpointDegreesSupplier() {
+        return () -> readTunableNumber("minimumSetpointDegrees", minimumSetpointDegrees);
     }
 
     /**
-     * Supplies the maximum mechanism setpoint in mechanism units.
+     * Supplies the minimum mechanism setpoint in radians.
      *
-     * @return supplier that yields the maximum setpoint
+     * @return supplier that yields the minimum setpoint in radians
      */
-    public Supplier<Double> getMaximumSetpointSupplier() {
-        return () -> readTunableNumber("maximumSetpoint", maximumSetpoint);
+    public Supplier<Double> getMinimumSetpointRadiansSupplier() {
+        return () -> Units.degreesToRadians(getMinimumSetpointDegreesSupplier().get());
+    }
+
+    /**
+     * Supplies the maximum mechanism setpoint in degrees.
+     *
+     * @return supplier that yields the maximum setpoint in degrees
+     */
+    public Supplier<Double> getMaximumSetpointDegreesSupplier() {
+        return () -> readTunableNumber("maximumSetpointDegrees", maximumSetpointDegrees);
+    }
+
+    /**
+     * Supplies the maximum mechanism setpoint in radians.
+     *
+     * @return supplier that yields the maximum setpoint in radians
+     */
+    public Supplier<Double> getMaximumSetpointRadiansSupplier() {
+        return () -> Units.degreesToRadians(getMaximumSetpointDegreesSupplier().get());
     }
 }
