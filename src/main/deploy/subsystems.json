@@ -26,8 +26,8 @@
       "minimumSetpointDegrees": -360.0,
       "maximumSetpointDegrees": 360.0
     },
-    "maximumVelocityDegreesPerSecond": 15.0,
-    "maximumAccelerationDegreesPerSecondSquared": 10.0,
+    "maximumVelocityDegreesPerSecond": 30.0,
+    "maximumAccelerationDegreesPerSecondSquared": 25.0,
     "minimumSetpointDegrees": -270.0,
     "maximumSetpointDegrees": 270.0,
     "positionToleranceDegrees": 2.0,
