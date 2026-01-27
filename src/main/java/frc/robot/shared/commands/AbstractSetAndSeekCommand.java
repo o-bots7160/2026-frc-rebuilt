@@ -10,7 +10,7 @@ import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
  * <p>
  * Extend this class to bind operator inputs or autonomous goals without having the subsystem manufacture commands. Provide a target supplier in the
  * constructor; the command will set the goal on initialize, step the profile each cycle, and finish once the subsystem reports
- * {@link AbstractSetAndSeekSubsystem#atTarget()}.
+ * {@link AbstractSetAndSeekSubsystem#isProfileSettled()}.
  * </p>
  *
  * @param <TSubsystem> concrete set-and-seek subsystem type

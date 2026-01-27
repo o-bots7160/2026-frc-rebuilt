@@ -75,6 +75,9 @@ public abstract class AbstractMotor implements Motor {
     /** Prevents spammy warnings if the motor is used before init(). */
     private boolean              warnedNotInitialized           = false;
 
+    /** Counts how many times we have re-applied config. */
+    private int                  reconfigureCount               = 0;
+
     /**
      * Creates a motor wrapper backed by a shared motor config using the default brushless SparkMax type.
      *
@@ -140,6 +143,7 @@ public abstract class AbstractMotor implements Motor {
         SparkMaxConfig sparkMaxConfig = configureMotor(baseConfig);
         motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         initialized = true;
+        log.recordOutput(name + "/initialized", true);
     }
 
     /**
@@ -160,6 +164,8 @@ public abstract class AbstractMotor implements Motor {
         // Rebuild the config from scratch so tunable values are pulled fresh.
         SparkMaxConfig sparkMaxConfig = configureMotor(baseConfig);
         motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        reconfigureCount++;
+        log.recordOutput(name + "/reconfigureCount", reconfigureCount);
     }
 
     /**
@@ -184,6 +190,7 @@ public abstract class AbstractMotor implements Motor {
         // Store the command for logging before sending it to hardware.
         lastCommandedVolts = volts;
         motor.setVoltage(volts);
+        log.recordOutput(name + "/commandedVolts", lastCommandedVolts);
     }
 
     @Override
@@ -205,6 +212,8 @@ public abstract class AbstractMotor implements Motor {
         // Convert the duty cycle into a rough voltage for logging.
         lastCommandedVolts = clampedPercent * DEFAULT_VOLTAGE_COMPENSATION;
         motor.set(clampedPercent);
+        log.recordOutput(name + "/commandedDutyCycle", clampedPercent);
+        log.recordOutput(name + "/commandedVolts", lastCommandedVolts);
     }
 
     @Override
@@ -221,6 +230,8 @@ public abstract class AbstractMotor implements Motor {
             return;
         }
         motor.stopMotor();
+        lastCommandedVolts = 0.0;
+        log.recordOutput(name + "/commandedVolts", lastCommandedVolts);
     }
 
     /**
@@ -398,6 +409,10 @@ public abstract class AbstractMotor implements Motor {
         this.maximumPositionRadians          = maximumPositionRadians;
         this.positionRadiansPerMotorRotation = mechanismRadiansPerMotorRotation;
         this.velocityRadPerSecPerMotorRpm    = mechanismRadiansPerMotorRotation / 60.0;
+
+        log.recordOutput(name + "/minimumPositionRads", minimumPositionRadians);
+        log.recordOutput(name + "/maximumPositionRads", maximumPositionRadians);
+        log.recordOutput(name + "/radsPerMotorRotation", mechanismRadiansPerMotorRotation);
     }
 
     /**
@@ -410,6 +425,9 @@ public abstract class AbstractMotor implements Motor {
         // Clamp the requested position so commands cannot exceed limits.
         double clamped = clamp(targetPositionRadians, minimumPositionRadians, maximumPositionRadians);
         lastCommandedPositionRads = clamped;
+        log.recordOutput(name + "/targetRequestedPositionRads", targetPositionRadians);
+        log.recordOutput(name + "/targetPositionRads", clamped);
+        log.recordOutput(name + "/targetWasClamped", targetPositionRadians != clamped);
         return clamped;
     }
 
@@ -421,6 +439,7 @@ public abstract class AbstractMotor implements Motor {
     protected void recordVelocitySetpointRadians(double targetVelocityRadPerSec) {
         // Store for telemetry (velocity may still be controlled by subclasses).
         lastCommandedVelocityRadPerSec = targetVelocityRadPerSec;
+        log.recordOutput(name + "/targetVelocityRadPerSec", targetVelocityRadPerSec);
     }
 
     /**
@@ -440,6 +459,7 @@ public abstract class AbstractMotor implements Motor {
         if (!warnedNotInitialized) {
             warnedNotInitialized = true;
             log.warning("Motor " + name + " ignored " + action + " before init(); call init() after assigning config.");
+            log.recordOutput(name + "/initialized", false);
         }
         return false;
     }

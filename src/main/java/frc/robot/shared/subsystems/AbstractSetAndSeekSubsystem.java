@@ -47,8 +47,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
 
         // Trapezoid profile constraints define the max cruise speed and acceleration for smooth motion.
         constraints = new TrapezoidProfile.Constraints(
-            config.getMaximumVelocityDegreesPerSecondSupplier().get(),
-            config.getMaximumAccelerationDegreesPerSecondSquaredSupplier().get());
+                config.getMaximumVelocityDegreesPerSecondSupplier().get(),
+                config.getMaximumAccelerationDegreesPerSecondSquaredSupplier().get());
 
         // Profiled PID drives the mechanism toward the goal while respecting the trapezoid limits.
         controller  = new ProfiledPIDController(
@@ -59,7 +59,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 kDt);
         // Position tolerance is in mechanism units; velocity tolerance is a small fraction of max speed.
         controller.setTolerance(config.getPositionToleranceDegreesSupplier().get(),
-            config.getMaximumVelocityDegreesPerSecondSupplier().get() * 0.05);
+                config.getMaximumVelocityDegreesPerSecondSupplier().get() * 0.05);
 
         // Feedforward estimates the voltage needed to maintain a desired velocity/acceleration.
         feedforward = new SimpleMotorFeedforward(
@@ -100,10 +100,19 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
             return;
         }
 
-        double clampedTarget = clamp(targetPosition, config.getMinimumSetpointDegreesSupplier().get(),
-            config.getMaximumSetpointDegreesSupplier().get());
+        // Capture inputs for easier debugging.
+        double minimumSetpointDegrees = config.getMinimumSetpointDegreesSupplier().get();
+        double maximumSetpointDegrees = config.getMaximumSetpointDegreesSupplier().get();
+
+        // Clamp the request so we never ask the mechanism to move past its safe range.
+        double clampedTarget = clamp(targetPosition, minimumSetpointDegrees, maximumSetpointDegrees);
+        log.recordOutput("targetRequestedPosition", targetPosition);
+        log.recordOutput("targetClampedPosition", clampedTarget);
+        log.recordOutput("targetWasClamped", targetPosition != clampedTarget);
+        // Store the goal with zero velocity so the profile knows where to stop.
         goalState = new TrapezoidProfile.State(clampedTarget, 0.0);
 
+        // Give the goal to the controller so the next seek step advances toward it.
         controller.setGoal(goalState);
     }
 
@@ -116,36 +125,32 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
             return;
         }
 
+        // Refresh sensor data and log it before we compute the next setpoint.
         motor.updateInputs(motorInputs);
         org.littletonrobotics.junction.Logger.processInputs(className + "/motor", motorInputs);
 
+        // Pull the latest motion constraints so live tuning takes effect immediately.
         refreshConstraints();
 
+        // Use the profiled PID to calculate the next output from the current position.
         double measuredPosition = getMeasuredPosition();
         double controllerOutput = controller.calculate(measuredPosition);
 
+        // Grab the setpoint the profile wants us to follow this cycle.
         setpointState = controller.getSetpoint();
 
+        // Feedforward estimates the volts needed to maintain the desired velocity.
         double feedforwardVolts = feedforward.calculate(setpointState.velocity);
         double voltageCommand   = controllerOutput + feedforwardVolts;
+        double positionError    = goalState.position - measuredPosition;
+
+        log.recordOutput("positionErrorDegrees", positionError);
+        log.recordOutput("controllerOutputVolts", controllerOutput);
+        log.recordOutput("feedforwardVolts", feedforwardVolts);
+        log.recordOutput("voltageCommandVolts", voltageCommand);
 
         applySetpoint(setpointState, voltageCommand);
         logSetpoint(setpointState, goalState);
-    }
-
-    /**
-     * States whether the mechanism is within the configured tolerance of the goal position.
-     *
-     * @return True when the measured position is at the goal.
-     */
-    public boolean atTarget() {
-        if (isSubsystemDisabled()) {
-            logDisabled("atTarget");
-            return true;
-        }
-
-        double error = Math.abs(goalState.position - getMeasuredPosition());
-        return error <= config.getPositionToleranceDegreesSupplier().get();
     }
 
     /**
@@ -155,13 +160,6 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     public SysIdRoutine getSysIdRoutine() {
         return sysIdRoutine;
-    }
-
-    /**
-     * Retargets the motion profile to the current measured position so the profiled controller decelerates to a stop.
-     */
-    public void holdCurrentPosition() {
-        setTarget(getMeasuredPosition());
     }
 
     /**
@@ -176,32 +174,17 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
             return;
         }
 
+        // Capture the live state so the controller can decelerate smoothly.
         double measuredPosition = getMeasuredPosition();
         double measuredVelocity = getMeasuredVelocity();
 
+        log.recordOutput("settleMeasuredPosition", measuredPosition);
+        log.recordOutput("settleMeasuredVelocity", measuredVelocity);
+
+        // Reset clears the internal error so the profile starts from the real motion state.
         controller.reset(measuredPosition, measuredVelocity);
+        // Reuse setTarget to clamp and update the goal.
         setTarget(measuredPosition);
-    }
-
-    /**
-     * Retargets the profile to a new goal while preserving the current measured motion state.
-     * <p>
-     * Use this when issuing a fresh goal during motion to avoid a snap back to the old setpoint state.
-     * </p>
-     *
-     * @param targetPosition Desired mechanism position (same units as the configuration).
-     */
-    public void settleAtTarget(double targetPosition) {
-        if (isSubsystemDisabled()) {
-            logDisabled("settleAtTarget");
-            return;
-        }
-
-        double measuredPosition = getMeasuredPosition();
-        double measuredVelocity = getMeasuredVelocity();
-
-        controller.reset(measuredPosition, measuredVelocity);
-        setTarget(targetPosition);
     }
 
     /**
@@ -210,7 +193,10 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      * @return True when the profile reports settled.
      */
     public boolean isProfileSettled() {
-        return controller.atGoal();
+        // The controller checks both position and velocity tolerances for a true stop.
+        boolean settled = controller.atGoal();
+        log.recordOutput("profileSettled", settled);
+        return settled;
     }
 
     /**
@@ -252,6 +238,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     private void logSetpoint(TrapezoidProfile.State setpoint, TrapezoidProfile.State goal) {
+        // Log the profile targets and the live sensor feedback each cycle.
         log.recordOutput("goalPosition", goal.position);
         log.recordOutput("goalVelocity", goal.velocity);
         log.recordOutput("setpointPosition", setpoint.position);
@@ -265,9 +252,10 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     private void refreshConstraints() {
+        // Read live tunable limits so the profile respects current max speed and acceleration.
         constraints = new TrapezoidProfile.Constraints(
-            config.getMaximumVelocityDegreesPerSecondSupplier().get(),
-            config.getMaximumAccelerationDegreesPerSecondSquaredSupplier().get());
+                config.getMaximumVelocityDegreesPerSecondSupplier().get(),
+                config.getMaximumAccelerationDegreesPerSecondSquaredSupplier().get());
         controller.setConstraints(constraints);
     }
 }

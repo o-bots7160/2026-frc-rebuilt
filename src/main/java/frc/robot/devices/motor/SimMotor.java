@@ -43,6 +43,8 @@ public class SimMotor implements Motor {
 
     private double               velocityRadPerSec              = 0.0;
 
+    private final String         name;
+
     /**
      * Creates a simulated motor with supplier-backed motion bounds. Mechanism units are treated as degrees externally; all internal math runs in
      * radians and is converted for callers.
@@ -59,6 +61,7 @@ public class SimMotor implements Motor {
         DoubleSupplier maximumVelocityRadiansPerSecondSupplier            = () -> Units.degreesToRadians(maximumVelocitySupplier.get());
         DoubleSupplier maximumAccelerationRadiansPerSecondSquaredSupplier = () -> Units.degreesToRadians(maximumAccelerationSupplier.get());
 
+        this.name                                               = name;
         this.log                                                = Logger.getInstance(name);
         this.gearRatio                                          = motorRotationsPerMechanismRotation;
         this.mechanismFreeSpeedRadPerSec                        = Units.rotationsToRadians((5676.0 / 60.0) / gearRatio);
@@ -74,6 +77,10 @@ public class SimMotor implements Motor {
         double initialMax = maximumPositionRadiansSupplier.getAsDouble();
         this.lastCommandedPositionRads      = clamp(0.0, initialMin, initialMax);
         this.lastCommandedVelocityRadPerSec = 0.0;
+
+        log.recordOutput(name + "/initialized", true);
+        log.recordOutput(name + "/gearRatio", gearRatio);
+        log.recordOutput(name + "/freeSpeedRadPerSec", mechanismFreeSpeedRadPerSec);
     }
 
     /**
@@ -84,6 +91,7 @@ public class SimMotor implements Motor {
     @Override
     public void setVoltage(double volts) {
         lastCommandedVolts = volts;
+        log.recordOutput(name + "/commandedVolts", lastCommandedVolts);
     }
 
     @Override
@@ -98,8 +106,10 @@ public class SimMotor implements Motor {
      */
     @Override
     public void setSpeed(double speed) {
+        // Convert a duty cycle request into an equivalent voltage for the sim model.
         double clampedPercent = clamp(speed, -1.0, 1.0);
         setVoltage(clampedPercent * 12.0);
+        log.recordOutput(name + "/commandedDutyCycle", clampedPercent);
     }
 
     /**
@@ -108,6 +118,7 @@ public class SimMotor implements Motor {
     @Override
     public void stop() {
         setVoltage(0.0);
+        log.recordOutput(name + "/stopped", true);
     }
 
     /**
@@ -160,6 +171,7 @@ public class SimMotor implements Motor {
 
     @Override
     public void updateInputs(MotorIOInputs inputs) {
+        // Step the physics model before exporting sensor values.
         stepSimulation();
 
         double positionRads      = getPositionRadiansUnconverted();
@@ -175,6 +187,11 @@ public class SimMotor implements Motor {
                                                                                                                         // sim
         inputs.targetPositionRads      = lastCommandedPositionRads;
         inputs.targetVelocityRadPerSec = lastCommandedVelocityRadPerSec;
+
+        log.recordOutput(name + "/positionRads", positionRads);
+        log.recordOutput(name + "/velocityRadPerSec", velocityRadPerSec);
+        log.recordOutput(name + "/targetPositionRads", lastCommandedPositionRads);
+        log.recordOutput(name + "/targetVelocityRadPerSec", lastCommandedVelocityRadPerSec);
     }
 
     /**
@@ -186,6 +203,9 @@ public class SimMotor implements Motor {
     public double recordPositionSetpointRadians(double targetPositionRadians) {
         double clamped = clamp(targetPositionRadians, minimumPositionRadiansSupplier.getAsDouble(), maximumPositionRadiansSupplier.getAsDouble());
         lastCommandedPositionRads = clamped;
+        log.recordOutput(name + "/targetRequestedPositionRads", targetPositionRadians);
+        log.recordOutput(name + "/targetPositionRads", clamped);
+        log.recordOutput(name + "/targetWasClamped", targetPositionRadians != clamped);
         return clamped;
     }
 
@@ -196,15 +216,18 @@ public class SimMotor implements Motor {
      */
     public void recordVelocitySetpointRadians(double targetVelocityRadPerSec) {
         lastCommandedVelocityRadPerSec = targetVelocityRadPerSec;
+        log.recordOutput(name + "/targetVelocityRadPerSec", targetVelocityRadPerSec);
     }
 
     private void stepSimulation() {
+        // Convert volts into a duty cycle to approximate open-loop control.
         double duty                  = clamp(lastCommandedVolts / 12.0, -1.0, 1.0);
 
         double maxVelocityRadPerSec  = maximumVelocityRadiansPerSecondSupplier.getAsDouble();
         double maxAccelRadPerSecSq   = maximumAccelerationRadiansPerSecondSquaredSupplier.getAsDouble();
         double targetVelocityRadPerS = clamp(duty * mechanismFreeSpeedRadPerSec, -maxVelocityRadPerSec, maxVelocityRadPerSec);
 
+        // Limit acceleration so the simulation respects configured constraints.
         double maxDeltaV             = maxAccelRadPerSecSq * kDtSeconds;
         double deltaV                = clamp(targetVelocityRadPerS - velocityRadPerSec, -maxDeltaV, maxDeltaV);
 
@@ -222,6 +245,9 @@ public class SimMotor implements Motor {
             positionRadians   = maxPosition;
             velocityRadPerSec = 0.0;
         }
+
+        log.recordOutput(name + "/positionRadsUnclamped", positionRadians);
+        log.recordOutput(name + "/velocityRadPerSecUnclamped", velocityRadPerSec);
     }
 
     private double getPositionRadiansUnconverted() {
