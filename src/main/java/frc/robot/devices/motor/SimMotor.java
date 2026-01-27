@@ -3,25 +3,43 @@ package frc.robot.devices.motor;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.shared.logging.Logger;
 
 /**
  * Simulation-only motor wrapper that mirrors the {@link Motor} surface without touching CAN hardware.
  * <p>
- * Advances a lightweight first-order motor model each loop so trapezoidal profiles can be exercised in the simulator. Positions are tracked in
- * radians internally; callers can supply converters to expose alternate units (for example, degrees for the turret) while keeping telemetry in
+ * Uses a {@link DCMotorSim} model with a simple inertia estimate so open-loop voltage commands behave like a real brushed motor with back-EMF.
+ * Positions are tracked in radians internally; callers can expose alternate units (for example, degrees for the turret) while keeping telemetry in
  * radians.
  * </p>
  */
 public class SimMotor implements Motor {
 
-    private static final double  kDtSeconds                     = 0.02;
+    private static final double  kDtSeconds                        = 0.02;
+
+    private static final double  kNominalVoltage                   = 12.0;
+
+    private static final double  kMinimumAccelerationRadPerSecSq   = 1e-3;
+
+    private static final double  kMinimumMomentOfInertiaKgMetersSq = 1e-6;
+
+    private static final double  kDefaultMomentOfInertiaKgMetersSq = 0.001;
+
+    private static final double  kEpsilon                          = 1e-6;
 
     private final Logger         log;
 
     private final double         gearRatio;
+
+    private final DCMotor        motorModel;
+
+    private DCMotorSim           motorSim;
 
     private final double         mechanismFreeSpeedRadPerSec;
 
@@ -33,21 +51,32 @@ public class SimMotor implements Motor {
 
     private final DoubleSupplier maximumAccelerationRadiansPerSecondSquaredSupplier;
 
-    private double               lastCommandedVolts             = 0.0;
+    private double               lastCommandedVolts                = 0.0;
 
-    private double               lastCommandedPositionRads      = Double.NaN;
+    private double               lastCommandedPositionRads         = Double.NaN;
 
-    private double               lastCommandedVelocityRadPerSec = Double.NaN;
+    private double               lastCommandedVelocityRadPerSec    = Double.NaN;
 
-    private double               positionRadians                = 0.0;
+    private double               positionRadians                   = 0.0;
 
-    private double               velocityRadPerSec              = 0.0;
+    private double               velocityRadPerSec                 = 0.0;
+
+    private double               lastMaxAccelerationRadPerSecSq    = Double.NaN;
 
     private final String         name;
 
     /**
-     * Creates a simulated motor with supplier-backed motion bounds. Mechanism units are treated as degrees externally; all internal math runs in
-     * radians and is converted for callers.
+     * Creates a simulated motor with supplier-backed motion bounds.
+     * <p>
+     * Mechanism units are treated as degrees externally; all internal math runs in radians and is converted for callers.
+     * </p>
+     *
+     * @param name                               friendly name used for logging
+     * @param motorRotationsPerMechanismRotation motor rotations per one mechanism rotation
+     * @param minimumPositionSupplier            minimum position in degrees
+     * @param maximumPositionSupplier            maximum position in degrees
+     * @param maximumVelocitySupplier            maximum profile velocity in degrees per second
+     * @param maximumAccelerationSupplier        maximum profile acceleration in degrees per second squared
      */
     public SimMotor(
             String name,
@@ -56,6 +85,38 @@ public class SimMotor implements Motor {
             Supplier<Double> maximumPositionSupplier,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
+        this(
+                name,
+                motorRotationsPerMechanismRotation,
+                minimumPositionSupplier,
+                maximumPositionSupplier,
+                maximumVelocitySupplier,
+                maximumAccelerationSupplier,
+                DCMotor.getNEO(1));
+    }
+
+    /**
+     * Creates a simulated motor with an explicit motor model for improved realism.
+     * <p>
+     * Use this when you know the exact motor type (for example, NEO 550) or the number of motors in the gearbox.
+     * </p>
+     *
+     * @param name                               friendly name used for logging
+     * @param motorRotationsPerMechanismRotation motor rotations per one mechanism rotation
+     * @param minimumPositionSupplier            minimum position in degrees
+     * @param maximumPositionSupplier            maximum position in degrees
+     * @param maximumVelocitySupplier            maximum profile velocity in degrees per second
+     * @param maximumAccelerationSupplier        maximum profile acceleration in degrees per second squared
+     * @param motorModel                         motor model (for example, {@link DCMotor#getNEO(int)})
+     */
+    public SimMotor(
+            String name,
+            double motorRotationsPerMechanismRotation,
+            Supplier<Double> minimumPositionSupplier,
+            Supplier<Double> maximumPositionSupplier,
+            Supplier<Double> maximumVelocitySupplier,
+            Supplier<Double> maximumAccelerationSupplier,
+            DCMotor motorModel) {
         DoubleSupplier minimumPositionRadiansSupplier                     = () -> Units.degreesToRadians(minimumPositionSupplier.get());
         DoubleSupplier maximumPositionRadiansSupplier                     = () -> Units.degreesToRadians(maximumPositionSupplier.get());
         DoubleSupplier maximumVelocityRadiansPerSecondSupplier            = () -> Units.degreesToRadians(maximumVelocitySupplier.get());
@@ -63,8 +124,11 @@ public class SimMotor implements Motor {
 
         this.name                                               = name;
         this.log                                                = Logger.getInstance(name);
-        this.gearRatio                                          = motorRotationsPerMechanismRotation;
-        this.mechanismFreeSpeedRadPerSec                        = Units.rotationsToRadians((5676.0 / 60.0) / gearRatio);
+        this.gearRatio                                          = motorRotationsPerMechanismRotation > 0.0
+                ? motorRotationsPerMechanismRotation
+                : 1.0;
+        this.motorModel                                         = motorModel;
+        this.mechanismFreeSpeedRadPerSec                        = motorModel.freeSpeedRadPerSec / this.gearRatio;
         this.minimumPositionRadiansSupplier                     = minimumPositionRadiansSupplier;
         this.maximumPositionRadiansSupplier                     = maximumPositionRadiansSupplier;
         this.maximumVelocityRadiansPerSecondSupplier            = maximumVelocityRadiansPerSecondSupplier;
@@ -77,6 +141,11 @@ public class SimMotor implements Motor {
         double initialMax = maximumPositionRadiansSupplier.getAsDouble();
         this.lastCommandedPositionRads      = clamp(0.0, initialMin, initialMax);
         this.lastCommandedVelocityRadPerSec = 0.0;
+        this.positionRadians                = this.lastCommandedPositionRads;
+        this.velocityRadPerSec              = 0.0;
+
+        rebuildMotorSim(maximumAccelerationRadiansPerSecondSquaredSupplier.getAsDouble());
+        motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
 
         log.recordOutput(name + "/initialized", true);
         log.recordOutput(name + "/gearRatio", gearRatio);
@@ -122,7 +191,7 @@ public class SimMotor implements Motor {
     }
 
     /**
-     * Reports the mechanism position in caller-facing units (default radians).
+     * Reports the mechanism position in degrees.
      */
     @Override
     public double getEncoderPosition() {
@@ -130,7 +199,7 @@ public class SimMotor implements Motor {
     }
 
     /**
-     * Reports the mechanism velocity in caller-facing units per second (default radians/second).
+     * Reports the mechanism velocity in degrees per second.
      */
     @Override
     public double getEncoderVelocity() {
@@ -177,14 +246,15 @@ public class SimMotor implements Motor {
         double positionRads      = getPositionRadiansUnconverted();
         double velocityRadPerSec = getVelocityRadiansPerSecondUnconverted();
 
-        inputs.positionRads            = positionRads;
-        inputs.velocityRadPerSec       = velocityRadPerSec;
-        inputs.appliedVolts            = lastCommandedVolts;
+        inputs.positionRads      = positionRads;
+        inputs.velocityRadPerSec = velocityRadPerSec;
+        double appliedVolts = clamp(lastCommandedVolts, -kNominalVoltage, kNominalVoltage);
+        inputs.appliedVolts            = appliedVolts;
         inputs.commandedVolts          = lastCommandedVolts;
-        inputs.supplyCurrentAmps       = Math.abs(lastCommandedVolts) > 1e-3 ? Math.abs(lastCommandedVolts) * 0.5 : 0.0;
-        inputs.temperatureCelsius      = 25.0;                                                                          // Simple placeholder; thermal
-                                                                                                                        // modeling not required for
-                                                                                                                        // sim
+        inputs.supplyCurrentAmps       = motorSim.getCurrentDrawAmps();
+        inputs.temperatureCelsius      = 25.0;                          // Simple placeholder; thermal
+                                                                        // modeling not required for
+                                                                        // sim
         inputs.targetPositionRads      = lastCommandedPositionRads;
         inputs.targetVelocityRadPerSec = lastCommandedVelocityRadPerSec;
 
@@ -220,19 +290,21 @@ public class SimMotor implements Motor {
     }
 
     private void stepSimulation() {
-        // Convert volts into a duty cycle to approximate open-loop control.
-        double duty                  = clamp(lastCommandedVolts / 12.0, -1.0, 1.0);
+        double maxAccelRadPerSecSq = maximumAccelerationRadiansPerSecondSquaredSupplier.getAsDouble();
+        rebuildMotorSimIfNeeded(maxAccelRadPerSecSq);
 
-        double maxVelocityRadPerSec  = maximumVelocityRadiansPerSecondSupplier.getAsDouble();
-        double maxAccelRadPerSecSq   = maximumAccelerationRadiansPerSecondSquaredSupplier.getAsDouble();
-        double targetVelocityRadPerS = clamp(duty * mechanismFreeSpeedRadPerSec, -maxVelocityRadPerSec, maxVelocityRadPerSec);
+        double appliedVolts = clamp(lastCommandedVolts, -kNominalVoltage, kNominalVoltage);
+        motorSim.setInputVoltage(appliedVolts);
+        motorSim.update(kDtSeconds);
 
-        // Limit acceleration so the simulation respects configured constraints.
-        double maxDeltaV             = maxAccelRadPerSecSq * kDtSeconds;
-        double deltaV                = clamp(targetVelocityRadPerS - velocityRadPerSec, -maxDeltaV, maxDeltaV);
+        positionRadians   = motorSim.getAngularPositionRad();
+        velocityRadPerSec = motorSim.getAngularVelocityRadPerSec();
 
-        velocityRadPerSec += deltaV;
-        positionRadians   += velocityRadPerSec * kDtSeconds;
+        double maxVelocityRadPerSec = maximumVelocityRadiansPerSecondSupplier.getAsDouble();
+        if (Double.isFinite(maxVelocityRadPerSec) && Math.abs(velocityRadPerSec) > maxVelocityRadPerSec) {
+            velocityRadPerSec = Math.copySign(maxVelocityRadPerSec, velocityRadPerSec);
+            motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
+        }
 
         // Enforce motion bounds to mirror the hardware wrapper behavior.
         double minPosition = minimumPositionRadiansSupplier.getAsDouble();
@@ -241,13 +313,53 @@ public class SimMotor implements Motor {
         if (positionRadians < minPosition) {
             positionRadians   = minPosition;
             velocityRadPerSec = 0.0;
+            motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
         } else if (positionRadians > maxPosition) {
             positionRadians   = maxPosition;
             velocityRadPerSec = 0.0;
+            motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
         }
 
-        log.recordOutput(name + "/positionRadsUnclamped", positionRadians);
-        log.recordOutput(name + "/velocityRadPerSecUnclamped", velocityRadPerSec);
+        log.recordOutput(name + "/positionRads", positionRadians);
+        log.recordOutput(name + "/velocityRadPerSec", velocityRadPerSec);
+    }
+
+    private void rebuildMotorSimIfNeeded(double maxAccelerationRadPerSecSq) {
+        if (!Double.isFinite(maxAccelerationRadPerSecSq) || maxAccelerationRadPerSecSq <= kMinimumAccelerationRadPerSecSq) {
+            maxAccelerationRadPerSecSq = kMinimumAccelerationRadPerSecSq;
+        }
+
+        if (Math.abs(maxAccelerationRadPerSecSq - lastMaxAccelerationRadPerSecSq) <= kEpsilon) {
+            return;
+        }
+
+        rebuildMotorSim(maxAccelerationRadPerSecSq);
+        motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
+    }
+
+    private void rebuildMotorSim(double maxAccelerationRadPerSecSq) {
+        double momentOfInertiaKgMetersSq = computeMomentOfInertia(maxAccelerationRadPerSecSq);
+        motorSim                       = new DCMotorSim(
+                LinearSystemId.createDCMotorSystem(motorModel, momentOfInertiaKgMetersSq, gearRatio),
+                motorModel);
+        lastMaxAccelerationRadPerSecSq = maxAccelerationRadPerSecSq;
+        log.recordOutput(name + "/momentOfInertiaKgMetersSq", momentOfInertiaKgMetersSq);
+        log.dashboard(name + "/simMotorModel", motorModel.getClass().getSimpleName());
+    }
+
+    private double computeMomentOfInertia(double maxAccelerationRadPerSecSq) {
+        if (!Double.isFinite(maxAccelerationRadPerSecSq) || maxAccelerationRadPerSecSq <= kMinimumAccelerationRadPerSecSq) {
+            return kDefaultMomentOfInertiaKgMetersSq;
+        }
+
+        double outputStallTorque = motorModel.stallTorqueNewtonMeters * gearRatio;
+        double moment            = outputStallTorque / maxAccelerationRadPerSecSq;
+
+        if (!Double.isFinite(moment)) {
+            return kDefaultMomentOfInertiaKgMetersSq;
+        }
+
+        return Math.max(moment, kMinimumMomentOfInertiaKgMetersSq);
     }
 
     private double getPositionRadiansUnconverted() {
