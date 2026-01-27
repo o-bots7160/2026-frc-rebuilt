@@ -123,8 +123,8 @@ public class TriggerBindings {
                 GameControllerButton.B,
                 turretCommandFactory.createMoveToAngleCommand(270.0));
 
-        driverController.onButtonPress(GameControllerButton.X,
-                turretCommandFactory.createSysIdFullSweepCommand(0.5, 3.0, 3.0));
+        driverController.onButtonHold(GameControllerButton.X,
+                turretCommandFactory.createSysIdFullSweepCommand(1, 15.0, 15.0));
     }
 
 }

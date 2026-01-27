@@ -17,7 +17,7 @@ import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
  */
 public class AbstractSetAndSeekCommand<TSubsystem extends AbstractSetAndSeekSubsystem<?>> extends AbstractSubsystemCommand<TSubsystem> {
     // TODO: this should be in configuration instead of hardcoded
-    private static final double    SETTLE_TIMEOUT_SECONDS = 5.0;
+    private static final double    SETTLE_TIMEOUT_SECONDS = 2.0;
 
     private final Supplier<Double> targetSupplier;
 

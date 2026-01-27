@@ -14,30 +14,30 @@
   },
   "turretSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "turretMotorConfig": {
       "enabled": true,
-      "verbose": true,
-      "useSetpointLimits": false,
+      "verbose": false,
+      "useSetpointLimits": true,
       "motorCanId": 55,
       "motorInverted": false,
       "smartCurrentLimitAmps": 40,
-      "motorRotationsPerMechanismRotation": 9.5,
+      "motorRotationsPerMechanismRotation": 237.5,
       "minimumSetpointDegrees": -360.0,
       "maximumSetpointDegrees": 360.0
     },
     "maximumVelocityDegreesPerSecond": 15.0,
-    "maximumAccelerationDegreesPerSecondSquared": 180.0,
+    "maximumAccelerationDegreesPerSecondSquared": 10.0,
     "minimumSetpointDegrees": -270.0,
     "maximumSetpointDegrees": 270.0,
     "positionToleranceDegrees": 2.0,
     "initialPositionDegrees": 0.0,
     "initialVelocityDegreesPerSecond": 0.0,
-    "kP": 0.02,
+    "kP": 21.103,
     "kI": 0.0,
     "kD": 0.01,
-    "kS": 0.25,
-    "kV": 0.0,
-    "kA": 0.0
+    "kS": 0.23609,
+    "kV": 101.21,
+    "kA": 7.6996
   }
 }
