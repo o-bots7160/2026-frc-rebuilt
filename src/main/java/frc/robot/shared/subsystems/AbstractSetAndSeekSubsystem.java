@@ -85,8 +85,9 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 className + "/motor",
                 this.motor::setVoltage,
                 this.motor::getVoltage,
-                this::getMeasuredPosition,
-                this::getMeasuredVelocity);
+            () -> this.motor.updateInputs(motorInputs),
+            () -> motorInputs.positionRads,
+            () -> motorInputs.velocityRadPerSec);
     }
 
     /**

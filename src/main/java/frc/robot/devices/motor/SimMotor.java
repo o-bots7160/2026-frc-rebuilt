@@ -21,49 +21,51 @@ import frc.robot.shared.logging.Logger;
  */
 public class SimMotor implements Motor {
 
-    private static final double  kDtSeconds                        = 0.02;
+    private static final double     kDtSeconds                        = 0.02;
 
-    private static final double  kNominalVoltage                   = 12.0;
+    private static final double     kNominalVoltage                   = 12.0;
 
-    private static final double  kMinimumAccelerationRadPerSecSq   = 1e-3;
+    private static final double     kMinimumAccelerationRadPerSecSq   = 1e-3;
 
-    private static final double  kMinimumMomentOfInertiaKgMetersSq = 1e-6;
+    private static final double     kMinimumMomentOfInertiaKgMetersSq = 1e-6;
 
-    private static final double  kDefaultMomentOfInertiaKgMetersSq = 0.001;
+    private static final double     kDefaultMomentOfInertiaKgMetersSq = 0.001;
 
-    private static final double  kEpsilon                          = 1e-6;
+    private static final double     kEpsilon                          = 1e-6;
 
-    private final Logger         log;
+    private final Logger            log;
 
-    private final double         gearRatio;
+    private final double            gearRatio;
 
-    private final DCMotor        motorModel;
+    private final DCMotor           motorModel;
 
-    private DCMotorSim           motorSim;
+    private DCMotorSim              motorSim;
 
-    private final double         mechanismFreeSpeedRadPerSec;
+    private final double            mechanismFreeSpeedRadPerSec;
 
-    private final DoubleSupplier minimumPositionRadiansSupplier;
+    private final DoubleSupplier    minimumPositionRadiansSupplier;
 
-    private final DoubleSupplier maximumPositionRadiansSupplier;
+    private final DoubleSupplier    maximumPositionRadiansSupplier;
 
-    private final DoubleSupplier maximumVelocityRadiansPerSecondSupplier;
+    private final DoubleSupplier    maximumVelocityRadiansPerSecondSupplier;
 
-    private final DoubleSupplier maximumAccelerationRadiansPerSecondSquaredSupplier;
+    private final DoubleSupplier    maximumAccelerationRadiansPerSecondSquaredSupplier;
 
-    private double               lastCommandedVolts                = 0.0;
+    private final Supplier<Boolean> useSetpointLimitsSupplier;
 
-    private double               lastCommandedPositionRads         = Double.NaN;
+    private double                  lastCommandedVolts                = 0.0;
 
-    private double               lastCommandedVelocityRadPerSec    = Double.NaN;
+    private double                  lastCommandedPositionRads         = Double.NaN;
 
-    private double               positionRadians                   = 0.0;
+    private double                  lastCommandedVelocityRadPerSec    = Double.NaN;
 
-    private double               velocityRadPerSec                 = 0.0;
+    private double                  positionRadians                   = 0.0;
 
-    private double               lastMaxAccelerationRadPerSecSq    = Double.NaN;
+    private double                  velocityRadPerSec                 = 0.0;
 
-    private final String         name;
+    private double                  lastMaxAccelerationRadPerSecSq    = Double.NaN;
+
+    private final String            name;
 
     /**
      * Creates a simulated motor with supplier-backed motion bounds.
@@ -92,6 +94,7 @@ public class SimMotor implements Motor {
                 maximumPositionSupplier,
                 maximumVelocitySupplier,
                 maximumAccelerationSupplier,
+                () -> true,
                 DCMotor.getNEO(1));
     }
 
@@ -117,6 +120,74 @@ public class SimMotor implements Motor {
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier,
             DCMotor motorModel) {
+        this(
+                name,
+                motorRotationsPerMechanismRotation,
+                minimumPositionSupplier,
+                maximumPositionSupplier,
+                maximumVelocitySupplier,
+                maximumAccelerationSupplier,
+                () -> true,
+                motorModel);
+    }
+
+    /**
+     * Creates a simulated motor with supplier-backed motion bounds and a toggle for enforcing limits.
+     * <p>
+     * Disable setpoint limits when running SysId so the characterization sweep is not clipped by the configured bounds.
+     * </p>
+     *
+     * @param name                               friendly name used for logging
+     * @param motorRotationsPerMechanismRotation motor rotations per one mechanism rotation
+     * @param minimumPositionSupplier            minimum position in degrees
+     * @param maximumPositionSupplier            maximum position in degrees
+     * @param maximumVelocitySupplier            maximum profile velocity in degrees per second
+     * @param maximumAccelerationSupplier        maximum profile acceleration in degrees per second squared
+     * @param useSetpointLimitsSupplier          supplier that enables or disables position clamping
+     */
+    public SimMotor(
+            String name,
+            double motorRotationsPerMechanismRotation,
+            Supplier<Double> minimumPositionSupplier,
+            Supplier<Double> maximumPositionSupplier,
+            Supplier<Double> maximumVelocitySupplier,
+            Supplier<Double> maximumAccelerationSupplier,
+            Supplier<Boolean> useSetpointLimitsSupplier) {
+        this(
+                name,
+                motorRotationsPerMechanismRotation,
+                minimumPositionSupplier,
+                maximumPositionSupplier,
+                maximumVelocitySupplier,
+                maximumAccelerationSupplier,
+                useSetpointLimitsSupplier,
+                DCMotor.getNEO(1));
+    }
+
+    /**
+     * Creates a simulated motor with an explicit motor model and optional setpoint limit enforcement.
+     * <p>
+     * Use this when you know the exact motor type (for example, NEO 550) or the number of motors in the gearbox.
+     * </p>
+     *
+     * @param name                               friendly name used for logging
+     * @param motorRotationsPerMechanismRotation motor rotations per one mechanism rotation
+     * @param minimumPositionSupplier            minimum position in degrees
+     * @param maximumPositionSupplier            maximum position in degrees
+     * @param maximumVelocitySupplier            maximum profile velocity in degrees per second
+     * @param maximumAccelerationSupplier        maximum profile acceleration in degrees per second squared
+     * @param useSetpointLimitsSupplier          supplier that enables or disables position clamping
+     * @param motorModel                         motor model (for example, {@link DCMotor#getNEO(int)})
+     */
+    public SimMotor(
+            String name,
+            double motorRotationsPerMechanismRotation,
+            Supplier<Double> minimumPositionSupplier,
+            Supplier<Double> maximumPositionSupplier,
+            Supplier<Double> maximumVelocitySupplier,
+            Supplier<Double> maximumAccelerationSupplier,
+            Supplier<Boolean> useSetpointLimitsSupplier,
+            DCMotor motorModel) {
         DoubleSupplier minimumPositionRadiansSupplier                     = () -> Units.degreesToRadians(minimumPositionSupplier.get());
         DoubleSupplier maximumPositionRadiansSupplier                     = () -> Units.degreesToRadians(maximumPositionSupplier.get());
         DoubleSupplier maximumVelocityRadiansPerSecondSupplier            = () -> Units.degreesToRadians(maximumVelocitySupplier.get());
@@ -133,13 +204,16 @@ public class SimMotor implements Motor {
         this.maximumPositionRadiansSupplier                     = maximumPositionRadiansSupplier;
         this.maximumVelocityRadiansPerSecondSupplier            = maximumVelocityRadiansPerSecondSupplier;
         this.maximumAccelerationRadiansPerSecondSquaredSupplier = maximumAccelerationRadiansPerSecondSquaredSupplier;
+        this.useSetpointLimitsSupplier                          = useSetpointLimitsSupplier;
 
         log.verbose("Configuring SimMotor " + name + " (gear ratio " + gearRatio + ")");
 
         // Seed targets with the initial mechanism position for cleaner telemetry.
         double initialMin = minimumPositionRadiansSupplier.getAsDouble();
         double initialMax = maximumPositionRadiansSupplier.getAsDouble();
-        this.lastCommandedPositionRads      = clamp(0.0, initialMin, initialMax);
+        this.lastCommandedPositionRads      = shouldEnforceSetpointLimits()
+                ? clamp(0.0, initialMin, initialMax)
+                : 0.0;
         this.lastCommandedVelocityRadPerSec = 0.0;
         this.positionRadians                = this.lastCommandedPositionRads;
         this.velocityRadPerSec              = 0.0;
@@ -147,9 +221,9 @@ public class SimMotor implements Motor {
         rebuildMotorSim(maximumAccelerationRadiansPerSecondSquaredSupplier.getAsDouble());
         motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
 
-        log.recordOutput(name + "/initialized", true);
-        log.recordOutput(name + "/gearRatio", gearRatio);
-        log.recordOutput(name + "/freeSpeedRadPerSec", mechanismFreeSpeedRadPerSec);
+        log.recordOutput("initialized", true);
+        log.recordOutput("gearRatio", gearRatio);
+        log.recordOutput("freeSpeedRadPerSec", mechanismFreeSpeedRadPerSec);
     }
 
     /**
@@ -160,7 +234,7 @@ public class SimMotor implements Motor {
     @Override
     public void setVoltage(double volts) {
         lastCommandedVolts = volts;
-        log.recordOutput(name + "/commandedVolts", lastCommandedVolts);
+        log.recordOutput("commandedVolts", lastCommandedVolts);
     }
 
     @Override
@@ -178,7 +252,7 @@ public class SimMotor implements Motor {
         // Convert a duty cycle request into an equivalent voltage for the sim model.
         double clampedPercent = clamp(speed, -1.0, 1.0);
         setVoltage(clampedPercent * 12.0);
-        log.recordOutput(name + "/commandedDutyCycle", clampedPercent);
+        log.recordOutput("commandedDutyCycle", clampedPercent);
     }
 
     /**
@@ -187,7 +261,7 @@ public class SimMotor implements Motor {
     @Override
     public void stop() {
         setVoltage(0.0);
-        log.recordOutput(name + "/stopped", true);
+        log.recordOutput("stopped", true);
     }
 
     /**
@@ -211,6 +285,9 @@ public class SimMotor implements Motor {
      */
     @Override
     public double getMaximumTargetPosition() {
+        if (!shouldEnforceSetpointLimits()) {
+            return Double.POSITIVE_INFINITY;
+        }
         return Units.radiansToDegrees(maximumPositionRadiansSupplier.getAsDouble());
     }
 
@@ -219,6 +296,9 @@ public class SimMotor implements Motor {
      */
     @Override
     public double getMinimumTargetPosition() {
+        if (!shouldEnforceSetpointLimits()) {
+            return Double.NEGATIVE_INFINITY;
+        }
         return Units.radiansToDegrees(minimumPositionRadiansSupplier.getAsDouble());
     }
 
@@ -258,10 +338,10 @@ public class SimMotor implements Motor {
         inputs.targetPositionRads      = lastCommandedPositionRads;
         inputs.targetVelocityRadPerSec = lastCommandedVelocityRadPerSec;
 
-        log.recordOutput(name + "/positionRads", positionRads);
-        log.recordOutput(name + "/velocityRadPerSec", velocityRadPerSec);
-        log.recordOutput(name + "/targetPositionRads", lastCommandedPositionRads);
-        log.recordOutput(name + "/targetVelocityRadPerSec", lastCommandedVelocityRadPerSec);
+        log.recordOutput("positionRads", positionRads);
+        log.recordOutput("velocityRadPerSec", velocityRadPerSec);
+        log.recordOutput("targetPositionRads", lastCommandedPositionRads);
+        log.recordOutput("targetVelocityRadPerSec", lastCommandedVelocityRadPerSec);
     }
 
     /**
@@ -271,11 +351,14 @@ public class SimMotor implements Motor {
      * @return clamped position setpoint in radians
      */
     public double recordPositionSetpointRadians(double targetPositionRadians) {
-        double clamped = clamp(targetPositionRadians, minimumPositionRadiansSupplier.getAsDouble(), maximumPositionRadiansSupplier.getAsDouble());
+        double clamped = targetPositionRadians;
+        if (shouldEnforceSetpointLimits()) {
+            clamped = clamp(targetPositionRadians, minimumPositionRadiansSupplier.getAsDouble(), maximumPositionRadiansSupplier.getAsDouble());
+        }
         lastCommandedPositionRads = clamped;
-        log.recordOutput(name + "/targetRequestedPositionRads", targetPositionRadians);
-        log.recordOutput(name + "/targetPositionRads", clamped);
-        log.recordOutput(name + "/targetWasClamped", targetPositionRadians != clamped);
+        log.recordOutput("targetRequestedPositionRads", targetPositionRadians);
+        log.recordOutput("targetPositionRads", clamped);
+        log.recordOutput("targetWasClamped", targetPositionRadians != clamped);
         return clamped;
     }
 
@@ -286,7 +369,7 @@ public class SimMotor implements Motor {
      */
     public void recordVelocitySetpointRadians(double targetVelocityRadPerSec) {
         lastCommandedVelocityRadPerSec = targetVelocityRadPerSec;
-        log.recordOutput(name + "/targetVelocityRadPerSec", targetVelocityRadPerSec);
+        log.recordOutput("targetVelocityRadPerSec", targetVelocityRadPerSec);
     }
 
     private void stepSimulation() {
@@ -307,21 +390,23 @@ public class SimMotor implements Motor {
         }
 
         // Enforce motion bounds to mirror the hardware wrapper behavior.
-        double minPosition = minimumPositionRadiansSupplier.getAsDouble();
-        double maxPosition = maximumPositionRadiansSupplier.getAsDouble();
+        if (shouldEnforceSetpointLimits()) {
+            double minPosition = minimumPositionRadiansSupplier.getAsDouble();
+            double maxPosition = maximumPositionRadiansSupplier.getAsDouble();
 
-        if (positionRadians < minPosition) {
-            positionRadians   = minPosition;
-            velocityRadPerSec = 0.0;
-            motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
-        } else if (positionRadians > maxPosition) {
-            positionRadians   = maxPosition;
-            velocityRadPerSec = 0.0;
-            motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
+            if (positionRadians < minPosition) {
+                positionRadians   = minPosition;
+                velocityRadPerSec = 0.0;
+                motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
+            } else if (positionRadians > maxPosition) {
+                positionRadians   = maxPosition;
+                velocityRadPerSec = 0.0;
+                motorSim.setState(VecBuilder.fill(positionRadians, velocityRadPerSec));
+            }
         }
 
-        log.recordOutput(name + "/positionRads", positionRadians);
-        log.recordOutput(name + "/velocityRadPerSec", velocityRadPerSec);
+        log.recordOutput("positionRads", positionRadians);
+        log.recordOutput("velocityRadPerSec", velocityRadPerSec);
     }
 
     private void rebuildMotorSimIfNeeded(double maxAccelerationRadPerSecSq) {
@@ -343,7 +428,7 @@ public class SimMotor implements Motor {
                 LinearSystemId.createDCMotorSystem(motorModel, momentOfInertiaKgMetersSq, gearRatio),
                 motorModel);
         lastMaxAccelerationRadPerSecSq = maxAccelerationRadPerSecSq;
-        log.recordOutput(name + "/momentOfInertiaKgMetersSq", momentOfInertiaKgMetersSq);
+        log.recordOutput("momentOfInertiaKgMetersSq", momentOfInertiaKgMetersSq);
         log.dashboard(name + "/simMotorModel", motorModel.getClass().getSimpleName());
     }
 
@@ -363,6 +448,9 @@ public class SimMotor implements Motor {
     }
 
     private double getPositionRadiansUnconverted() {
+        if (!shouldEnforceSetpointLimits()) {
+            return positionRadians;
+        }
         return clamp(positionRadians, minimumPositionRadiansSupplier.getAsDouble(), maximumPositionRadiansSupplier.getAsDouble());
     }
 
@@ -372,5 +460,12 @@ public class SimMotor implements Motor {
 
     private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    private boolean shouldEnforceSetpointLimits() {
+        if (useSetpointLimitsSupplier == null) {
+            return true;
+        }
+        return Boolean.TRUE.equals(useSetpointLimitsSupplier.get());
     }
 }

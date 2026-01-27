@@ -53,6 +53,7 @@ public class TurretSimMotor extends SimMotor {
                 motorConfig.getMinimumSetpointDegreesSupplier(),
                 motorConfig.getMaximumSetpointDegreesSupplier(),
                 maximumVelocitySupplier,
-                maximumAccelerationSupplier);
+            maximumAccelerationSupplier,
+            motorConfig.getUseSetpointLimitsSupplier());
     }
 }

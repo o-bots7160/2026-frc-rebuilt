@@ -18,7 +18,7 @@
     "turretMotorConfig": {
       "enabled": true,
       "verbose": true,
-      "useSetpointLimits": true,
+      "useSetpointLimits": false,
       "motorCanId": 55,
       "motorInverted": false,
       "smartCurrentLimitAmps": 40,

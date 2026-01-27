@@ -2,13 +2,13 @@ package frc.robot.subsystems.turret.commands;
 
 import java.util.function.Supplier;
 
-import frc.robot.shared.commands.AbstractSubsystemCommandFactory;
+import frc.robot.shared.commands.AbstractSetAndSeekCommandFactory;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
 /**
  * Generates commands that operate on the turret subsystem so RobotContainer can stay focused on wiring.
  */
-public class TurretSubsystemCommandFactory extends AbstractSubsystemCommandFactory<TurretSubsystem> {
+public class TurretSubsystemCommandFactory extends AbstractSetAndSeekCommandFactory<TurretSubsystem> {
 
     /**
      * Creates a factory for commands that share the given turret subsystem instance.
