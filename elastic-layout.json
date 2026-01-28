@@ -281,149 +281,14 @@
         "layouts": [],
         "containers": [
           {
-            "title": "enabled",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "maximumSetpoint",
-            "x": 640.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/maximumSetpoint",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "minimumSetpoint",
-            "x": 512.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/minimumSetpoint",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "motorCanId",
-            "x": 640.0,
+            "x": 0.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/motorCanId",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "motorInverted",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/motorInverted",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "motorRotationsPerMechanismRotation",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/motorRotationsPerMechanismRotation",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "smartCurrentLimitAmps",
-            "x": 896.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/smartCurrentLimitAmps",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "verbose",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/verbose",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "initialPosition",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/initialPosition",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "initialVelocity",
-            "x": 640.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/initialVelocity",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -514,80 +379,10 @@
             }
           },
           {
-            "title": "maximumAcceleration",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/maximumAcceleration",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "maximumSetpoint",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/maximumSetpoint",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "maximumVelocity",
-            "x": 896.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/maximumVelocity",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "minimumSetpoint",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/minimumSetpoint",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "positionTolerance",
-            "x": 1024.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/positionTolerance",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "AppliedVolts",
             "x": 0.0,
-            "y": 0.0,
-            "width": 128.0,
+            "y": 256.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -599,9 +394,9 @@
           },
           {
             "title": "CommandedVolts",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -612,24 +407,10 @@
             }
           },
           {
-            "title": "PositionRads",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/TurretSubsystem/motor/PositionRads",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "SupplyCurrentAmps",
             "x": 0.0,
-            "y": 128.0,
-            "width": 128.0,
+            "y": 384.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -640,14 +421,56 @@
             }
           },
           {
-            "title": "TargetPositionRads",
+            "title": "maximumAccelerationDegreesPerSecondSquared",
+            "x": 640.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/maximumAccelerationDegreesPerSecondSquared",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "maximumSetpointDegrees",
             "x": 256.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/maximumSetpointDegrees",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "maximumVelocityDegreesPerSecond",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/maximumVelocityDegreesPerSecond",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "measuredPositionDegrees",
+            "x": 1024.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/TurretSubsystem/motor/TargetPositionRads",
+              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/measuredPositionDegrees",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false

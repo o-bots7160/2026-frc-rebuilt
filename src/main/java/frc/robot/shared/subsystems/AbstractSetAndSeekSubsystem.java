@@ -265,13 +265,13 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         log.recordOutput("goalPositionDegrees", Units.radiansToDegrees(goal.position));
         log.recordOutput("goalVelocityRadPerSec", goal.velocity);
         log.recordOutput("goalVelocityDegreesPerSec", Units.radiansToDegrees(goal.velocity));
-        log.recordOutput("setpointPositionRads", setpoint.position);
+        log.recordOutput("setpointPositionRadians", setpoint.position);
         log.recordOutput("setpointPositionDegrees", Units.radiansToDegrees(setpoint.position));
         log.recordOutput("setpointVelocityRadPerSec", setpoint.velocity);
         log.recordOutput("setpointVelocityDegreesPerSec", Units.radiansToDegrees(setpoint.velocity));
-        log.recordOutput("measuredPositionRads", getMeasuredPosition());
+        log.recordOutput("measuredPositionRadians", getMeasuredPosition());
         log.recordOutput("measuredPositionDegrees", Units.radiansToDegrees(getMeasuredPosition()));
-        log.recordOutput("measuredVelocityRadPerSec", getMeasuredVelocity());
+        log.recordOutput("measuredVelocityRadiansPerSec", getMeasuredVelocity());
         log.recordOutput("measuredVelocityDegreesPerSec", Units.radiansToDegrees(getMeasuredVelocity()));
     }
 

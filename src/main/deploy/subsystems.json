@@ -18,26 +18,26 @@
     "turretMotorConfig": {
       "enabled": true,
       "verbose": false,
-      "useSetpointLimits": false,
+      "useSetpointLimits": true,
       "motorCanId": 55,
       "motorInverted": false,
       "smartCurrentLimitAmps": 40,
-      "motorRotationsPerMechanismRotation": 237.5,
+      "motorRotationsPerMechanismRotation": 47.5,
       "reverseSoftLimitDegrees": -360.0,
       "forwardSoftLimitDegrees": 360.0
     },
-    "maximumVelocityDegreesPerSecond": 30.0,
-    "maximumAccelerationDegreesPerSecondSquared": 25.0,
+    "maximumVelocityDegreesPerSecond": 90.0,
+    "maximumAccelerationDegreesPerSecondSquared": 45.0,
     "minimumSetpointDegrees": -180.0,
     "maximumSetpointDegrees": 180.0,
     "positionToleranceDegrees": 1.0,
     "initialPositionDegrees": 0.0,
     "initialVelocityDegreesPerSecond": 0.0,
-    "kP": 21.103,
+    "kP": 2.2432,
     "kI": 0.0,
     "kD": 0.01,
-    "kS": 0.23609,
-    "kV": 101.21,
-    "kA": 7.6996
+    "kS": 0.21727,
+    "kV": 5.948,
+    "kA": 1.0735
   }
 }
