@@ -148,9 +148,9 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     private void seedInitialState() {
         double initialPositionRad = 0.0;
         if (Boolean.TRUE.equals(useSetpointLimitsSupplier.get())) {
-            double minPosition = config.getMinimumSetpointRadiansSupplier().get();
-            double maxPosition = config.getMaximumSetpointRadiansSupplier().get();
-            initialPositionRad = MathUtil.clamp(0.0, minPosition, maxPosition);
+            double reverseSoftLimitRad = config.getReverseSoftLimitRadiansSupplier().get();
+            double forwardSoftLimitRad = config.getForwardSoftLimitRadiansSupplier().get();
+            initialPositionRad = MathUtil.clamp(0.0, reverseSoftLimitRad, forwardSoftLimitRad);
         }
 
         sparkMaxSim.setPosition(initialPositionRad);

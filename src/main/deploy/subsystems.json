@@ -23,8 +23,8 @@
       "motorInverted": false,
       "smartCurrentLimitAmps": 40,
       "motorRotationsPerMechanismRotation": 237.5,
-      "minimumSetpointDegrees": -360.0,
-      "maximumSetpointDegrees": 360.0
+      "reverseSoftLimitDegrees": -360.0,
+      "forwardSoftLimitDegrees": 360.0
     },
     "maximumVelocityDegreesPerSecond": 30.0,
     "maximumAccelerationDegreesPerSecondSquared": 25.0,

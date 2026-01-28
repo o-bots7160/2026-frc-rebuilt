@@ -25,14 +25,14 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
     /** Gear ratio expressed as motor rotations per one mechanism rotation. */
     public double  motorRotationsPerMechanismRotation;
 
-    /** True when the motor should enforce minimum/maximum setpoint limits. */
+    /** True when the motor should enforce forward and reverse soft limits. */
     public boolean useSetpointLimits = true;
 
-    /** Minimum allowed mechanism setpoint in degrees. */
-    public double  minimumSetpointDegrees;
+    /** Reverse travel soft limit in degrees. */
+    public double  reverseSoftLimitDegrees;
 
-    /** Maximum allowed mechanism setpoint in degrees. */
-    public double  maximumSetpointDegrees;
+    /** Forward travel soft limit in degrees. */
+    public double  forwardSoftLimitDegrees;
 
     /**
      * Supplies the CAN ID (not typically tuned, but exposed for consistency/logging).
@@ -80,38 +80,38 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
     }
 
     /**
-     * Supplies the minimum mechanism setpoint in degrees.
+     * Supplies the reverse soft limit in degrees.
      *
-     * @return supplier that yields the minimum setpoint in degrees
+     * @return supplier that yields the reverse soft limit in degrees
      */
-    public Supplier<Double> getMinimumSetpointDegreesSupplier() {
-        return () -> readTunableNumber("minimumSetpointDegrees", minimumSetpointDegrees);
+    public Supplier<Double> getReverseSoftLimitDegreesSupplier() {
+        return () -> readTunableNumber("reverseSoftLimitDegrees", reverseSoftLimitDegrees);
     }
 
     /**
-     * Supplies the minimum mechanism setpoint in radians.
+     * Supplies the reverse soft limit in radians.
      *
-     * @return supplier that yields the minimum setpoint in radians
+     * @return supplier that yields the reverse soft limit in radians
      */
-    public Supplier<Double> getMinimumSetpointRadiansSupplier() {
-        return () -> Units.degreesToRadians(getMinimumSetpointDegreesSupplier().get());
+    public Supplier<Double> getReverseSoftLimitRadiansSupplier() {
+        return () -> Units.degreesToRadians(getReverseSoftLimitDegreesSupplier().get());
     }
 
     /**
-     * Supplies the maximum mechanism setpoint in degrees.
+     * Supplies the forward soft limit in degrees.
      *
-     * @return supplier that yields the maximum setpoint in degrees
+     * @return supplier that yields the forward soft limit in degrees
      */
-    public Supplier<Double> getMaximumSetpointDegreesSupplier() {
-        return () -> readTunableNumber("maximumSetpointDegrees", maximumSetpointDegrees);
+    public Supplier<Double> getForwardSoftLimitDegreesSupplier() {
+        return () -> readTunableNumber("forwardSoftLimitDegrees", forwardSoftLimitDegrees);
     }
 
     /**
-     * Supplies the maximum mechanism setpoint in radians.
+     * Supplies the forward soft limit in radians.
      *
-     * @return supplier that yields the maximum setpoint in radians
+     * @return supplier that yields the forward soft limit in radians
      */
-    public Supplier<Double> getMaximumSetpointRadiansSupplier() {
-        return () -> Units.degreesToRadians(getMaximumSetpointDegreesSupplier().get());
+    public Supplier<Double> getForwardSoftLimitRadiansSupplier() {
+        return () -> Units.degreesToRadians(getForwardSoftLimitDegreesSupplier().get());
     }
 }

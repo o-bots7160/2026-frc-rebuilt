@@ -41,9 +41,9 @@ public class TurretMotor extends AbstractMotor {
 
     private int                     lastSmartCurrentLimitAmps;
 
-    private double                  lastMinimumSetpointDegrees;
+    private double                  lastReverseSoftLimitDegrees;
 
-    private double                  lastMaximumSetpointDegrees;
+    private double                  lastForwardSoftLimitDegrees;
 
     private double                  lastMotorRotationsPerMechanismRotation;
 
@@ -73,15 +73,15 @@ public class TurretMotor extends AbstractMotor {
         int     motorCanId                         = config.getMotorCanIdSupplier().get();
         boolean motorInverted                      = config.getMotorInvertedSupplier().get();
         int     smartCurrentLimit                  = config.getSmartCurrentLimitSupplier().get();
-        double  minimumSetpointDegrees             = config.getMinimumSetpointDegreesSupplier().get();
-        double  maximumSetpointDegrees             = config.getMaximumSetpointDegreesSupplier().get();
+        double  reverseSoftLimitDegrees            = config.getReverseSoftLimitDegreesSupplier().get();
+        double  forwardSoftLimitDegrees            = config.getForwardSoftLimitDegreesSupplier().get();
         double  motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
 
         boolean configChanged                      = motorCanId != lastMotorCanId
                 || motorInverted != lastMotorInverted
                 || smartCurrentLimit != lastSmartCurrentLimitAmps
-                || hasChanged(minimumSetpointDegrees, lastMinimumSetpointDegrees)
-                || hasChanged(maximumSetpointDegrees, lastMaximumSetpointDegrees)
+                || hasChanged(reverseSoftLimitDegrees, lastReverseSoftLimitDegrees)
+                || hasChanged(forwardSoftLimitDegrees, lastForwardSoftLimitDegrees)
                 || hasChanged(motorRotationsPerMechanismRotation, lastMotorRotationsPerMechanismRotation);
 
         if (!configChanged) {
@@ -94,8 +94,8 @@ public class TurretMotor extends AbstractMotor {
         }
 
         updateMotionConstraints(
-                Units.degreesToRadians(minimumSetpointDegrees),
-                Units.degreesToRadians(maximumSetpointDegrees),
+            Units.degreesToRadians(reverseSoftLimitDegrees),
+            Units.degreesToRadians(forwardSoftLimitDegrees),
                 computeMechanismRadiansPerMotorRotation(motorRotationsPerMechanismRotation));
         reconfigure();
         cacheConfigSnapshot();
@@ -125,8 +125,8 @@ public class TurretMotor extends AbstractMotor {
         lastMotorCanId                         = config.getMotorCanIdSupplier().get();
         lastMotorInverted                      = config.getMotorInvertedSupplier().get();
         lastSmartCurrentLimitAmps              = config.getSmartCurrentLimitSupplier().get();
-        lastMinimumSetpointDegrees             = config.getMinimumSetpointDegreesSupplier().get();
-        lastMaximumSetpointDegrees             = config.getMaximumSetpointDegreesSupplier().get();
+        lastReverseSoftLimitDegrees            = config.getReverseSoftLimitDegreesSupplier().get();
+        lastForwardSoftLimitDegrees            = config.getForwardSoftLimitDegreesSupplier().get();
         lastMotorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
     }
 

@@ -89,7 +89,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 this.motor::setVoltage,
                 this.motor::getVoltage,
                 () -> this.motor.updateInputs(motorInputs),
-                () -> motorInputs.positionRads,
+                () -> motorInputs.positionRadians,
                 () -> motorInputs.velocityRadPerSec);
     }
 
@@ -234,7 +234,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      * @return The current measured position in radians. Defaults to the profiled setpoint for simulation-only usage.
      */
     protected double getMeasuredPosition() {
-        return motor.getEncoderPosition();
+        return motor.getPositionRadians();
     }
 
     /**
@@ -243,7 +243,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      * @return The current measured velocity in radians per second. Defaults to the profiled setpoint velocity.
      */
     protected double getMeasuredVelocity() {
-        return motor.getEncoderVelocity();
+        return motor.getVelocityRadiansPerSecond();
     }
 
     private void logSetpoint(TrapezoidProfile.State setpoint, TrapezoidProfile.State goal) {

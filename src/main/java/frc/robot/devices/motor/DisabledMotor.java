@@ -44,20 +44,20 @@ public final class DisabledMotor implements Motor {
     /**
      * Reports a neutral encoder position of 0.
      *
-     * @return position in mechanism units
+     * @return position in radians
      */
     @Override
-    public double getEncoderPosition() {
+    public double getPositionRadians() {
         return 0.0;
     }
 
     /**
      * Reports a neutral encoder velocity of 0.
      *
-     * @return velocity in mechanism units per second
+     * @return velocity in radians per second
      */
     @Override
-    public double getEncoderVelocity() {
+    public double getVelocityRadiansPerSecond() {
         return 0.0;
     }
 
@@ -96,7 +96,7 @@ public final class DisabledMotor implements Motor {
      */
     @Override
     public void updateInputs(MotorIOInputs inputs) {
-        inputs.positionRads            = 0.0;
+        inputs.positionRadians            = 0.0;
         inputs.velocityRadPerSec       = 0.0;
         inputs.appliedVolts            = Units.Volts.of(lastCommandedVolts);
         inputs.commandedVolts          = Units.Volts.of(lastCommandedVolts);

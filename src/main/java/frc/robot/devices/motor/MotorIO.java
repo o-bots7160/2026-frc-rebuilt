@@ -20,31 +20,37 @@ public interface MotorIO {
     @AutoLog
     public static class MotorIOInputs {
         /** Measured mechanism position in radians (post conversion). */
-        public double positionRads            = 0.0;
+        public double  positionRadians            = 0.0;
+
+        /** Measured mechanism position in rotations (post conversion). */
+        public double  positionMotorRotations       = 0.0;
+
+        /** Measured mechanism position in radians (post conversion). */
+        public double  positionDegrees         = 0.0;
 
         /** Measured mechanism velocity in radians per second (post conversion). */
-        public double velocityRadPerSec       = 0.0;
+        public double  velocityRadPerSec       = 0.0;
 
         /** Applied voltage from the motor controller output stage. */
-        public Voltage appliedVolts           = Units.Volts.of(0.0);
+        public Voltage appliedVolts            = Units.Volts.of(0.0);
 
         /** Bus voltage reported by the motor controller in volts. */
-        public double busVoltageVolts         = 0.0;
+        public double  busVoltageVolts         = 0.0;
 
         /** Last commanded voltage request (open-loop), if applicable. */
-        public Voltage commandedVolts         = Units.Volts.of(0.0);
+        public Voltage commandedVolts          = Units.Volts.of(0.0);
 
         /** Reported supply/phase current draw in amps. */
-        public double supplyCurrentAmps       = 0.0;
+        public double  supplyCurrentAmps       = 0.0;
 
         /** Motor temperature in degrees Celsius. */
-        public double temperatureCelsius      = 0.0;
+        public double  temperatureCelsius      = 0.0;
 
         /** Last commanded target position in radians, if applicable. */
-        public double targetPositionRads      = Double.NaN;
+        public double  targetPositionRads      = Double.NaN;
 
         /** Last commanded target velocity in radians per second, if applicable. */
-        public double targetVelocityRadPerSec = Double.NaN;
+        public double  targetVelocityRadPerSec = Double.NaN;
     }
 
     /**

@@ -52,23 +52,23 @@ public abstract class AbstractMotor implements Motor {
     /** Base config applied to every SparkMax before subclass customizations. */
     private final SparkMaxConfig    baseConfig;
 
-    /** Supplies whether software and hardware setpoint limits should be enforced. */
+    /** Supplies whether soft limits should be enforced. */
     private final Supplier<Boolean> useSetpointLimitsSupplier;
 
-    /** Supplies the minimum allowed position in radians. */
-    private final Supplier<Double>  minimumPositionRadiansSupplier;
+    /** Supplies the reverse soft limit position in radians. */
+    private final Supplier<Double>  reverseSoftLimitRadiansSupplier;
 
-    /** Supplies the maximum allowed position in radians. */
-    private final Supplier<Double>  maximumPositionRadiansSupplier;
+    /** Supplies the forward soft limit position in radians. */
+    private final Supplier<Double>  forwardSoftLimitRadiansSupplier;
 
     /** Supplies the gear ratio as motor rotations per mechanism rotation. */
     private final Supplier<Double>  motorRotationsPerMechanismRotationSupplier;
 
     /** Motion bounds used to clamp position setpoints (in radians). */
-    private double                  minimumPositionRadians;
+    private double                  reverseSoftLimitRadians;
 
     /** Motion bounds used to clamp position setpoints (in radians). */
-    private double                  maximumPositionRadians;
+    private double                  forwardSoftLimitRadians;
 
     /** Conversion factor from motor rotations to mechanism radians. */
     private double                  positionRadiansPerMotorRotation;
@@ -116,8 +116,8 @@ public abstract class AbstractMotor implements Motor {
         this.log                                        = Logger.getInstance(this.getClass());
         // Cache suppliers so limits can be refreshed alongside hardware updates.
         this.useSetpointLimitsSupplier                  = config.getUseSetpointLimitsSupplier();
-        this.minimumPositionRadiansSupplier             = config.getMinimumSetpointRadiansSupplier();
-        this.maximumPositionRadiansSupplier             = config.getMaximumSetpointRadiansSupplier();
+        this.reverseSoftLimitRadiansSupplier            = config.getReverseSoftLimitRadiansSupplier();
+        this.forwardSoftLimitRadiansSupplier            = config.getForwardSoftLimitRadiansSupplier();
         this.motorRotationsPerMechanismRotationSupplier = config.getMotorRotationsPerMechanismRotationSupplier();
 
         // Instantiate the controller with the requested CAN ID and motor type.
@@ -233,8 +233,8 @@ public abstract class AbstractMotor implements Motor {
      * @return mechanism position (radians)
      */
     @Override
-    public double getEncoderPosition() {
-        if (!ensureInitialized("getEncoderPosition")) {
+    public double getPositionRadians() {
+        if (!ensureInitialized("getPositionRadians")) {
             return 0.0;
         }
         // Encoder conversion factors are configured so SparkMax reports mechanism radians.
@@ -247,8 +247,8 @@ public abstract class AbstractMotor implements Motor {
      * @return mechanism velocity (radians/second)
      */
     @Override
-    public double getEncoderVelocity() {
-        if (!ensureInitialized("getEncoderVelocity")) {
+    public double getVelocityRadiansPerSecond() {
+        if (!ensureInitialized("getVelocityRadiansPerSecond")) {
             return 0.0;
         }
         // Encoder conversion factors are configured so SparkMax reports radians per second.
@@ -281,7 +281,7 @@ public abstract class AbstractMotor implements Motor {
     public void updateInputs(MotorIOInputs inputs) {
         if (!ensureInitialized("updateInputs")) {
             // Report zeros/NaN so logs show the motor is inactive.
-            inputs.positionRads            = 0.0;
+            inputs.positionRadians         = 0.0;
             inputs.velocityRadPerSec       = 0.0;
             inputs.appliedVolts            = edu.wpi.first.units.Units.Volts.of(0.0);
             inputs.busVoltageVolts         = 0.0;
@@ -293,8 +293,10 @@ public abstract class AbstractMotor implements Motor {
             return;
         }
         // Pull fresh sensor data for logging and telemetry dashboards.
-        inputs.positionRads            = getEncoderPosition();
-        inputs.velocityRadPerSec       = getEncoderVelocity();
+        inputs.positionRadians         = getPositionRadians();
+        inputs.positionMotorRotations  = inputs.positionRadians / positionRadiansPerMotorRotation;
+        inputs.positionDegrees         = Math.toDegrees(inputs.positionRadians);
+        inputs.velocityRadPerSec       = getVelocityRadiansPerSecond();
         inputs.appliedVolts            = getVoltage();
         inputs.busVoltageVolts         = motor.getBusVoltage();
         inputs.commandedVolts          = edu.wpi.first.units.Units.Volts.of(lastCommandedVolts);
@@ -310,17 +312,17 @@ public abstract class AbstractMotor implements Motor {
      * Use this when tunable configuration updates change limits or gear ratios so internal conversions stay aligned with the hardware.
      * </p>
      *
-     * @param minimumPositionRadians           minimum allowed position in radians
-     * @param maximumPositionRadians           maximum allowed position in radians
+     * @param reverseSoftLimitRadians          reverse soft limit position in radians
+     * @param forwardSoftLimitRadians          forward soft limit position in radians
      * @param mechanismRadiansPerMotorRotation mechanism radians per motor rotation (gear ratio applied)
      */
     protected final void updateMotionConstraints(
-            double minimumPositionRadians,
-            double maximumPositionRadians,
+            double reverseSoftLimitRadians,
+            double forwardSoftLimitRadians,
             double mechanismRadiansPerMotorRotation) {
         // Update motion bounds and conversion factors together to avoid mismatch.
-        this.minimumPositionRadians          = minimumPositionRadians;
-        this.maximumPositionRadians          = maximumPositionRadians;
+        this.reverseSoftLimitRadians         = reverseSoftLimitRadians;
+        this.forwardSoftLimitRadians         = forwardSoftLimitRadians;
         this.positionRadiansPerMotorRotation = mechanismRadiansPerMotorRotation;
         this.velocityRadPerSecPerMotorRpm    = mechanismRadiansPerMotorRotation / 60.0;
         applyHardwareSoftLimits();
@@ -351,26 +353,26 @@ public abstract class AbstractMotor implements Motor {
 
     private void applyHardwareSoftLimits() {
         if (useSetpointLimitsSupplier.get()) {
-            minimumPositionRadians = minimumPositionRadiansSupplier.get();
-            maximumPositionRadians = maximumPositionRadiansSupplier.get();
+            reverseSoftLimitRadians = reverseSoftLimitRadiansSupplier.get();
+            forwardSoftLimitRadians = forwardSoftLimitRadiansSupplier.get();
         } else {
-            minimumPositionRadians = Double.NEGATIVE_INFINITY;
-            maximumPositionRadians = Double.POSITIVE_INFINITY;
+            reverseSoftLimitRadians = Double.NEGATIVE_INFINITY;
+            forwardSoftLimitRadians = Double.POSITIVE_INFINITY;
         }
 
-        boolean hasMinimumLimit = Double.isFinite(minimumPositionRadians);
-        boolean hasMaximumLimit = Double.isFinite(maximumPositionRadians);
+        boolean hasReverseLimit = Double.isFinite(reverseSoftLimitRadians);
+        boolean hasForwardLimit = Double.isFinite(forwardSoftLimitRadians);
 
         baseConfig.softLimit
-                .reverseSoftLimitEnabled(hasMinimumLimit)
-                .forwardSoftLimitEnabled(hasMaximumLimit);
+                .reverseSoftLimitEnabled(hasReverseLimit)
+                .forwardSoftLimitEnabled(hasForwardLimit);
 
-        if (hasMinimumLimit) {
-            baseConfig.softLimit.reverseSoftLimit(minimumPositionRadians);
+        if (hasReverseLimit) {
+            baseConfig.softLimit.reverseSoftLimit(reverseSoftLimitRadians);
         }
 
-        if (hasMaximumLimit) {
-            baseConfig.softLimit.forwardSoftLimit(maximumPositionRadians);
+        if (hasForwardLimit) {
+            baseConfig.softLimit.forwardSoftLimit(forwardSoftLimitRadians);
         }
     }
 
