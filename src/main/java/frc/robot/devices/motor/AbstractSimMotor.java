@@ -117,27 +117,6 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     }
 
     /**
-     * Records a position setpoint for telemetry and clamps it to the configured bounds.
-     *
-     * @param targetPositionRadians desired mechanism position (radians)
-     * @return clamped position setpoint in radians
-     */
-    @Override
-    public double recordPositionSetpointRadians(double targetPositionRadians) {
-        return super.recordPositionSetpointRadians(targetPositionRadians);
-    }
-
-    /**
-     * Records a velocity setpoint for telemetry.
-     *
-     * @param targetVelocityRadPerSec desired mechanism velocity (radians per second)
-     */
-    @Override
-    public void recordVelocitySetpointRadians(double targetVelocityRadPerSec) {
-        super.recordVelocitySetpointRadians(targetVelocityRadPerSec);
-    }
-
-    /**
      * Reports the applied voltage request currently sent to the simulated Spark MAX.
      *
      * @return voltage applied to the motor controller

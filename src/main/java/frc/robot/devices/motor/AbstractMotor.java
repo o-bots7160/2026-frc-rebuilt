@@ -241,26 +241,13 @@ public abstract class AbstractMotor implements Motor {
      *
      * @return mechanism position (radians)
      */
-    public double getPositionRadians() {
-        if (!ensureInitialized("getPositionRadians")) {
+    @Override
+    public double getEncoderPosition() {
+        if (!ensureInitialized("getEncoderPosition")) {
             return 0.0;
         }
         // Encoder conversion factors are configured so SparkMax reports mechanism radians.
         return motor.getEncoder().getPosition();
-    }
-
-    @Override
-    public double getEncoderPosition() {
-        return getPositionRadians();
-    }
-
-    /**
-     * Reports the current measured position in degrees (helper for student-facing UI).
-     *
-     * @return mechanism position (degrees)
-     */
-    public double getPositionDegrees() {
-        return Units.radiansToDegrees(getPositionRadians());
     }
 
     /**
@@ -268,17 +255,13 @@ public abstract class AbstractMotor implements Motor {
      *
      * @return mechanism velocity (radians/second)
      */
-    public double getVelocityRadPerSec() {
-        if (!ensureInitialized("getVelocityRadPerSec")) {
+    @Override
+    public double getEncoderVelocity() {
+        if (!ensureInitialized("getEncoderVelocity")) {
             return 0.0;
         }
         // Encoder conversion factors are configured so SparkMax reports radians per second.
         return motor.getEncoder().getVelocity();
-    }
-
-    @Override
-    public double getEncoderVelocity() {
-        return getVelocityRadPerSec();
     }
 
     /**
@@ -287,7 +270,7 @@ public abstract class AbstractMotor implements Motor {
      * @return mechanism velocity (degrees/second)
      */
     public double getVelocityDegreesPerSec() {
-        return Units.radiansToDegrees(getVelocityRadPerSec());
+        return Units.radiansToDegrees(getEncoderVelocity());
     }
 
     /**
@@ -355,8 +338,8 @@ public abstract class AbstractMotor implements Motor {
             return;
         }
         // Pull fresh sensor data for logging and telemetry dashboards.
-        inputs.positionRads            = getPositionRadians();
-        inputs.velocityRadPerSec       = getVelocityRadPerSec();
+        inputs.positionRads            = getEncoderPosition();
+        inputs.velocityRadPerSec       = getEncoderVelocity();
         inputs.appliedVolts            = getAppliedVolts();
         inputs.busVoltageVolts         = motor.getBusVoltage();
         inputs.commandedVolts          = lastCommandedVolts;
