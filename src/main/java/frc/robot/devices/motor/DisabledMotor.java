@@ -24,21 +24,11 @@ public final class DisabledMotor implements Motor {
     /**
      * Ignores voltage requests and records the last value for telemetry.
      *
-     * @param voltageVolts desired voltage output in volts
-     */
-    @Override
-    public void setVoltage(double voltageVolts) {
-        lastCommandedVolts = voltageVolts;
-    }
-
-    /**
-     * Ignores voltage requests and records the last value for telemetry.
-     *
      * @param voltage desired voltage output
      */
     @Override
     public void setVoltage(Voltage voltage) {
-        setVoltage(voltage.in(Units.Volts));
+        lastCommandedVolts = voltage.in(Units.Volts);
     }
 
     /**
@@ -48,7 +38,7 @@ public final class DisabledMotor implements Motor {
      */
     @Override
     public void setSpeed(double speed) {
-        setVoltage(speed * 12.0);
+        setVoltage(Units.Volts.of(speed * 12.0));
     }
 
     /**
@@ -108,8 +98,8 @@ public final class DisabledMotor implements Motor {
     public void updateInputs(MotorIOInputs inputs) {
         inputs.positionRads            = 0.0;
         inputs.velocityRadPerSec       = 0.0;
-        inputs.appliedVolts            = lastCommandedVolts;
-        inputs.commandedVolts          = lastCommandedVolts;
+        inputs.appliedVolts            = Units.Volts.of(lastCommandedVolts);
+        inputs.commandedVolts          = Units.Volts.of(lastCommandedVolts);
         inputs.supplyCurrentAmps       = 0.0;
         inputs.temperatureCelsius      = 0.0;
         inputs.targetPositionRads      = Double.NaN;

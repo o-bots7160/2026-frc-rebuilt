@@ -2,6 +2,9 @@ package frc.robot.devices.motor;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Voltage;
+
 /**
  * Defines the telemetry surface for a motor controller so AdvantageKit can mirror hardware readings.
  * <p>
@@ -23,13 +26,13 @@ public interface MotorIO {
         public double velocityRadPerSec       = 0.0;
 
         /** Applied voltage from the motor controller output stage. */
-        public double appliedVolts            = 0.0;
+        public Voltage appliedVolts           = Units.Volts.of(0.0);
 
         /** Bus voltage reported by the motor controller in volts. */
         public double busVoltageVolts         = 0.0;
 
         /** Last commanded voltage request (open-loop), if applicable. */
-        public double commandedVolts          = 0.0;
+        public Voltage commandedVolts         = Units.Volts.of(0.0);
 
         /** Reported supply/phase current draw in amps. */
         public double supplyCurrentAmps       = 0.0;

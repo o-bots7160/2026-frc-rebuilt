@@ -21,13 +21,6 @@ public interface Motor extends MotorIO {
     void setVoltage(Voltage voltage);
 
     /**
-     * Commands the motor with a voltage request.
-     *
-     * @param voltageVolts desired voltage output in volts
-     */
-    void setVoltage(double voltageVolts);
-
-    /**
      * Commands an open-loop duty cycle.
      *
      * @param speed duty cycle from -1 (full reverse) to 1 (full forward)

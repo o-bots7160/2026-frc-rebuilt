@@ -11,7 +11,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -114,16 +113,6 @@ public abstract class AbstractSimMotor extends AbstractMotor {
         init();
         log.dashboard("simMotorModel", motorModel.getClass().getSimpleName());
         log.recordOutput("gearRatio", gearRatio);
-    }
-
-    /**
-     * Reports the applied voltage request currently sent to the simulated Spark MAX.
-     *
-     * @return voltage applied to the motor controller
-     */
-    @Override
-    public Voltage getVoltage() {
-        return edu.wpi.first.units.Units.Volts.of(getAppliedVolts());
     }
 
     /**

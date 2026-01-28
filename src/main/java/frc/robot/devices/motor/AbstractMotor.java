@@ -187,24 +187,15 @@ public abstract class AbstractMotor implements Motor {
         return initialized;
     }
 
-    /**
-     * Applies an open-loop voltage command to the motor controller.
-     *
-     * @param volts desired voltage to apply
-     */
     @Override
-    public void setVoltage(double volts) {
+    public void setVoltage(Voltage voltage) {
         if (!ensureInitialized("setVoltage")) {
             return;
         }
+        double volts = voltage.in(edu.wpi.first.units.Units.Volts);
         // Store the command for logging before sending it to hardware.
         lastCommandedVolts = volts;
         motor.setVoltage(volts);
-    }
-
-    @Override
-    public void setVoltage(Voltage voltage) {
-        setVoltage(voltage.in(edu.wpi.first.units.Units.Volts));
     }
 
     /**
@@ -264,49 +255,13 @@ public abstract class AbstractMotor implements Motor {
         return motor.getEncoder().getVelocity();
     }
 
-    /**
-     * Reports the current measured velocity in degrees per second (helper for student-facing UI).
-     *
-     * @return mechanism velocity (degrees/second)
-     */
-    public double getVelocityDegreesPerSec() {
-        return Units.radiansToDegrees(getEncoderVelocity());
-    }
-
-    /**
-     * Returns the last commanded target position for logging convenience.
-     *
-     * @return target position in radians (may be {@link Double#NaN} if unset)
-     */
-    public double getTargetPositionRadians() {
-        return lastCommandedPositionRads;
-    }
-
-    /**
-     * Returns the last commanded target velocity for logging convenience.
-     *
-     * @return target velocity in radians per second (may be {@link Double#NaN} if unset)
-     */
-    public double getTargetVelocityRadPerSec() {
-        return lastCommandedVelocityRadPerSec;
-    }
-
-    /**
-     * Reports the applied voltage based on bus voltage and applied output.
-     *
-     * @return applied voltage in volts
-     */
-    public double getAppliedVolts() {
-        if (!ensureInitialized("getAppliedVolts")) {
-            return 0.0;
-        }
-        // Applied output is a percent; multiply by bus voltage to estimate volts.
-        return motor.getBusVoltage() * motor.getAppliedOutput();
-    }
-
     @Override
     public Voltage getVoltage() {
-        return edu.wpi.first.units.Units.Volts.of(getAppliedVolts());
+        if (!ensureInitialized("getVoltage")) {
+            return edu.wpi.first.units.Units.Volts.of(0.0);
+        }
+        // Applied output is a percent; multiply by bus voltage to estimate volts.
+        return edu.wpi.first.units.Units.Volts.of(motor.getBusVoltage() * motor.getAppliedOutput());
     }
 
     /**
@@ -328,9 +283,9 @@ public abstract class AbstractMotor implements Motor {
             // Report zeros/NaN so logs show the motor is inactive.
             inputs.positionRads            = 0.0;
             inputs.velocityRadPerSec       = 0.0;
-            inputs.appliedVolts            = 0.0;
+            inputs.appliedVolts            = edu.wpi.first.units.Units.Volts.of(0.0);
             inputs.busVoltageVolts         = 0.0;
-            inputs.commandedVolts          = 0.0;
+            inputs.commandedVolts          = edu.wpi.first.units.Units.Volts.of(0.0);
             inputs.supplyCurrentAmps       = 0.0;
             inputs.temperatureCelsius      = 0.0;
             inputs.targetPositionRads      = Double.NaN;
@@ -340,9 +295,9 @@ public abstract class AbstractMotor implements Motor {
         // Pull fresh sensor data for logging and telemetry dashboards.
         inputs.positionRads            = getEncoderPosition();
         inputs.velocityRadPerSec       = getEncoderVelocity();
-        inputs.appliedVolts            = getAppliedVolts();
+        inputs.appliedVolts            = getVoltage();
         inputs.busVoltageVolts         = motor.getBusVoltage();
-        inputs.commandedVolts          = lastCommandedVolts;
+        inputs.commandedVolts          = edu.wpi.first.units.Units.Volts.of(lastCommandedVolts);
         inputs.supplyCurrentAmps       = motor.getOutputCurrent();
         inputs.temperatureCelsius      = motor.getMotorTemperature();
         inputs.targetPositionRads      = lastCommandedPositionRads;

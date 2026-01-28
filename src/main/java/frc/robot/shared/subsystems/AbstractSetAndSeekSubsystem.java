@@ -1,5 +1,7 @@
 package frc.robot.shared.subsystems;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -219,10 +221,11 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      * @param voltageCommand requested motor voltage in volts before clamping
      */
     protected void applySetpoint(TrapezoidProfile.State setpoint, double voltageCommand) {
-        double clampedVoltage = clamp(voltageCommand, -12.0, 12.0);
+        edu.wpi.first.units.measure.Voltage clampedVoltage = Volts.of(
+                clamp(voltageCommand, -12.0, 12.0));
         motor.setVoltage(clampedVoltage);
 
-        log.recordOutput("commandedVoltage", clampedVoltage);
+        log.recordOutput("commandedVoltage", clampedVoltage.in(Volts));
     }
 
     /**
