@@ -281,28 +281,6 @@ public class SimMotor implements Motor {
     }
 
     /**
-     * Highest allowed target position in mechanism units.
-     */
-    @Override
-    public double getMaximumTargetPosition() {
-        if (!shouldEnforceSetpointLimits()) {
-            return Double.POSITIVE_INFINITY;
-        }
-        return Units.radiansToDegrees(maximumPositionRadiansSupplier.getAsDouble());
-    }
-
-    /**
-     * Lowest allowed target position in mechanism units.
-     */
-    @Override
-    public double getMinimumTargetPosition() {
-        if (!shouldEnforceSetpointLimits()) {
-            return Double.NEGATIVE_INFINITY;
-        }
-        return Units.radiansToDegrees(minimumPositionRadiansSupplier.getAsDouble());
-    }
-
-    /**
      * Reports the applied voltage (mirrors the last commanded voltage in simulation).
      */
     @Override

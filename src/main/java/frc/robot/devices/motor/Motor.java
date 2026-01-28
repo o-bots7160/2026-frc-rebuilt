@@ -35,20 +35,6 @@ public interface Motor extends MotorIO {
     void setSpeed(double speed);
 
     /**
-     * Highest allowed target position in mechanism units.
-     *
-     * @return maximum target position
-     */
-    double getMaximumTargetPosition();
-
-    /**
-     * Lowest allowed target position in mechanism units.
-     *
-     * @return minimum target position
-     */
-    double getMinimumTargetPosition();
-
-    /**
      * Reports the current mechanism position.
      *
      * @return position in mechanism units

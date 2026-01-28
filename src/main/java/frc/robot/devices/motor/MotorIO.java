@@ -5,8 +5,8 @@ import org.littletonrobotics.junction.AutoLog;
 /**
  * Defines the telemetry surface for a motor controller so AdvantageKit can mirror hardware readings.
  * <p>
- * Implementations should fill the {@link MotorIOInputs} container with raw measurements (in radians and seconds) once per loop.
- * Subsystems can then pass the generated {@code MotorIOInputsAutoLogged} into {@code Logger.processInputs(...)} for automatic logging.
+ * Implementations should fill the {@link MotorIOInputs} container with raw measurements (in radians and seconds) once per loop. Subsystems can then
+ * pass the generated {@code MotorIOInputsAutoLogged} into {@code Logger.processInputs(...)} for automatic logging.
  * </p>
  */
 public interface MotorIO {
@@ -25,8 +25,11 @@ public interface MotorIO {
         /** Applied voltage from the motor controller output stage. */
         public double appliedVolts            = 0.0;
 
-    /** Last commanded voltage request (open-loop), if applicable. */
-    public double commandedVolts          = 0.0;
+        /** Bus voltage reported by the motor controller in volts. */
+        public double busVoltageVolts         = 0.0;
+
+        /** Last commanded voltage request (open-loop), if applicable. */
+        public double commandedVolts          = 0.0;
 
         /** Reported supply/phase current draw in amps. */
         public double supplyCurrentAmps       = 0.0;

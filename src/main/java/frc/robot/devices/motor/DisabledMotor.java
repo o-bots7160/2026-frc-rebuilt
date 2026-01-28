@@ -52,26 +52,6 @@ public final class DisabledMotor implements Motor {
     }
 
     /**
-     * Reports a neutral maximum target position of 0.
-     *
-     * @return maximum target position
-     */
-    @Override
-    public double getMaximumTargetPosition() {
-        return 0.0;
-    }
-
-    /**
-     * Reports a neutral minimum target position of 0.
-     *
-     * @return minimum target position
-     */
-    @Override
-    public double getMinimumTargetPosition() {
-        return 0.0;
-    }
-
-    /**
      * Reports a neutral encoder position of 0.
      *
      * @return position in mechanism units

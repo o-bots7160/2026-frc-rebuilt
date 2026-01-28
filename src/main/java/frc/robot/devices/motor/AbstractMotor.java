@@ -1,11 +1,14 @@
 package frc.robot.devices.motor;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.shared.config.AbstractMotorConfig;
@@ -33,50 +36,60 @@ public abstract class AbstractMotor implements Motor {
         if (motorRotationsPerMechanismRotation <= 0.0) {
             return Units.rotationsToRadians(1.0);
         }
+        // Convert motor rotations per mechanism rotation into mechanism radians per motor rotation.
         return Units.rotationsToRadians(1.0 / motorRotationsPerMechanismRotation);
     }
 
     /** Friendly name used in log messages and dashboard keys. */
-    protected final String       name;
+    protected final String          name;
 
     /** Shared logger instance used for warnings and verbose updates. */
-    protected final Logger       log;
+    protected final Logger          log;
 
     /** Hardware controller that actually drives the motor output. */
-    protected final SparkMax     motor;
+    protected final SparkMax        motor;
 
     /** Base config applied to every SparkMax before subclass customizations. */
-    private final SparkMaxConfig baseConfig;
+    private final SparkMaxConfig    baseConfig;
+
+    /** Supplies whether software and hardware setpoint limits should be enforced. */
+    private final Supplier<Boolean> useSetpointLimitsSupplier;
+
+    /** Supplies the minimum allowed position in radians. */
+    private final Supplier<Double>  minimumPositionRadiansSupplier;
+
+    /** Supplies the maximum allowed position in radians. */
+    private final Supplier<Double>  maximumPositionRadiansSupplier;
+
+    /** Supplies the gear ratio as motor rotations per mechanism rotation. */
+    private final Supplier<Double>  motorRotationsPerMechanismRotationSupplier;
 
     /** Motion bounds used to clamp position setpoints (in radians). */
-    private double               minimumPositionRadians;
+    private double                  minimumPositionRadians;
 
     /** Motion bounds used to clamp position setpoints (in radians). */
-    private double               maximumPositionRadians;
+    private double                  maximumPositionRadians;
 
     /** Conversion factor from motor rotations to mechanism radians. */
-    private double               positionRadiansPerMotorRotation;
+    private double                  positionRadiansPerMotorRotation;
 
     /** Conversion factor from motor RPM to mechanism radians per second. */
-    private double               velocityRadPerSecPerMotorRpm;
+    private double                  velocityRadPerSecPerMotorRpm;
 
     /** Most recent open-loop command in volts (for telemetry). */
-    private double               lastCommandedVolts             = 0.0;
+    private double                  lastCommandedVolts             = 0.0;
 
     /** Most recent position setpoint in radians (for telemetry). */
-    private double               lastCommandedPositionRads      = Double.NaN;
+    private double                  lastCommandedPositionRads      = Double.NaN;
 
     /** Most recent velocity setpoint in radians per second (for telemetry). */
-    private double               lastCommandedVelocityRadPerSec = Double.NaN;
+    private double                  lastCommandedVelocityRadPerSec = Double.NaN;
 
     /** Tracks whether the hardware config has been pushed to the controller. */
-    private boolean              initialized                    = false;
+    private boolean                 initialized                    = false;
 
     /** Prevents spammy warnings if the motor is used before init(). */
-    private boolean              warnedNotInitialized           = false;
-
-    /** Counts how many times we have re-applied config. */
-    private int                  reconfigureCount               = 0;
+    private boolean                 warnedNotInitialized           = false;
 
     /**
      * Creates a motor wrapper backed by a shared motor config using the default brushless SparkMax type.
@@ -99,21 +112,16 @@ public abstract class AbstractMotor implements Motor {
             String name,
             AbstractMotorConfig config,
             MotorType motorType) {
-        this.name = name;
-        this.log  = Logger.getInstance(this.getClass());
-        // Pull motion bounds from the shared config so all commands clamp consistently.
-        if (config.getUseSetpointLimitsSupplier().get()) {
-            this.minimumPositionRadians = config.getMinimumSetpointRadiansSupplier().get();
-            this.maximumPositionRadians = config.getMaximumSetpointRadiansSupplier().get();
-        } else {
-            this.minimumPositionRadians = Double.NEGATIVE_INFINITY;
-            this.maximumPositionRadians = Double.POSITIVE_INFINITY;
-        }
+        this.name                                       = name;
+        this.log                                        = Logger.getInstance(this.getClass());
+        // Cache suppliers so limits can be refreshed alongside hardware updates.
+        this.useSetpointLimitsSupplier                  = config.getUseSetpointLimitsSupplier();
+        this.minimumPositionRadiansSupplier             = config.getMinimumSetpointRadiansSupplier();
+        this.maximumPositionRadiansSupplier             = config.getMaximumSetpointRadiansSupplier();
+        this.motorRotationsPerMechanismRotationSupplier = config.getMotorRotationsPerMechanismRotationSupplier();
 
         // Compute unit conversion factors once so telemetry is fast.
-        this.positionRadiansPerMotorRotation = computeMechanismRadiansPerMotorRotation(
-                config.getMotorRotationsPerMechanismRotationSupplier().get());
-        this.velocityRadPerSecPerMotorRpm    = positionRadiansPerMotorRotation / 60.0;
+        applyConversionFactors();
 
         // Instantiate the controller with the requested CAN ID and motor type.
         int deviceId = config.getMotorCanIdSupplier().get();
@@ -124,6 +132,7 @@ public abstract class AbstractMotor implements Motor {
         SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
         sparkMaxConfig.voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
         this.baseConfig = sparkMaxConfig;
+        applyHardwareSoftLimits();
     }
 
     /**
@@ -139,11 +148,13 @@ public abstract class AbstractMotor implements Motor {
 
         log.verbose("Configuring SparkMax motor " + name + " after initialization");
 
+        applyHardwareSoftLimits();
+        applyConversionFactors();
         // Let the subclass inject additional settings (PID, current limits, soft limits, etc.).
         SparkMaxConfig sparkMaxConfig = configureMotor(baseConfig);
         motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         initialized = true;
-        log.recordOutput(name + "/initialized", true);
+        log.recordOutput("initialized", true);
     }
 
     /**
@@ -161,11 +172,11 @@ public abstract class AbstractMotor implements Motor {
 
         log.verbose("Reconfiguring SparkMax motor " + name + " after config change");
 
+        applyHardwareSoftLimits();
+        applyConversionFactors();
         // Rebuild the config from scratch so tunable values are pulled fresh.
         SparkMaxConfig sparkMaxConfig = configureMotor(baseConfig);
         motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        reconfigureCount++;
-        log.recordOutput(name + "/reconfigureCount", reconfigureCount);
     }
 
     /**
@@ -190,7 +201,6 @@ public abstract class AbstractMotor implements Motor {
         // Store the command for logging before sending it to hardware.
         lastCommandedVolts = volts;
         motor.setVoltage(volts);
-        log.recordOutput(name + "/commandedVolts", lastCommandedVolts);
     }
 
     @Override
@@ -201,24 +211,18 @@ public abstract class AbstractMotor implements Motor {
     /**
      * Applies an open-loop duty cycle (-1 to 1).
      *
-     * @param percent duty cycle request, where 1.0 equals full forward
+     * @param speed duty cycle request, where 1.0 equals full forward
      */
-    public void setDutyCycle(double percent) {
-        if (!ensureInitialized("setDutyCycle")) {
+    @Override
+    public void setSpeed(double speed) {
+        if (!ensureInitialized("setSpeed")) {
             return;
         }
         // Clamp the duty cycle because SparkMax expects -1 to 1.
-        double clampedPercent = clamp(percent, -1.0, 1.0);
+        double clampedPercent = MathUtil.clamp(speed, -1.0, 1.0);
         // Convert the duty cycle into a rough voltage for logging.
         lastCommandedVolts = clampedPercent * DEFAULT_VOLTAGE_COMPENSATION;
         motor.set(clampedPercent);
-        log.recordOutput(name + "/commandedDutyCycle", clampedPercent);
-        log.recordOutput(name + "/commandedVolts", lastCommandedVolts);
-    }
-
-    @Override
-    public void setSpeed(double speed) {
-        setDutyCycle(speed);
     }
 
     /**
@@ -231,7 +235,6 @@ public abstract class AbstractMotor implements Motor {
         }
         motor.stopMotor();
         lastCommandedVolts = 0.0;
-        log.recordOutput(name + "/commandedVolts", lastCommandedVolts);
     }
 
     /**
@@ -243,8 +246,8 @@ public abstract class AbstractMotor implements Motor {
         if (!ensureInitialized("getPositionRadians")) {
             return 0.0;
         }
-        // The SparkMax encoder reports motor rotations; convert to mechanism radians.
-        return motor.getEncoder().getPosition() * positionRadiansPerMotorRotation;
+        // Encoder conversion factors are configured so SparkMax reports mechanism radians.
+        return motor.getEncoder().getPosition();
     }
 
     @Override
@@ -270,8 +273,8 @@ public abstract class AbstractMotor implements Motor {
         if (!ensureInitialized("getVelocityRadPerSec")) {
             return 0.0;
         }
-        // The SparkMax encoder reports motor RPM; convert to radians per second.
-        return motor.getEncoder().getVelocity() * velocityRadPerSecPerMotorRpm;
+        // Encoder conversion factors are configured so SparkMax reports radians per second.
+        return motor.getEncoder().getVelocity();
     }
 
     @Override
@@ -304,34 +307,6 @@ public abstract class AbstractMotor implements Motor {
      */
     public double getTargetVelocityRadPerSec() {
         return lastCommandedVelocityRadPerSec;
-    }
-
-    /**
-     * Returns the configured minimum allowed position in radians.
-     *
-     * @return lower motion bound (radians)
-     */
-    public double getMinimumPositionRadians() {
-        return minimumPositionRadians;
-    }
-
-    @Override
-    public double getMinimumTargetPosition() {
-        return minimumPositionRadians;
-    }
-
-    /**
-     * Returns the configured maximum allowed position in radians.
-     *
-     * @return upper motion bound (radians)
-     */
-    public double getMaximumPositionRadians() {
-        return maximumPositionRadians;
-    }
-
-    @Override
-    public double getMaximumTargetPosition() {
-        return maximumPositionRadians;
     }
 
     /**
@@ -372,6 +347,7 @@ public abstract class AbstractMotor implements Motor {
             inputs.positionRads            = 0.0;
             inputs.velocityRadPerSec       = 0.0;
             inputs.appliedVolts            = 0.0;
+            inputs.busVoltageVolts         = 0.0;
             inputs.commandedVolts          = 0.0;
             inputs.supplyCurrentAmps       = 0.0;
             inputs.temperatureCelsius      = 0.0;
@@ -383,6 +359,7 @@ public abstract class AbstractMotor implements Motor {
         inputs.positionRads            = getPositionRadians();
         inputs.velocityRadPerSec       = getVelocityRadPerSec();
         inputs.appliedVolts            = getAppliedVolts();
+        inputs.busVoltageVolts         = motor.getBusVoltage();
         inputs.commandedVolts          = lastCommandedVolts;
         inputs.supplyCurrentAmps       = motor.getOutputCurrent();
         inputs.temperatureCelsius      = motor.getMotorTemperature();
@@ -409,10 +386,7 @@ public abstract class AbstractMotor implements Motor {
         this.maximumPositionRadians          = maximumPositionRadians;
         this.positionRadiansPerMotorRotation = mechanismRadiansPerMotorRotation;
         this.velocityRadPerSecPerMotorRpm    = mechanismRadiansPerMotorRotation / 60.0;
-
-        log.recordOutput(name + "/minimumPositionRads", minimumPositionRadians);
-        log.recordOutput(name + "/maximumPositionRads", maximumPositionRadians);
-        log.recordOutput(name + "/radsPerMotorRotation", mechanismRadiansPerMotorRotation);
+        applyHardwareSoftLimits();
     }
 
     /**
@@ -423,11 +397,8 @@ public abstract class AbstractMotor implements Motor {
      */
     protected double recordPositionSetpointRadians(double targetPositionRadians) {
         // Clamp the requested position so commands cannot exceed limits.
-        double clamped = clamp(targetPositionRadians, minimumPositionRadians, maximumPositionRadians);
+        double clamped = MathUtil.clamp(targetPositionRadians, minimumPositionRadians, maximumPositionRadians);
         lastCommandedPositionRads = clamped;
-        log.recordOutput(name + "/targetRequestedPositionRads", targetPositionRadians);
-        log.recordOutput(name + "/targetPositionRads", clamped);
-        log.recordOutput(name + "/targetWasClamped", targetPositionRadians != clamped);
         return clamped;
     }
 
@@ -439,7 +410,6 @@ public abstract class AbstractMotor implements Motor {
     protected void recordVelocitySetpointRadians(double targetVelocityRadPerSec) {
         // Store for telemetry (velocity may still be controlled by subclasses).
         lastCommandedVelocityRadPerSec = targetVelocityRadPerSec;
-        log.recordOutput(name + "/targetVelocityRadPerSec", targetVelocityRadPerSec);
     }
 
     /**
@@ -459,12 +429,45 @@ public abstract class AbstractMotor implements Motor {
         if (!warnedNotInitialized) {
             warnedNotInitialized = true;
             log.warning("Motor " + name + " ignored " + action + " before init(); call init() after assigning config.");
-            log.recordOutput(name + "/initialized", false);
+            log.recordOutput("initialized", false);
         }
+
         return false;
     }
 
-    private double clamp(double value, double min, double max) {
-        return Math.max(min, Math.min(max, value));
+    private void applyHardwareSoftLimits() {
+        if (useSetpointLimitsSupplier.get()) {
+            minimumPositionRadians = minimumPositionRadiansSupplier.get();
+            maximumPositionRadians = maximumPositionRadiansSupplier.get();
+        } else {
+            minimumPositionRadians = Double.NEGATIVE_INFINITY;
+            maximumPositionRadians = Double.POSITIVE_INFINITY;
+        }
+
+        boolean hasMinimumLimit = Double.isFinite(minimumPositionRadians);
+        boolean hasMaximumLimit = Double.isFinite(maximumPositionRadians);
+
+        baseConfig.softLimit
+                .reverseSoftLimitEnabled(hasMinimumLimit)
+                .forwardSoftLimitEnabled(hasMaximumLimit);
+
+        if (hasMinimumLimit) {
+            baseConfig.softLimit.reverseSoftLimit(minimumPositionRadians);
+        }
+
+        if (hasMaximumLimit) {
+            baseConfig.softLimit.forwardSoftLimit(maximumPositionRadians);
+        }
     }
+
+    private void applyConversionFactors() {
+        positionRadiansPerMotorRotation = computeMechanismRadiansPerMotorRotation(
+                motorRotationsPerMechanismRotationSupplier.get());
+        velocityRadPerSecPerMotorRpm    = positionRadiansPerMotorRotation / 60.0;
+
+        baseConfig.encoder
+                .positionConversionFactor(positionRadiansPerMotorRotation)
+                .velocityConversionFactor(velocityRadPerSecPerMotorRpm);
+    }
+
 }

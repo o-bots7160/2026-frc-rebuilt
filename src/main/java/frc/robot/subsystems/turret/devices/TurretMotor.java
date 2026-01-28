@@ -102,26 +102,6 @@ public class TurretMotor extends AbstractMotor {
     }
 
     @Override
-    public double getEncoderPosition() {
-        return Units.radiansToDegrees(super.getEncoderPosition());
-    }
-
-    @Override
-    public double getEncoderVelocity() {
-        return Units.radiansToDegrees(super.getEncoderVelocity());
-    }
-
-    @Override
-    public double getMaximumTargetPosition() {
-        return config.getMaximumSetpointDegreesSupplier().get();
-    }
-
-    @Override
-    public double getMinimumTargetPosition() {
-        return config.getMinimumSetpointDegreesSupplier().get();
-    }
-
-    @Override
     protected SparkMaxConfig configureMotor(SparkMaxConfig sparkConfig) {
         sparkConfig
                 .inverted(config.getMotorInvertedSupplier().get())
@@ -131,7 +111,7 @@ public class TurretMotor extends AbstractMotor {
 
         double motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
         double positionFactor                     = computeMechanismRadiansPerMotorRotation(motorRotationsPerMechanismRotation);
-        double velocityFactor = positionFactor / 60.0;
+        double velocityFactor                     = positionFactor / 60.0;
 
         // Apply encoder scaling so SparkMax position/velocity already report mechanism radians.
         sparkConfig.encoder
