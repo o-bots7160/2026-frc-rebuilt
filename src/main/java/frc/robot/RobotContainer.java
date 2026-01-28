@@ -81,7 +81,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // return Commands.print("No autonomous command configured");
-        return turretCommandFactory.createMoveToAngleCommand(360)
-                .andThen(turretCommandFactory.createMoveToAngleCommand(-360)).repeatedly();
+        return turretCommandFactory.createMoveToAngleCommand(500)
+                .andThen(turretCommandFactory.createMoveToAngleCommand(-500)).repeatedly();
     }
 }
