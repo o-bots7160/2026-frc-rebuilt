@@ -2,7 +2,7 @@ package frc.robot.subsystems.turret.devices;
 
 import java.util.function.Supplier;
 
-import frc.robot.devices.motor.SimMotor;
+import frc.robot.devices.motor.AbstractSimMotor;
 import frc.robot.subsystems.turret.config.TurretMotorConfig;
 
 /**
@@ -12,7 +12,7 @@ import frc.robot.subsystems.turret.config.TurretMotorConfig;
  * by the subsystem to ensure limits and gearing match the real device.
  * </p>
  */
-public class TurretSimMotor extends SimMotor {
+public class TurretSimMotor extends AbstractSimMotor {
 
     /**
      * Creates a simulated turret motor wrapper using the supplied configuration values.
@@ -49,11 +49,8 @@ public class TurretSimMotor extends SimMotor {
             Supplier<Double> maximumAccelerationSupplier) {
         super(
                 "TurretMotorSim",
-                motorConfig.getMotorRotationsPerMechanismRotationSupplier().get(),
-                motorConfig.getMinimumSetpointDegreesSupplier(),
-                motorConfig.getMaximumSetpointDegreesSupplier(),
+                motorConfig,
                 maximumVelocitySupplier,
-            maximumAccelerationSupplier,
-            motorConfig.getUseSetpointLimitsSupplier());
+                maximumAccelerationSupplier);
     }
 }

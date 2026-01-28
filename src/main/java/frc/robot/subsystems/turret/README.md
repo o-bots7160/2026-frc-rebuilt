@@ -16,8 +16,8 @@ at a steady cadence.
   AdvantageKit tunables.
 - Uses `AbstractSetAndSeekSubsystem` to run trapezoidal profiles and enforce
   min/max angle guards before applying motor output.
-- In sim, swaps to `SimMotor` with the same limits, gearing, and profile bounds
-  so autonomous and command logic behave consistently.
+- In sim, swaps to `AbstractSimMotor` with the same limits, gearing, and profile
+  bounds so autonomous and command logic behave consistently.
 - Works with vision to auto-aim and should align with shooter RPM readiness
   before feeding pieces.
 
@@ -25,7 +25,7 @@ at a steady cadence.
 
 - Classes:
   - `TurretSubsystem` extends `AbstractSetAndSeekSubsystem` and owns motor
-    creation (SparkMax vs. `SimMotor`).
+    creation (SparkMax vs. `AbstractSimMotor`).
   - `devices/TurretMotor` wraps the SparkMax, handles inversion/current limits,
     and scales encoder units to radians while reporting degrees to callers.
   - `commands/MoveTurretToAngleCommand` is the profiled move command; the

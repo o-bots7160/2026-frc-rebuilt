@@ -120,9 +120,6 @@ public abstract class AbstractMotor implements Motor {
         this.maximumPositionRadiansSupplier             = config.getMaximumSetpointRadiansSupplier();
         this.motorRotationsPerMechanismRotationSupplier = config.getMotorRotationsPerMechanismRotationSupplier();
 
-        // Compute unit conversion factors once so telemetry is fast.
-        applyConversionFactors();
-
         // Instantiate the controller with the requested CAN ID and motor type.
         int deviceId = config.getMotorCanIdSupplier().get();
         this.motor = new SparkMax(deviceId, motorType);
@@ -132,6 +129,8 @@ public abstract class AbstractMotor implements Motor {
         SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
         sparkMaxConfig.voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
         this.baseConfig = sparkMaxConfig;
+        // Compute unit conversion factors once so telemetry is fast.
+        applyConversionFactors();
         applyHardwareSoftLimits();
     }
 
