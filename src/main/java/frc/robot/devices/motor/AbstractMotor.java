@@ -372,29 +372,6 @@ public abstract class AbstractMotor implements Motor {
     }
 
     /**
-     * Records a position setpoint for telemetry and clamps it to the configured bounds.
-     *
-     * @param targetPositionRadians desired mechanism position (radians)
-     * @return clamped position setpoint in radians
-     */
-    protected double recordPositionSetpointRadians(double targetPositionRadians) {
-        // Clamp the requested position so commands cannot exceed limits.
-        double clamped = MathUtil.clamp(targetPositionRadians, minimumPositionRadians, maximumPositionRadians);
-        lastCommandedPositionRads = clamped;
-        return clamped;
-    }
-
-    /**
-     * Records a velocity setpoint for telemetry.
-     *
-     * @param targetVelocityRadPerSec desired mechanism velocity (radians/second)
-     */
-    protected void recordVelocitySetpointRadians(double targetVelocityRadPerSec) {
-        // Store for telemetry (velocity may still be controlled by subclasses).
-        lastCommandedVelocityRadPerSec = targetVelocityRadPerSec;
-    }
-
-    /**
      * Allows subclasses to append motor-specific configuration before the object is applied to hardware.
      *
      * @param config initial {@link SparkMaxConfig} with default voltage compensation
