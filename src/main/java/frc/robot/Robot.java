@@ -43,14 +43,15 @@ public class Robot extends LoggedRobot {
             // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         } else {
-            setUseTiming(false); // Run as fast as possible
             String replayPath = System.getenv("REPLAY_LOG");
 
             if (replayPath != null && !replayPath.isBlank()) {
+                setUseTiming(false); // Replay logs as fast as possible.
                 // Use a supplied replay log (set REPLAY_LOG env var) and save a suffixed copy.
                 Logger.setReplaySource(new WPILOGReader(replayPath));
                 Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(replayPath, "_sim")));
             } else {
+                setUseTiming(true); // Keep real-time loop timing for live simulation and SysId.
                 // No replay provided; publish live telemetry and log to a default sim file.
                 Logger.addDataReceiver(new NT4Publisher());
                 String basePath = Filesystem.getOperatingDirectory() != null

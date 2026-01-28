@@ -21,8 +21,8 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
                 ? TurretMotor.create(config.turretMotorConfig)
                 : TurretSimMotor.create(
                         config.turretMotorConfig,
-                    config.getMaximumVelocityDegreesPerSecondSupplier(),
-                    config.getMaximumAccelerationDegreesPerSecondSquaredSupplier());
+                        config.getMaximumVelocityDegreesPerSecondSupplier(),
+                        config.getMaximumAccelerationDegreesPerSecondSquaredSupplier());
     }
 
     /**
@@ -36,19 +36,6 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
 
     private TurretSubsystem(TurretSubsystemConfig config, Motor motor) {
         super(config, motor);
-    }
-
-    /**
-     * Polls for tunable updates and refreshes the hardware motor configuration when needed.
-     * <p>
-     * This keeps SparkMax settings aligned with Elastic/NetworkTables edits without requiring a restart.
-     * </p>
-     */
-    @Override
-    public void periodic() {
-        if (!isFMSAttached() && motor instanceof TurretMotor turretMotor) {
-            turretMotor.refreshConfiguration();
-        }
     }
 
 }

@@ -97,13 +97,19 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
         SysIdRoutine routine = subsystem.getSysIdRoutine();
 
         return routine
-                .quasistatic(SysIdRoutine.Direction.kForward)
-                .withTimeout(quasistaticTimeoutSecs)
+                // Quasistatic forward: slow voltage ramp to capture static friction + velocity data.
+                .quasistatic(SysIdRoutine.Direction.kForward).withTimeout(quasistaticTimeoutSecs)
+                // Pause to let the mechanism settle before reversing direction.
                 .andThen(Commands.waitSeconds(delaySeconds))
+                // Quasistatic reverse: slow voltage ramp in reverse to capture symmetric data.
                 .andThen(routine.quasistatic(SysIdRoutine.Direction.kReverse).withTimeout(quasistaticTimeoutSecs))
+                // Pause to let the mechanism settle before dynamic tests.
                 .andThen(Commands.waitSeconds(delaySeconds))
+                // Dynamic forward: step voltage to capture acceleration response.
                 .andThen(routine.dynamic(SysIdRoutine.Direction.kForward).withTimeout(dynamicTimeoutSecs))
+                // Pause to let the mechanism settle before the final reverse sweep.
                 .andThen(Commands.waitSeconds(delaySeconds))
+                // Dynamic reverse: step voltage in reverse to capture acceleration response.
                 .andThen(routine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(dynamicTimeoutSecs));
     }
 }

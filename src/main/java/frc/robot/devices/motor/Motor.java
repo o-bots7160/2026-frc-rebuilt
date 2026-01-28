@@ -73,6 +73,16 @@ public interface Motor extends MotorIO {
     void stop();
 
     /**
+     * Refreshes the motor hardware configuration when tunable values change.
+     * <p>
+     * The default implementation is a no-op. Override in wrappers that can reapply inversion, current limits, or scaling at runtime.
+     * </p>
+     */
+    default void refreshConfiguration() {
+        // No-op by default; override in motor wrappers that support live reconfiguration.
+    }
+
+    /**
      * Exposes the underlying motor controller for advanced tuning.
      * <p>
      * Use this sparingly to access vendor-specific configuration that is not covered by this interface.

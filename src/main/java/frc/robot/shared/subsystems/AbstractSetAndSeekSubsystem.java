@@ -94,6 +94,19 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
+     * Refreshes motor configuration when not attached to the FMS.
+     * <p>
+     * Override this if you need additional periodic behavior, but call {@code super.periodic()} to keep live tuning updates active.
+     * </p>
+     */
+    @Override
+    public void periodic() {
+        if (!isFMSAttached()) {
+            motor.refreshConfiguration();
+        }
+    }
+
+    /**
      * Sets a new goal for the motion profile. Values outside the configured range are clamped.
      *
      * @param targetPositionDegrees desired mechanism position in degrees
