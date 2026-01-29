@@ -61,7 +61,7 @@ public class TurretMotor extends AbstractMotor {
     /**
      * Reapplies SparkMax configuration when tunable values change in Elastic.
      * <p>
-     * Call this periodically (for example, from the subsystem {@link #periodic()} hook) so updates to inversion, current limit, gear ratio, or
+    * Call this periodically (for example, from the subsystem {@link frc.robot.subsystems.turret.TurretSubsystem#periodic()} hook) so updates to inversion, current limit, gear ratio, or
      * setpoint bounds take effect without restarting the robot. Changes to the CAN ID are logged but require a reboot to take effect.
      * </p>
      */
