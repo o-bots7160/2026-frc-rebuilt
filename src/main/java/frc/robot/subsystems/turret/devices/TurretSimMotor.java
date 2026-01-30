@@ -48,7 +48,7 @@ public class TurretSimMotor extends AbstractSimMotor {
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         super(
-                "TurretMotorSim",
+                "TurretMotor",
                 motorConfig,
                 maximumVelocitySupplier,
                 maximumAccelerationSupplier);

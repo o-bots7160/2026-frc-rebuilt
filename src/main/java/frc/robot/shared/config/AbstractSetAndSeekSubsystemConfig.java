@@ -28,6 +28,9 @@ public abstract class AbstractSetAndSeekSubsystemConfig extends AbstractConfig {
     /** Acceptable position error when deciding if the mechanism is at its goal, in degrees. */
     public double positionToleranceDegrees;
 
+    /** Acceptable velocity error when deciding if the mechanism is at its goal, in degrees per second. */
+    public double velocityToleranceDegreesPerSecond;
+
     /** Starting position used to seed the initial profile state, in degrees. */
     public double initialPositionDegrees;
 
@@ -144,6 +147,24 @@ public abstract class AbstractSetAndSeekSubsystemConfig extends AbstractConfig {
      */
     public Supplier<Double> getPositionToleranceRadiansSupplier() {
         return () -> Units.degreesToRadians(getPositionToleranceDegreesSupplier().get());
+    }
+
+    /**
+     * Supplies the allowed velocity error used to decide when the mechanism is at its goal.
+     *
+     * @return supplier yielding the velocity tolerance (degrees per second)
+     */
+    public Supplier<Double> getVelocityToleranceDegreesPerSecondSupplier() {
+        return () -> readTunableNumber("velocityToleranceDegreesPerSecond", velocityToleranceDegreesPerSecond);
+    }
+
+    /**
+     * Supplies the allowed velocity error in radians per second.
+     *
+     * @return supplier yielding the velocity tolerance (radians per second)
+     */
+    public Supplier<Double> getVelocityToleranceRadiansPerSecondSupplier() {
+        return () -> Units.degreesToRadians(getVelocityToleranceDegreesPerSecondSupplier().get());
     }
 
     /**
