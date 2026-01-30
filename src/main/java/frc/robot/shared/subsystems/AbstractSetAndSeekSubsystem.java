@@ -62,7 +62,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 kDt);
         // Position tolerance is in mechanism units; velocity tolerance is a small fraction of max speed.
         controller.setTolerance(config.getPositionToleranceRadiansSupplier().get(),
-                config.getMaximumVelocityRadiansPerSecondSupplier().get() * 0.05);
+                config.getMaximumVelocityRadiansPerSecondSupplier().get() * 0.10);
 
         // Feedforward estimates the voltage needed to maintain a desired velocity/acceleration.
         feedforward = new SimpleMotorFeedforward(

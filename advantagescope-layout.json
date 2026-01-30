@@ -1,57 +1,61 @@
 {
   "hubs": [
     {
-      "x": 0,
-      "y": 30,
-      "width": 1920,
+      "x": 1527,
+      "y": -9,
+      "width": 1938,
       "height": 1050,
       "state": {
         "sidebar": {
-          "width": 500,
+          "width": 458,
           "expanded": [
-            "/RealOutputs/DriveBaseSubsystemCommandFactory/DriverInputs",
-            "/RealOutputs/DriveBaseSubsystemCommandFactory/DriverInputs/forward",
-            "/RealOutputs/DriveBaseSubsystemCommandFactory",
-            "/DriveBase/ChassisSpeeds",
-            "/DriveBase/ModuleTargets",
-            "/DriveBase/ModuleStates",
-            "/DriveBase/GyroYaw",
-            "/DriveBase/ModuleStates/0",
-            "/DriveBase/Pose",
-            "/DriveBase/Pose/translation",
-            "/DriveBase/Pose/rotation",
-            "/DriverStation/Joystick0",
-            "/DriverStation/Joystick0/AxisValues",
-            "/RealOutputs/Odometry",
-            "/RealOutputs/Odometry/Robot",
-            "/NetworkInputs/SmartDashboard",
-            "/NetworkInputs/SmartDashboard/DriveBaseSubsystem",
-            "/TurretSubsystem/motor",
-            "/RealOutputs/TurretSubsystem",
             "/SmartDashboard/swerve",
             "/SmartDashboard/swerve/advantagescope",
-            "/SmartDashboard",
-            "/SmartDashboard/Swerve Drive",
-            "/SmartDashboard/Swerve Drive/errors",
-            "/AdvantageKit",
-            "/AdvantageKit/TurretSubsystem/motor",
-            "/AdvantageKit/RealOutputs/SwerveStates",
-            "/AdvantageKit/RealOutputs/SwerveStates/Measured",
+            "/SmartDashboard/DriveBaseSubsystem",
             "/AdvantageKit/RealOutputs",
-            "/AdvantageKit/RealOutputs/SwerveStates/Target",
-            "/AdvantageKit/RealOutputs/SwerveStates/CurrentStates",
-            "/AdvantageKit/RealOutputs/SwerveStates/DesiredStates",
-            "/AdvantageKit/RealOutputs/SwerveChassisSpeeds"
+            "/AdvantageKit/RealOutputs/SwerveStates",
+            "/SmartDashboard/swerve/modules",
+            "/SmartDashboard/swerve/modules/frontleft",
+            "/SmartDashboard/swerve/modules/frontright",
+            "/SmartDashboard/swerve/modules/backleft",
+            "/SmartDashboard/swerve/modules/backright",
+            "/SmartDashboard/Swerve Drive",
+            "/AdvantageKit/RealOutputs/Swerve",
+            "/AdvantageKit/RealOutputs/Swerve/RobotRotation",
+            "/AdvantageKit/RealOutputs/Odometry",
+            "/AdvantageKit/RealOutputs/Odometry/Robot",
+            "/AdvantageKit/RealOutputs/Odometry/Robot/rotation",
+            "/AdvantageKit/RealOutputs/Odometry/Robot/translation",
+            "/AdvantageKit/RealOutputs/Encoders",
+            "/AdvantageKit/RealOutputs/Encoders/errors",
+            "/AdvantageKit/RealOutputs/Encoders/infos",
+            "/AdvantageKit/RealOutputs/Encoders/warnings",
+            "/AdvantageKit/TurretSubsystem",
+            "/AdvantageKit/TurretSubsystem/motor",
+            "/AdvantageKit/NetworkInputs",
+            "/AdvantageKit/NetworkInputs/SmartDashboard",
+            "/SmartDashboard/TurretSubsystem",
+            "/SmartDashboard/TurretMotor",
+            "/SmartDashboard/SubsystemsConfig",
+            "/LiveWindow/.status",
+            "/AdvantageKit",
+            "/AdvantageKit/NetworkInputs/SmartDashboard/TurretMotor",
+            "/AdvantageKit/NetworkInputs/SmartDashboard/TurretSubsystem",
+            "/AdvantageKit/RealOutputs/TurretSubsystem",
+            "/AdvantageKit/RealOutputs/TurretMotor",
+            "/AdvantageKit/RealOutputs/TurretMotor/TurretMotor",
+            "/SmartDashboard/SubsystemsConfig/turretSubsystem",
+            "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig"
           ]
         },
         "tabs": {
-          "selected": 2,
+          "selected": 3,
           "tabs": [
             {
               "type": 0,
               "title": "",
               "controller": null,
-              "controllerUUID": "y95ej1ccq5p0h1epkos58zxw5x33kifz",
+              "controllerUUID": "h4gl1hvr7k8d7jhu04a5odapknmz6j40",
               "renderer": "",
               "controlsHeight": 0
             },
@@ -59,19 +63,31 @@
               "type": 1,
               "title": "Line Graph",
               "controller": {
+                "leftSources": [],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "9rsl57emina6ad2xdbprw5skqjj29j4i",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Turret",
+              "controller": {
                 "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionRads",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [
                   {
                     "type": "stepped",
                     "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/AppliedVolts",
@@ -79,6 +95,18 @@
                     "visible": true,
                     "options": {
                       "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/measuredPositionDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   }
@@ -97,7 +125,81 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "y7x16qlzztf384dkqe4gb0b5bxnt01f9",
+              "controllerUUID": "0vei9gv9exlfqe1g909fvc5727c9ahel",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionRadians",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/profileSettled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/targetRequestedPositionDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/positionErrorDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "k7wz3jixu1a92dbqtr2qkabr446yo6dk",
               "renderer": null,
               "controlsHeight": 200
             },
@@ -112,7 +214,7 @@
                     "logType": "SwerveModuleState[]",
                     "visible": true,
                     "options": {
-                      "color": "#00ff00",
+                      "color": "#ff0000",
                       "arrangement": "0,1,2,3"
                     }
                   },
@@ -122,7 +224,7 @@
                     "logType": "SwerveModuleState[]",
                     "visible": true,
                     "options": {
-                      "color": "#ff0000",
+                      "color": "#0000ff",
                       "arrangement": "0,1,2,3"
                     }
                   },
@@ -145,47 +247,31 @@
                       "color": "#ff8c00",
                       "arrangement": "0,1,2,3"
                     }
-                  },
-                  {
-                    "type": "chassisSpeeds",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Desired",
-                    "logType": "ChassisSpeeds",
-                    "visible": true,
-                    "options": {
-                      "color": "#0000ff"
-                    }
-                  },
-                  {
-                    "type": "chassisSpeeds",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Measured",
-                    "logType": "ChassisSpeeds",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ffff"
-                    }
                   }
                 ],
                 "maxSpeed": 5,
-                "sizeX": 0.65,
-                "sizeY": 0.65,
+                "sizeX": 0.7,
+                "sizeY": 0.7,
                 "orientation": 1
               },
-              "controllerUUID": "z3334p09qliwv4h9a3q39j0be6a31hoq",
+              "controllerUUID": "owlur25g0o1dvzchd6lm5e2hztfa3dss",
               "renderer": null,
-              "controlsHeight": 261
+              "controlsHeight": 200
             },
             {
               "type": 4,
-              "title": "DriveSubsystemConfig",
+              "title": "Table",
               "controller": [
-                "/NetworkInputs/SmartDashboard/DriveBaseSubsystem/maximumAngularAccelerationDegreesPerSecondSquared",
-                "/NetworkInputs/SmartDashboard/DriveBaseSubsystem/maximumAngularSpeedDegreesPerSecond",
-                "/NetworkInputs/SmartDashboard/DriveBaseSubsystem/maximumLinearSpeedFeetPerSecond",
-                "/NetworkInputs/SmartDashboard/DriveBaseSubsystem/rotationToleranceDegrees",
-                "/NetworkInputs/SmartDashboard/DriveBaseSubsystem/translationScale",
-                "/NetworkInputs/SmartDashboard/DriveBaseSubsystem/translationToleranceInches"
+                "NT:/SmartDashboard/swerve/modules/frontleft/Raw Absolute Encoder",
+                "NT:/SmartDashboard/swerve/modules/frontleft/Adjusted Absolute Encoder",
+                "NT:/SmartDashboard/swerve/modules/frontright/Raw Absolute Encoder",
+                "NT:/SmartDashboard/swerve/modules/frontright/Adjusted Absolute Encoder",
+                "NT:/SmartDashboard/swerve/modules/backleft/Raw Absolute Encoder",
+                "NT:/SmartDashboard/swerve/modules/backleft/Adjusted Absolute Encoder",
+                "NT:/SmartDashboard/swerve/modules/backright/Raw Absolute Encoder",
+                "NT:/SmartDashboard/swerve/modules/backright/Adjusted Absolute Encoder"
               ],
-              "controllerUUID": "pvxu6zb2x0s01vnw2ycp3dy74224ctoh",
+              "controllerUUID": "zdr8rsosnhtvqofe6q53n1bxw3qlqbkw",
               "renderer": null,
               "controlsHeight": 0
             },
@@ -193,22 +279,12 @@
               "type": 2,
               "title": "2D Field",
               "controller": {
-                "sources": [
-                  {
-                    "type": "robot",
-                    "logKey": "/DriveBase/Pose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "bumpers": ""
-                    }
-                  }
-                ],
-                "field": "FRC:2026 Field",
-                "orientation": 3,
+                "sources": [],
+                "field": "FRC:Evergreen",
+                "orientation": 0,
                 "size": "large"
               },
-              "controllerUUID": "98lyztyghbbvxp1nj5rnuuyiymxgw8pq",
+              "controllerUUID": "nkgyrqhxcsquuka5kzv8awxdphbu33r2",
               "renderer": null,
               "controlsHeight": 200
             },
@@ -216,27 +292,17 @@
               "type": 3,
               "title": "3D Field",
               "controller": {
-                "sources": [
-                  {
-                    "type": "robot",
-                    "logKey": "/RealOutputs/Odometry/Robot",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "model": "2026 KitBot"
-                    }
-                  }
-                ],
-                "game": "FRC:2026 Field"
+                "sources": [],
+                "game": "FRC:Evergreen"
               },
-              "controllerUUID": "9tfeui1t3rnk0s0bfo6p67ayttracxan",
+              "controllerUUID": "sxxkdk78ifnurfg12ap4t6gvz1w7ujut",
               "renderer": {
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  1.6237102354557595e-15,
-                  6.576858446876528,
-                  -13.258600247730609
+                  1.4695761589768238e-15,
+                  5.999999999999999,
+                  -12
                 ],
                 "cameraTarget": [
                   0,
