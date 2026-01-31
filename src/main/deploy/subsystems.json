@@ -42,13 +42,21 @@
     "kA": 0.59712
   },
   "aprilTagVisionSubsystem": {
-    "enabled": false,
+    "enabled": true,
     "verbose": false,
     "linearStandardDeviationBaseline": 0.08,
     "angularStandardDeviationBaseline": 1.0,
     "maximumAmbiguity": 0.3,
     "cameras": {
       "Arducam_OV9281_USB1": {
+        "x": 13.0,
+        "y": 0.0,
+        "z": 15.0,
+        "roll": 0.0,
+        "pitch": 0.0,
+        "yaw": 0.0
+      },
+      "Arducam_OV9281_USB2": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,

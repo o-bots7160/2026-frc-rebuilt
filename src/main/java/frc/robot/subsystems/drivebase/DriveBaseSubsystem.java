@@ -331,6 +331,10 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             Pose2d robotPose,
             double timestamp,
             Matrix<N3, N1> standardDeviations) {
+        // Ignore vision updates if the swerve drive is not available.
+        if (swerveDrive == null) {
+            return;
+        }
         swerveDrive.addVisionMeasurement(robotPose, timestamp, standardDeviations);
     }
 
