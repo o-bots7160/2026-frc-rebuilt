@@ -2,6 +2,8 @@ package frc.robot.subsystems.turret.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.commands.AbstractSetAndSeekCommandFactory;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
@@ -37,5 +39,14 @@ public class TurretSubsystemCommandFactory extends AbstractSetAndSeekCommandFact
      */
     public MoveTurretToAngleCommand createMoveToAngleCommand(double targetDegrees) {
         return createMoveToAngleCommand(() -> targetDegrees);
+    }
+
+    /**
+     * Builds a command that logs a snapshot of the turret absolute encoder.
+     *
+     * @return command that logs raw and solved absolute angles once
+     */
+    public Command createLogAbsoluteEncoderSnapshotCommand() {
+        return Commands.runOnce(subsystem::logAbsoluteEncoderSnapshot);
     }
 }

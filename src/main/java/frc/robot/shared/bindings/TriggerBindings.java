@@ -125,6 +125,11 @@ public class TriggerBindings {
 
         driverController.onButtonHold(GameControllerButton.X,
                 turretCommandFactory.createSysIdFullSweepCommand(1, 8.0, 3.0));
+
+        // remove once we've validated the turret absolute encoder; best to
+        // only press this when turret is stationary
+        driverController.onButtonPress(GameControllerButton.Y,
+                turretCommandFactory.createLogAbsoluteEncoderSnapshotCommand());
     }
 
 }

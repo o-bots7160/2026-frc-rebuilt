@@ -26,6 +26,21 @@
       "reverseSoftLimitDegrees": -180.0,
       "forwardSoftLimitDegrees": 180.0
     },
+    "absoluteEncoderConfig": {
+      "enabled": true,
+      "verbose": false,
+      "commonDriveRatio": 9.5,
+      "driveGearTeeth": 16,
+      "encoder1Inverted": false,
+      "encoder1OffsetDegrees": 0.0,
+      "encoder1PinionTeeth": 17,
+      "encoder1SparkMaxCanId": 60,
+      "encoder2Inverted": false,
+      "encoder2OffsetDegrees": 0.0,
+      "encoder2PinionTeeth": 19,
+      "encoder2SparkMaxCanId": 61,
+      "matchToleranceDegrees": 1.0
+    },
     "maximumVelocityDegreesPerSecond": 10.0,
     "maximumAccelerationDegreesPerSecondSquared": 45.0,
     "minimumSetpointDegrees": -180.0,

@@ -121,6 +121,18 @@ public class TurretMotor extends AbstractMotor {
         return sparkConfig;
     }
 
+    /**
+     * Sets the relative encoder position in mechanism radians.
+     *
+     * @param positionRadians desired encoder position in mechanism radians
+     */
+    public void setRelativePositionRadians(double positionRadians) {
+        if (!isInitialized()) {
+            return;
+        }
+        motor.getEncoder().setPosition(positionRadians);
+    }
+
     private void cacheConfigSnapshot() {
         lastMotorCanId                         = config.getMotorCanIdSupplier().get();
         lastMotorInverted                      = config.getMotorInvertedSupplier().get();

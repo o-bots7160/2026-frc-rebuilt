@@ -10,4 +10,7 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
     /** Motor configuration bundle for the turret mechanism. */
     public TurretMotorConfig turretMotorConfig = new TurretMotorConfig();
 
+    /** Absolute encoder configuration for EasyCRT seeding. */
+    public TurretAbsoluteEncoderConfig absoluteEncoderConfig = new TurretAbsoluteEncoderConfig();
+
 }
