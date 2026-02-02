@@ -98,9 +98,21 @@ public abstract class AbstractConfig {
     }
 
     /**
-     * Computes the default dashboard prefix as the simple class name without a trailing "Config" suffix.
+     * Returns the dashboard prefix used to build logged network keys.
+     * <p>
+     * Subclasses can override this to supply a different prefix when they need to nest entries under another container.
+     * </p>
+     *
+     * @return prefix that is appended after the SmartDashboard namespace
+     */
+    protected String getDashboardPrefix() {
+        return defaultDashboardPrefix;
+    }
+
+    /**
+     * Computes the dashboard key for the given suffix.
      */
     private String dashboardKey(String key) {
-        return SMART_DASHBOARD_PREFIX + defaultDashboardPrefix + key;
+        return SMART_DASHBOARD_PREFIX + getDashboardPrefix() + key;
     }
 }

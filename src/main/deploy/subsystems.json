@@ -14,10 +14,10 @@
   },
   "turretSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "turretMotorConfig": {
       "enabled": true,
-      "verbose": false,
+      "verbose": true,
       "useSetpointLimits": true,
       "motorCanId": 55,
       "motorInverted": false,
@@ -27,7 +27,7 @@
       "forwardSoftLimitDegrees": 180.0
     },
     "maximumVelocityDegreesPerSecond": 10.0,
-    "maximumAccelerationDegreesPerSecondSquared": 45.0,
+    "maximumAccelerationDegreesPerSecondSquared": 10.0,
     "minimumSetpointDegrees": -180.0,
     "maximumSetpointDegrees": 180.0,
     "positionToleranceDegrees": 5.0,

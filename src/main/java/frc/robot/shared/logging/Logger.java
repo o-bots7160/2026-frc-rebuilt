@@ -121,7 +121,7 @@ public class Logger {
      */
     public void recordOutput(String key, boolean value) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, value);
-        debug("ak/" + key + ": " + value);
+        // debug("ak/" + key + ": " + value);
     }
 
     /**
@@ -130,7 +130,7 @@ public class Logger {
      */
     public void recordOutput(String key, double value) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, value);
-        debug("ak/" + key + ": " + value);
+        // debug("ak/" + key + ": " + value);
     }
 
     /**
@@ -138,7 +138,7 @@ public class Logger {
      */
     public void recordOutput(String key, double[] values) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, values);
-        debug("ak/" + key + "[length=" + values.length + "]");
+        // debug("ak/" + key + "[length=" + values.length + "]");
     }
 
     /**
@@ -146,7 +146,7 @@ public class Logger {
      */
     public void recordOutput(String key, Pose2d pose) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, pose);
-        debug("ak/" + key + ": pose logged");
+        // debug("ak/" + key + ": pose logged");
     }
 
     /**

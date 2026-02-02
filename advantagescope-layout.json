@@ -45,11 +45,14 @@
             "/AdvantageKit/RealOutputs/TurretMotor",
             "/AdvantageKit/RealOutputs/TurretMotor/TurretMotor",
             "/SmartDashboard/SubsystemsConfig/turretSubsystem",
-            "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig"
+            "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig",
+            "/AdvantageKit/RealOutputs/Logger",
+            "/SmartDashboard",
+            "/SmartDashboard/SubsystemsConfig/driveBaseSubsystem"
           ]
         },
         "tabs": {
-          "selected": 3,
+          "selected": 2,
           "tabs": [
             {
               "type": 0,
@@ -111,7 +114,35 @@
                     }
                   }
                 ],
-                "discreteSources": [],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kP",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kI",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kD",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  }
+                ],
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -257,6 +288,16 @@
               "controllerUUID": "owlur25g0o1dvzchd6lm5e2hztfa3dss",
               "renderer": null,
               "controlsHeight": 200
+            },
+            {
+              "type": 5,
+              "title": "Console",
+              "controller": "NT:/AdvantageKit/RealOutputs/Console",
+              "controllerUUID": "un54pqd1njp0yrnlbxrj2jm5hzdw0rm6",
+              "renderer": {
+                "highlight": false
+              },
+              "controlsHeight": 0
             },
             {
               "type": 4,

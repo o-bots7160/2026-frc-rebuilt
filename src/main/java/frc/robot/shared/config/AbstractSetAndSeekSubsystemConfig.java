@@ -256,4 +256,17 @@ public abstract class AbstractSetAndSeekSubsystemConfig extends AbstractConfig {
     public Supplier<Double> getkASupplier() {
         return () -> readTunableNumber("kA", kA);
     }
+
+    /**
+     * Returns the dashboard prefix, honoring the optional override when provided.
+     *
+     * @return prefix appended after the SmartDashboard namespace
+     */
+    @Override
+    protected String getDashboardPrefix() {
+        if (dashboardPrefix != null && !dashboardPrefix.isBlank()) {
+            return dashboardPrefix;
+        }
+        return super.getDashboardPrefix();
+    }
 }

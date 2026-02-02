@@ -29,7 +29,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
 
     protected final ProfiledPIDController   controller;
 
-    protected final SimpleMotorFeedforward  feedforward;
+    protected SimpleMotorFeedforward        feedforward;
 
     protected TrapezoidProfile.State        goalState;
 
@@ -62,7 +62,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 kDt);
 
         // Position tolerance is in mechanism units; velocity tolerance is a small fraction of max speed.
-        controller.setTolerance(config.getPositionToleranceRadiansSupplier().get(),
+        controller.setTolerance(
+                config.getPositionToleranceRadiansSupplier().get(),
                 config.getVelocityToleranceRadiansPerSecondSupplier().get());
 
         // Feedforward estimates the voltage needed to maintain a desired velocity/acceleration.
@@ -104,6 +105,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     public void periodic() {
         if (!isFMSAttached()) {
             motor.refreshConfiguration();
+            refreshConstraints();
         }
     }
 
@@ -149,9 +151,6 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         // Refresh sensor data and log it before we compute the next setpoint.
         motor.updateInputs(motorInputs);
         org.littletonrobotics.junction.Logger.processInputs(className + "/motor", motorInputs);
-
-        // Pull the latest motion constraints so live tuning takes effect immediately.
-        refreshConstraints();
 
         // Use the profiled PID to calculate the next output from the current position.
         double measuredPosition = getMeasuredPosition();
@@ -286,5 +285,21 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 config.getMaximumVelocityRadiansPerSecondSupplier().get(),
                 config.getMaximumAccelerationRadiansPerSecondSquaredSupplier().get());
         controller.setConstraints(constraints);
+
+        // Refresh gains so live tuning updates affect the controller immediately.
+        controller.setPID(
+                config.getkPSupplier().get(),
+                config.getkISupplier().get(),
+                config.getkDSupplier().get());
+
+        controller.setTolerance(
+                config.getPositionToleranceRadiansSupplier().get(),
+                config.getVelocityToleranceRadiansPerSecondSupplier().get());
+
+        // Refresh feedforward gains so voltage estimates track live tuning updates.
+        feedforward = new SimpleMotorFeedforward(
+                config.getkSSupplier().get(),
+                config.getkVSupplier().get(),
+                config.getkASupplier().get());
     }
 }
