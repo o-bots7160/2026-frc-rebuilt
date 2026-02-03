@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -98,21 +99,37 @@ public abstract class AbstractConfig {
     }
 
     /**
-     * Returns the dashboard prefix used to build logged network keys.
+     * Reads a tunable number that represents degrees.
      * <p>
-     * Subclasses can override this to supply a different prefix when they need to nest entries under another container.
+     * Use this helper when the stored value is in degrees so all configs share the same conversion pattern.
      * </p>
      *
-     * @return prefix that is appended after the SmartDashboard namespace
+     * @param key             dashboard key suffix to read (class prefix is applied automatically)
+     * @param fallbackDegrees fallback value in degrees used when FMS is attached or no entry exists
+     * @return latest tunable value in degrees, or the provided fallback when FMS is attached
      */
-    protected String getDashboardPrefix() {
-        return defaultDashboardPrefix;
+    protected double readTunableDegrees(String key, double fallbackDegrees) {
+        return readTunableNumber(key, fallbackDegrees);
+    }
+
+    /**
+     * Reads a tunable number stored in degrees and returns the value in radians.
+     * <p>
+     * Call this when your config stores angles in degrees but your subsystem expects radians.
+     * </p>
+     *
+     * @param key             dashboard key suffix to read (class prefix is applied automatically)
+     * @param fallbackDegrees fallback value in degrees used when FMS is attached or no entry exists
+     * @return latest tunable value in radians, or the provided fallback when FMS is attached
+     */
+    protected double readTunableDegreesAsRadians(String key, double fallbackDegrees) {
+        return Units.degreesToRadians(readTunableDegrees(key, fallbackDegrees));
     }
 
     /**
      * Computes the dashboard key for the given suffix.
      */
     private String dashboardKey(String key) {
-        return SMART_DASHBOARD_PREFIX + getDashboardPrefix() + key;
+        return SMART_DASHBOARD_PREFIX + defaultDashboardPrefix + key;
     }
 }

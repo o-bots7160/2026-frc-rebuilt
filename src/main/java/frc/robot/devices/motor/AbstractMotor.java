@@ -115,13 +115,13 @@ public abstract class AbstractMotor implements Motor {
         this.name                                       = name;
         this.log                                        = Logger.getInstance(this.getClass());
         // Cache suppliers so limits can be refreshed alongside hardware updates.
-        this.useSetpointLimitsSupplier                  = config.getUseSetpointLimitsSupplier();
-        this.reverseSoftLimitRadiansSupplier            = config.getReverseSoftLimitRadiansSupplier();
-        this.forwardSoftLimitRadiansSupplier            = config.getForwardSoftLimitRadiansSupplier();
-        this.motorRotationsPerMechanismRotationSupplier = config.getMotorRotationsPerMechanismRotationSupplier();
+        this.useSetpointLimitsSupplier                  = config::getUseSetpointLimits;
+        this.reverseSoftLimitRadiansSupplier            = config::getReverseSoftLimitRadians;
+        this.forwardSoftLimitRadiansSupplier            = config::getForwardSoftLimitRadians;
+        this.motorRotationsPerMechanismRotationSupplier = config::getMotorRotationsPerMechanismRotation;
 
         // Instantiate the controller with the requested CAN ID and motor type.
-        int deviceId = config.getMotorCanIdSupplier().get();
+        int deviceId = config.getMotorCanId();
         this.motor = new SparkMax(deviceId, motorType);
         log.verbose("Creating SparkMax motor " + name + " (device ID " + deviceId + ")");
 

@@ -70,12 +70,12 @@ public class TurretMotor extends AbstractMotor {
             return;
         }
 
-        int     motorCanId                         = config.getMotorCanIdSupplier().get();
-        boolean motorInverted                      = config.getMotorInvertedSupplier().get();
-        int     smartCurrentLimit                  = config.getSmartCurrentLimitSupplier().get();
-        double  reverseSoftLimitDegrees            = config.getReverseSoftLimitDegreesSupplier().get();
-        double  forwardSoftLimitDegrees            = config.getForwardSoftLimitDegreesSupplier().get();
-        double  motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
+        int     motorCanId                         = config.getMotorCanId();
+        boolean motorInverted                      = config.getMotorInverted();
+        int     smartCurrentLimit                  = config.getSmartCurrentLimitAmps();
+        double  reverseSoftLimitDegrees            = config.getReverseSoftLimitDegrees();
+        double  forwardSoftLimitDegrees            = config.getForwardSoftLimitDegrees();
+        double  motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotation();
 
         boolean configChanged                      = motorCanId != lastMotorCanId
                 || motorInverted != lastMotorInverted
@@ -104,12 +104,12 @@ public class TurretMotor extends AbstractMotor {
     @Override
     protected SparkMaxConfig configureMotor(SparkMaxConfig sparkConfig) {
         sparkConfig
-                .inverted(config.getMotorInvertedSupplier().get())
-                .smartCurrentLimit(config.getSmartCurrentLimitSupplier().get())
+            .inverted(config.getMotorInverted())
+            .smartCurrentLimit(config.getSmartCurrentLimitAmps())
                 .idleMode(IdleMode.kBrake)
                 .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
 
-        double motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
+        double motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotation();
         double positionFactor                     = computeMechanismRadiansPerMotorRotation(motorRotationsPerMechanismRotation);
         double velocityFactor                     = positionFactor / 60.0;
 
@@ -122,12 +122,12 @@ public class TurretMotor extends AbstractMotor {
     }
 
     private void cacheConfigSnapshot() {
-        lastMotorCanId                         = config.getMotorCanIdSupplier().get();
-        lastMotorInverted                      = config.getMotorInvertedSupplier().get();
-        lastSmartCurrentLimitAmps              = config.getSmartCurrentLimitSupplier().get();
-        lastReverseSoftLimitDegrees            = config.getReverseSoftLimitDegreesSupplier().get();
-        lastForwardSoftLimitDegrees            = config.getForwardSoftLimitDegreesSupplier().get();
-        lastMotorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotationSupplier().get();
+        lastMotorCanId                         = config.getMotorCanId();
+        lastMotorInverted                      = config.getMotorInverted();
+        lastSmartCurrentLimitAmps              = config.getSmartCurrentLimitAmps();
+        lastReverseSoftLimitDegrees            = config.getReverseSoftLimitDegrees();
+        lastForwardSoftLimitDegrees            = config.getForwardSoftLimitDegrees();
+        lastMotorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotation();
     }
 
     private boolean hasChanged(double currentValue, double lastValue) {

@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.bindings.TriggerBindings;
 import frc.robot.shared.config.ConfigurationLoader;
 import frc.robot.shared.config.FieldLayoutConfig;
@@ -95,7 +96,10 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // return Commands.print("No autonomous command configured");
-        return turretCommandFactory.createMoveToAngleCommand(500)
-                .andThen(turretCommandFactory.createMoveToAngleCommand(-500)).repeatedly();
+        return turretCommandFactory.createMoveToAngleCommand(100)
+                .andThen(Commands.waitSeconds(2.0))
+                .andThen(turretCommandFactory.createMoveToAngleCommand(-100))
+                .andThen(Commands.waitSeconds(2.0))
+                .repeatedly();
     }
 }

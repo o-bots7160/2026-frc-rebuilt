@@ -60,11 +60,14 @@ Follow them whenever you add code, documentation, or tests.
 - Keep deployment assets under `src/main/deploy` (e.g., `subsystems.json` and
   mechanism configs like the swerve `controllerproperties.json`, module
   definitions, and trajectories).
-- Config classes should surface tunable suppliers for every runtime-adjustable
-  value (numbers and booleans) using the AdvantageKit-backed helpers (e.g.,
+- Config classes should expose direct getters for every runtime-adjustable value
+  (numbers and booleans) using the AdvantageKit-backed helpers (e.g.,
   `readTunableNumber`, `readTunableBoolean`) so we can tweak on-robot without
   redeploying. Store human-friendly defaults in the fields, then expose
-  `get*Supplier()` accessors that read the tunable values.
+  `get*()` accessors that read the tunable values. When a supplier is needed,
+  wrap it at the call site (for example, `config::getMaximumVelocityDegreesPerSecond`).
+- Prefer the shared helpers in `AbstractConfig` for degree/radian reads:
+  `readTunableDegrees` and `readTunableDegreesAsRadians`.
 - Subsystem folders may include a `README.md`; read it for a quick brief on
   behavior, key classes, and configuration before editing or generating code.
 

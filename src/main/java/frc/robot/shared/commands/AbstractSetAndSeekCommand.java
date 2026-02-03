@@ -34,6 +34,7 @@ public class AbstractSetAndSeekCommand<TSubsystem extends AbstractSetAndSeekSubs
 
     @Override
     public void execute() {
+        subsystem.setTarget(targetSupplier.get());
         subsystem.seekTarget();
     }
 
@@ -45,10 +46,9 @@ public class AbstractSetAndSeekCommand<TSubsystem extends AbstractSetAndSeekSubs
                     .schedule(new SetAndSeekSettleCommand<>(subsystem).withTimeout(SETTLE_TIMEOUT_SECONDS));
         } else {
             log.info("Ending " + getName() + " after reaching target");
+            // Always stop after completion so the motor does not drift once the command exits.
+            subsystem.handleSeekInterrupted();
         }
-
-        // Always stop after completion so the motor does not drift once the command exits
-        subsystem.handleSeekInterrupted();
     }
 
     @Override

@@ -50,31 +50,31 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
 
         // Trapezoid profile constraints define the max cruise speed and acceleration for smooth motion.
         constraints = new TrapezoidProfile.Constraints(
-                config.getMaximumVelocityRadiansPerSecondSupplier().get(),
-                config.getMaximumAccelerationRadiansPerSecondSquaredSupplier().get());
+                config.getMaximumVelocityRadiansPerSecond(),
+                config.getMaximumAccelerationRadiansPerSecondSquared());
 
         // Profiled PID drives the mechanism toward the goal while respecting the trapezoid limits.
         controller  = new ProfiledPIDController(
-                config.getkPSupplier().get(),
-                config.getkISupplier().get(),
-                config.getkDSupplier().get(),
+                config.getkP(),
+                config.getkI(),
+                config.getkD(),
                 constraints,
                 kDt);
 
         // Position tolerance is in mechanism units; velocity tolerance is a small fraction of max speed.
         controller.setTolerance(
-                config.getPositionToleranceRadiansSupplier().get(),
-                config.getVelocityToleranceRadiansPerSecondSupplier().get());
+                config.getPositionToleranceRadians(),
+                config.getVelocityToleranceRadiansPerSecond());
 
         // Feedforward estimates the voltage needed to maintain a desired velocity/acceleration.
         feedforward = new SimpleMotorFeedforward(
-                config.getkSSupplier().get(),
-                config.getkVSupplier().get(),
-                config.getkASupplier().get());
+                config.getkS(),
+                config.getkV(),
+                config.getkA());
 
         // Seed the profile with the configured starting position/velocity so the first update is stable.
-        double initialPosition = config.getInitialPositionRadiansSupplier().get();
-        double initialVelocity = config.getInitialVelocityRadiansPerSecondSupplier().get();
+        double initialPosition = config.getInitialPositionRadians();
+        double initialVelocity = config.getInitialVelocityRadiansPerSecond();
 
         // The goal state is where we want to end; the setpoint state is the next step along the profile.
         goalState     = new TrapezoidProfile.State(initialPosition, 0.0);
@@ -121,16 +121,14 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         }
 
         // Capture inputs for easier debugging.
-        double minimumSetpointRadians = config.getMinimumSetpointRadiansSupplier().get();
-        double maximumSetpointRadians = config.getMaximumSetpointRadiansSupplier().get();
+        double minimumSetpointRadians = config.getMinimumSetpointRadians();
+        double maximumSetpointRadians = config.getMaximumSetpointRadians();
         double requestedTargetRadians = Units.degreesToRadians(targetPositionDegrees);
 
         // Clamp the request so we never ask the mechanism to move past its safe range.
         double clampedTargetRadians   = clamp(requestedTargetRadians, minimumSetpointRadians, maximumSetpointRadians);
         log.recordOutput("targetRequestedPositionDegrees", targetPositionDegrees);
-        log.recordOutput("targetRequestedPositionRads", requestedTargetRadians);
         log.recordOutput("targetClampedPositionDegrees", Units.radiansToDegrees(clampedTargetRadians));
-        log.recordOutput("targetClampedPositionRads", clampedTargetRadians);
         log.recordOutput("targetWasClamped", requestedTargetRadians != clampedTargetRadians);
         // Store the goal with zero velocity so the profile knows where to stop.
         goalState = new TrapezoidProfile.State(clampedTargetRadians, 0.0);
@@ -164,14 +162,17 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         double voltageCommand   = controllerOutput + feedforwardVolts;
         double positionError    = goalState.position - measuredPosition;
 
-        log.recordOutput("positionErrorRads", positionError);
         log.recordOutput("positionErrorDegrees", Units.radiansToDegrees(positionError));
         log.recordOutput("controllerOutputVolts", controllerOutput);
         log.recordOutput("feedforwardVolts", feedforwardVolts);
         log.recordOutput("voltageCommandVolts", voltageCommand);
 
         applySetpoint(setpointState, voltageCommand);
-        logSetpoint(setpointState, goalState);
+
+        log.recordOutput("goalPositionDegrees", Units.radiansToDegrees(goalState.position));
+        log.recordOutput("goalVelocityDegreesPerSec", Units.radiansToDegrees(goalState.velocity));
+        log.recordOutput("setpointPositionDegrees", Units.radiansToDegrees(setpointState.position));
+        log.recordOutput("setpointVelocityDegreesPerSec", Units.radiansToDegrees(setpointState.velocity));
     }
 
     /**
@@ -199,8 +200,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         double measuredPosition = getMeasuredPosition();
         double measuredVelocity = getMeasuredVelocity();
 
-        log.recordOutput("settleMeasuredPosition", measuredPosition);
-        log.recordOutput("settleMeasuredVelocity", measuredVelocity);
+        log.recordOutput("settleMeasuredPositionDegrees", Units.radiansToDegrees(measuredPosition));
+        log.recordOutput("settleMeasuredVelocityDegreesPerSec", Units.radiansToDegrees(measuredVelocity));
 
         // Reset clears the internal error so the profile starts from the real motion state.
         controller.reset(measuredPosition, measuredVelocity);
@@ -237,8 +238,6 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         edu.wpi.first.units.measure.Voltage clampedVoltage = Volts.of(
                 clamp(voltageCommand, -12.0, 12.0));
         motor.setVoltage(clampedVoltage);
-
-        log.recordOutput("commandedVoltage", clampedVoltage.in(Volts));
     }
 
     /**
@@ -259,22 +258,6 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         return motor.getVelocityRadiansPerSecond();
     }
 
-    private void logSetpoint(TrapezoidProfile.State setpoint, TrapezoidProfile.State goal) {
-        // Log the profile targets and the live sensor feedback each cycle.
-        log.recordOutput("goalPositionRads", goal.position);
-        log.recordOutput("goalPositionDegrees", Units.radiansToDegrees(goal.position));
-        log.recordOutput("goalVelocityRadPerSec", goal.velocity);
-        log.recordOutput("goalVelocityDegreesPerSec", Units.radiansToDegrees(goal.velocity));
-        log.recordOutput("setpointPositionRadians", setpoint.position);
-        log.recordOutput("setpointPositionDegrees", Units.radiansToDegrees(setpoint.position));
-        log.recordOutput("setpointVelocityRadPerSec", setpoint.velocity);
-        log.recordOutput("setpointVelocityDegreesPerSec", Units.radiansToDegrees(setpoint.velocity));
-        log.recordOutput("measuredPositionRadians", getMeasuredPosition());
-        log.recordOutput("measuredPositionDegrees", Units.radiansToDegrees(getMeasuredPosition()));
-        log.recordOutput("measuredVelocityRadiansPerSec", getMeasuredVelocity());
-        log.recordOutput("measuredVelocityDegreesPerSec", Units.radiansToDegrees(getMeasuredVelocity()));
-    }
-
     private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }
@@ -282,24 +265,24 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     private void refreshConstraints() {
         // Read live tunable limits so the profile respects current max speed and acceleration.
         constraints = new TrapezoidProfile.Constraints(
-                config.getMaximumVelocityRadiansPerSecondSupplier().get(),
-                config.getMaximumAccelerationRadiansPerSecondSquaredSupplier().get());
+                config.getMaximumVelocityRadiansPerSecond(),
+                config.getMaximumAccelerationRadiansPerSecondSquared());
         controller.setConstraints(constraints);
 
         // Refresh gains so live tuning updates affect the controller immediately.
         controller.setPID(
-                config.getkPSupplier().get(),
-                config.getkISupplier().get(),
-                config.getkDSupplier().get());
+                config.getkP(),
+                config.getkI(),
+                config.getkD());
 
         controller.setTolerance(
-                config.getPositionToleranceRadiansSupplier().get(),
-                config.getVelocityToleranceRadiansPerSecondSupplier().get());
+                config.getPositionToleranceRadians(),
+                config.getVelocityToleranceRadiansPerSecond());
 
         // Refresh feedforward gains so voltage estimates track live tuning updates.
         feedforward = new SimpleMotorFeedforward(
-                config.getkSSupplier().get(),
-                config.getkVSupplier().get(),
-                config.getkASupplier().get());
+                config.getkS(),
+                config.getkV(),
+                config.getkA());
     }
 }

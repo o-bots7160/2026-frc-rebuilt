@@ -1,9 +1,9 @@
 {
   "hubs": [
     {
-      "x": 1527,
-      "y": -9,
-      "width": 1938,
+      "x": 0,
+      "y": 30,
+      "width": 1920,
       "height": 1050,
       "state": {
         "sidebar": {
@@ -11,8 +11,6 @@
           "expanded": [
             "/SmartDashboard/swerve",
             "/SmartDashboard/swerve/advantagescope",
-            "/SmartDashboard/DriveBaseSubsystem",
-            "/AdvantageKit/RealOutputs",
             "/AdvantageKit/RealOutputs/SwerveStates",
             "/SmartDashboard/swerve/modules",
             "/SmartDashboard/swerve/modules/frontleft",
@@ -30,13 +28,8 @@
             "/AdvantageKit/RealOutputs/Encoders/errors",
             "/AdvantageKit/RealOutputs/Encoders/infos",
             "/AdvantageKit/RealOutputs/Encoders/warnings",
-            "/AdvantageKit/TurretSubsystem",
-            "/AdvantageKit/TurretSubsystem/motor",
-            "/AdvantageKit/NetworkInputs",
             "/AdvantageKit/NetworkInputs/SmartDashboard",
             "/SmartDashboard/TurretSubsystem",
-            "/SmartDashboard/TurretMotor",
-            "/SmartDashboard/SubsystemsConfig",
             "/LiveWindow/.status",
             "/AdvantageKit",
             "/AdvantageKit/NetworkInputs/SmartDashboard/TurretMotor",
@@ -48,7 +41,11 @@
             "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig",
             "/AdvantageKit/RealOutputs/Logger",
             "/SmartDashboard",
-            "/SmartDashboard/SubsystemsConfig/driveBaseSubsystem"
+            "/SmartDashboard/SubsystemsConfig/driveBaseSubsystem",
+            "/AdvantageKit/RealOutputs",
+            "/SmartDashboard/TurretMotor",
+            "/AdvantageKit/TurretSubsystem",
+            "/AdvantageKit/TurretSubsystem/motor"
           ]
         },
         "tabs": {
@@ -100,16 +97,56 @@
                       "color": "#e5b31b",
                       "size": "normal"
                     }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/controllerOutputVolts",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/feedforwardVolts",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
                   }
                 ],
                 "rightSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/measuredPositionDegrees",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/setpointPositionDegrees",
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#2b66a2",
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/goalPositionDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487",
                       "size": "normal"
                     }
                   }
@@ -121,7 +158,7 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#af2437"
+                      "color": "#2b66a2"
                     }
                   },
                   {
@@ -130,7 +167,7 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
-                      "color": "#80588e"
+                      "color": "#3b875a"
                     }
                   },
                   {
@@ -139,7 +176,34 @@
                     "logType": "Number",
                     "visible": true,
                     "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
                       "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kV",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kA",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
                     }
                   }
                 ],
@@ -158,81 +222,7 @@
               },
               "controllerUUID": "0vei9gv9exlfqe1g909fvc5727c9ahel",
               "renderer": null,
-              "controlsHeight": 200
-            },
-            {
-              "type": 1,
-              "title": "Line Graph",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionRadians",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "discreteSources": [
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/profileSettled",
-                    "logType": "Boolean",
-                    "visible": true,
-                    "options": {
-                      "color": "#af2437"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/targetRequestedPositionDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#80588e"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/positionErrorDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e48b32"
-                    }
-                  }
-                ],
-                "leftLockedRange": null,
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "k7wz3jixu1a92dbqtr2qkabr446yo6dk",
-              "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 391
             },
             {
               "type": 9,

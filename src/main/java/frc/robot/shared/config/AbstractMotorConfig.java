@@ -1,9 +1,5 @@
 package frc.robot.shared.config;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.util.Units;
-
 /**
  * Base configuration bundle for a single motor controller and its mechanism limits.
  * <p>
@@ -35,83 +31,83 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
     public double  forwardSoftLimitDegrees;
 
     /**
-     * Supplies the CAN ID (not typically tuned, but exposed for consistency/logging).
+     * Returns the CAN ID (not typically tuned, but exposed for consistency/logging).
      *
-     * @return supplier that yields the motor controller CAN ID
+     * @return motor controller CAN ID
      */
-    public Supplier<Integer> getMotorCanIdSupplier() {
-        return () -> (int) readTunableNumber("motorCanId", motorCanId);
+    public int getMotorCanId() {
+        return (int) readTunableNumber("motorCanId", motorCanId);
     }
 
     /**
-     * Supplies whether the motor output is inverted.
+     * Returns whether the motor output is inverted.
      *
-     * @return supplier that indicates whether to invert motor output
+     * @return true when the motor output is inverted
      */
-    public Supplier<Boolean> getMotorInvertedSupplier() {
-        return () -> readTunableBoolean("motorInverted", motorInverted);
+    public boolean getMotorInverted() {
+        return readTunableBoolean("motorInverted", motorInverted);
     }
 
     /**
-     * Supplies the smart current limit in amps.
+     * Returns the smart current limit in amps.
      *
-     * @return supplier that yields the current limit in amps
+     * @return current limit in amps
      */
-    public Supplier<Integer> getSmartCurrentLimitSupplier() {
-        return () -> (int) readTunableNumber("smartCurrentLimitAmps", smartCurrentLimitAmps);
+    public int getSmartCurrentLimitAmps() {
+        return (int) readTunableNumber("smartCurrentLimitAmps", smartCurrentLimitAmps);
     }
 
     /**
-     * Supplies the gear ratio (motor rotations per mechanism rotation).
+     * Returns the gear ratio (motor rotations per mechanism rotation).
      *
-     * @return supplier that yields the motor rotations per one mechanism rotation
+     * @return motor rotations per one mechanism rotation
      */
-    public Supplier<Double> getMotorRotationsPerMechanismRotationSupplier() {
-        return () -> readTunableNumber("motorRotationsPerMechanismRotation", motorRotationsPerMechanismRotation);
+    public double getMotorRotationsPerMechanismRotation() {
+        return readTunableNumber("motorRotationsPerMechanismRotation", motorRotationsPerMechanismRotation);
     }
 
     /**
-     * Supplies whether the motor should enforce minimum and maximum setpoint limits.
+     * Returns whether the motor should enforce minimum and maximum setpoint limits.
      *
-     * @return supplier that indicates whether setpoint limits are enforced
+     * @return true when setpoint limits are enforced
      */
-    public Supplier<Boolean> getUseSetpointLimitsSupplier() {
-        return () -> readTunableBoolean("useSetpointLimits", useSetpointLimits);
+    public boolean getUseSetpointLimits() {
+        return readTunableBoolean("useSetpointLimits", useSetpointLimits);
     }
 
     /**
-     * Supplies the reverse soft limit in degrees.
+     * Returns the reverse soft limit in degrees.
      *
-     * @return supplier that yields the reverse soft limit in degrees
+     * @return reverse soft limit in degrees
      */
-    public Supplier<Double> getReverseSoftLimitDegreesSupplier() {
-        return () -> readTunableNumber("reverseSoftLimitDegrees", reverseSoftLimitDegrees);
+    public double getReverseSoftLimitDegrees() {
+        return readTunableDegrees("reverseSoftLimitDegrees", reverseSoftLimitDegrees);
     }
 
     /**
-     * Supplies the reverse soft limit in radians.
+     * Returns the reverse soft limit in radians.
      *
-     * @return supplier that yields the reverse soft limit in radians
+     * @return reverse soft limit in radians
      */
-    public Supplier<Double> getReverseSoftLimitRadiansSupplier() {
-        return () -> Units.degreesToRadians(getReverseSoftLimitDegreesSupplier().get());
+    public double getReverseSoftLimitRadians() {
+        return readTunableDegreesAsRadians("reverseSoftLimitDegrees", reverseSoftLimitDegrees);
     }
 
     /**
-     * Supplies the forward soft limit in degrees.
+     * Returns the forward soft limit in degrees.
      *
-     * @return supplier that yields the forward soft limit in degrees
+     * @return forward soft limit in degrees
      */
-    public Supplier<Double> getForwardSoftLimitDegreesSupplier() {
-        return () -> readTunableNumber("forwardSoftLimitDegrees", forwardSoftLimitDegrees);
+    public double getForwardSoftLimitDegrees() {
+        return readTunableDegrees("forwardSoftLimitDegrees", forwardSoftLimitDegrees);
     }
 
     /**
-     * Supplies the forward soft limit in radians.
+     * Returns the forward soft limit in radians.
      *
-     * @return supplier that yields the forward soft limit in radians
+     * @return forward soft limit in radians
      */
-    public Supplier<Double> getForwardSoftLimitRadiansSupplier() {
-        return () -> Units.degreesToRadians(getForwardSoftLimitDegreesSupplier().get());
+    public double getForwardSoftLimitRadians() {
+        return readTunableDegreesAsRadians("forwardSoftLimitDegrees", forwardSoftLimitDegrees);
     }
 }

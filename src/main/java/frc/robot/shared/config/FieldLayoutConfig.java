@@ -1,7 +1,6 @@
 package frc.robot.shared.config;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -34,12 +33,15 @@ public class FieldLayoutConfig extends AbstractConfig {
     public FieldLayoutType fieldType;
 
     /**
-     * Supplies the configured field type selector.
+     * Returns the configured field type selector.
+     * <p>
+     * Use this to determine which official field layout is loaded for AprilTag poses.
+     * </p>
      *
-     * @return supplier yielding the current field type string
+     * @return selected field layout type
      */
-    public Supplier<FieldLayoutType> getFieldTypeSupplier() {
-        return () -> parseFieldType(readTunableString("fieldType", requireFieldType().name()));
+    public FieldLayoutType getFieldType() {
+        return parseFieldType(readTunableString("fieldType", requireFieldType().name()));
     }
 
     /**
@@ -52,7 +54,7 @@ public class FieldLayoutConfig extends AbstractConfig {
      * @throws IllegalArgumentException when the configured enum names are invalid
      */
     public AprilTagFieldLayout loadLayout() {
-        FieldLayoutType     resolvedFieldType = getFieldTypeSupplier().get();
+        FieldLayoutType     resolvedFieldType = getFieldType();
         AprilTagFields      selectedField     = resolveSelectedField(resolvedFieldType);
         AprilTagFieldLayout layout            = AprilTagFieldLayout.loadField(selectedField);
         layout.setOrigin(resolveOrigin());

@@ -101,9 +101,9 @@ public abstract class AbstractSimMotor extends AbstractMotor {
         this.motorModel                                         = motorModel;
         this.maximumVelocityRadiansPerSecondSupplier            = () -> Units.degreesToRadians(maximumVelocityDegreesPerSecondSupplier.get());
         this.maximumAccelerationRadiansPerSecondSquaredSupplier = () -> Units.degreesToRadians(maximumAccelerationDegreesPerSecondSqSupplier.get());
-        this.useSetpointLimitsSupplier                          = config.getUseSetpointLimitsSupplier();
+        this.useSetpointLimitsSupplier                          = config::getUseSetpointLimits;
 
-        double configuredRatio = config.getMotorRotationsPerMechanismRotationSupplier().get();
+        double configuredRatio = config.getMotorRotationsPerMechanismRotation();
         this.gearRatio = configuredRatio > 0.0 ? configuredRatio : 1.0;
 
         sparkMaxSim    = new SparkMaxSim(motor, motorModel);
@@ -139,8 +139,8 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     @Override
     protected SparkMaxConfig configureMotor(SparkMaxConfig sparkConfig) {
         sparkConfig
-                .inverted(config.getMotorInvertedSupplier().get())
-                .smartCurrentLimit(config.getSmartCurrentLimitSupplier().get())
+            .inverted(config.getMotorInverted())
+            .smartCurrentLimit(config.getSmartCurrentLimitAmps())
                 .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
         return sparkConfig;
     }
@@ -148,8 +148,8 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     private void seedInitialState() {
         double initialPositionRad = 0.0;
         if (Boolean.TRUE.equals(useSetpointLimitsSupplier.get())) {
-            double reverseSoftLimitRad = config.getReverseSoftLimitRadiansSupplier().get();
-            double forwardSoftLimitRad = config.getForwardSoftLimitRadiansSupplier().get();
+            double reverseSoftLimitRad = config.getReverseSoftLimitRadians();
+            double forwardSoftLimitRad = config.getForwardSoftLimitRadians();
             initialPositionRad = MathUtil.clamp(0.0, reverseSoftLimitRad, forwardSoftLimitRad);
         }
 

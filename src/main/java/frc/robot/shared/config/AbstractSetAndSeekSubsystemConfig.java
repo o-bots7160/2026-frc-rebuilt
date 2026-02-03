@@ -1,9 +1,5 @@
 package frc.robot.shared.config;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.util.Units;
-
 /**
  * Configuration values for subsystems that follow a trapezoidal motion profile.
  * <p>
@@ -59,214 +55,204 @@ public abstract class AbstractSetAndSeekSubsystemConfig extends AbstractConfig {
     public String dashboardPrefix;
 
     /**
-     * Supplies the minimum setpoint, tuned via SmartDashboard, to clamp incoming targets.
+     * Returns the minimum setpoint, tuned via SmartDashboard, to clamp incoming targets.
      *
-     * @return supplier yielding the minimum allowed setpoint (degrees)
+     * @return minimum allowed setpoint (degrees)
      */
-    public Supplier<Double> getMinimumSetpointDegreesSupplier() {
-        return () -> readTunableNumber("minimumSetpointDegrees", minimumSetpointDegrees);
+    public double getMinimumSetpointDegrees() {
+        return readTunableDegrees("minimumSetpointDegrees", minimumSetpointDegrees);
     }
 
     /**
-     * Supplies the minimum setpoint in radians.
+     * Returns the minimum setpoint in radians.
      *
-     * @return supplier yielding the minimum allowed setpoint (radians)
+     * @return minimum allowed setpoint (radians)
      */
-    public Supplier<Double> getMinimumSetpointRadiansSupplier() {
-        return () -> Units.degreesToRadians(getMinimumSetpointDegreesSupplier().get());
+    public double getMinimumSetpointRadians() {
+        return readTunableDegreesAsRadians("minimumSetpointDegrees", minimumSetpointDegrees);
     }
 
     /**
-     * Supplies the maximum setpoint, tuned via SmartDashboard, to clamp incoming targets.
+     * Returns the maximum setpoint, tuned via SmartDashboard, to clamp incoming targets.
      *
-     * @return supplier yielding the maximum allowed setpoint (degrees)
+     * @return maximum allowed setpoint (degrees)
      */
-    public Supplier<Double> getMaximumSetpointDegreesSupplier() {
-        return () -> readTunableNumber("maximumSetpointDegrees", maximumSetpointDegrees);
+    public double getMaximumSetpointDegrees() {
+        return readTunableDegrees("maximumSetpointDegrees", maximumSetpointDegrees);
     }
 
     /**
-     * Supplies the maximum setpoint in radians.
+     * Returns the maximum setpoint in radians.
      *
-     * @return supplier yielding the maximum allowed setpoint (radians)
+     * @return maximum allowed setpoint (radians)
      */
-    public Supplier<Double> getMaximumSetpointRadiansSupplier() {
-        return () -> Units.degreesToRadians(getMaximumSetpointDegreesSupplier().get());
+    public double getMaximumSetpointRadians() {
+        return readTunableDegreesAsRadians("maximumSetpointDegrees", maximumSetpointDegrees);
     }
 
     /**
-     * Supplies the maximum profile velocity, tuned via SmartDashboard.
+     * Returns the maximum profile velocity, tuned via SmartDashboard.
      *
-     * @return supplier yielding the max velocity (degrees per second)
+     * @return max velocity (degrees per second)
      */
-    public Supplier<Double> getMaximumVelocityDegreesPerSecondSupplier() {
-        return () -> readTunableNumber("maximumVelocityDegreesPerSecond", maximumVelocityDegreesPerSecond);
+    public double getMaximumVelocityDegreesPerSecond() {
+        return readTunableDegrees("maximumVelocityDegreesPerSecond", maximumVelocityDegreesPerSecond);
     }
 
     /**
-     * Supplies the maximum profile velocity in radians per second.
+     * Returns the maximum profile velocity in radians per second.
      *
-     * @return supplier yielding the max velocity (radians per second)
+     * @return max velocity (radians per second)
      */
-    public Supplier<Double> getMaximumVelocityRadiansPerSecondSupplier() {
-        return () -> Units.degreesToRadians(getMaximumVelocityDegreesPerSecondSupplier().get());
+    public double getMaximumVelocityRadiansPerSecond() {
+        return readTunableDegreesAsRadians("maximumVelocityDegreesPerSecond", maximumVelocityDegreesPerSecond);
     }
 
     /**
-     * Supplies the maximum profile acceleration, tuned via SmartDashboard.
+     * Returns the maximum profile acceleration, tuned via SmartDashboard.
      *
-     * @return supplier yielding the max acceleration (degrees per second squared)
+     * @return max acceleration (degrees per second squared)
      */
-    public Supplier<Double> getMaximumAccelerationDegreesPerSecondSquaredSupplier() {
-        return () -> readTunableNumber("maximumAccelerationDegreesPerSecondSquared",
+    public double getMaximumAccelerationDegreesPerSecondSquared() {
+        return readTunableDegrees(
+                "maximumAccelerationDegreesPerSecondSquared",
                 maximumAccelerationDegreesPerSecondSquared);
     }
 
     /**
-     * Supplies the maximum profile acceleration in radians per second squared.
+     * Returns the maximum profile acceleration in radians per second squared.
      *
-     * @return supplier yielding the max acceleration (radians per second squared)
+     * @return max acceleration (radians per second squared)
      */
-    public Supplier<Double> getMaximumAccelerationRadiansPerSecondSquaredSupplier() {
-        return () -> Units.degreesToRadians(getMaximumAccelerationDegreesPerSecondSquaredSupplier().get());
+    public double getMaximumAccelerationRadiansPerSecondSquared() {
+        return readTunableDegreesAsRadians(
+                "maximumAccelerationDegreesPerSecondSquared",
+                maximumAccelerationDegreesPerSecondSquared);
     }
 
     /**
-     * Supplies the allowed position error used to decide when the mechanism is at its goal.
+     * Returns the allowed position error used to decide when the mechanism is at its goal.
      *
-     * @return supplier yielding the position tolerance (degrees)
+     * @return position tolerance (degrees)
      */
-    public Supplier<Double> getPositionToleranceDegreesSupplier() {
-        return () -> readTunableNumber("positionToleranceDegrees", positionToleranceDegrees);
+    public double getPositionToleranceDegrees() {
+        return readTunableDegrees("positionToleranceDegrees", positionToleranceDegrees);
     }
 
     /**
-     * Supplies the allowed position error in radians.
+     * Returns the allowed position error in radians.
      *
-     * @return supplier yielding the position tolerance (radians)
+     * @return position tolerance (radians)
      */
-    public Supplier<Double> getPositionToleranceRadiansSupplier() {
-        return () -> Units.degreesToRadians(getPositionToleranceDegreesSupplier().get());
+    public double getPositionToleranceRadians() {
+        return readTunableDegreesAsRadians("positionToleranceDegrees", positionToleranceDegrees);
     }
 
     /**
-     * Supplies the allowed velocity error used to decide when the mechanism is at its goal.
+     * Returns the allowed velocity error used to decide when the mechanism is at its goal.
      *
-     * @return supplier yielding the velocity tolerance (degrees per second)
+     * @return velocity tolerance (degrees per second)
      */
-    public Supplier<Double> getVelocityToleranceDegreesPerSecondSupplier() {
-        return () -> readTunableNumber("velocityToleranceDegreesPerSecond", velocityToleranceDegreesPerSecond);
+    public double getVelocityToleranceDegreesPerSecond() {
+        return readTunableDegrees("velocityToleranceDegreesPerSecond", velocityToleranceDegreesPerSecond);
     }
 
     /**
-     * Supplies the allowed velocity error in radians per second.
+     * Returns the allowed velocity error in radians per second.
      *
-     * @return supplier yielding the velocity tolerance (radians per second)
+     * @return velocity tolerance (radians per second)
      */
-    public Supplier<Double> getVelocityToleranceRadiansPerSecondSupplier() {
-        return () -> Units.degreesToRadians(getVelocityToleranceDegreesPerSecondSupplier().get());
+    public double getVelocityToleranceRadiansPerSecond() {
+        return readTunableDegreesAsRadians("velocityToleranceDegreesPerSecond", velocityToleranceDegreesPerSecond);
     }
 
     /**
-     * Supplies the initial position that seeds the profile state on startup.
+     * Returns the initial position that seeds the profile state on startup.
      *
-     * @return supplier yielding the starting position (degrees)
+     * @return starting position (degrees)
      */
-    public Supplier<Double> getInitialPositionDegreesSupplier() {
-        return () -> readTunableNumber("initialPositionDegrees", initialPositionDegrees);
+    public double getInitialPositionDegrees() {
+        return readTunableDegrees("initialPositionDegrees", initialPositionDegrees);
     }
 
     /**
-     * Supplies the initial position in radians.
+     * Returns the initial position in radians.
      *
-     * @return supplier yielding the starting position (radians)
+     * @return starting position (radians)
      */
-    public Supplier<Double> getInitialPositionRadiansSupplier() {
-        return () -> Units.degreesToRadians(getInitialPositionDegreesSupplier().get());
+    public double getInitialPositionRadians() {
+        return readTunableDegreesAsRadians("initialPositionDegrees", initialPositionDegrees);
     }
 
     /**
-     * Supplies the initial velocity that seeds the profile state on startup.
+     * Returns the initial velocity that seeds the profile state on startup.
      *
-     * @return supplier yielding the starting velocity (degrees per second)
+     * @return starting velocity (degrees per second)
      */
-    public Supplier<Double> getInitialVelocityDegreesPerSecondSupplier() {
-        return () -> readTunableNumber("initialVelocityDegreesPerSecond", initialVelocityDegreesPerSecond);
+    public double getInitialVelocityDegreesPerSecond() {
+        return readTunableDegrees("initialVelocityDegreesPerSecond", initialVelocityDegreesPerSecond);
     }
 
     /**
-     * Supplies the initial velocity in radians per second.
+     * Returns the initial velocity in radians per second.
      *
-     * @return supplier yielding the starting velocity (radians per second)
+     * @return starting velocity (radians per second)
      */
-    public Supplier<Double> getInitialVelocityRadiansPerSecondSupplier() {
-        return () -> Units.degreesToRadians(getInitialVelocityDegreesPerSecondSupplier().get());
+    public double getInitialVelocityRadiansPerSecond() {
+        return readTunableDegreesAsRadians("initialVelocityDegreesPerSecond", initialVelocityDegreesPerSecond);
     }
 
     /**
-     * Supplies the proportional gain for the profiled controller.
+     * Returns the proportional gain for the profiled controller.
      *
-     * @return supplier yielding kP
+     * @return kP
      */
-    public Supplier<Double> getkPSupplier() {
-        return () -> readTunableNumber("kP", kP);
+    public double getkP() {
+        return readTunableNumber("kP", kP);
     }
 
     /**
-     * Supplies the integral gain for the profiled controller.
+     * Returns the integral gain for the profiled controller.
      *
-     * @return supplier yielding kI
+     * @return kI
      */
-    public Supplier<Double> getkISupplier() {
-        return () -> readTunableNumber("kI", kI);
+    public double getkI() {
+        return readTunableNumber("kI", kI);
     }
 
     /**
-     * Supplies the derivative gain for the profiled controller.
+     * Returns the derivative gain for the profiled controller.
      *
-     * @return supplier yielding kD
+     * @return kD
      */
-    public Supplier<Double> getkDSupplier() {
-        return () -> readTunableNumber("kD", kD);
+    public double getkD() {
+        return readTunableNumber("kD", kD);
     }
 
     /**
-     * Supplies the static feedforward term.
+     * Returns the static feedforward term.
      *
-     * @return supplier yielding kS (volts)
+     * @return kS (volts)
      */
-    public Supplier<Double> getkSSupplier() {
-        return () -> readTunableNumber("kS", kS);
+    public double getkS() {
+        return readTunableNumber("kS", kS);
     }
 
     /**
-     * Supplies the velocity feedforward term.
+     * Returns the velocity feedforward term.
      *
-     * @return supplier yielding kV (volts per mechanism unit per second)
+     * @return kV (volts per mechanism unit per second)
      */
-    public Supplier<Double> getkVSupplier() {
-        return () -> readTunableNumber("kV", kV);
+    public double getkV() {
+        return readTunableNumber("kV", kV);
     }
 
     /**
-     * Supplies the acceleration feedforward term.
+     * Returns the acceleration feedforward term.
      *
-     * @return supplier yielding kA (volts per mechanism unit per second squared)
+     * @return kA (volts per mechanism unit per second squared)
      */
-    public Supplier<Double> getkASupplier() {
-        return () -> readTunableNumber("kA", kA);
-    }
-
-    /**
-     * Returns the dashboard prefix, honoring the optional override when provided.
-     *
-     * @return prefix appended after the SmartDashboard namespace
-     */
-    @Override
-    protected String getDashboardPrefix() {
-        if (dashboardPrefix != null && !dashboardPrefix.isBlank()) {
-            return dashboardPrefix;
-        }
-        return super.getDashboardPrefix();
+    public double getkA() {
+        return readTunableNumber("kA", kA);
     }
 }
