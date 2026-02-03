@@ -1,0 +1,18 @@
+{
+  "field-image": "2026-shop.png",
+  "field-corners": {
+    "top-left": [
+      108,
+      22
+    ],
+    "bottom-right": [
+      1441,
+      908
+    ]
+  },
+  "field-size": [
+    6.0,
+    5.0
+  ],
+  "field-unit": "meters"
+}

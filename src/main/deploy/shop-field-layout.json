@@ -1,18 +1,98 @@
 {
-  "field-image": "2026-shop.png",
-  "field-corners": {
-    "top-left": [
-      108,
-      22
-    ],
-    "bottom-right": [
-      1441,
-      908
-    ]
+  "field": {
+    "length": 6.0,
+    "width": 5.0
   },
-  "field-size": [
-    6.0,
-    5.0
-  ],
-  "field-unit": "meters"
+  "tags": [
+    {
+      "ID": 1,
+      "pose": {
+        "rotation": {
+          "quaternion": {
+            "W": 1.0,
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          }
+        },
+        "translation": {
+          "x": 0.0,
+          "y": 1.5,
+          "z": 0.434
+        }
+      }
+    },
+    {
+      "ID": 2,
+      "pose": {
+        "rotation": {
+          "quaternion": {
+            "W": 1.0,
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          }
+        },
+        "translation": {
+          "x": 0.0,
+          "y": 3.0,
+          "z": 0.434
+        }
+      }
+    },
+    {
+      "ID": 3,
+      "pose": {
+        "rotation": {
+          "quaternion": {
+            "W": 0.7071067811865475,
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.7071067811865476
+          }
+        },
+        "translation": {
+          "x": 1.5,
+          "y": 0.0,
+          "z": 0.434
+        }
+      }
+    },
+    {
+      "ID": 4,
+      "pose": {
+        "rotation": {
+          "quaternion": {
+            "W": 0.7071067811865475,
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.7071067811865476
+          }
+        },
+        "translation": {
+          "x": 5.21,
+          "y": 0.0,
+          "z": 0.436
+        }
+      }
+    },
+    {
+      "ID": 5,
+      "pose": {
+        "rotation": {
+          "quaternion": {
+            "W": 0.7071067811865475,
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.7071067811865476
+          }
+        },
+        "translation": {
+          "x": 5.635,
+          "y": 0.0,
+          "z": 0.436
+        }
+      }
+    }
+  ]
 }
