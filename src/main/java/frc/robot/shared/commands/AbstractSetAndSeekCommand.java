@@ -34,7 +34,7 @@ public class AbstractSetAndSeekCommand<TSubsystem extends AbstractSetAndSeekSubs
 
     @Override
     public void execute() {
-        subsystem.setTarget(targetSupplier.get());
+        //subsystem.setTarget(targetSupplier.get());
         subsystem.seekTarget();
     }
 
