@@ -32,6 +32,15 @@ Follow them whenever you add code, documentation, or tests.
   `AbstractSetAndSeekSubsystem`.
   - Command factories live alongside commands in each subsystem's `commands/`
     folder (no standalone `factories/` folder).
+- Set-and-seek mechanisms should follow the latest turret pattern:
+  - Read the turret guide first: [src/main/java/frc/robot/subsystems/turret/README.md](src/main/java/frc/robot/subsystems/turret/README.md).
+  - Use [src/main/java/frc/robot/shared/subsystems/AbstractSetAndSeekSubsystem.java](src/main/java/frc/robot/shared/subsystems/AbstractSetAndSeekSubsystem.java)
+    for profile logic and [src/main/java/frc/robot/shared/commands/AbstractSetAndSeekCommand.java](src/main/java/frc/robot/shared/commands/AbstractSetAndSeekCommand.java)
+    for command flow.
+  - Keep public APIs in degrees, clamp targets to config limits, and log both
+    requested and clamped values.
+  - Keep command factories in each subsystem’s `commands/` folder (example in
+    the turret folder) and avoid putting command builders on subsystems.
 - Organize class members by visibility and role: public API at the top, followed
   by protected, package-private, and private helpers. Group overloads together.
 - Keep methods cohesive and self-descriptive. If logic is hard to infer from
