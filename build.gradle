@@ -197,6 +197,20 @@ tasks.register("renderReadmes") {
             return
         }
 
+        def toDisplayName = { readmePath ->
+            if (readmePath == "README.md") {
+                return "Project README"
+            }
+            def match = (readmePath =~ /frc\/robot\/subsystems\/([^\\/]+)\/README\.md/)
+            if (match.matches()) {
+                def subsystemName = match[0][1]
+                def prettyName = subsystemName.substring(0, 1).toUpperCase() + subsystemName.substring(1)
+                return "${prettyName} Subsystem README"
+            }
+            def cleaned = readmePath.replaceAll(/README\.md$/, "README").replaceAll("/", " ")
+            return cleaned.replaceAll("\\s+", " ").trim()
+        }
+
         readmeOutputDir.mkdirs()
         allReadmes.each { readme ->
             def relativePath = readme == rootReadme
@@ -222,9 +236,7 @@ tasks.register("renderReadmes") {
             def jqueryUiCssPath = "${rootPrefix}script-dir/jquery-ui.min.css"
             def jqueryUiOverridesPath = "${rootPrefix}jquery-ui.overrides.css"
             def indexPath = "${rootPrefix}index.html"
-            def readmeTitle = readme == rootReadme
-                ? "Project README"
-                : relativePath.replaceAll(/README\.md$/, "README")
+            def readmeTitle = toDisplayName(relativePath)
 
             outputFile.text = """
 <!DOCTYPE HTML>
@@ -304,11 +316,17 @@ ${markedOutput.toString("UTF-8")}
                 ? "README.md"
                 : readmeInputDir.toPath().relativize(readme.toPath()).toString()
             def htmlPath = relativePath.replaceAll(/README\.md$/, "README.html")
-            def displayName = readme == rootReadme
-                ? "Project README"
-                : relativePath.replaceAll(/README\.md$/, "README").replaceAll("/", " ")
+            def displayName = toDisplayName(relativePath)
             return [path: htmlPath, name: displayName]
-        }.sort { it.name }
+        }.sort { a, b ->
+            if (a.path == "README.html") {
+                return -1
+            }
+            if (b.path == "README.html") {
+                return 1
+            }
+            return a.name <=> b.name
+        }
 
         overviewFile.text = """
 <!DOCTYPE HTML>
@@ -323,7 +341,7 @@ ${markedOutput.toString("UTF-8")}
 </head>
 <body>
 <h1>Subsystem READMEs</h1>
-<p>Use this index to jump to rendered README pages in the Javadoc output.</p>
+<p>Each README summarizes a subsystem’s purpose, key behaviors, and configuration details.</p>
 <ul>
 ${overviewLinks.collect { "<li><a href=\"${it.path}\">${it.name}</a> (${it.path})</li>" }.join("\n")}
 </ul>
