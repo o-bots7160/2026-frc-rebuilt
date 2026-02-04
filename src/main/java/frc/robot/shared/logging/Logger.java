@@ -59,6 +59,12 @@ public class Logger {
 
     private Boolean verbose;
 
+    /**
+     * Creates a logger scoped to the provided class name.
+     *
+     * @param className name to prefix all log messages with
+     * @param verbose   true to enable verbose and debug output
+     */
     protected Logger(String className, boolean verbose) {
         this.className = className;
         this.verbose   = verbose;
@@ -118,6 +124,9 @@ public class Logger {
     /**
      * Records a boolean to AdvantageKit using the class name as a prefix.
      * Prefer this for telemetry instead of SmartDashboard to reduce NetworkTables noise.
+     *
+     * @param key   telemetry key suffix
+     * @param value value to record
      */
     public void recordOutput(String key, boolean value) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, value);
@@ -127,6 +136,9 @@ public class Logger {
     /**
      * Records a numeric value to AdvantageKit using the class name as a prefix.
      * Prefer this for telemetry instead of SmartDashboard to reduce NetworkTables noise.
+     *
+     * @param key   telemetry key suffix
+     * @param value value to record
      */
     public void recordOutput(String key, double value) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, value);
@@ -135,6 +147,9 @@ public class Logger {
 
     /**
      * Records an array of numeric values to AdvantageKit using the class name as a prefix.
+     *
+     * @param key    telemetry key suffix
+     * @param values values to record
      */
     public void recordOutput(String key, double[] values) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, values);
@@ -143,6 +158,9 @@ public class Logger {
 
     /**
      * Records a pose to AdvantageKit using the class name as a prefix.
+     *
+     * @param key  telemetry key suffix
+     * @param pose pose value to record
      */
     public void recordOutput(String key, Pose2d pose) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, pose);

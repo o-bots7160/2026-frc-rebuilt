@@ -71,6 +71,11 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
     private SwerveModuleState[]               lastRequestedStates    = new SwerveModuleState[0];
 
+    /**
+     * Creates the drive base subsystem and wires YAGSL hardware if enabled.
+     *
+     * @param config drive base configuration values and tunables
+     */
     public DriveBaseSubsystem(DriveBaseSubsystemConfig config) {
         super(config);
 
@@ -326,6 +331,10 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * <p>This method is typically invoked via a
      * {@link frc.robot.subsystems.vision.AprilTagVisionConsumer} supplied to the
      * Vision subsystem during wiring in {@code RobotContainer}.</p>
+         *
+         * @param robotPose          pose measurement in meters and radians
+         * @param timestamp          timestamp of the measurement in seconds
+         * @param standardDeviations measurement standard deviations for x/y/theta
      */
     public void addVisionMeasurement(
             Pose2d robotPose,

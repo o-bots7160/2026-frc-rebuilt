@@ -11,11 +11,23 @@ import frc.robot.subsystems.vision.config.DriverCameraSubsystemConfig;
  */
 public class SubsystemsConfig {
 
+    /**
+     * Drive base configuration bundle.
+     */
     public DriveBaseSubsystemConfig driveBaseSubsystem = new DriveBaseSubsystemConfig();
 
+    /**
+     * Turret configuration bundle.
+     */
     public TurretSubsystemConfig    turretSubsystem    = new TurretSubsystemConfig();
 
+    /**
+     * AprilTag vision configuration bundle.
+     */
     public AprilTagVisionSubsystemConfig aprilTagVisionSubsystem = new AprilTagVisionSubsystemConfig();
 
+    /**
+     * Driver camera configuration bundle.
+     */
     public DriverCameraSubsystemConfig driverCameraSubsystem = new DriverCameraSubsystemConfig();
 }

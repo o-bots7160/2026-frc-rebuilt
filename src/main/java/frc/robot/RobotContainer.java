@@ -21,6 +21,9 @@ import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 import frc.robot.subsystems.vision.AprilTagVisionSubsystem;
 import frc.robot.subsystems.vision.DriverCameraSubsystem;
 
+/**
+ * Central wiring hub for subsystems, commands, and driver inputs.
+ */
 public class RobotContainer {
 
     // Configuration
@@ -50,6 +53,9 @@ public class RobotContainer {
     @SuppressWarnings("unused")
     private final TriggerBindings                  triggerBindings;
 
+    /**
+     * Builds the robot container and wires subsystems, command factories, and bindings.
+     */
     public RobotContainer() {
         try {
             subsystemsConfig            = ConfigurationLoader.load("subsystems.json", SubsystemsConfig.class);
@@ -94,6 +100,14 @@ public class RobotContainer {
         return aprilTagFieldLayoutSupplier.get();
     }
 
+    /**
+     * Returns the command to run during autonomous mode.
+     * <p>
+     * Update this method to swap between auto routines.
+     * </p>
+     *
+     * @return command scheduled at the start of autonomous
+     */
     public Command getAutonomousCommand() {
         // return Commands.print("No autonomous command configured");
         return turretCommandFactory.createMoveToAngleCommand(100)

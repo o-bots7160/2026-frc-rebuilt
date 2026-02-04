@@ -11,8 +11,14 @@ import frc.robot.shared.subsystems.AbstractSubsystem;
  * @param <TSubsystem> subsystem type this command operates on
  */
 public abstract class AbstractSubsystemCommand<TSubsystem extends AbstractSubsystem<?>> extends Command {
+    /**
+     * Subsystem instance this command requires and operates on.
+     */
     protected final TSubsystem subsystem;
 
+    /**
+     * Logger scoped to the concrete command class.
+     */
     protected final Logger     log;
 
     /**

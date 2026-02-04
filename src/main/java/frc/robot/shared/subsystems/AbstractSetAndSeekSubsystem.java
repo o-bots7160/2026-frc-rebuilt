@@ -21,18 +21,39 @@ import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
  * </p>
  */
 public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAndSeekSubsystemConfig> extends AbstractSubsystem<TConfig> {
+    /**
+     * Motor used to drive the set-and-seek mechanism.
+     */
     protected final Motor                   motor;
 
+    /**
+     * Logged motor inputs snapshot used for telemetry and replay.
+     */
     protected final MotorIOInputsAutoLogged motorInputs = new MotorIOInputsAutoLogged();
 
+    /**
+     * Trapezoid constraints that bound velocity and acceleration.
+     */
     protected TrapezoidProfile.Constraints  constraints;
 
+    /**
+     * Profiled PID controller that tracks the trapezoid setpoint.
+     */
     protected final ProfiledPIDController   controller;
 
+    /**
+     * Feedforward model used to estimate needed voltage.
+     */
     protected SimpleMotorFeedforward        feedforward;
 
+    /**
+     * Desired goal state for the trapezoid profile.
+     */
     protected TrapezoidProfile.State        goalState;
 
+    /**
+     * Current setpoint state produced by the trapezoid profile.
+     */
     protected TrapezoidProfile.State        setpointState;
 
     private final SysIdRoutine              sysIdRoutine;

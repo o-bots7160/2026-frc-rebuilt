@@ -2,7 +2,18 @@ package frc.robot.shared.commands;
 
 import frc.robot.shared.subsystems.AbstractSubsystem;
 
+/**
+ * Base factory for building commands tied to a single subsystem instance.
+ * <p>
+ * Extend this in each subsystem package to keep command creation centralized.
+ * </p>
+ *
+ * @param <TSubsystem> subsystem type that commands will operate on
+ */
 public abstract class AbstractSubsystemCommandFactory<TSubsystem extends AbstractSubsystem<?>> {
+    /**
+     * Subsystem instance shared by all commands created by this factory.
+     */
     protected final TSubsystem subsystem;
 
     /**

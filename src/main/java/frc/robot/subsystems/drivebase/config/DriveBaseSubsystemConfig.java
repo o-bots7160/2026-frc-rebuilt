@@ -11,22 +11,49 @@ import frc.robot.shared.config.AbstractConfig;
  */
 public class DriveBaseSubsystemConfig extends AbstractConfig {
 
+    /**
+     * Maximum linear speed in feet per second.
+     */
     public double maximumLinearSpeedFeetPerSecond;
 
+    /**
+     * Maximum angular speed in degrees per second.
+     */
     public double maximumAngularSpeedDegreesPerSecond;
 
+    /**
+     * Heading controller proportional gain.
+     */
     public double headingKp;
 
+    /**
+     * Heading controller integral gain.
+     */
     public double headingKi;
 
+    /**
+     * Heading controller derivative gain.
+     */
     public double headingKd;
 
+    /**
+     * Allowed heading error in degrees.
+     */
     public double rotationToleranceDegrees;
 
+    /**
+     * Driver translation scale from 0 to 1.
+     */
     public double translationScale;
 
+    /**
+     * Additional translation scale applied in simulation.
+     */
     public double simulationTranslationScale;
 
+    /**
+     * Additional rotation scale applied in simulation.
+     */
     public double simulationOmegaScale;
 
     /**

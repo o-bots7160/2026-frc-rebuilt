@@ -18,16 +18,34 @@ public interface DriveBaseIO {
      */
     @AutoLog
     public static class DriveBaseIOInputs {
+        /**
+         * Current robot pose estimate in meters and radians.
+         */
         public Pose2d              pose                     = new Pose2d();
 
+        /**
+         * Measured chassis speeds in meters per second and radians per second.
+         */
         public ChassisSpeeds       chassisSpeeds            = new ChassisSpeeds();
 
+        /**
+         * Measured swerve module states.
+         */
         public SwerveModuleState[] moduleStates             = new SwerveModuleState[0];
 
+        /**
+         * Target swerve module states requested by the controller.
+         */
         public SwerveModuleState[] moduleTargets            = new SwerveModuleState[0];
 
+        /**
+         * Current gyro yaw reading.
+         */
         public Rotation2d          gyroYaw                  = new Rotation2d();
 
+        /**
+         * Timestamp for the latest odometry update in seconds.
+         */
         public double              odometryTimestampSeconds = 0.0;
     }
 

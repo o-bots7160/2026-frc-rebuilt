@@ -12,6 +12,9 @@ import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 
+/**
+ * Factory that creates drive base commands and wires default behaviors.
+ */
 public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFactory<DriveBaseSubsystem> {
 
     /**

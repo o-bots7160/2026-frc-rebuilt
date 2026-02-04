@@ -27,8 +27,20 @@ public abstract class AbstractConfig {
 
     private final String                            defaultDashboardPrefix;
 
+    /**
+     * Enables or disables the subsystem that owns this config.
+     * <p>
+     * Set this in JSON to fully skip hardware actions when a mechanism is not ready.
+     * </p>
+     */
     public boolean                                  enabled         = true;
 
+    /**
+     * Enables verbose logging for the subsystem that owns this config.
+     * <p>
+     * Use this during tuning to print extra debug information.
+     * </p>
+     */
     public boolean                                  verbose         = true;
 
     private final Map<String, LoggedNetworkBoolean> tunableBooleans = new HashMap<>();
@@ -37,6 +49,12 @@ public abstract class AbstractConfig {
 
     private final Map<String, LoggedNetworkString>  tunableStrings  = new HashMap<>();
 
+    /**
+     * Creates a config base and derives the default SmartDashboard prefix from the class name.
+     * <p>
+     * Subclasses should call this implicitly when deserialized from JSON.
+     * </p>
+     */
     protected AbstractConfig() {
         this.defaultDashboardPrefix = computeDefaultDashboardPrefix(getClass());
     }

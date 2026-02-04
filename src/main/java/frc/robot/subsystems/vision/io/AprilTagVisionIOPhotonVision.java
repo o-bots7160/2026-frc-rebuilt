@@ -24,12 +24,28 @@ import edu.wpi.first.math.geometry.Transform3d;
  */
 public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
 
+    /**
+     * PhotonVision camera instance used to pull pipeline results.
+     */
     protected final PhotonCamera        camera;
 
+    /**
+     * Transform from robot center to the camera position.
+     */
     protected final Transform3d         robotToCamera;
 
+    /**
+     * Field layout that maps AprilTag IDs to field poses.
+     */
     protected final AprilTagFieldLayout fieldLayout;
 
+    /**
+     * Creates a PhotonVision-backed AprilTag IO implementation.
+     *
+     * @param cameraName    name of the PhotonVision camera instance
+     * @param robotToCamera robot-to-camera transform in meters and radians
+     * @param fieldLayout   AprilTag field layout used to look up tag poses
+     */
     public AprilTagVisionIOPhotonVision(
             String cameraName,
             Transform3d robotToCamera,

@@ -18,16 +18,34 @@ public class AprilTagVisionSubsystemConfig extends AbstractConfig {
      * Nested class for JSON deserialization of camera transforms.
      */
     public static class CameraTransform {
+        /**
+         * Robot-to-camera X offset in meters (forward positive).
+         */
         public double x;
 
+        /**
+         * Robot-to-camera Y offset in meters (left positive).
+         */
         public double y;
 
+        /**
+         * Robot-to-camera Z offset in meters (up positive).
+         */
         public double z;
 
+        /**
+         * Robot-to-camera roll in radians.
+         */
         public double roll;
 
+        /**
+         * Robot-to-camera pitch in radians.
+         */
         public double pitch;
 
+        /**
+         * Robot-to-camera yaw in radians.
+         */
         public double yaw;
 
         /**

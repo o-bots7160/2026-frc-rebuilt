@@ -14,16 +14,34 @@ import frc.robot.shared.logging.Logger;
  * </p>
  */
 public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends SubsystemBase {
+    /**
+     * Nominal loop period in seconds for controller updates.
+     */
     protected static double kDt = 0.02;
 
+    /**
+     * Subsystem configuration bundle loaded from JSON.
+     */
     protected TConfig       config;
 
+    /**
+     * Cached class name used for logging prefixes.
+     */
     protected String        className;
 
+    /**
+     * True when verbose logging is enabled for this subsystem.
+     */
     protected boolean       verbose;
 
+    /**
+     * Logger instance scoped to the subsystem.
+     */
     protected Logger        log;
 
+    /**
+     * True when the subsystem is allowed to run hardware actions.
+     */
     protected boolean       enabled;
 
     /**
@@ -84,6 +102,14 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
         return RobotBase.isReal() && DriverStation.isFMSAttached();
     }
 
+    /**
+     * Logs a standardized message when a call is skipped due to disable state.
+     * <p>
+     * Call this from public APIs to make skipped actions visible to operators.
+     * </p>
+     *
+     * @param methodName name of the method that was skipped
+     */
     protected void logDisabled(String methodName) {
         log.verbose(methodName + " called, but subsystem is disabled.");
     }

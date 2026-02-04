@@ -20,11 +20,17 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+/**
+ * Main robot class that owns the command scheduler and logging setup.
+ */
 public class Robot extends LoggedRobot {
     private Command              m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
 
+    /**
+     * Creates the robot and initializes logging, replay, and container wiring.
+     */
     public Robot() {
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);

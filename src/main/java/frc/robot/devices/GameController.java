@@ -15,15 +15,25 @@ public class GameController extends CommandJoystick {
      * Buttons on a standard game controller.
      */
     public enum GameControllerButton {
+        /** Button A. */
         A(1),
+        /** Button B. */
         B(2),
+        /** Button X. */
         X(3),
+        /** Button Y. */
         Y(4),
+        /** Left bumper. */
         L1(5),
+        /** Right bumper. */
         R1(6),
+        /** Back/select button. */
         Back(7),
+        /** Start button. */
         Start(8),
+        /** Left stick press. */
         LStick(9),
+        /** Right stick press. */
         RStick(10);
 
         private final int value;
@@ -32,6 +42,11 @@ public class GameController extends CommandJoystick {
             this.value = value;
         }
 
+        /**
+         * Returns the raw driver station button index.
+         *
+         * @return button index used by WPILib
+         */
         public int getValue() {
             return value;
         }
@@ -41,11 +56,17 @@ public class GameController extends CommandJoystick {
      * Axes on a standard game controller.
      */
     public enum GameControllerAxes {
+        /** Left stick X axis. */
         LeftStickX(0),
+        /** Left stick Y axis. */
         LeftStickY(1),
+        /** Right stick X axis. */
         RightStickX(4),
+        /** Right stick Y axis. */
         RightStickY(5),
+        /** Left trigger axis. */
         LTrigger(2),
+        /** Right trigger axis. */
         RTrigger(3);
 
         private final int value;
@@ -54,11 +75,21 @@ public class GameController extends CommandJoystick {
             this.value = value;
         }
 
+        /**
+         * Returns the raw driver station axis index.
+         *
+         * @return axis index used by WPILib
+         */
         public int getValue() {
             return value;
         }
     }
 
+    /**
+     * Creates a game controller wrapper for the given USB port.
+     *
+     * @param port driver station USB port index
+     */
     public GameController(int port) {
         super(port);
     }
