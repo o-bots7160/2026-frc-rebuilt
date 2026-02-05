@@ -1,0 +1,84 @@
+{
+  "name": "Shop Field",
+  "isFTC": false,
+  "coordinateSystem": "wall-blue",
+  "widthInches": 280,
+  "heightInches": 185.552,
+  "aprilTags": [
+    {
+      "variant": "36h11-6.5in",
+      "id": 1,
+      "rotations": [
+        {
+          "axis": "z",
+          "degrees": 0.0
+        }
+      ],
+      "position": [
+        0.0,
+        1.5,
+        0.434
+      ]
+    },
+    {
+      "variant": "36h11-6.5in",
+      "id": 2,
+      "rotations": [
+        {
+          "axis": "z",
+          "degrees": 0.0
+        }
+      ],
+      "position": [
+        0.0,
+        3.0,
+        0.434
+      ]
+    },
+    {
+      "variant": "36h11-6.5in",
+      "id": 3,
+      "rotations": [
+        {
+          "axis": "z",
+          "degrees": 270.0
+        }
+      ],
+      "position": [
+        1.5,
+        0.0,
+        0.434
+      ]
+    },
+    {
+      "variant": "36h11-6.5in",
+      "id": 4,
+      "rotations": [
+        {
+          "axis": "z",
+          "degrees": 270.0
+        }
+      ],
+      "position": [
+        5.21,
+        0.0,
+        0.436
+      ]
+    },
+    {
+      "variant": "36h11-6.5in",
+      "id": 5,
+      "rotations": [
+        {
+          "axis": "z",
+          "degrees": 270.0
+        }
+      ],
+      "position": [
+        5.635,
+        0.0,
+        0.436
+      ]
+    }
+  ]
+}

@@ -1,9 +1,13 @@
 package frc.robot.shared.config;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Objects;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.wpilibj.Filesystem;
 
 /**
  * Configuration for selecting the official AprilTag field layout and origin.
@@ -15,9 +19,38 @@ public class FieldLayoutConfig extends AbstractConfig {
      */
     public enum FieldLayoutType {
         /** The welded field layout. */
-        WELDED,
+        WELDED("welded", Source.OFFICIAL, WELDED_FIELD),
         /** The AndyMark field layout. */
-        ANDYMARK
+        ANDYMARK("andymark", Source.OFFICIAL, ANDY_MARK_FIELD),
+        /** Obots shop. */
+        SHOP("shop", Source.CUSTOM, SHOP_FIELD);
+
+        private enum Source {
+            OFFICIAL,
+            CUSTOM
+        }
+
+        private final String name;
+        private final Source source;
+        private final String fieldResource;
+
+        FieldLayoutType(String name, Source source, String fieldResource) {
+            this.name   = name;
+            this.source = source;
+            this.fieldResource  = fieldResource;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isOfficial() {
+            return source == Source.OFFICIAL;
+        }
+
+        public String getFieldResource() {
+            return fieldResource;
+        }
     }
 
     /** Enum name of the welded field layout to load. */
@@ -26,10 +59,13 @@ public class FieldLayoutConfig extends AbstractConfig {
     /** Enum name of the AndyMark field layout to load. */
     public static final String ANDY_MARK_FIELD = "k2026RebuiltAndymark";
 
+    /** Deploy-relative path for the shop field layout. */
+    public static final String SHOP_FIELD = "shop-field-layout.json";
+
     /** Enum name for the AprilTag layout origin to apply. */
     public static final String ORIGIN = "kBlueAllianceWallRightSide";
 
-    /** Field type selector used to pick between welded and AndyMark layouts. */
+    /** Field type selector used to pick between field layouts. */
     public FieldLayoutType fieldType;
 
     /**
@@ -55,18 +91,30 @@ public class FieldLayoutConfig extends AbstractConfig {
      */
     public AprilTagFieldLayout loadLayout() {
         FieldLayoutType     resolvedFieldType = getFieldType();
-        AprilTagFields      selectedField     = resolveSelectedField(resolvedFieldType);
-        AprilTagFieldLayout layout            = AprilTagFieldLayout.loadField(selectedField);
+        AprilTagFieldLayout layout            = loadLayoutForType(resolvedFieldType);
         layout.setOrigin(resolveOrigin());
         return layout;
     }
 
-    private AprilTagFields resolveSelectedField(FieldLayoutType fieldTypeValue) {
+    private AprilTagFieldLayout loadLayoutForType(FieldLayoutType fieldTypeValue) {
         FieldLayoutType resolvedType = Objects.requireNonNull(fieldTypeValue, "fieldType must be configured");
-        if (resolvedType == FieldLayoutType.ANDYMARK) {
-            return AprilTagFields.valueOf(ANDY_MARK_FIELD);
+        if (resolvedType.isOfficial()) {
+            AprilTagFields selectedField = AprilTagFields.valueOf(resolvedType.getFieldResource());
+            return AprilTagFieldLayout.loadField(selectedField);
         }
-        return AprilTagFields.valueOf(WELDED_FIELD);
+        return loadCustomLayout(resolvedType.getFieldResource());
+    }
+
+    private AprilTagFieldLayout loadCustomLayout(String resourcePath) {
+        if (resourcePath == null || resourcePath.isBlank()) {
+            throw new IllegalArgumentException("Custom field layouts must define a resource path");
+        }
+        Path deployPath = Filesystem.getDeployDirectory().toPath().resolve(resourcePath.trim());
+        try {
+            return new AprilTagFieldLayout(deployPath);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load custom field layout from deploy path: " + deployPath, e);
+        }
     }
 
     private AprilTagFieldLayout.OriginPosition resolveOrigin() {
@@ -78,12 +126,20 @@ public class FieldLayoutConfig extends AbstractConfig {
     }
 
     private FieldLayoutType parseFieldType(String value) {
-        String normalized = Objects.requireNonNull(value, "fieldType must be configured").trim().toLowerCase();
+        String normalized = Objects.requireNonNull(value, "fieldType must be configured").trim().toLowerCase(Locale.ROOT);
         if ("andymark".equals(normalized) || "andy-mark".equals(normalized) || "andy".equals(normalized)) {
             return FieldLayoutType.ANDYMARK;
         }
+        if ("shop".equals(normalized)) {
+            return FieldLayoutType.SHOP;
+        }
         if ("welded".equals(normalized)) {
             return FieldLayoutType.WELDED;
+        }
+        for (FieldLayoutType type : FieldLayoutType.values()) {
+            if (type.getName().equals(normalized)) {
+                return type;
+            }
         }
         return FieldLayoutType.valueOf(value.trim());
     }
