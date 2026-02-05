@@ -103,7 +103,7 @@ public class TriggerBindings {
                                 * computeDriveThrottleScale(),
                         -1.0,
                         1.0),
-                () -> driverController.getRawAxis(GameControllerAxes.RightStickX.getValue()));
+                () -> -driverController.getRawAxis(GameControllerAxes.RightStickX.getValue()));
     }
 
     private double computeDriveThrottleScale() {
