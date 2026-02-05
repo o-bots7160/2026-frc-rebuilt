@@ -1,0 +1,9 @@
+{
+  "name": "Shop Field",
+  "isFTC": false,
+  "coordinateSystem": "wall-blue",
+  "topLeft": [108, 22],
+  "bottomRight": [1448, 910],
+  "widthInches": 280,
+  "heightInches": 185.552
+}
