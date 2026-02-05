@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -89,18 +90,6 @@ public class RobotContainer {
     }
 
     /**
-     * Returns the active AprilTag field layout for navigation and vision targeting.
-     * <p>
-     * Use this to look up tag poses for autonomous destinations or pose correction.
-     * </p>
-     *
-     * @return loaded AprilTag field layout with the configured origin applied
-     */
-    public AprilTagFieldLayout getAprilTagFieldLayout() {
-        return aprilTagFieldLayoutSupplier.get();
-    }
-
-    /**
      * Returns the command to run during autonomous mode.
      * <p>
      * Update this method to swap between auto routines.
@@ -115,5 +104,14 @@ public class RobotContainer {
                 .andThen(turretCommandFactory.createMoveToAngleCommand(-100))
                 .andThen(Commands.waitSeconds(2.0))
                 .repeatedly();
+    }
+
+    /**
+     * Resets the drive base pose.
+     *
+     * @param pose new robot pose in field coordinates
+     */
+    public void resetDrivePose(Pose2d pose) {
+        driveBaseSubsystem.resetPose(pose);
     }
 }

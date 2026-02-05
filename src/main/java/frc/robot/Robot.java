@@ -15,6 +15,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -121,6 +123,17 @@ public class Robot extends LoggedRobot {
     public void teleopInit() {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
+        } else if (isSimulation()) {
+
+            // if the robot didn't move around in auton and this is a
+            // simulation then let's reset to start on the line for now;
+            // maybe we should make a drop-down different start positions
+            // or tunable config?
+            Pose2d startPose = new Pose2d(
+                    3.6 /* just short of blue starting line */,
+                    4.0 /* center of field */,
+                    new Rotation2d(0) /* facing red alliance */);
+            m_robotContainer.resetDrivePose(startPose);
         }
     }
 
