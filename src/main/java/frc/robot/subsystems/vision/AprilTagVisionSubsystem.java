@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -23,10 +21,10 @@ import frc.robot.subsystems.vision.io.AprilTagVisionIOPhotonVisionSim;
 
 /**
  * Subsystem that processes AprilTag camera observations for robot pose estimation.
- *
- * <p>Uses AprilTag detection via PhotonVision to provide vision-based pose
- * corrections to the drivebase pose estimator. Pose filtering and uncertainty
- * calculation are delegated to {@link AprilTagPoseEstimator}.</p>
+ * <p>
+ * Uses AprilTag detection via PhotonVision to provide vision-based pose corrections to the drivebase pose estimator. Pose filtering and uncertainty
+ * calculation are delegated to {@link AprilTagPoseEstimator}.
+ * </p>
  */
 public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSubsystemConfig> {
 
@@ -34,12 +32,16 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             String name,
             AprilTagVisionIO io,
             AprilTagVisionIOInputsAutoLogged inputs,
-            Alert disconnectedAlert) {}
+            Alert disconnectedAlert) {
+    }
 
     private final Map<String, CameraInstance> cameras;
-    private final AprilTagVisionConsumer consumer;
-    private final AprilTagFieldLayout fieldLayout;
-    private final AprilTagPoseEstimator poseEstimator;
+
+    private final AprilTagVisionConsumer      consumer;
+
+    private final AprilTagFieldLayout         fieldLayout;
+
+    private final AprilTagPoseEstimator       poseEstimator;
 
     /**
      * Creates a new AprilTagVisionSubsystem.
@@ -56,8 +58,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             Supplier<Pose2d> poseSupplier) {
 
         super(config);
-        this.consumer = consumer;
-        this.fieldLayout = fieldLayout;
+        this.consumer      = consumer;
+        this.fieldLayout   = fieldLayout;
 
         this.poseEstimator = new AprilTagPoseEstimator(new AprilTagPoseEstimator.Params(
                 fieldLayout.getFieldLength(),
@@ -66,9 +68,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 config.getLinearStandardDeviationBaseline()::get,
                 config.getAngularStandardDeviationBaseline()::get));
 
-        this.cameras = createCameras(config, fieldLayout, poseSupplier);
+        this.cameras       = createCameras(config, fieldLayout, poseSupplier);
 
-        log.info("AprilTagVisionSubsystem initialized with " + cameras.size() + " camera(s)");
+        log.info("Initialized with " + cameras.size() + " camera(s)");
     }
 
     @Override
@@ -84,7 +86,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
 
         for (var camera : cameras.values()) {
             camera.io().updateInputs(camera.inputs());
-            Logger.processInputs("Vision/Camera/" + camera.name(), camera.inputs());
+            log.processInputs("Camera/" + camera.name(), camera.inputs());
 
             camera.disconnectedAlert().set(!camera.inputs().connected);
 
@@ -115,8 +117,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         for (var configEntry : configCameras.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .toList()) {
-            String cameraName = configEntry.getKey();
-            var transform3d = configEntry.getValue().toTransform3d();
+            String           cameraName  = configEntry.getKey();
+            var              transform3d = configEntry.getValue().toTransform3d();
 
             AprilTagVisionIO visionIo;
             if (isSimulation()) {
@@ -134,7 +136,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 log.info("Created real camera: " + cameraName);
             }
 
-            var inputs = new AprilTagVisionIOInputsAutoLogged();
+            var inputs            = new AprilTagVisionIOInputsAutoLogged();
             var disconnectedAlert = new Alert(
                     "Vision camera '" + cameraName + "' is disconnected.",
                     AlertType.kWarning);
@@ -197,12 +199,11 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             List<Pose3d> robotPoses,
             List<Pose3d> acceptedPoses,
             List<Pose3d> rejectedPoses) {
-
-        String prefix = "Vision/Camera/" + cameraName;
-        Logger.recordOutput(prefix + "/TagPoses", tagPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput(prefix + "/RobotPoses", robotPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput(prefix + "/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput(prefix + "/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+        String prefix = "Camera/" + cameraName;
+        log.recordOutput(prefix + "/TagPoses", tagPoses.toArray(new Pose3d[0]));
+        log.recordOutput(prefix + "/RobotPoses", robotPoses.toArray(new Pose3d[0]));
+        log.recordOutput(prefix + "/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
+        log.recordOutput(prefix + "/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
     }
 
     private void logSummary(
@@ -210,11 +211,10 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             List<Pose3d> robotPoses,
             List<Pose3d> acceptedPoses,
             List<Pose3d> rejectedPoses) {
-
-        Logger.recordOutput("Vision/Summary/TagPoses", tagPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput("Vision/Summary/RobotPoses", robotPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput("Vision/Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput("Vision/Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+        log.recordOutput("Summary/TagPoses", tagPoses.toArray(new Pose3d[0]));
+        log.recordOutput("Summary/RobotPoses", robotPoses.toArray(new Pose3d[0]));
+        log.recordOutput("Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
+        log.recordOutput("Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
     }
 
 }

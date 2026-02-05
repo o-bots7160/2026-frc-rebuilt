@@ -1,6 +1,9 @@
 package frc.robot.shared.logging;
 
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -165,6 +168,27 @@ public class Logger {
     public void recordOutput(String key, Pose2d pose) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, pose);
         // debug("ak/" + key + ": pose logged");
+    }
+
+    /**
+     * Records an array of 3D poses to AdvantageKit using the class name as a prefix.
+     *
+     * @param key   telemetry key suffix
+     * @param poses pose array to record
+     */
+    public void recordOutput(String key, Pose3d[] poses) {
+        org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, poses);
+        // debug("ak/" + key + "[length=" + poses.length + "]");
+    }
+
+    /**
+     * Records an auto-logged input snapshot with the logger prefix applied.
+     *
+     * @param key    input key suffix for AdvantageKit
+     * @param inputs auto-logged inputs bundle to record
+     */
+    public void processInputs(String key, LoggableInputs inputs) {
+        org.littletonrobotics.junction.Logger.processInputs(className + '/' + key, inputs);
     }
 
     /**

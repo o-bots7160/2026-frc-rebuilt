@@ -169,7 +169,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
 
         // Refresh sensor data and log it before we compute the next setpoint.
         motor.updateInputs(motorInputs);
-        org.littletonrobotics.junction.Logger.processInputs(className + "/motor", motorInputs);
+        log.processInputs("motor", motorInputs);
 
         // Use the profiled PID to calculate the next output from the current position.
         double measuredPosition = getMeasuredPosition();

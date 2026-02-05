@@ -325,16 +325,15 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Pass-through method for injecting vision-based pose estimates into the
-     * drivetrain pose estimator.
+     * Pass-through method for injecting vision-based pose estimates into the drivetrain pose estimator.
+     * <p>
+     * This method is typically invoked via a {@link frc.robot.subsystems.vision.AprilTagVisionConsumer} supplied to the Vision subsystem during
+     * wiring in {@code RobotContainer}.
+     * </p>
      *
-     * <p>This method is typically invoked via a
-     * {@link frc.robot.subsystems.vision.AprilTagVisionConsumer} supplied to the
-     * Vision subsystem during wiring in {@code RobotContainer}.</p>
-         *
-         * @param robotPose          pose measurement in meters and radians
-         * @param timestamp          timestamp of the measurement in seconds
-         * @param standardDeviations measurement standard deviations for x/y/theta
+     * @param robotPose          pose measurement in meters and radians
+     * @param timestamp          timestamp of the measurement in seconds
+     * @param standardDeviations measurement standard deviations for x/y/theta
      */
     public void addVisionMeasurement(
             Pose2d robotPose,
