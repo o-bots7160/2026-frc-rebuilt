@@ -15,10 +15,9 @@ public class DriverCameraSubsystemConfig extends AbstractConfig {
     public String cameraName;
 
     /**
-     * Pipeline index to use for driver mode (typically 0 for a driver
-     * camera pipeline).
+     * Pipeline index to use for driver mode (typically 0 for a driver camera pipeline).
      */
-    public int pipelineIndex;
+    public int    pipelineIndex;
 
     /**
      * Returns the configured driver camera name.

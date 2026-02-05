@@ -7,23 +7,25 @@ import frc.robot.subsystems.vision.config.DriverCameraSubsystemConfig;
 
 /**
  * Subsystem that manages a camera in driver mode for driver camera streaming.
- *
- * <p>This subsystem configures the camera to operate as a driver camera,
- * disabling vision processing and LEDs to provide a clean video stream for
- * the driver station.</p>
- * 
- * <p>This is currently Limelight specific.  If we want to have the option
- * of using the PhotonVision rig for a drive camera we'll need to adjust.</p>
+ * <p>
+ * This subsystem configures the camera to operate as a driver camera, disabling vision processing and LEDs to provide a clean video stream for the
+ * driver station.
+ * </p>
+ * <p>
+ * This is currently Limelight specific. If we want to have the option of using the PhotonVision rig for a drive camera we'll need to adjust.
+ * </p>
  */
 public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsystemConfig> {
 
-    private static final int CAM_MODE_DRIVER = 1;
-    private static final int LED_MODE_FORCE_OFF = 1;
-    private static final int STREAM_MODE_STANDARD = 0;
+    private static final int   CAM_MODE_DRIVER      = 1;
+
+    private static final int   LED_MODE_FORCE_OFF   = 1;
+
+    private static final int   STREAM_MODE_STANDARD = 0;
 
     private final NetworkTable table;
 
-    private boolean initialized = false;
+    private boolean            initialized          = false;
 
     /**
      * Creates a new DriverCameraSubsystem.

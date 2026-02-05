@@ -20,15 +20,15 @@ public class AprilTagVisionIOPhotonVisionSim extends AprilTagVisionIOPhotonVisio
     private final Supplier<Pose2d> poseSupplier;
 
     /**
-         * Construct the instance with the usual config plus a live robot pose supplier.
-         * <p>
-         * Use the drive base pose so the simulated camera can render realistic tag observations.
-         * </p>
-         *
-         * @param cameraName    name of the PhotonVision camera instance
-         * @param robotToCamera robot-to-camera transform in meters and radians
-         * @param fieldLayout   AprilTag field layout used for tag poses
-         * @param poseSupplier  supplier of the robot pose used for simulation updates
+     * Construct the instance with the usual config plus a live robot pose supplier.
+     * <p>
+     * Use the drive base pose so the simulated camera can render realistic tag observations.
+     * </p>
+     *
+     * @param cameraName    name of the PhotonVision camera instance
+     * @param robotToCamera robot-to-camera transform in meters and radians
+     * @param fieldLayout   AprilTag field layout used for tag poses
+     * @param poseSupplier  supplier of the robot pose used for simulation updates
      */
     public AprilTagVisionIOPhotonVisionSim(
             String cameraName,
@@ -44,7 +44,7 @@ public class AprilTagVisionIOPhotonVisionSim extends AprilTagVisionIOPhotonVisio
         }
 
         var cameraProperties = new SimCameraProperties();
-        var cameraSim = new PhotonCameraSim(camera, cameraProperties, fieldLayout);
+        var cameraSim        = new PhotonCameraSim(camera, cameraProperties, fieldLayout);
         visionSim.addCamera(cameraSim, robotToCamera);
     }
 

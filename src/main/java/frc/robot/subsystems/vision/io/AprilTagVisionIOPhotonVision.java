@@ -18,9 +18,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 
 /**
  * AprilTagVisionIO implementation for PhotonVision cameras.
- *
- * <p>Processes camera frames to extract AprilTag observations for pose
- * estimation.</p>
+ * <p>
+ * Processes camera frames to extract AprilTag observations for pose estimation.
+ * </p>
  */
 public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
 
@@ -61,8 +61,8 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
 
         // neither of these are logged; they're collections built up based on
         // PhotonVision pipeline results and processed to log info
-        Set<Integer> observedTagIds        = new HashSet<>();
-        List<PoseObservation> observations = new ArrayList<>();
+        Set<Integer>          observedTagIds = new HashSet<>();
+        List<PoseObservation> observations   = new ArrayList<>();
 
         for (var result : camera.getAllUnreadResults()) {
 
@@ -117,11 +117,11 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
             final PhotonPipelineResult pipelineResult,
             Set<Integer> observedTagIds) {
 
-        MultiTargetPNPResult multitagResult = pipelineResult.multitagResult.get();
+        MultiTargetPNPResult multitagResult     = pipelineResult.multitagResult.get();
 
-        Pose3d robotPose          = calculateRobotPoseFromCamera(multitagResult.estimatedPose.best);
-        double averageTagDistance = calculateAverageTagDistance(pipelineResult.targets);
-        int tagCount              = multitagResult.fiducialIDsUsed.size();
+        Pose3d               robotPose          = calculateRobotPoseFromCamera(multitagResult.estimatedPose.best);
+        double               averageTagDistance = calculateAverageTagDistance(pipelineResult.targets);
+        int                  tagCount           = multitagResult.fiducialIDsUsed.size();
 
         observedTagIds.addAll(multitagResult.fiducialIDsUsed.stream()
                 .map(Short::intValue)
@@ -142,15 +142,15 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
             final PhotonPipelineResult pipelineResult,
             Set<Integer> observedTagIds) {
 
-        PhotonTrackedTarget target = pipelineResult.targets.get(0);
+        PhotonTrackedTarget target  = pipelineResult.targets.get(0);
 
-        Optional<Pose3d> tagPose = fieldLayout.getTagPose(target.fiducialId);
+        Optional<Pose3d>    tagPose = fieldLayout.getTagPose(target.fiducialId);
         if (tagPose.isEmpty()) {
             return Optional.empty();
         }
 
-        Pose3d robotPose     = calculateRobotPoseFromTag(tagPose.get(), target.bestCameraToTarget);
-        double tagDistance   = target.bestCameraToTarget.getTranslation().getNorm();
+        Pose3d robotPose   = calculateRobotPoseFromTag(tagPose.get(), target.bestCameraToTarget);
+        double tagDistance = target.bestCameraToTarget.getTranslation().getNorm();
 
         observedTagIds.add(target.fiducialId);
 

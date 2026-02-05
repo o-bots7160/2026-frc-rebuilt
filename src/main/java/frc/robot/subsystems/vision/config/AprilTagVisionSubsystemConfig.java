@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision.config;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -9,13 +8,16 @@ import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.shared.config.AbstractConfig;
 
 /**
- * Configuration bundle for the AprilTag vision subsystem. Values are mirrored
- * to SmartDashboard so they can be tuned live without redeploying firmware.
+ * Configuration bundle for the AprilTag vision subsystem. Values are mirrored to SmartDashboard so they can be tuned live without redeploying
+ * firmware.
  */
 public class AprilTagVisionSubsystemConfig extends AbstractConfig {
 
     /**
      * Nested class for JSON deserialization of camera transforms.
+     * <p>
+     * Translation values are in meters and rotations are in radians.
+     * </p>
      */
     public static class CameraTransform {
         /**
@@ -61,7 +63,7 @@ public class AprilTagVisionSubsystemConfig extends AbstractConfig {
     }
 
     /**
-     * Cameras name and their robot-to-camera transform. Each transform defines the camear position relative to robot center: (x forward, y left, z
+     * Camera names and their robot-to-camera transforms. Each transform defines the camera position relative to robot center: (x forward, y left, z
      * up).
      */
     public Map<String, CameraTransform> cameras;
@@ -69,49 +71,49 @@ public class AprilTagVisionSubsystemConfig extends AbstractConfig {
     /**
      * Standard deviation for angular (rotation) pose measurements at 1 meter with a single tag.
      */
-    public double angularStandardDeviationBaseline;
+    public double                       angularStandardDeviationBaseline;
 
     /**
      * Standard deviation for linear (x/y) pose measurements at 1 meter with a single tag.
      */
-    public double linearStandardDeviationBaseline;
+    public double                       linearStandardDeviationBaseline;
 
     /**
      * Maximum pose ambiguity allowed for single-tag observations. Observations with higher ambiguity are rejected.
      */
-    public double maximumAmbiguity;
+    public double                       maximumAmbiguity;
 
     /**
-     * Supplies the angular standard deviation baseline for pose estimation.
+     * Returns the angular standard deviation baseline for pose estimation.
      *
-     * @return supplier yielding the current angular std dev baseline (radians)
+     * @return angular std dev baseline (radians)
      */
-    public Supplier<Double> getAngularStandardDeviationBaseline() {
-        return () -> readTunableNumber("angularStandardDeviationBaseline", angularStandardDeviationBaseline);
+    public double getAngularStandardDeviationBaseline() {
+        return readTunableNumber("angularStandardDeviationBaseline", angularStandardDeviationBaseline);
     }
 
     /**
-     * Supplies the linear standard deviation baseline for pose estimation.
+     * Returns the linear standard deviation baseline for pose estimation.
      *
-     * @return supplier yielding the current linear std dev baseline (meters)
+     * @return linear std dev baseline (meters)
      */
-    public Supplier<Double> getLinearStandardDeviationBaseline() {
-        return () -> readTunableNumber("linearStandardDeviationBaseline", linearStandardDeviationBaseline);
+    public double getLinearStandardDeviationBaseline() {
+        return readTunableNumber("linearStandardDeviationBaseline", linearStandardDeviationBaseline);
     }
 
     /**
-     * Supplies the maximum ambiguity threshold for single-tag observations.
+     * Returns the maximum ambiguity threshold for single-tag observations.
      *
-     * @return supplier yielding the current max ambiguity value
+     * @return max ambiguity (dimensionless)
      */
-    public Supplier<Double> getMaximumAmbiguity() {
-        return () -> readTunableNumber("maximumAmbiguity", maximumAmbiguity);
+    public double getMaximumAmbiguity() {
+        return readTunableNumber("maximumAmbiguity", maximumAmbiguity);
     }
 
     /**
-     * Returns the configured camera names.
+     * Returns the configured camera map.
      *
-     * @return array of camera names matching PhotonVision configuration
+     * @return map of camera names to robot-to-camera transforms
      */
     public Map<String, CameraTransform> getCameras() {
         return cameras;
