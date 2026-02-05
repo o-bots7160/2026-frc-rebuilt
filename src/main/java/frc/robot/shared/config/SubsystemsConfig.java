@@ -1,6 +1,7 @@
 package frc.robot.shared.config;
 
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
+import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
 import frc.robot.subsystems.vision.config.AprilTagVisionSubsystemConfig;
 import frc.robot.subsystems.vision.config.DriverCameraSubsystemConfig;
@@ -30,4 +31,9 @@ public class SubsystemsConfig {
      * Driver camera configuration bundle.
      */
     public DriverCameraSubsystemConfig driverCameraSubsystem = new DriverCameraSubsystemConfig();
+
+    /**
+     * Robot state configuration bundle.
+     */
+    public RobotStateSubsystemConfig robotStateSubsystem = new RobotStateSubsystemConfig();
 }

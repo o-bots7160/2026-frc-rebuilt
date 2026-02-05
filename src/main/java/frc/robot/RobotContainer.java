@@ -17,6 +17,7 @@ import frc.robot.shared.config.FieldLayoutConfig;
 import frc.robot.shared.config.SubsystemsConfig;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
+import frc.robot.subsystems.robotstate.RobotStateSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 import frc.robot.subsystems.vision.AprilTagVisionSubsystem;
@@ -38,6 +39,8 @@ public class RobotContainer {
     private final DriveBaseSubsystem               driveBaseSubsystem;
 
     private final TurretSubsystem                  turretSubsystem;
+
+    private final RobotStateSubsystem              robotStateSubsystem;
 
     @SuppressWarnings("unused")
     private final AprilTagVisionSubsystem          aprilTagVisionSubsystem;
@@ -64,21 +67,34 @@ public class RobotContainer {
             aprilTagFieldLayoutSupplier = fieldLayoutConfig::loadLayout;
 
             // Subsystems
-            driveBaseSubsystem          = new DriveBaseSubsystem(subsystemsConfig.driveBaseSubsystem);
+            robotStateSubsystem         = new RobotStateSubsystem(subsystemsConfig.robotStateSubsystem);
+            driveBaseSubsystem          = new DriveBaseSubsystem(
+                    subsystemsConfig.driveBaseSubsystem,
+                    robotStateSubsystem::updateOdometryPose);
             turretSubsystem             = new TurretSubsystem(subsystemsConfig.turretSubsystem);
             aprilTagVisionSubsystem     = new AprilTagVisionSubsystem(
                     subsystemsConfig.aprilTagVisionSubsystem,
                     aprilTagFieldLayoutSupplier.get(),
-                    /* vision-based pose consumer */ driveBaseSubsystem::addVisionMeasurement,
-                    /* pose provider for simulations */ driveBaseSubsystem::getPose);
+                    robotStateSubsystem::addVisionMeasurement,
+                    robotStateSubsystem::getEstimatedPose);
             driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
 
             // Command factories
             driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
             turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
 
+            // Default Commands
+            turretCommandFactory.setDefaultTrackFieldTargetCommand(
+                    robotStateSubsystem,
+                    () -> {
+                        var layout = aprilTagFieldLayoutSupplier.get();
+                        return layout.getTagPose(26)
+                                .map(pose -> pose.getTranslation().toTranslation2d())
+                                .orElseThrow();
+                    });
+
             // Input bindings
-            triggerBindings             = new TriggerBindings(
+            triggerBindings = new TriggerBindings(
                     driveBaseCommandFactory,
                     subsystemsConfig.driveBaseSubsystem,
                     turretCommandFactory);
@@ -87,6 +103,31 @@ public class RobotContainer {
             DriverStation.reportError(message, e.getStackTrace());
             throw e instanceof RuntimeException ? (RuntimeException) e : new IllegalStateException(message, e);
         }
+    }
+
+    /**
+     * Resets the robot pose for both the drivebase and the robot state estimator.
+     * <p>
+     * Use this in simulation or autonomous init to place the robot at a known field location.
+     * </p>
+     *
+     * @param pose desired starting pose in meters and radians
+     */
+    public void resetPose(edu.wpi.first.math.geometry.Pose2d pose) {
+        driveBaseSubsystem.resetPose(pose);
+        robotStateSubsystem.resetPose(pose);
+    }
+
+    /**
+     * Returns the active AprilTag field layout for navigation and vision targeting.
+     * <p>
+     * Use this to look up tag poses for autonomous destinations or pose correction.
+     * </p>
+     *
+     * @return loaded AprilTag field layout with the configured origin applied
+     */
+    public AprilTagFieldLayout getAprilTagFieldLayout() {
+        return aprilTagFieldLayoutSupplier.get();
     }
 
     /**

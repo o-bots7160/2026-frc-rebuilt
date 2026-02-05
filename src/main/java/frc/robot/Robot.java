@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * Main robot class that owns the command scheduler and logging setup.
  */
 public class Robot extends LoggedRobot {
+    private static final Pose2d SIM_START_POSE = new Pose2d(1.0, 1.0, new Rotation2d());
+
     private Command              m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
@@ -100,6 +102,11 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledExit() {
+    }
+
+    @Override
+    public void simulationInit() {
+        m_robotContainer.resetPose(SIM_START_POSE);
     }
 
     @Override

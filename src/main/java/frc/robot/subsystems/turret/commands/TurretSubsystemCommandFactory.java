@@ -2,7 +2,10 @@ package frc.robot.subsystems.turret.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.shared.commands.AbstractSetAndSeekCommandFactory;
+import frc.robot.subsystems.robotstate.RobotStateSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
 /**
@@ -37,5 +40,33 @@ public class TurretSubsystemCommandFactory extends AbstractSetAndSeekCommandFact
      */
     public MoveTurretToAngleCommand createMoveToAngleCommand(double targetDegrees) {
         return createMoveToAngleCommand(() -> targetDegrees);
+    }
+    
+    /**
+     * Builds a command that continuously tracks a field-relative target using the fused robot pose.
+     *
+     * @param robotStateSubsystem         robot state subsystem providing the fused pose estimate
+     * @param targetFieldPositionSupplier supplier of the target position in field coordinates (meters)
+     * @return command that aims the turret at the supplied field target position
+     */
+    public TrackFieldTargetCommand createTrackFieldTargetCommand(
+            RobotStateSubsystem robotStateSubsystem,
+            Supplier<Translation2d> targetFieldPositionSupplier) {
+        return new TrackFieldTargetCommand(subsystem, robotStateSubsystem, targetFieldPositionSupplier);
+    }
+
+    /**
+     * Builds and sets the default turret tracking command using a field-relative target supplier.
+     *
+     * @param robotStateSubsystem         robot state subsystem providing the fused pose estimate
+     * @param targetFieldPositionSupplier supplier of the target position in field coordinates (meters)
+     * @return command that is also set as the turret default
+     */
+    public Command setDefaultTrackFieldTargetCommand(
+            RobotStateSubsystem robotStateSubsystem,
+            Supplier<Translation2d> targetFieldPositionSupplier) {
+        Command command = createTrackFieldTargetCommand(robotStateSubsystem, targetFieldPositionSupplier);
+        subsystem.setDefaultCommand(command);
+        return command;
     }
 }

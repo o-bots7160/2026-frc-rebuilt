@@ -76,6 +76,18 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
     }
 
     /**
+     * Reports whether verbose telemetry and debug output are enabled for this subsystem.
+     * <p>
+     * Use this flag to gate detailed logging so it can be disabled quickly for events.
+     * </p>
+     *
+     * @return True when verbose logging is enabled in the subsystem configuration.
+     */
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    /**
      * Reports whether the code is running in WPILib simulation.
      *
      * @return True when running in simulation rather than on a real robot.

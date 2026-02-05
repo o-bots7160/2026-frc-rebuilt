@@ -1,5 +1,7 @@
 package frc.robot.subsystems.turret;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.devices.motor.Motor;
 import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
@@ -21,8 +23,8 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
                 ? TurretMotor.create(config.turretMotorConfig)
                 : TurretSimMotor.create(
                         config.turretMotorConfig,
-                config::getMaximumVelocityDegreesPerSecond,
-                config::getMaximumAccelerationDegreesPerSecondSquared);
+                        config::getMaximumVelocityDegreesPerSecond,
+                        config::getMaximumAccelerationDegreesPerSecondSquared);
     }
 
     /**
@@ -36,6 +38,71 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
 
     private TurretSubsystem(TurretSubsystemConfig config, Motor motor) {
         super(config, motor);
+    }
+
+    /**
+     * Computes the turret target angle needed to face a field-relative target.
+     * <p>
+     * The result is expressed in turret degrees, where 0 degrees aligns with robot-forward plus the configured zero offset. The returned angle is
+     * clamped to the configured turret limits and will pick the closest equivalent angle within that range.
+     * </p>
+     *
+     * @param robotPose                 current robot pose in meters and radians
+     * @param targetFieldPositionMeters target position on the field in meters
+     * @return turret target angle in degrees
+     */
+    public double calculateFieldTargetDegrees(Pose2d robotPose, Translation2d targetFieldPositionMeters) {
+        double deltaX              = targetFieldPositionMeters.getX() - robotPose.getX();
+        double deltaY              = targetFieldPositionMeters.getY() - robotPose.getY();
+
+        double fieldAngleRadians   = Math.atan2(deltaY, deltaX);
+        double robotHeadingRadians = robotPose.getRotation().getRadians();
+        double zeroOffsetRadians   = Math.toRadians(config.getTurretZeroOffsetDegrees());
+        double rawTargetRadians    = fieldAngleRadians - robotHeadingRadians + zeroOffsetRadians;
+        return Math.toDegrees(clampToTurretLimitsRadians(rawTargetRadians));
+    }
+
+    /**
+     * Clamps a turret target angle to the configured setpoint limits.
+     * <p>
+     * This method shifts the target by whole rotations to find the closest equivalent angle inside the allowed range.
+     * </p>
+     *
+     * @param targetDegrees requested turret angle in degrees
+     * @return closest equivalent angle within the turret limits
+     */
+    private double clampToTurretLimitsRadians(double targetRadians) {
+        double minRadians = config.getMinimumSetpointRadians();
+        double maxRadians = config.getMaximumSetpointRadians();
+
+        if (minRadians > maxRadians) {
+            double swap = minRadians;
+            minRadians = maxRadians;
+            maxRadians = swap;
+        }
+
+        double clampedTarget = targetRadians;
+        double rangeRadians  = maxRadians - minRadians;
+        if (rangeRadians <= 0.0) {
+            return minRadians;
+        }
+
+        double fullRotation = Math.PI * 2.0;
+        while (clampedTarget < minRadians) {
+            clampedTarget += fullRotation;
+        }
+
+        while (clampedTarget > maxRadians) {
+            clampedTarget -= fullRotation;
+        }
+
+        if (clampedTarget < minRadians || clampedTarget > maxRadians) {
+            double minOffset = Math.abs(clampedTarget - minRadians);
+            double maxOffset = Math.abs(maxRadians - clampedTarget);
+            return minOffset <= maxOffset ? minRadians : maxRadians;
+        }
+
+        return clampedTarget;
     }
 
 }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drivebase;
 
 import java.io.File;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -51,6 +52,9 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
     private final Field2d                     fieldDisplay           = new Field2d();
 
+    private Consumer<Pose2d>                  odometryPoseConsumer    = pose -> {
+    };
+
     /**
      * YAGSL swerve drive instance that handles kinematics, odometry, and module commands.
      * <p>
@@ -77,7 +81,23 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @param config drive base configuration values and tunables
      */
     public DriveBaseSubsystem(DriveBaseSubsystemConfig config) {
+        this(config, pose -> {
+        });
+    }
+
+    /**
+     * Creates the drive base subsystem and wires YAGSL hardware if enabled.
+     * <p>
+     * The odometry pose consumer is called each cycle with the latest drivebase pose.
+     * </p>
+     *
+     * @param config              drive base configuration values and tunables
+     * @param odometryPoseConsumer consumer that accepts the latest odometry pose
+     */
+    public DriveBaseSubsystem(DriveBaseSubsystemConfig config, Consumer<Pose2d> odometryPoseConsumer) {
         super(config);
+        this.odometryPoseConsumer = odometryPoseConsumer != null ? odometryPoseConsumer : pose -> {
+        };
 
         // If the subsystem is disabled in config, skip all hardware setup.
         if (isSubsystemDisabled()) {
@@ -125,6 +145,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         Logger.recordOutput("Swerve/RobotRotation", getPose().getRotation());
         // Update the on-dashboard field widget so drivers can see pose changes.
         fieldDisplay.setRobotPose(getPose());
+        odometryPoseConsumer.accept(getPose());
     }
 
     /**
@@ -139,6 +160,24 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         }
 
         return swerveDrive.getPose();
+    }
+
+    /**
+     * Registers a consumer that will receive the latest odometry pose each loop.
+     * <p>
+     * Use this to pipe drivebase odometry into a centralized Robot State subsystem without tightly coupling the two subsystems.
+     * </p>
+     *
+     * @param consumer consumer that accepts the current odometry pose in meters and radians
+     */
+    public void setOdometryPoseConsumer(Consumer<Pose2d> consumer) {
+        if (consumer == null) {
+            this.odometryPoseConsumer = pose -> {
+            };
+            return;
+        }
+
+        this.odometryPoseConsumer = consumer;
     }
 
     /**
