@@ -49,17 +49,9 @@
     "maximumAmbiguity": 0.3,
     "cameras": {
       "Arducam_OV9281_USB1": {
-        "x": 13.0,
+        "x": 0.3302,
         "y": 0.0,
-        "z": 15.0,
-        "roll": 0.0,
-        "pitch": 0.0,
-        "yaw": 0.0
-      },
-      "Arducam_OV9281_USB2": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
+        "z": 0.381,
         "roll": 0.0,
         "pitch": 0.0,
         "yaw": 0.0
