@@ -1,6 +1,6 @@
 {
   "driveBaseSubsystem": {
-    "enabled": false,
+    "enabled": true,
     "verbose": false,
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
@@ -42,7 +42,7 @@
     "kA": 0.59712
   },
   "aprilTagVisionSubsystem": {
-    "enabled": false,
+    "enabled": true,
     "verbose": true,
     "linearStandardDeviationBaseline": 0.08,
     "angularStandardDeviationBaseline": 1.0,

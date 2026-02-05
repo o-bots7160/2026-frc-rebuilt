@@ -7,7 +7,7 @@
       "height": 1050,
       "state": {
         "sidebar": {
-          "width": 298,
+          "width": 442,
           "expanded": [
             "/SmartDashboard/swerve",
             "/SmartDashboard/swerve/advantagescope",
@@ -40,16 +40,41 @@
             "/SmartDashboard/SubsystemsConfig/turretSubsystem",
             "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig",
             "/AdvantageKit/RealOutputs/Logger",
-            "/SmartDashboard",
             "/SmartDashboard/SubsystemsConfig/driveBaseSubsystem",
             "/AdvantageKit/RealOutputs",
             "/SmartDashboard/TurretMotor",
             "/AdvantageKit/TurretSubsystem",
-            "/AdvantageKit/TurretSubsystem/motor"
+            "/AdvantageKit/TurretSubsystem/motor",
+            "/SmartDashboard/Field",
+            "/AdvantageKit/DriveBase",
+            "/AdvantageKit/DriveBase/Pose",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPoses",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPosesAccepted",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPosesRejected",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/TagPoses",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB2",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB2/RobotPoses/0",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB2/RobotPoses/0/rotation",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB2/RobotPoses/0/translation",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0/rotation",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0/translation",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses/0",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses/0/translation",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesRejected",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted/0",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted/0/translation",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0"
           ]
         },
         "tabs": {
-          "selected": 0,
+          "selected": 4,
           "tabs": [
             {
               "type": 0,
@@ -342,6 +367,49 @@
               },
               "controllerUUID": "owlur25g0o1dvzchd6lm5e2hztfa3dss",
               "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/DriveBase/Pose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "2026 KitBot"
+                    }
+                  },
+                  {
+                    "type": "aprilTag",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "36h11-6.5in"
+                    }
+                  }
+                ],
+                "game": "FRC:2026 Field"
+              },
+              "controllerUUID": "mbz1hy3k922qrwehxctzkkk6w4ue71f6",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -2.4649674553698118,
+                  3.2563784856583085,
+                  0.7454649862294896
+                ],
+                "cameraTarget": [
+                  -6.058538843901598,
+                  0.5,
+                  0.46005126113218353
+                ]
+              },
               "controlsHeight": 200
             }
           ]
