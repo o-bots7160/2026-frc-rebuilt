@@ -4,11 +4,17 @@ import java.io.File;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.shared.subsystems.AbstractSubsystem;
@@ -103,6 +109,53 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         this.io = swerveDrive != null ? new DriveBaseIOYagsl(swerveDrive) : inputs -> {
         };
 
+        RobotConfig robotConfig;
+        try {
+            robotConfig = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            log.error("Failed to load PathPlanner RobotConfig: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        // Configure AutoBuilder last.
+        AutoBuilder.configure(
+                // Robot pose supplier.
+                this::getOdometryPose,
+                // Method to reset odometry (will be called if your auto has a starting pose).
+                this::resetPose,
+                // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE.
+                this::getRobotRelativeSpeeds,
+                // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds.
+                // Optionally outputs individual module feedforwards.
+                (speeds, feedforwards) -> driveRobotRelative(speeds),
+                // PPHolonomicController is the built in path following controller for holonomic drive trains.
+                new PPHolonomicDriveController(
+                        // Translation PID constants.
+                        new PIDConstants(
+                                config.getPathTranslationKp().get(),
+                                config.getPathTranslationKi().get(),
+                                config.getPathTranslationKd().get()),
+                        // Rotation PID constants.
+                        new PIDConstants(
+                                config.getPathRotationKp().get(),
+                                config.getPathRotationKi().get(),
+                                config.getPathRotationKd().get())),
+                // The robot configuration.
+                robotConfig,
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                // Reference to this subsystem to set requirements.
+                this);
     }
 
     /**
@@ -336,6 +389,55 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     public SwerveDrive getSwerveDrive() {
         // Expose the raw drive for advanced commands or testing helpers.
         return swerveDrive;
+    }
+
+    /**
+     * Returns the latest robot-relative chassis speeds for path following.
+     * <p>
+     * Use this to supply PathPlanner with current drive velocities in robot coordinates.
+     * </p>
+     *
+     * @return robot-relative chassis speeds in meters per second and radians per second
+     */
+    private ChassisSpeeds getRobotRelativeSpeeds() {
+        if (isSubsystemDisabled()) {
+            // Provide a safe default when the subsystem is disabled.
+            return new ChassisSpeeds();
+        }
+
+        // Use the most recently logged chassis speeds from the IO layer.
+        return inputs.chassisSpeeds;
+    }
+
+    /**
+     * Drives the robot using robot-relative chassis speeds for path following.
+     * <p>
+     * This clamps the request to configured limits and logs the request for telemetry.
+     * </p>
+     *
+     * @param speeds robot-relative velocity request in meters per second and radians per second
+     */
+    private void driveRobotRelative(ChassisSpeeds speeds) {
+        if (isSubsystemDisabled()) {
+            return;
+        }
+
+        if (swerveDrive == null) {
+            // Skip the request if hardware is unavailable.
+            log.warning("Robot-relative drive request ignored because the swerve drive is not available.");
+            return;
+        }
+
+        // Clamp the requested speeds to the configured maximums.
+        Translation2d translation = clampTranslation(new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+        double        rotation    = clampRotation(speeds.omegaRadiansPerSecond);
+
+        // Cache the request so telemetry reflects the latest path-following command.
+        lastRequestedSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+        lastRequestedStates = swerveDrive.toServeModuleStates(lastRequestedSpeeds, true);
+
+        // Send a robot-relative drive request to the swerve library.
+        swerveDrive.drive(translation, rotation, false, false, centerOfRotationMeters);
     }
 
     /**

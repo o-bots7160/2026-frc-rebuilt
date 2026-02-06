@@ -6,6 +6,9 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -140,12 +143,12 @@ public class RobotContainer {
      * @return command scheduled at the start of autonomous
      */
     public Command getAutonomousCommand() {
-        // return Commands.print("No autonomous command configured");
-        return turretCommandFactory.createMoveToAngleCommand(100)
-                .andThen(Commands.waitSeconds(2.0))
-                .andThen(turretCommandFactory.createMoveToAngleCommand(-100))
-                .andThen(Commands.waitSeconds(2.0))
-                .repeatedly();
+        if (!AutoBuilder.isConfigured()) {
+            DriverStation.reportWarning("AutoBuilder not configured; returning a no-op autonomous command.", false);
+            return Commands.none();
+        }
+
+        return new PathPlannerAuto("Example Auto");
     }
 
     /**

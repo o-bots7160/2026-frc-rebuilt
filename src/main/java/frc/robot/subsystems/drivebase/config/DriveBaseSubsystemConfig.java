@@ -42,6 +42,36 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
     public double rotationToleranceDegrees;
 
     /**
+     * Path following translation proportional gain.
+     */
+    public double pathTranslationKp;
+
+    /**
+     * Path following translation integral gain.
+     */
+    public double pathTranslationKi;
+
+    /**
+     * Path following translation derivative gain.
+     */
+    public double pathTranslationKd;
+
+    /**
+     * Path following rotation proportional gain.
+     */
+    public double pathRotationKp;
+
+    /**
+     * Path following rotation integral gain.
+     */
+    public double pathRotationKi;
+
+    /**
+     * Path following rotation derivative gain.
+     */
+    public double pathRotationKd;
+
+    /**
      * Driver translation scale from 0 to 1.
      */
     public double translationScale;
@@ -138,5 +168,59 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
     public Supplier<Double> getRotationToleranceRadians() {
         return () -> Units.degreesToRadians(
                 readTunableNumber("rotationToleranceDegrees", rotationToleranceDegrees));
+    }
+
+    /**
+     * Supplies the path following translation proportional gain.
+     *
+     * @return supplier yielding the current translation Kp
+     */
+    public Supplier<Double> getPathTranslationKp() {
+        return () -> readTunableNumber("pathTranslationKp", pathTranslationKp);
+    }
+
+    /**
+     * Supplies the path following translation integral gain.
+     *
+     * @return supplier yielding the current translation Ki
+     */
+    public Supplier<Double> getPathTranslationKi() {
+        return () -> readTunableNumber("pathTranslationKi", pathTranslationKi);
+    }
+
+    /**
+     * Supplies the path following translation derivative gain.
+     *
+     * @return supplier yielding the current translation Kd
+     */
+    public Supplier<Double> getPathTranslationKd() {
+        return () -> readTunableNumber("pathTranslationKd", pathTranslationKd);
+    }
+
+    /**
+     * Supplies the path following rotation proportional gain.
+     *
+     * @return supplier yielding the current rotation Kp
+     */
+    public Supplier<Double> getPathRotationKp() {
+        return () -> readTunableNumber("pathRotationKp", pathRotationKp);
+    }
+
+    /**
+     * Supplies the path following rotation integral gain.
+     *
+     * @return supplier yielding the current rotation Ki
+     */
+    public Supplier<Double> getPathRotationKi() {
+        return () -> readTunableNumber("pathRotationKi", pathRotationKi);
+    }
+
+    /**
+     * Supplies the path following rotation derivative gain.
+     *
+     * @return supplier yielding the current rotation Kd
+     */
+    public Supplier<Double> getPathRotationKd() {
+        return () -> readTunableNumber("pathRotationKd", pathRotationKd);
     }
 }
