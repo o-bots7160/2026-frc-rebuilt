@@ -7,6 +7,8 @@ package frc.robot;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -26,7 +28,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * Main robot class that owns the command scheduler and logging setup.
  */
 public class Robot extends LoggedRobot {
-    private static final Pose2d SIM_START_POSE = new Pose2d(1.0, 1.0, new Rotation2d());
+
+    private static final double  FIELD_LENGTH_METERS   = 16.54;
+
+    private static final double  FIELD_WIDTH_METERS    = 8.21;
+
+    private static final double  START_X_OFFSET_METERS = 1.5;
+
+    private static final double  EDGE_Y_OFFSET_METERS  = 1.1;
 
     private Command              m_autonomousCommand;
 
@@ -106,11 +115,17 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void simulationInit() {
-        m_robotContainer.resetPose(SIM_START_POSE);
+        Pose2d startPose = getSimulationStartPose();
+        m_robotContainer.resetPose(startPose);
     }
 
     @Override
     public void autonomousInit() {
+        if (isSimulation()) {
+            Pose2d startPose = getSimulationStartPose();
+            m_robotContainer.resetPose(startPose);
+        }
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
@@ -128,19 +143,13 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
+        if (isSimulation()) {
+            Pose2d startPose = getSimulationStartPose();
+            m_robotContainer.resetPose(startPose);
+        }
+
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
-        } else if (isSimulation()) {
-
-            // if the robot didn't move around in auton and this is a
-            // simulation then let's reset to start on the line for now;
-            // maybe we should make a drop-down different start positions
-            // or tunable config?
-            Pose2d startPose = new Pose2d(
-                    3.6 /* just short of blue starting line */,
-                    4.0 /* center of field */,
-                    new Rotation2d(0) /* facing red alliance */);
-            m_robotContainer.resetDrivePose(startPose);
         }
     }
 
@@ -163,5 +172,38 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void testExit() {
+    }
+
+    /**
+     * Computes a reasonable simulation start pose from the driver station alliance and station.
+     * <p>
+     * In the simulation app, set the driver station alliance and position so the team side updates and the start pose reflects the selected station.
+     * </p>
+     *
+     * @return pose in meters and radians that matches the simulated alliance wall and station
+     */
+    private Pose2d getSimulationStartPose() {
+        // Prefer the live driver station info, but default to Blue/center when not present in sim.
+        Optional<DriverStation.Alliance> alliance        = DriverStation.getAlliance();
+        OptionalInt                      stationPosition = DriverStation.getLocation();
+
+        boolean                          isRedAlliance   = alliance.orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red;
+        int                              station         = stationPosition.orElse(2);
+
+        // Spread start locations by station: 1 (near edge), 2 (center), 3 (far edge).
+        double                           yPositionMeters;
+        switch (station) {
+        case 1 -> yPositionMeters = EDGE_Y_OFFSET_METERS;
+        case 3 -> yPositionMeters = FIELD_WIDTH_METERS - EDGE_Y_OFFSET_METERS;
+        default -> yPositionMeters = FIELD_WIDTH_METERS / 2.0;
+        }
+
+        // Place the robot just inside the alliance wall, facing the opposing side.
+        double     xPositionMeters = isRedAlliance
+                ? FIELD_LENGTH_METERS - START_X_OFFSET_METERS
+                : START_X_OFFSET_METERS;
+        Rotation2d heading         = isRedAlliance ? Rotation2d.fromDegrees(180.0) : new Rotation2d();
+
+        return new Pose2d(xPositionMeters, yPositionMeters, heading);
     }
 }
