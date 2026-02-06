@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
+import frc.robot.subsystems.robotstate.io.RobotStateIO;
+import frc.robot.subsystems.robotstate.io.RobotStateIOInputsAutoLogged;
 
 /**
  * Centralized pose tracking subsystem that fuses odometry and vision into a single robot pose.
@@ -19,26 +21,30 @@ import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
  */
 public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemConfig> {
 
-    private final Field2d    fieldDisplay                   = new Field2d();
+    private final Field2d                      fieldDisplay                   = new Field2d();
 
-    private Consumer<Pose2d> odometryResetConsumer          = pose -> {
-                                                            };
+    private final RobotStateIO                 io;
 
-    private Pose2d           odometryPose                   = new Pose2d();
+    private final RobotStateIOInputsAutoLogged inputs                         = new RobotStateIOInputsAutoLogged();
 
-    private Pose2d           estimatedPose                  = new Pose2d();
+    private Consumer<Pose2d>                   odometryResetConsumer          = pose -> {
+                                                                              };
 
-    private Pose2d           lastVisionPose                 = new Pose2d();
+    private Pose2d                             odometryPose                   = new Pose2d();
 
-    private double           lastVisionTimestampSeconds     = Double.NaN;
+    private Pose2d                             estimatedPose                  = new Pose2d();
 
-    private boolean          hasVisionMeasurement           = false;
+    private Pose2d                             lastVisionPose                 = new Pose2d();
 
-    private boolean          enableVisionFusion             = true;
+    private double                             lastVisionTimestampSeconds     = Double.NaN;
 
-    private double           visionBlendFactor              = 0.5;
+    private boolean                            hasVisionMeasurement           = false;
 
-    private double           visionMeasurementMaxAgeSeconds = 0.0;
+    private boolean                            enableVisionFusion             = true;
+
+    private double                             visionBlendFactor              = 0.5;
+
+    private double                             visionMeasurementMaxAgeSeconds = 0.0;
 
     /**
      * Creates the Robot State subsystem.
@@ -50,6 +56,8 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
      */
     public RobotStateSubsystem(RobotStateSubsystemConfig config) {
         super(config);
+
+        this.io = this::updateInputs;
 
         refreshTunables();
         SmartDashboard.putData("Field", fieldDisplay);
@@ -72,11 +80,8 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         }
 
         updateEstimatedPose();
-        log.recordOutput("Pose/Odometry", odometryPose);
-        log.recordOutput("Pose/Estimated", estimatedPose);
-        log.recordOutput("Pose/Vision", lastVisionPose);
-        log.recordOutput("Vision/HasMeasurement", hasVisionMeasurement);
-        log.recordOutput("Vision/TimestampSeconds", lastVisionTimestampSeconds);
+        io.updateInputs(inputs);
+        log.processInputs("RobotState", inputs);
         fieldDisplay.setRobotPose(estimatedPose);
     }
 
@@ -190,6 +195,17 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
 
         double clampedBlendFactor = MathUtil.clamp(visionBlendFactor, 0.0, 1.0);
         estimatedPose = estimatedPose.interpolate(lastVisionPose, clampedBlendFactor);
+    }
+
+    private void updateInputs(RobotStateIO.RobotStateIOInputs inputs) {
+        inputs.odometryPose                   = odometryPose;
+        inputs.estimatedPose                  = estimatedPose;
+        inputs.lastVisionPose                 = lastVisionPose;
+        inputs.lastVisionTimestampSeconds     = lastVisionTimestampSeconds;
+        inputs.hasVisionMeasurement           = hasVisionMeasurement;
+        inputs.enableVisionFusion             = enableVisionFusion;
+        inputs.visionBlendFactor              = visionBlendFactor;
+        inputs.visionMeasurementMaxAgeSeconds = visionMeasurementMaxAgeSeconds;
     }
 
     private void refreshTunables() {
