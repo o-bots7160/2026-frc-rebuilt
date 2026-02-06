@@ -1,11 +1,12 @@
 package frc.robot.subsystems.robotstate;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
+import java.util.function.Consumer;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
 
@@ -18,17 +19,26 @@ import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
  */
 public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemConfig> {
 
-    private Pose2d         odometryPose                 = new Pose2d();
+    private final Field2d    fieldDisplay                   = new Field2d();
 
-    private Pose2d         estimatedPose                = new Pose2d();
+    private Consumer<Pose2d> odometryResetConsumer          = pose -> {
+                                                            };
 
-    private Pose2d         lastVisionPose               = new Pose2d();
+    private Pose2d           odometryPose                   = new Pose2d();
 
-    private Matrix<N3, N1> lastVisionStandardDeviations = VecBuilder.fill(0.0, 0.0, 0.0);
+    private Pose2d           estimatedPose                  = new Pose2d();
 
-    private double         lastVisionTimestampSeconds   = Double.NaN;
+    private Pose2d           lastVisionPose                 = new Pose2d();
 
-    private boolean        hasVisionMeasurement         = false;
+    private double           lastVisionTimestampSeconds     = Double.NaN;
+
+    private boolean          hasVisionMeasurement           = false;
+
+    private boolean          enableVisionFusion             = true;
+
+    private double           visionBlendFactor              = 0.5;
+
+    private double           visionMeasurementMaxAgeSeconds = 0.0;
 
     /**
      * Creates the Robot State subsystem.
@@ -40,6 +50,9 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
      */
     public RobotStateSubsystem(RobotStateSubsystemConfig config) {
         super(config);
+
+        refreshTunables();
+        SmartDashboard.putData("Field", fieldDisplay);
     }
 
     /**
@@ -50,12 +63,12 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
      */
     @Override
     public void periodic() {
-        if (!isFMSAttached()) {
-            refreshTunables();
-        }
-
         if (isSubsystemDisabled()) {
             return;
+        }
+
+        if (!isFMSAttached()) {
+            refreshTunables();
         }
 
         updateEstimatedPose();
@@ -64,6 +77,25 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         log.recordOutput("Pose/Vision", lastVisionPose);
         log.recordOutput("Vision/HasMeasurement", hasVisionMeasurement);
         log.recordOutput("Vision/TimestampSeconds", lastVisionTimestampSeconds);
+        fieldDisplay.setRobotPose(estimatedPose);
+    }
+
+    /**
+     * Registers a consumer that will reset odometry whenever the robot state pose is reset.
+     * <p>
+     * Use this to keep drivebase odometry aligned with the fused pose without tightly coupling the subsystems.
+     * </p>
+     *
+     * @param consumer consumer that accepts the reset pose in meters and radians
+     */
+    public void setOdometryResetConsumer(Consumer<Pose2d> consumer) {
+        if (consumer == null) {
+            this.odometryResetConsumer = pose -> {
+            };
+            return;
+        }
+
+        this.odometryResetConsumer = consumer;
     }
 
     /**
@@ -81,7 +113,7 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         }
 
         this.odometryPose = pose;
-        if (!config.getEnableVisionFusion() || !hasVisionMeasurement) {
+        if (!enableVisionFusion || !hasVisionMeasurement) {
             this.estimatedPose = pose;
         }
     }
@@ -89,26 +121,23 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
     /**
      * Accepts a vision-based robot pose measurement for fusion.
      * <p>
-     * The timestamp is used to reject stale measurements. Standard deviations are stored for telemetry and future estimator upgrades.
+     * The timestamp is used to reject stale measurements.
      * </p>
      *
-     * @param robotPose          pose measurement in meters and radians
-     * @param timestampSeconds   timestamp of the measurement in seconds
-     * @param standardDeviations standard deviations for x/y/theta uncertainty
+     * @param robotPose        pose measurement in meters and radians
+     * @param timestampSeconds timestamp of the measurement in seconds
      */
     public void addVisionMeasurement(
             Pose2d robotPose,
-            double timestampSeconds,
-            Matrix<N3, N1> standardDeviations) {
+            double timestampSeconds) {
         if (isSubsystemDisabled()) {
             logDisabled("addVisionMeasurement");
             return;
         }
 
-        this.lastVisionPose               = robotPose;
-        this.lastVisionTimestampSeconds   = timestampSeconds;
-        this.lastVisionStandardDeviations = standardDeviations;
-        this.hasVisionMeasurement         = true;
+        this.lastVisionPose             = robotPose;
+        this.lastVisionTimestampSeconds = timestampSeconds;
+        this.hasVisionMeasurement       = true;
     }
 
     /**
@@ -125,12 +154,13 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
             return;
         }
 
-        this.odometryPose                 = pose;
-        this.estimatedPose                = pose;
-        this.lastVisionPose               = pose;
-        this.lastVisionTimestampSeconds   = Double.NaN;
-        this.lastVisionStandardDeviations = VecBuilder.fill(0.0, 0.0, 0.0);
-        this.hasVisionMeasurement         = false;
+        this.odometryPose               = pose;
+        this.estimatedPose              = pose;
+        this.lastVisionPose             = pose;
+        this.lastVisionTimestampSeconds = Double.NaN;
+        this.hasVisionMeasurement       = false;
+
+        odometryResetConsumer.accept(pose);
     }
 
     /**
@@ -145,92 +175,26 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         return estimatedPose;
     }
 
-    /**
-     * Returns the most recent odometry pose.
-     * <p>
-     * Use this when you need raw encoder/gyro odometry without vision fusion.
-     * </p>
-     *
-     * @return latest odometry pose in meters and radians
-     */
-    public Pose2d getOdometryPose() {
-        return odometryPose;
-    }
-
-    /**
-     * Returns the most recent vision pose measurement.
-     * <p>
-     * This is useful for debugging camera alignment and measurement quality.
-     * </p>
-     *
-     * @return latest vision pose in meters and radians
-     */
-    public Pose2d getLastVisionPose() {
-        return lastVisionPose;
-    }
-
-    /**
-     * Returns the timestamp of the latest vision measurement.
-     * <p>
-     * Use this to determine measurement age and diagnose camera latency.
-     * </p>
-     *
-     * @return timestamp in seconds, or NaN if no measurement has been recorded
-     */
-    public double getLastVisionTimestampSeconds() {
-        return lastVisionTimestampSeconds;
-    }
-
-    /**
-     * Returns whether a vision measurement has been received.
-     * <p>
-     * This can be used to gate fusion logic or to display a vision status indicator.
-     * </p>
-     *
-     * @return true if at least one vision measurement has been recorded
-     */
-    public boolean hasVisionMeasurement() {
-        return hasVisionMeasurement;
-    }
-
-    /**
-     * Returns the standard deviations for the most recent vision measurement.
-     * <p>
-     * These values represent uncertainty in x/y (meters) and rotation (radians).
-     * </p>
-     *
-     * @return 3x1 matrix of standard deviations for the last vision measurement
-     */
-    public Matrix<N3, N1> getLastVisionStandardDeviations() {
-        return lastVisionStandardDeviations;
-    }
-
     private void updateEstimatedPose() {
         estimatedPose = odometryPose;
 
-        if (!config.getEnableVisionFusion() || !hasVisionMeasurement) {
+        if (!enableVisionFusion || !hasVisionMeasurement) {
             return;
         }
 
         double measurementAgeSeconds = Timer.getFPGATimestamp() - lastVisionTimestampSeconds;
         if (Double.isNaN(lastVisionTimestampSeconds)
-                || measurementAgeSeconds > config.getVisionMeasurementMaxAgeSeconds()) {
+                || measurementAgeSeconds > visionMeasurementMaxAgeSeconds) {
             return;
         }
 
-        double blendFactor = clamp(config.getVisionBlendFactor(), 0.0, 1.0);
-        estimatedPose = estimatedPose.interpolate(lastVisionPose, blendFactor);
+        double clampedBlendFactor = MathUtil.clamp(visionBlendFactor, 0.0, 1.0);
+        estimatedPose = estimatedPose.interpolate(lastVisionPose, clampedBlendFactor);
     }
 
     private void refreshTunables() {
-        config.getEnableVisionFusion();
-        config.getVisionBlendFactor();
-        config.getVisionMeasurementMaxAgeSeconds();
-        config.getOdometryStandardDeviations();
-        config.getVisionStandardDeviations();
-    }
-
-    private double clamp(double value, double min, double max) {
-        return Math.max(min, Math.min(max, value));
+        enableVisionFusion             = config.getEnableVisionFusion();
+        visionBlendFactor              = config.getVisionBlendFactor();
+        visionMeasurementMaxAgeSeconds = config.getVisionMeasurementMaxAgeSeconds();
     }
 }

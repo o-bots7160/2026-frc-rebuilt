@@ -71,17 +71,18 @@ public class RobotContainer {
             driveBaseSubsystem          = new DriveBaseSubsystem(
                     subsystemsConfig.driveBaseSubsystem,
                     robotStateSubsystem::updateOdometryPose);
-            turretSubsystem             = new TurretSubsystem(subsystemsConfig.turretSubsystem);
-            aprilTagVisionSubsystem     = new AprilTagVisionSubsystem(
+            robotStateSubsystem.setOdometryResetConsumer(driveBaseSubsystem::resetPose);
+            turretSubsystem         = new TurretSubsystem(subsystemsConfig.turretSubsystem);
+            aprilTagVisionSubsystem = new AprilTagVisionSubsystem(
                     subsystemsConfig.aprilTagVisionSubsystem,
                     aprilTagFieldLayoutSupplier.get(),
                     robotStateSubsystem::addVisionMeasurement,
-                    robotStateSubsystem::getEstimatedPose);
-            driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
+                    driveBaseSubsystem::getOdometryPose);
+            driverCameraSubsystem   = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
 
             // Command factories
-            driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
-            turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
+            driveBaseCommandFactory = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
+            turretCommandFactory    = new TurretSubsystemCommandFactory(turretSubsystem);
 
             // Default Commands
             turretCommandFactory.setDefaultTrackFieldTargetCommand(
@@ -114,7 +115,6 @@ public class RobotContainer {
      * @param pose desired starting pose in meters and radians
      */
     public void resetPose(edu.wpi.first.math.geometry.Pose2d pose) {
-        driveBaseSubsystem.resetPose(pose);
         robotStateSubsystem.resetPose(pose);
     }
 
@@ -153,6 +153,6 @@ public class RobotContainer {
      * @param pose new robot pose in field coordinates
      */
     public void resetDrivePose(Pose2d pose) {
-        driveBaseSubsystem.resetPose(pose);
+        robotStateSubsystem.resetPose(pose);
     }
 }

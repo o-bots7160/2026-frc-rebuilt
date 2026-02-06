@@ -2,9 +2,8 @@ package frc.robot.shared.logging;
 
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -40,8 +39,8 @@ public class Logger {
     /**
      * Returns an instance of Logger for the specified name
      *
-    * @param className the name to scope the logger instance to
-    * @return a new Logger instance for the specified class with the given verbosity setting
+     * @param className the name to scope the logger instance to
+     * @return a new Logger instance for the specified class with the given verbosity setting
      */
     public static Logger getInstance(String className) {
         return new Logger(className, false);
@@ -50,9 +49,9 @@ public class Logger {
     /**
      * Returns an instance of Logger for the specified name
      *
-    * @param className the name to scope the logger instance to
-    * @param verbose   the verbosity setting for the logger
-    * @return a new Logger instance for the specified class with the given verbosity setting
+     * @param className the name to scope the logger instance to
+     * @param verbose   the verbosity setting for the logger
+     * @return a new Logger instance for the specified class with the given verbosity setting
      */
     public static Logger getInstance(String className, boolean verbose) {
         return new Logger(className, verbose);
@@ -125,8 +124,8 @@ public class Logger {
     }
 
     /**
-     * Records a boolean to AdvantageKit using the class name as a prefix.
-     * Prefer this for telemetry instead of SmartDashboard to reduce NetworkTables noise.
+     * Records a boolean to AdvantageKit using the class name as a prefix. Prefer this for telemetry instead of SmartDashboard to reduce NetworkTables
+     * noise.
      *
      * @param key   telemetry key suffix
      * @param value value to record
@@ -137,8 +136,8 @@ public class Logger {
     }
 
     /**
-     * Records a numeric value to AdvantageKit using the class name as a prefix.
-     * Prefer this for telemetry instead of SmartDashboard to reduce NetworkTables noise.
+     * Records a numeric value to AdvantageKit using the class name as a prefix. Prefer this for telemetry instead of SmartDashboard to reduce
+     * NetworkTables noise.
      *
      * @param key   telemetry key suffix
      * @param value value to record
@@ -156,29 +155,46 @@ public class Logger {
      */
     public void recordOutput(String key, double[] values) {
         org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, values);
-        // debug("ak/" + key + "[length=" + values.length + "]");
     }
 
     /**
-     * Records a pose to AdvantageKit using the class name as a prefix.
-     *
-     * @param key  telemetry key suffix
-     * @param pose pose value to record
-     */
-    public void recordOutput(String key, Pose2d pose) {
-        org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, pose);
-        // debug("ak/" + key + ": pose logged");
-    }
-
-    /**
-     * Records an array of 3D poses to AdvantageKit using the class name as a prefix.
+     * Records a struct-serializable value to AdvantageKit using the class name as a prefix.
+     * <p>
+     * Use this for WPILib types that implement {@link StructSerializable} (poses, rotations, chassis speeds, module states, etc.).
+     * </p>
      *
      * @param key   telemetry key suffix
-     * @param poses pose array to record
+     * @param value struct-serializable value to record
+     * @param <T>   value type that supports struct serialization
      */
-    public void recordOutput(String key, Pose3d[] poses) {
-        org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, poses);
-        // debug("ak/" + key + "[length=" + poses.length + "]");
+    public <T extends StructSerializable> void recordOutput(String key, T value) {
+        org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, value);
+    }
+
+    /**
+     * Records an array of struct-serializable values to AdvantageKit using the class name as a prefix.
+     * <p>
+     * This matches AdvantageKit's struct array logging for types like module states or pose lists.
+     * </p>
+     *
+     * @param key   telemetry key suffix
+     * @param value struct-serializable values to record
+     * @param <T>   value type that supports struct serialization
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends StructSerializable> void recordOutput(String key, T... value) {
+        org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, value);
+    }
+
+    /**
+     * Records a 2D array of struct-serializable values to AdvantageKit using the class name as a prefix.
+     *
+     * @param key   telemetry key suffix
+     * @param value struct-serializable values to record
+     * @param <T>   value type that supports struct serialization
+     */
+    public <T extends StructSerializable> void recordOutput(String key, T[][] value) {
+        org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, value);
     }
 
     /**

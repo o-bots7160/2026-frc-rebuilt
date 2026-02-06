@@ -2,6 +2,7 @@ package frc.robot.shared.subsystems;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -147,7 +148,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         double requestedTargetRadians = Units.degreesToRadians(targetPositionDegrees);
 
         // Clamp the request so we never ask the mechanism to move past its safe range.
-        double clampedTargetRadians   = clamp(requestedTargetRadians, minimumSetpointRadians, maximumSetpointRadians);
+        double clampedTargetRadians   = MathUtil.clamp(requestedTargetRadians, minimumSetpointRadians, maximumSetpointRadians);
         log.recordOutput("targetRequestedPositionDegrees", targetPositionDegrees);
         log.recordOutput("targetClampedPositionDegrees", Units.radiansToDegrees(clampedTargetRadians));
         log.recordOutput("targetWasClamped", requestedTargetRadians != clampedTargetRadians);
@@ -257,7 +258,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     protected void applySetpoint(TrapezoidProfile.State setpoint, double voltageCommand) {
         edu.wpi.first.units.measure.Voltage clampedVoltage = Volts.of(
-                clamp(voltageCommand, -12.0, 12.0));
+                MathUtil.clamp(voltageCommand, -12.0, 12.0));
         motor.setVoltage(clampedVoltage);
     }
 
@@ -277,10 +278,6 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     protected double getMeasuredVelocity() {
         return motor.getVelocityRadiansPerSecond();
-    }
-
-    private double clamp(double value, double min, double max) {
-        return Math.max(min, Math.min(max, value));
     }
 
     private void refreshConstraints() {

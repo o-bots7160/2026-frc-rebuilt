@@ -136,6 +136,9 @@ Follow them whenever you add code, documentation, or tests.
 - Default to AdvantageKit (`org.littletonrobotics.junction.Logger`,
   `LoggedDashboardValue`) for telemetry; record structured values with
   `Logger.recordOutput` instead of SmartDashboard calls.
+- In subsystems, use the shared `log` from `AbstractSubsystem` for telemetry and
+  input logging (for example, `log.recordOutput` and `log.processInputs`) rather
+  than calling the static AdvantageKit logger directly.
 - Use SmartDashboard/Shuffleboard only for operator-critical values that drivers
   need live; keep everything else AdvantageKit-only to reduce NetworkTables
   noise, especially as we add more subsystems and generated components.

@@ -2,9 +2,9 @@
   "hubs": [
     {
       "x": 0,
-      "y": 29,
-      "width": 1536,
-      "height": 819,
+      "y": 30,
+      "width": 1920,
+      "height": 1050,
       "state": {
         "sidebar": {
           "width": 442,
@@ -20,11 +20,10 @@
             "/SmartDashboard/Swerve Drive",
             "/AdvantageKit/RealOutputs/Swerve",
             "/AdvantageKit/RealOutputs/Swerve/RobotRotation",
-            "/AdvantageKit/RealOutputs/Odometry",
-            "/AdvantageKit/RealOutputs/Odometry/Robot",
-            "/AdvantageKit/RealOutputs/Odometry/Robot/rotation",
-            "/AdvantageKit/RealOutputs/Odometry/Robot/translation",
-            "/AdvantageKit/RealOutputs/Encoders",
+            "/AdvantageKit/RealOutputs/Pose",
+            "/AdvantageKit/RealOutputs/Pose/Odometry",
+            "/AdvantageKit/RealOutputs/Pose/Odometry/rotation",
+            "/AdvantageKit/RealOutputs/Pose/Odometry/translation",
             "/AdvantageKit/RealOutputs/Encoders/errors",
             "/AdvantageKit/RealOutputs/Encoders/infos",
             "/AdvantageKit/RealOutputs/Encoders/warnings",
@@ -34,23 +33,17 @@
             "/AdvantageKit",
             "/AdvantageKit/NetworkInputs/SmartDashboard/TurretMotor",
             "/AdvantageKit/NetworkInputs/SmartDashboard/TurretSubsystem",
-            "/AdvantageKit/RealOutputs/TurretSubsystem",
             "/AdvantageKit/RealOutputs/TurretMotor",
             "/AdvantageKit/RealOutputs/TurretMotor/TurretMotor",
             "/SmartDashboard/SubsystemsConfig/turretSubsystem",
             "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig",
-            "/AdvantageKit/RealOutputs/Logger",
             "/SmartDashboard/SubsystemsConfig/driveBaseSubsystem",
             "/AdvantageKit/RealOutputs",
             "/SmartDashboard/TurretMotor",
-            "/AdvantageKit/TurretSubsystem",
             "/AdvantageKit/TurretSubsystem/motor",
             "/SmartDashboard/Field",
-            "/AdvantageKit/DriveBase",
-            "/AdvantageKit/DriveBase/Pose",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem",
+            "/AdvantageKit/RealOutputs/Pose/Estimated",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPoses",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPosesAccepted",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPosesRejected",
@@ -60,17 +53,16 @@
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB2/RobotPoses/0/rotation",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB2/RobotPoses/0/translation",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0/rotation",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0/translation",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses/0",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses/0/translation",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesRejected",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted/0",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted/0/translation",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0"
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0",
+            "/AdvantageKit/RealOutputs/RobotStateSubsystem",
+            "/AdvantageKit/RealOutputs/RobotStateSubsystem/Pose",
+            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem"
           ]
         },
         "tabs": {
@@ -375,15 +367,6 @@
               "controller": {
                 "sources": [
                   {
-                    "type": "robot",
-                    "logKey": "NT:/AdvantageKit/DriveBase/Pose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "model": "2026 CA26"
-                    }
-                  },
-                  {
                     "type": "aprilTag",
                     "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses",
                     "logType": "Pose3d[]",
@@ -391,25 +374,76 @@
                     "options": {
                       "variant": "36h11-6.5in"
                     }
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/RobotStateSubsystem/Pose/Estimated",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "2026 CA26"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/RobotStateSubsystem/Pose/Odometry",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "2026 KitBot",
+                      "color": "#00ff00"
+                    }
                   }
                 ],
                 "game": "FRC:2026 Field"
               },
               "controllerUUID": "mbz1hy3k922qrwehxctzkkk6w4ue71f6",
               "renderer": {
-                "cameraIndex": -1,
+                "cameraIndex": -2,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  0.5108646556447878,
-                  4.2685544760960195,
-                  8.236346308589763
+                  2,
+                  1,
+                  1.0000000000000002
                 ],
                 "cameraTarget": [
-                  0.3982126913801169,
-                  -1.9038839235052047,
-                  -4.937407792738824
+                  0,
+                  0.5,
+                  0
                 ]
               },
+              "controlsHeight": 200
+            },
+            {
+              "type": 2,
+              "title": "2D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/RobotStateSubsystem/Pose/Estimated",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "bumpers": ""
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/RobotStateSubsystem/Pose/Odometry",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff00ff"
+                    }
+                  }
+                ],
+                "field": "FRC:2026 Field",
+                "orientation": 0,
+                "size": "large"
+              },
+              "controllerUUID": "ztkf03bdgdjptjcsubrpgrc0iajaovq0",
+              "renderer": null,
               "controlsHeight": 200
             }
           ]

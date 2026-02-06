@@ -107,6 +107,15 @@ The key folders under `src/main` you will touch most often are:
   its own `commands/` (including command factories), `config/`, and `io/`
   folders.
 
+### Pose ownership
+
+- `RobotStateSubsystem` is the authoritative field pose source for commands and
+  other subsystems.
+- `DriveBaseSubsystem` provides odometry only and streams updates into robot
+  state.
+- Resetting pose flows through robot state so the drivebase and estimator stay
+  aligned.
+
 ![System overview diagram for the 2026 robot](./7160-frc-rebuilt.drawio.svg)
 
 This architecture diagram lives in `7160-frc-rebuilt.drawio.svg`; open and edit

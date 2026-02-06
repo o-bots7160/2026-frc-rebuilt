@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -22,7 +23,7 @@ import frc.robot.subsystems.vision.io.AprilTagVisionIOPhotonVisionSim;
 /**
  * Subsystem that processes AprilTag camera observations for robot pose estimation.
  * <p>
- * Uses AprilTag detection via PhotonVision to provide pose corrections for the drivebase estimator. Pose filtering and uncertainty calculation are
+ * Uses AprilTag detection via PhotonVision to provide pose corrections for the robot state estimator. Pose filtering and uncertainty calculation are
  * delegated to {@link AprilTagPoseEstimator}.
  * </p>
  */
@@ -37,7 +38,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
 
     private final Map<String, CameraInstance> cameras;
 
-    private final AprilTagVisionConsumer      consumer;
+    private final BiConsumer<Pose2d, Double>  consumer;
 
     private final AprilTagFieldLayout         fieldLayout;
 
@@ -54,12 +55,13 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
      * @param config       configuration for vision processing and tunable thresholds
      * @param fieldLayout  AprilTag field layout in meters
      * @param consumer     consumer that receives accepted pose measurements in meters and radians
-     * @param poseSupplier supplier for the current robot pose in meters and radians (used for simulation)
+    * @param poseSupplier supplier for the current robot pose in meters and radians (used for simulation). Use raw odometry or ground-truth poses,
+    *                     not the fused robot state pose, to avoid feedback loops in sim.
      */
     public AprilTagVisionSubsystem(
             AprilTagVisionSubsystemConfig config,
             AprilTagFieldLayout fieldLayout,
-            AprilTagVisionConsumer consumer,
+            BiConsumer<Pose2d, Double> consumer,
             Supplier<Pose2d> poseSupplier) {
 
         super(config);
@@ -195,13 +197,12 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 continue;
             }
 
-            // Forward accepted measurements to the drivebase estimator.
+            // Forward accepted measurements to the robot state estimator.
             acceptedPoses.add(poseObservation.pose());
             var measurement = maybeMeasurement.get();
             consumer.accept(
                     measurement.pose(),
-                    measurement.timestampSeconds(),
-                    measurement.standardDeviations());
+                    measurement.timestampSeconds());
         }
 
         // Log per-camera data so we can compare cameras side by side.

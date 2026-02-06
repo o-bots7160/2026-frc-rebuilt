@@ -12,6 +12,8 @@ authoritative pose estimate.
 - Provide read-only pose access to other subsystems (turret, shooter, autonomous
   planners).
 - Log estimated, odometry, and vision poses to AdvantageKit for debugging.
+- Own the Field2d display so dashboards see the fused pose.
+- Coordinate odometry resets so the drivebase and robot state stay aligned.
 
 ## Usage notes
 
@@ -20,3 +22,4 @@ authoritative pose estimate.
 - Vision subsystems should inject measurements into this subsystem using the
   `addVisionMeasurement` API.
 - The drivebase should be the single source of odometry pose updates.
+- Use `setOdometryResetConsumer` to keep odometry reset behavior in one place.

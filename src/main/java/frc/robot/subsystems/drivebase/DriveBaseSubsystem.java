@@ -4,20 +4,13 @@ import java.io.File;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.drivebase.io.DriveBaseIO;
@@ -50,10 +43,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
     private final DriveBaseIOInputsAutoLogged inputs                 = new DriveBaseIOInputsAutoLogged();
 
-    private final Field2d                     fieldDisplay           = new Field2d();
-
-    private Consumer<Pose2d>                  odometryPoseConsumer    = pose -> {
-    };
+    private Consumer<Pose2d>                  odometryPoseConsumer   = pose -> {
+                                                                     };
 
     /**
      * YAGSL swerve drive instance that handles kinematics, odometry, and module commands.
@@ -91,7 +82,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * The odometry pose consumer is called each cycle with the latest drivebase pose.
      * </p>
      *
-     * @param config              drive base configuration values and tunables
+     * @param config               drive base configuration values and tunables
      * @param odometryPoseConsumer consumer that accepts the latest odometry pose
      */
     public DriveBaseSubsystem(DriveBaseSubsystemConfig config, Consumer<Pose2d> odometryPoseConsumer) {
@@ -112,8 +103,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         this.io = swerveDrive != null ? new DriveBaseIOYagsl(swerveDrive) : inputs -> {
         };
 
-        // Publish the field visualization so dashboards can render the live robot pose.
-        SmartDashboard.putData("Field", fieldDisplay);
     }
 
     /**
@@ -133,27 +122,27 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
         // Pull the latest sensor data from the IO layer before logging.
         io.updateInputs(inputs);
-        Logger.processInputs("DriveBase", inputs);
+        log.processInputs("DriveBase", inputs);
         // Publish odometry, module states, and chassis speeds for analysis.
-        Logger.recordOutput("Odometry/Robot", getPose());
-        Logger.recordOutput("SwerveStates/Measured", inputs.moduleStates);
-        Logger.recordOutput("SwerveStates/Target", lastRequestedStates);
-        Logger.recordOutput("SwerveStates/CurrentStates", inputs.moduleStates);
-        Logger.recordOutput("SwerveStates/DesiredStates", lastRequestedStates);
-        Logger.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
-        Logger.recordOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
-        Logger.recordOutput("Swerve/RobotRotation", getPose().getRotation());
-        // Update the on-dashboard field widget so drivers can see pose changes.
-        fieldDisplay.setRobotPose(getPose());
-        odometryPoseConsumer.accept(getPose());
+        log.recordOutput("SwerveStates/Measured", inputs.moduleStates);
+        log.recordOutput("SwerveStates/Target", lastRequestedStates);
+        log.recordOutput("SwerveStates/CurrentStates", inputs.moduleStates);
+        log.recordOutput("SwerveStates/DesiredStates", lastRequestedStates);
+        log.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
+        log.recordOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
+        log.recordOutput("Swerve/RobotRotation", getOdometryPose().getRotation());
+        odometryPoseConsumer.accept(getOdometryPose());
     }
 
     /**
-     * Returns the current estimated field pose of the robot.
+     * Returns the current odometry pose of the robot.
+     * <p>
+     * Use {@link frc.robot.subsystems.robotstate.RobotStateSubsystem} for the fused field pose.
+     * </p>
      *
-     * @return Current robot pose in meters and radians.
+     * @return current odometry pose in meters and radians
      */
-    public Pose2d getPose() {
+    public Pose2d getOdometryPose() {
         if (swerveDrive == null) {
             // Return a safe default when the swerve drive has not been initialized.
             return new Pose2d();
@@ -192,20 +181,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
         // Use the swerve library helper to reset odometry and the gyro together.
         swerveDrive.resetOdometry(pose);
-    }
-
-    /**
-     * Replaces the pose estimator state without changing odometry accumulators.
-     *
-     * @param pose Pose that should be reported going forward.
-     */
-    public void setPose(Pose2d pose) {
-        if (isSubsystemDisabled() || swerveDrive == null) {
-            return;
-        }
-
-        // Directly update the pose estimator without rewinding wheel encoders.
-        swerveDrive.swerveDrivePoseEstimator.resetPose(pose);
     }
 
     /**
@@ -361,27 +336,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     public SwerveDrive getSwerveDrive() {
         // Expose the raw drive for advanced commands or testing helpers.
         return swerveDrive;
-    }
-
-    /**
-     * Pass-through method for injecting vision-based pose estimates into the drivetrain pose estimator.
-     * <p>
-     * This method is typically invoked via a {@link frc.robot.subsystems.vision.AprilTagVisionConsumer} supplied to the Vision subsystem during
-     * wiring in {@code RobotContainer}.
-     * </p>
-     *
-     * @param robotPose          pose measurement in meters and radians
-     * @param timestamp          timestamp of the measurement in seconds
-     * @param standardDeviations measurement standard deviations for x/y/theta
-     */
-    public void addVisionMeasurement(
-            Pose2d robotPose,
-            double timestamp,
-            Matrix<N3, N1> standardDeviations) {
-        if (swerveDrive != null) {
-            // swerveDrive may not be defined if robot not enabled
-            swerveDrive.addVisionMeasurement(robotPose, timestamp, standardDeviations);
-        }
     }
 
     /**

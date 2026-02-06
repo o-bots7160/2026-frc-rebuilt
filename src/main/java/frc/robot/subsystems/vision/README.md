@@ -32,10 +32,11 @@ us how far we rolled and the gyro tells us our heading. That is called
 can slip.
 
 Vision helps correct that drift. When a tag is seen, the vision system reports
-the pose estimate and a confidence value. The drivebase fuses the two sources:
-it trusts odometry for short-term motion and uses the vision pose to nudge the
-estimate back to the correct spot. That combination keeps the robot’s field
-position accurate so the turret, shooter, and autonomous paths stay aligned.
+the pose estimate and a confidence value. The robot state subsystem fuses the
+two sources: it trusts odometry for short-term motion and uses the vision pose
+to nudge the estimate back to the correct spot. That combination keeps the
+robot’s field position accurate so the turret, shooter, and autonomous paths
+stay aligned.
 
 ## Control and configuration (programming)
 
@@ -45,7 +46,7 @@ position accurate so the turret, shooter, and autonomous paths stay aligned.
 - Tracks goals or pickup spots and shares angles to the turret and drivebase.
 - Flags target confidence so commands can decide when to trust vision over
   odometry.
-- Publishes pose and target info to AdvantageKit; drivebase can fuse it with
+- Publishes pose and target info to AdvantageKit; robot state can fuse it with
   odometry.
 - Document camera mounting offsets in config files to keep transforms correct.
 
@@ -65,8 +66,8 @@ position accurate so the turret, shooter, and autonomous paths stay aligned.
   visibility.
 - `AprilTagPoseEstimator`: Converts AprilTag detections into pose estimates and
   applies camera transforms.
-- `AprilTagVisionConsumer`: Adapter that hands vision outputs to other
-  subsystems (for example, drivebase or turret).
+- Pose measurement consumer: a callback passed to the vision subsystem to
+  forward accepted poses to robot state or other systems.
 - `config/AprilTagVisionSubsystemConfig`: Tunables and mounting offsets for
   AprilTag vision.
 - `config/DriverCameraSubsystemConfig`: Tunables for the driver camera setup.
