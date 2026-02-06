@@ -1,0 +1,74 @@
+{
+  "driveBaseSubsystem": {
+    "enabled": true,
+    "verbose": false,
+    "maximumLinearSpeedFeetPerSecond": 17.2,
+    "maximumAngularSpeedDegreesPerSecond": 540.0,
+    "headingKp": 0.85,
+    "headingKi": 0.0,
+    "headingKd": 0.02,
+    "translationScale": 0.8,
+    "simulationTranslationScale": 0.4,
+    "simulationOmegaScale": 0.5,
+    "rotationToleranceDegrees": 2.0
+  },
+  "turretSubsystem": {
+    "enabled": true,
+    "verbose": true,
+    "turretMotorConfig": {
+      "enabled": true,
+      "verbose": true,
+      "useSetpointLimits": true,
+      "motorCanId": 55,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 47.5,
+      "reverseSoftLimitDegrees": -180.0,
+      "forwardSoftLimitDegrees": 180.0
+    },
+    "maximumVelocityDegreesPerSecond": 110.0,
+    "maximumAccelerationDegreesPerSecondSquared": 50.0,
+    "minimumSetpointDegrees": -180.0,
+    "maximumSetpointDegrees": 180.0,
+    "positionToleranceDegrees": 5.0,
+    "velocityToleranceDegreesPerSecond": 10.0,
+    "initialPositionDegrees": 0.0,
+    "initialVelocityDegreesPerSecond": 0.0,
+    "kP": 18.5,
+    "kI": 0.0,
+    "kD": 1.0,
+    "kS": 0.30724,
+    "kV": 6.3425,
+    "kA": 0.59712
+  },
+  "robotStateSubsystem": {
+    "enabled": true,
+    "verbose": false,
+    "enableVisionFusion": true,
+    "visionBlendFactor": 0.15,
+    "visionMeasurementMaxAgeSeconds": 0.25
+  },
+  "aprilTagVisionSubsystem": {
+    "enabled": true,
+    "verbose": true,
+    "linearStandardDeviationBaseline": 0.08,
+    "angularStandardDeviationBaseline": 1.0,
+    "maximumAmbiguity": 0.3,
+    "cameras": {
+      "Arducam_OV9281_USB1": {
+        "x": 0.3302,
+        "y": 0.0,
+        "z": 0.381,
+        "roll": 0.0,
+        "pitch": 0.0,
+        "yaw": 0.0
+      }
+    }
+  },
+  "driverCameraSubsystem": {
+    "enabled": false,
+    "verbose": false,
+    "cameraName": "limelight",
+    "pipelineIndex": 0
+  }
+}

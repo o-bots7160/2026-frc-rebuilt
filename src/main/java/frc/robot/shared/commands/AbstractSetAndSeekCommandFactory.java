@@ -30,7 +30,7 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
      * @return command that runs the quasistatic test until completion
      */
     public Command createSysIdQuasistaticCommand(SysIdRoutine.Direction direction) {
-        return subsystem.getSysIdRoutine().quasistatic(direction);
+        return wrapSysIdCommand(subsystem.getSysIdRoutine().quasistatic(direction));
     }
 
     /**
@@ -61,7 +61,7 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
      * @return command that runs the dynamic test until completion
      */
     public Command createSysIdDynamicCommand(SysIdRoutine.Direction direction) {
-        return subsystem.getSysIdRoutine().dynamic(direction);
+        return wrapSysIdCommand(subsystem.getSysIdRoutine().dynamic(direction));
     }
 
     /**
@@ -96,7 +96,7 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
     public Command createSysIdFullSweepCommand(double delaySeconds, double quasistaticTimeoutSecs, double dynamicTimeoutSecs) {
         SysIdRoutine routine = subsystem.getSysIdRoutine();
 
-        return routine
+        return wrapSysIdCommand(routine
                 // Quasistatic forward: slow voltage ramp to capture static friction + velocity data.
                 .quasistatic(SysIdRoutine.Direction.kForward).withTimeout(quasistaticTimeoutSecs)
                 // Pause to let the mechanism settle before reversing direction.
@@ -110,6 +110,19 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
                 // Pause to let the mechanism settle before the final reverse sweep.
                 .andThen(Commands.waitSeconds(delaySeconds))
                 // Dynamic reverse: step voltage in reverse to capture acceleration response.
-                .andThen(routine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(dynamicTimeoutSecs));
+                .andThen(routine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(dynamicTimeoutSecs)));
+    }
+
+    private Command wrapSysIdCommand(Command sysIdCommand) {
+        return Commands.sequence(
+                Commands.runOnce(subsystem::logSysIdStart, subsystem),
+                sysIdCommand)
+                .finallyDo(interrupted -> {
+                    if (interrupted) {
+                        subsystem.logSysIdInterrupted();
+                    } else {
+                        subsystem.logSysIdEnd();
+                    }
+                });
     }
 }

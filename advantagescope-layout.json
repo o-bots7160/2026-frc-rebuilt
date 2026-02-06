@@ -62,12 +62,12 @@
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0",
             "/AdvantageKit/RealOutputs/RobotStateSubsystem",
             "/AdvantageKit/RealOutputs/RobotStateSubsystem/Pose",
-            "/AdvantageKit/RobotStateSubsystem",
-            "/AdvantageKit/RobotStateSubsystem/RobotState"
+            "/AdvantageKit/RobotStateSubsystem/RobotState",
+            "/AdvantageKit/RealOutputs/TurretSubsystem"
           ]
         },
         "tabs": {
-          "selected": 5,
+          "selected": 2,
           "tabs": [
             {
               "type": 0,
@@ -116,7 +116,7 @@
                     "type": "stepped",
                     "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/controllerOutputVolts",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#858584",
                       "size": "normal"

@@ -207,6 +207,36 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
+     * Logs the start of a SysId routine for operator awareness.
+     * <p>
+     * Call this once before running a SysId command sequence so the console reflects the upcoming characterization sweep.
+     * </p>
+     */
+    public void logSysIdStart() {
+        log.info("Start SysID Routine");
+    }
+
+    /**
+     * Logs the successful completion of a SysId routine.
+     * <p>
+     * Call this after a SysId command finishes to confirm the characterization sweep completed.
+     * </p>
+     */
+    public void logSysIdEnd() {
+        log.info("End SysID Routine");
+    }
+
+    /**
+     * Logs when a SysId routine is interrupted before completion.
+     * <p>
+     * Call this when a SysId command is cancelled or interrupted so operators know the sweep did not finish.
+     * </p>
+     */
+    public void logSysIdInterrupted() {
+        log.warning("Interrupted SysID Routine");
+    }
+
+    /**
      * Retargets the profile using the latest measured position and velocity to settle without oscillation.
      * <p>
      * Call this when interrupting a moving command so the controller decelerates smoothly from the current motion state.

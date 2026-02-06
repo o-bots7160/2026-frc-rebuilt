@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.bindings.TriggerBindings;
@@ -62,7 +63,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         try {
-            subsystemsConfig            = ConfigurationLoader.load("subsystems.json", SubsystemsConfig.class);
+            subsystemsConfig            = ConfigurationLoader.load(resolveSubsystemsConfigFileName(), SubsystemsConfig.class);
             fieldLayoutConfig           = ConfigurationLoader.load("field-layout.json", FieldLayoutConfig.class);
             aprilTagFieldLayoutSupplier = fieldLayoutConfig::loadLayout;
 
@@ -154,5 +155,22 @@ public class RobotContainer {
      */
     public void resetDrivePose(Pose2d pose) {
         robotStateSubsystem.resetPose(pose);
+    }
+
+    private String resolveSubsystemsConfigFileName() {
+        if (RobotBase.isSimulation()) {
+            return "subsystems-sim.json";
+        }
+
+        if (isTestRobot()) {
+            return "subsystems-test.json";
+        }
+
+        return "subsystems.json";
+    }
+
+    private boolean isTestRobot() {
+        // TODO: hardware check to see if we're using the test robot
+        return true;
     }
 }
