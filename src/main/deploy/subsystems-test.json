@@ -19,7 +19,7 @@
     "rotationToleranceDegrees": 2.0
   },
   "turretSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "turretMotorConfig": {
       "enabled": true,
@@ -64,9 +64,9 @@
       "Arducam_OV9281_USB1": {
         "x": 0.3302,
         "y": 0.0,
-        "z": 0.381,
+        "z": 0.4159,
         "roll": 0.0,
-        "pitch": 0.0,
+        "pitch": -0.3142,
         "yaw": 0.0
       }
     }

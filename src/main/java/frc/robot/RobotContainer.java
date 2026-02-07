@@ -126,6 +126,17 @@ public class RobotContainer {
     }
 
     /**
+     * Resets the robot pose using the latest vision measurement from the cameras.
+     * <p>
+     * Call this at match start so the pose estimator begins from the camera-derived position rather than a default origin. If no vision measurement
+     * is available yet, the reset is safely skipped by the underlying subsystem.
+     * </p>
+     */
+    public void resetPoseFromVision() {
+        robotStateSubsystem.resetPoseFromVision();
+    }
+
+    /**
      * Returns the active AprilTag field layout for navigation and vision targeting.
      * <p>
      * Use this to look up tag poses for autonomous destinations or pose correction.

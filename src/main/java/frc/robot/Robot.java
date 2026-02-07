@@ -105,6 +105,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {
     }
 
+    /** Runs each loop while the robot is disabled; no-op by default. */
     @Override
     public void disabledPeriodic() {
     }
@@ -119,11 +120,20 @@ public class Robot extends LoggedRobot {
         m_robotContainer.resetPose(startPose);
     }
 
+    /**
+     * Seeds the robot pose and schedules the selected autonomous routine.
+     * <p>
+     * On a real robot the pose is reset from the latest vision measurement so the autonomous path starts at the correct field location. In
+     * simulation a computed start pose is used instead since cameras are not present.
+     * </p>
+     */
     @Override
     public void autonomousInit() {
         if (isSimulation()) {
             Pose2d startPose = getSimulationStartPose();
             m_robotContainer.resetPose(startPose);
+        } else {
+            m_robotContainer.resetPoseFromVision();
         }
 
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -133,6 +143,7 @@ public class Robot extends LoggedRobot {
         }
     }
 
+    /** Runs each loop during autonomous; command scheduler handles execution. */
     @Override
     public void autonomousPeriodic() {
     }
@@ -141,11 +152,21 @@ public class Robot extends LoggedRobot {
     public void autonomousExit() {
     }
 
+    /**
+     * Seeds the robot pose and cancels any lingering autonomous command when teleop begins.
+     * <p>
+     * On a real robot the pose is reset from the latest vision measurement so driver-relative controls start from an accurate field position. In
+     * simulation a computed start pose is used instead.
+     * </p>
+     */
+
     @Override
     public void teleopInit() {
         if (isSimulation()) {
             Pose2d startPose = getSimulationStartPose();
             m_robotContainer.resetPose(startPose);
+        } else {
+            m_robotContainer.resetPoseFromVision();
         }
 
         if (m_autonomousCommand != null) {
@@ -153,6 +174,7 @@ public class Robot extends LoggedRobot {
         }
     }
 
+    /** Runs each loop during teleop; command scheduler handles execution. */
     @Override
     public void teleopPeriodic() {
     }
@@ -160,6 +182,8 @@ public class Robot extends LoggedRobot {
     @Override
     public void teleopExit() {
     }
+
+    /** Cancels all active commands when test mode begins. */
 
     @Override
     public void testInit() {

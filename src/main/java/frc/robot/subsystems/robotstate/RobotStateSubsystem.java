@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -169,6 +170,28 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
     }
 
     /**
+     * Resets the robot pose to the most recent vision measurement.
+     * <p>
+     * Call this at the start of a match to seed the pose estimator with the camera-derived position before switching to fused odometry-plus-vision
+     * tracking. If no vision measurement has been received yet, the reset is skipped and a warning is logged so operators can diagnose camera issues.
+     * </p>
+     */
+    public void resetPoseFromVision() {
+        if (isSubsystemDisabled()) {
+            logDisabled("resetPoseFromVision");
+            return;
+        }
+
+        if (!hasVisionMeasurement) {
+            DriverStation.reportWarning("resetPoseFromVision skipped: no vision measurement received yet.", false);
+            return;
+        }
+
+        Pose2d poseFromVision = this.lastVisionPose;
+        resetPose(poseFromVision);
+    }
+
+    /**
      * Returns the current fused pose estimate.
      * <p>
      * Commands and subsystems should use this pose for field-relative decisions.
@@ -195,6 +218,7 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
 
         double clampedBlendFactor = MathUtil.clamp(visionBlendFactor, 0.0, 1.0);
         estimatedPose = estimatedPose.interpolate(lastVisionPose, clampedBlendFactor);
+        odometryPose = estimatedPose;
     }
 
     private void updateInputs(RobotStateIO.RobotStateIOInputs inputs) {
