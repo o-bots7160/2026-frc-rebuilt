@@ -7,10 +7,8 @@ package frc.robot;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +19,7 @@ import frc.robot.shared.config.FieldLayoutConfig;
 import frc.robot.shared.config.SubsystemsConfig;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
+import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
 import frc.robot.subsystems.robotstate.RobotStateSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
@@ -53,6 +52,9 @@ public class RobotContainer {
     private final DriverCameraSubsystem            driverCameraSubsystem;
 
     // Command factories
+
+    private final PathPlannerCommandFactory        pathPlannerCommandFactory;
+
     private final DriveBaseSubsystemCommandFactory driveBaseCommandFactory;
 
     private final TurretSubsystemCommandFactory    turretCommandFactory;
@@ -76,17 +78,18 @@ public class RobotContainer {
                     subsystemsConfig.driveBaseSubsystem,
                     robotStateSubsystem::updateOdometryPose);
             robotStateSubsystem.setOdometryResetConsumer(driveBaseSubsystem::resetPose);
-            turretSubsystem         = new TurretSubsystem(subsystemsConfig.turretSubsystem);
-            aprilTagVisionSubsystem = new AprilTagVisionSubsystem(
+            turretSubsystem           = new TurretSubsystem(subsystemsConfig.turretSubsystem);
+            aprilTagVisionSubsystem   = new AprilTagVisionSubsystem(
                     subsystemsConfig.aprilTagVisionSubsystem,
                     aprilTagFieldLayoutSupplier.get(),
                     robotStateSubsystem::addVisionMeasurement,
                     driveBaseSubsystem::getOdometryPose);
-            driverCameraSubsystem   = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
+            driverCameraSubsystem     = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
 
             // Command factories
-            driveBaseCommandFactory = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
-            turretCommandFactory    = new TurretSubsystemCommandFactory(turretSubsystem);
+            pathPlannerCommandFactory = new PathPlannerCommandFactory(driveBaseSubsystem, robotStateSubsystem::resetPose);
+            driveBaseCommandFactory   = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
+            turretCommandFactory      = new TurretSubsystemCommandFactory(turretSubsystem);
 
             // Default Commands
             turretCommandFactory.setDefaultTrackFieldTargetCommand(
@@ -148,16 +151,10 @@ public class RobotContainer {
             return Commands.none();
         }
 
-        return new PathPlannerAuto("Example Auto");
-    }
+        Command autoCommand = pathPlannerCommandFactory.createAutoCommandForPosition(DriverStation.getAlliance().get(),
+                DriverStation.getLocation().getAsInt());
 
-    /**
-     * Resets the drive base pose.
-     *
-     * @param pose new robot pose in field coordinates
-     */
-    public void resetDrivePose(Pose2d pose) {
-        robotStateSubsystem.resetPose(pose);
+        return autoCommand;
     }
 
     private String resolveSubsystemsConfigFileName() {
