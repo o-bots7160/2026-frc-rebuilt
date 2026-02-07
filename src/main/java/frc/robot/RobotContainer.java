@@ -87,7 +87,7 @@ public class RobotContainer {
             driverCameraSubsystem     = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
 
             // Command factories
-            pathPlannerCommandFactory = new PathPlannerCommandFactory(driveBaseSubsystem, robotStateSubsystem::resetPose);
+            pathPlannerCommandFactory = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
             driveBaseCommandFactory   = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
             turretCommandFactory      = new TurretSubsystemCommandFactory(turretSubsystem);
 

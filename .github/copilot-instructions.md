@@ -3,6 +3,13 @@
 These notes describe how to collaborate with the 7160 2026 robot codebase.
 Follow them whenever you add code, documentation, or tests.
 
+> **Model note:** This file is consumed by both Claude Opus 4 and GPT 5.x
+> Codex. Write every rule as an explicit, concrete directive—do not rely on
+> either model "knowing what you mean." When in doubt, include a short
+> positive example and, where useful, a negative example. Both models should
+> treat every bullet as a hard requirement unless the word "prefer" or
+> "encouraged" appears.
+
 ## Writing voice and documentation expectations
 
 - Keep explanations at a clear high-school reading level—short sentences,
@@ -43,13 +50,67 @@ Follow them whenever you add code, documentation, or tests.
     the turret folder) and avoid putting command builders on subsystems.
 - Organize class members by visibility and role: public API at the top, followed
   by protected, package-private, and private helpers. Group overloads together.
-- Keep methods cohesive and self-descriptive. If logic is hard to infer from
-  names alone, add a short comment **above** the relevant block.
+- Keep methods cohesive and self-descriptive. When inline comments are
+  warranted (see *Javadoc and comment style reference*), keep them short and
+  place them above the relevant block.
 - Choose semantic variable names that immediately reveal intent (e.g.,
-  `driveVelocityMetersPerSecond`, not `vel`). Include units in the name when it
-  prevents ambiguity.
+  `driveVelocityMetersPerSecond`, not `vel`). Include units in the name for
+  variables, config properties, and constants whenever it prevents ambiguity
+  (e.g., `maximumSetpointDegrees`, `maximumAngularSpeedDegreesPerSecond`).
 - Abstractions are encouraged when they reduce duplication, but keep them simple
   enough to understand in a quick code review.
+
+## Safety guards and error handling
+
+- Every public mutating method on a subsystem must start with an
+  `isSubsystemDisabled()` check and return early when disabled. Call
+  `logDisabled("methodName")` so operators can see the skipped call in
+  telemetry.
+  ```java
+  public void setTarget(double degrees) {
+      if (isSubsystemDisabled()) {
+          logDisabled("setTarget");
+          return;
+      }
+      // ... real logic
+  }
+  ```
+- For high-frequency methods like `periodic()`, logging every cycle is too
+  noisy. Either return silently or log once using a boolean flag.
+- Use `DriverStation.reportError` for **fatal or high-severity** issues
+  (constructor failures, missing hardware). Include the stack trace.
+- Use `DriverStation.reportWarning` for **recoverable** situations (auto file
+  not pre-loaded, missing starting pose). Do not include a stack trace.
+- Use the subsystem's `log.verbose` or `log.recordOutput` for
+  subsystem-scoped diagnostics.
+- When hardware initialization fails in a constructor, set the subsystem to
+  disabled (via `config.enabled = false` or equivalent) so the rest of the
+  robot keeps running. Do not let a single sensor or motor failure crash the
+  entire program.
+- Never throw unchecked exceptions from periodic robot code. Catch, report,
+  and degrade gracefully.
+
+## Subsystem decoupling
+
+- Subsystems must never hold direct references to other subsystems.
+- All cross-subsystem data flows through `Supplier<T>`, `Consumer<T>`, or
+  `BiConsumer<T, U>` wired in `RobotContainer`.
+- Pass config getters as method references when a `Supplier<Double>` is
+  needed (e.g., `config::getMaximumVelocityDegreesPerSecond`).
+- Commands that need data from another subsystem should accept suppliers in
+  their constructor rather than querying the subsystem directly.
+- Good (decoupled):
+  ```java
+  new AprilTagVisionSubsystem(
+          config,
+          fieldLayout,
+          robotStateSubsystem::addVisionMeasurement,
+          driveBaseSubsystem::getOdometryPose);
+  ```
+- Bad (tightly coupled):
+  ```java
+  new AprilTagVisionSubsystem(config, fieldLayout, robotStateSubsystem, driveBaseSubsystem);
+  ```
 
 ## Project layout
 
@@ -85,9 +146,8 @@ Follow them whenever you add code, documentation, or tests.
 - Prefer the WPILib command-based structure: wire devices and subsystems in
   `RobotContainer`, bind inputs in one place, and set default commands so every
   subsystem has an idle behavior.
-- Keep control constants in one location (config classes or a `Constants`
-  helper) and document their units; reuse them in both autonomous and teleop
-  commands to avoid drift.
+- Keep control constants in config classes and document their units; reuse
+  them in both autonomous and teleop commands to avoid drift.
 - Stick to WPILib coordinate frames: field-relative poses use meters and
   radians, chassis speeds are forward (x), left (y), and counter-clockwise
   rotation (omega).
@@ -96,8 +156,7 @@ Follow them whenever you add code, documentation, or tests.
 - Use WPILib `Units` helpers (or AdvantageKit math utilities) when converting
   between rotations, radians, meters, and inches; never hard-code magic
   conversion numbers inline.
-- Default to AdvantageKit logging for telemetry and prefer
-  `SmartDashboard`/`Shuffleboard` only for quick debug values.
+- For telemetry and logging conventions, see *Logging and telemetry*.
 - When adding new hardware, supply vendor IDs and CAN IDs in config classes,
   ensure `SubsystemsConfig` stays in sync with `subsystems.json`, and document
   any Phoenix/REV firmware needs.
@@ -111,15 +170,165 @@ Follow them whenever you add code, documentation, or tests.
   be captured by naming alone.
 - When introducing robotics, mechanics, or other domain jargon, add a short
   explanation in Javadoc or a nearby comment so students can learn the term.
-- When a subsystem is disabled, add a log message for any public method that
-  gets called so operators can see the call was skipped.
-- Place comments on their own lines directly **before** the code block they
-  describe—avoid end-of-line commentary.
+  See also the domain-jargon guidance in *Additional suggestions*.
 - Remove obsolete or redundant comments during refactors to prevent drift.
+- For comment placement and formatting rules, see *Javadoc and comment style
+  reference*.
 
-## Config naming and units
+## Javadoc and comment style reference
 
-- All config properties must state their units in the name when applicable (e.g., `maximumSetpointDegrees`, `maximumAngularSpeedDegreesPerSecond`).
+Follow these rules exactly so every file in the codebase looks like it was
+written by the same person. When generating or editing code, match these
+patterns—do not invent new formatting.
+
+### Class-level Javadoc
+
+- One to three sentences of plain prose. Start with a noun phrase that says what
+  the class _is_ or _does_.
+- Use a `<p>` block for a second paragraph when you need a usage note or
+  caveat. Do **not** use `<h3>`, `<ol>`, `<li>`, `<ul>`, `<strong>`, or `<em>`
+  in any Javadoc.
+- Add `@param <T>` when the class has type parameters.
+- Add `@see` links only when they point to genuinely useful external docs.
+- Good example:
+  ```java
+  /**
+   * Factory that creates drive base commands and wires default behaviors.
+   */
+  ```
+- Bad example (too much HTML, too verbose):
+  ```java
+  /**
+   * <h3>DriveBaseSubsystemCommandFactory</h3>
+   * <p><strong>This factory</strong> is responsible for...</p>
+   * <ol><li>Step one</li><li>Step two</li></ol>
+   */
+  ```
+
+### Constructor Javadoc
+
+- Summary sentence starts with "Creates…" or "Builds…".
+- `@param` entries state purpose and units.
+- Good: `Creates a factory that produces commands operating on the provided drive base subsystem.`
+
+### Method Javadoc
+
+- Summary sentence starts with an imperative verb: "Builds…", "Computes…",
+  "Reads…", "Limits…", "Maps…".
+- Use a `<p>` block for caveats or edge-case behavior—keep it to one paragraph.
+- `@param` entries include units when the value has them (degrees, meters per
+  second, etc.).
+- `@return` states what comes back and its units.
+- Good:
+  ```java
+  /**
+   * Computes the turret target angle needed to face a field-relative target.
+   * <p>
+   * The returned angle is clamped to the configured turret limits.
+   * </p>
+   *
+   * @param robotPose                 current robot pose in meters and radians
+   * @param targetFieldPositionMeters target position on the field in meters
+   * @return turret target angle in degrees
+   */
+  ```
+
+### Field Javadoc
+
+- One-sentence summary on fields that are not immediately obvious from the name.
+- Add a `<p>` block only when extra context helps (domain explanation, wiring
+  note).
+- Skip Javadoc on trivially obvious private fields.
+
+### Inline comments
+
+- Always on their own line **above** the code they describe, never at the end of
+  a line.
+- Short imperative phrases, starting with a capital letter. Optionally use a
+  label prefix for related groups (e.g., `// Deadband:`, `// Telemetry:`).
+- Do **not** use section separator lines (`// ── Section ──`), ASCII-art
+  banners, or numbered step comments (`// 1.`, `// 2.`). Let method structure
+  and naming convey flow.
+
+### Allowed Javadoc HTML tags
+
+Only the following are permitted:
+
+| Tag | Usage |
+|---|---|
+| `<p>...</p>` | Paragraph break inside Javadoc |
+| `{@link ClassName}` | Cross-reference to a class or method |
+| `{@link ClassName#method()}` | Cross-reference with method anchor |
+| `{@code literal}` | Inline code literal |
+
+Everything else (`<h3>`, `<ol>`, `<li>`, `<ul>`, `<strong>`, `<em>`,
+`<table>`, `<pre>`) is **not allowed** in Javadoc.
+
+## Import ordering
+
+- Group imports in this order with a blank line between each group:
+  1. `import static` (if any).
+  2. `java.*` / `javax.*` (standard library).
+  3. Third-party libraries (`com.*`, `org.*`, vendor libs).
+  4. `edu.wpi.first.*` (WPILib).
+  5. `frc.robot.*` (project code).
+- Do not use wildcard imports (`import java.util.*`). Import each class
+  individually so dependencies are explicit and diffs are clean.
+
+## RobotContainer wiring order
+
+- Follow this sequence in the `RobotContainer` constructor so every
+  dependency is available before it is referenced:
+  1. **Configuration loading** — config objects, field layout suppliers.
+  2. **Subsystems** — instantiate in dependency order (e.g.,
+     `RobotStateSubsystem` before `DriveBaseSubsystem` when drivebase
+     publishes odometry into robot state).
+  3. **Cross-subsystem wiring** — connect consumers and suppliers between
+     subsystems.
+  4. **Command factories** — create one factory per subsystem.
+  5. **Default commands** — set idle behaviors.
+  6. **Input bindings** — map controller buttons to commands.
+- When adding a new subsystem, insert it in the correct dependency position.
+  Do not add it at the bottom of the list if other subsystems depend on it.
+
+## Disabled-subsystem lifecycle
+
+Follow this pattern when adding a new subsystem that can be toggled off:
+
+1. Add an `enabled` field to the subsystem entry in `subsystems.json`,
+   `subsystems-sim.json`, and `subsystems-test.json`.
+2. The corresponding config class inherits `public boolean enabled = true`
+   from `AbstractConfig`.
+3. `AbstractSubsystem` copies the flag in its constructor, exposing
+   `isSubsystemDisabled()` and `logDisabled(String)`.
+4. Guard public methods as described in *Safety guards and error handling*.
+5. In the subsystem constructor, bail out early when disabled:
+   ```java
+   if (isSubsystemDisabled()) {
+       log.verbose("MySubsystem disabled; skipping hardware init.");
+       this.io = inputs -> {};
+       return;
+   }
+   ```
+6. For motor-backed subsystems, use `DisabledMotor` (or an equivalent
+   no-op IO implementation) when the motor is absent so callers never
+   need null checks.
+7. `RobotContainer` still constructs all subsystems even when disabled.
+   They become inert, keeping wiring simple and avoiding null references.
+
+## Autonomous and PathPlanner conventions
+
+- Auto files live under `src/main/deploy/pathplanner/autos/` and follow the
+  naming pattern `Start Position N - Action.auto` (e.g.,
+  `Start Position 1 - Shoot and Collect.auto`).
+- Path files live under `src/main/deploy/pathplanner/paths/` and follow
+  `Start Position N - Segment Name.path`.
+- The `resolveAutoName` switch in `PathPlannerCommandFactory` must stay in
+  sync with the deployed `.auto` files. When adding a new auto, update both.
+- Pre-load all autos at construction time (in the factory constructor) to
+  avoid file-parsing delays when autonomous is enabled during a match.
+- On-the-fly alignment paths should set `preventFlipping = true` when
+  coordinates have already been adjusted for the current alliance.
 
 ## Testing and validation
 
@@ -150,13 +359,6 @@ Follow them whenever you add code, documentation, or tests.
 
 ## Additional suggestions
 
-- Surface important configuration constants via descriptive names and document
-  their units in both code and config files.
-- Whenever you introduce a new tuning value (feedforward gains, current limits,
-  mechanical offsets, etc.), extract it into the relevant config class or
-  `subsystems.json` entry so that future adjustments happen in one location.
-- Centralize repeated tuning parameters in config classes so that changes
-  propagate consistently across autonomous and teleop code.
 - SmartDashboard keys should be prefixed with the subsystem name (e.g.,
   `DriveBaseSubsystem/headingKp`), not the config class name (`*Config`). Apply
   this pattern for all subsystems and configs going forward.
@@ -164,3 +366,18 @@ Follow them whenever you add code, documentation, or tests.
   class-level Javadoc.
 - Keep TODOs actionable and include an owner or link so they do not linger
   without context.
+- Never introduce inline magic numbers. Extract every numeric literal into a
+  named constant or config field with units in the name.
+- When generating code for students, favor clarity over cleverness. A slightly
+  longer solution that reads like prose is better than a compact one that
+  requires advanced Java knowledge to parse.
+- If a method grows beyond roughly 30–40 lines, consider extracting helpers.
+  Short methods with descriptive names are easier for students to step through
+  in a debugger.
+- When a concept has a real-world robotics term (PID, feedforward,
+  trapezoidal profile, odometry, holonomic), define it briefly in the Javadoc
+  the first time it appears in a class so students learn the vocabulary as
+  they read the code.
+- Commit messages should use imperative mood ("Add turret tracking command",
+  not "Added" or "Adding"). Keep the summary under 72 characters and add a
+  body paragraph for non-trivial changes.
