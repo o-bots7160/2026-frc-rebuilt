@@ -7,7 +7,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.VisionMeasurementConsumer;
@@ -181,7 +180,7 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         }
 
         if (!hasVisionMeasurement) {
-            DriverStation.reportWarning("resetPoseFromVision skipped: no vision measurement received yet.", false);
+            reportWarning("resetPoseFromVision skipped: no vision measurement received yet.", false);
             return;
         }
 

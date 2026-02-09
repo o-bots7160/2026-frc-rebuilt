@@ -149,9 +149,9 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
 
         // Clamp the request so we never ask the mechanism to move past its safe range.
         double clampedTargetRadians   = MathUtil.clamp(requestedTargetRadians, minimumSetpointRadians, maximumSetpointRadians);
-        log.recordOutput("targetRequestedPositionDegrees", targetPositionDegrees);
-        log.recordOutput("targetClampedPositionDegrees", Units.radiansToDegrees(clampedTargetRadians));
-        log.recordOutput("targetWasClamped", requestedTargetRadians != clampedTargetRadians);
+        log.recordVerboseOutput("targetRequestedPositionDegrees", targetPositionDegrees);
+        log.recordVerboseOutput("targetClampedPositionDegrees", Units.radiansToDegrees(clampedTargetRadians));
+        log.recordVerboseOutput("targetWasClamped", requestedTargetRadians != clampedTargetRadians);
         // Store the goal with zero velocity so the profile knows where to stop.
         goalState = new TrapezoidProfile.State(clampedTargetRadians, 0.0);
 
@@ -185,16 +185,16 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         double positionError    = goalState.position - measuredPosition;
 
         log.recordOutput("positionErrorDegrees", Units.radiansToDegrees(positionError));
-        log.recordOutput("controllerOutputVolts", controllerOutput);
-        log.recordOutput("feedforwardVolts", feedforwardVolts);
+        log.recordVerboseOutput("controllerOutputVolts", controllerOutput);
+        log.recordVerboseOutput("feedforwardVolts", feedforwardVolts);
         log.recordOutput("voltageCommandVolts", voltageCommand);
 
         applySetpoint(setpointState, voltageCommand);
 
-        log.recordOutput("goalPositionDegrees", Units.radiansToDegrees(goalState.position));
-        log.recordOutput("goalVelocityDegreesPerSec", Units.radiansToDegrees(goalState.velocity));
-        log.recordOutput("setpointPositionDegrees", Units.radiansToDegrees(setpointState.position));
-        log.recordOutput("setpointVelocityDegreesPerSec", Units.radiansToDegrees(setpointState.velocity));
+        log.recordVerboseOutput("goalPositionDegrees", Units.radiansToDegrees(goalState.position));
+        log.recordVerboseOutput("goalVelocityDegreesPerSec", Units.radiansToDegrees(goalState.velocity));
+        log.recordVerboseOutput("setpointPositionDegrees", Units.radiansToDegrees(setpointState.position));
+        log.recordVerboseOutput("setpointVelocityDegreesPerSec", Units.radiansToDegrees(setpointState.velocity));
     }
 
     /**
@@ -252,8 +252,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         double measuredPosition = getMeasuredPosition();
         double measuredVelocity = getMeasuredVelocity();
 
-        log.recordOutput("settleMeasuredPositionDegrees", Units.radiansToDegrees(measuredPosition));
-        log.recordOutput("settleMeasuredVelocityDegreesPerSec", Units.radiansToDegrees(measuredVelocity));
+        log.recordVerboseOutput("settleMeasuredPositionDegrees", Units.radiansToDegrees(measuredPosition));
+        log.recordVerboseOutput("settleMeasuredVelocityDegreesPerSec", Units.radiansToDegrees(measuredVelocity));
 
         // Reset clears the internal error so the profile starts from the real motion state.
         controller.reset(measuredPosition, measuredVelocity);

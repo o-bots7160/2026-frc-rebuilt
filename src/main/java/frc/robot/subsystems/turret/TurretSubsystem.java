@@ -2,8 +2,8 @@ package frc.robot.subsystems.turret;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.devices.motor.Motor;
+import frc.robot.shared.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
 import frc.robot.subsystems.turret.devices.TurretMotor;
@@ -19,7 +19,7 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
             return null;
         }
 
-        return RobotBase.isReal()
+        return RobotEnvironment.isReal()
                 ? TurretMotor.create(config.turretMotorConfig)
                 : TurretSimMotor.create(
                         config.turretMotorConfig,

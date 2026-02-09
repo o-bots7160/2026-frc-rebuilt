@@ -1,8 +1,7 @@
 package frc.robot.shared.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.shared.RobotEnvironment;
 import frc.robot.shared.config.AbstractConfig;
 import frc.robot.shared.logging.Logger;
 
@@ -93,7 +92,7 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
      * @return True when running in simulation rather than on a real robot.
      */
     protected boolean isSimulation() {
-        return !RobotBase.isReal();
+        return RobotEnvironment.isSimulation();
     }
 
     /**
@@ -102,16 +101,45 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
      * @return True when running on a real robot.
      */
     protected boolean isReal() {
-        return RobotBase.isReal();
+        return RobotEnvironment.isReal();
     }
 
     /**
      * Reports whether the robot is attached to the FMS at call time.
+     * <p>
+     * Uses the per-cycle cached value from {@link RobotEnvironment#refreshCycle()}.
+     * </p>
      *
      * @return True when running on a real robot that is currently FMS attached.
      */
     protected boolean isFMSAttached() {
-        return RobotBase.isReal() && DriverStation.isFMSAttached();
+        return RobotEnvironment.isFMSAttached();
+    }
+
+    /**
+     * Reports a fatal or high-severity error to the Driver Station console.
+     * <p>
+     * Use this for constructor failures, missing hardware, or anything that should be immediately visible to operators.
+     * </p>
+     *
+     * @param message    error description
+     * @param stackTrace stack trace elements to include, or {@code null} to omit
+     */
+    protected void reportError(String message, StackTraceElement[] stackTrace) {
+        RobotEnvironment.reportError(message, stackTrace);
+    }
+
+    /**
+     * Reports a recoverable warning to the Driver Station console.
+     * <p>
+     * Use this for situations like a missing starting pose or a non-critical fallback.
+     * </p>
+     *
+     * @param message        warning description
+     * @param printStackTrace true to include a stack trace in the output
+     */
+    protected void reportWarning(String message, boolean printStackTrace) {
+        RobotEnvironment.reportWarning(message, printStackTrace);
     }
 
     /**

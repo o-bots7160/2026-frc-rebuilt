@@ -18,7 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.shared.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.drivebase.io.DriveBaseIO;
@@ -131,7 +131,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                     // This will flip the path being followed to the red side of the field.
                     // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                    var alliance = DriverStation.getAlliance();
+                    var alliance = RobotEnvironment.getAlliance();
                     if (alliance.isPresent()) {
                         return alliance.get() == DriverStation.Alliance.Red;
                     }
@@ -162,11 +162,9 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         // Publish odometry, module states, and chassis speeds for analysis.
         log.recordOutput("SwerveStates/Measured", inputs.moduleStates);
         log.recordOutput("SwerveStates/Target", lastRequestedStates);
-        log.recordOutput("SwerveStates/CurrentStates", inputs.moduleStates);
-        log.recordOutput("SwerveStates/DesiredStates", lastRequestedStates);
         log.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
         log.recordOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
-        log.recordOutput("Swerve/RobotRotation", getOdometryPose().getRotation());
+        log.recordVerboseOutput("Swerve/RobotRotation", getOdometryPose().getRotation());
     }
 
     /**
@@ -281,7 +279,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         double        simulationScale   = 1.0;
 
         // Simulation: optionally tone down speeds and increase telemetry detail to help debugging.
-        if (RobotBase.isSimulation()) {
+        if (isSimulation()) {
             simulationScale  = MathUtil.clamp(config.getSimulationTranslationScale().get(), 0.0, 1.0);
             translationScale = translationScale * simulationScale;
         }
@@ -294,18 +292,18 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 scaledVector.getX() * config.getMaximumLinearSpeedMetersPerSecond().get(),
                 scaledVector.getY() * config.getMaximumLinearSpeedMetersPerSecond().get());
 
-        // Telemetry: record all driver input stages for tuning and debugging.
-        log.recordOutput("DriverInputs/allianceSign", allianceSign);
-        log.recordOutput("DriverInputs/forward/raw", rawForward);
-        log.recordOutput("DriverInputs/forward/deadbanded", deadbandedForward);
-        log.recordOutput("DriverInputs/left/raw", rawLeft);
-        log.recordOutput("DriverInputs/left/deadbanded", deadbandedLeft);
-        log.recordOutput("DriverInputs/translation/scale", translationScale);
-        log.recordOutput("DriverInputs/translation/simulationScale", simulationScale);
-        log.recordOutput("DriverInputs/translation/scaledX", scaledVector.getX());
-        log.recordOutput("DriverInputs/translation/scaledY", scaledVector.getY());
-        log.recordOutput("DriverInputs/translation/commandedX", commandedSpeeds.getX());
-        log.recordOutput("DriverInputs/translation/commandedY", commandedSpeeds.getY());
+        // Telemetry: record all driver input stages for tuning and debugging (non-essential during matches).
+        log.recordVerboseOutput("DriverInputs/allianceSign", allianceSign);
+        log.recordVerboseOutput("DriverInputs/forward/raw", rawForward);
+        log.recordVerboseOutput("DriverInputs/forward/deadbanded", deadbandedForward);
+        log.recordVerboseOutput("DriverInputs/left/raw", rawLeft);
+        log.recordVerboseOutput("DriverInputs/left/deadbanded", deadbandedLeft);
+        log.recordVerboseOutput("DriverInputs/translation/scale", translationScale);
+        log.recordVerboseOutput("DriverInputs/translation/simulationScale", simulationScale);
+        log.recordVerboseOutput("DriverInputs/translation/scaledX", scaledVector.getX());
+        log.recordVerboseOutput("DriverInputs/translation/scaledY", scaledVector.getY());
+        log.recordVerboseOutput("DriverInputs/translation/commandedX", commandedSpeeds.getX());
+        log.recordVerboseOutput("DriverInputs/translation/commandedY", commandedSpeeds.getY());
 
         // Return the final translation request in meters per second.
         return commandedSpeeds;
@@ -344,7 +342,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         double simulationScale = 1.0;
 
         // Simulation: optionally reduce angular speed for safer testing.
-        if (RobotBase.isSimulation()) {
+        if (isSimulation()) {
             simulationScale = MathUtil.clamp(config.getSimulationOmegaScale().get(), 0.0, 1.0);
         }
 
@@ -353,11 +351,11 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 * simulationScale
                 * config.getMaximumAngularSpeedRadiansPerSecond().get();
 
-        // Telemetry: record all driver input stages for tuning and debugging.
-        log.recordOutput("DriverInputs/omega/raw", rawAxis);
-        log.recordOutput("DriverInputs/omega/deadbanded", processed);
-        log.recordOutput("DriverInputs/omega/simulationScale", simulationScale);
-        log.recordOutput("DriverInputs/omega/radiansPerSecond", radiansPerSecond);
+        // Telemetry: record all driver input stages for tuning and debugging (non-essential during matches).
+        log.recordVerboseOutput("DriverInputs/omega/raw", rawAxis);
+        log.recordVerboseOutput("DriverInputs/omega/deadbanded", processed);
+        log.recordVerboseOutput("DriverInputs/omega/simulationScale", simulationScale);
+        log.recordVerboseOutput("DriverInputs/omega/radiansPerSecond", radiansPerSecond);
 
         // Return the final angular velocity request in radians per second.
         return radiansPerSecond;
@@ -477,7 +475,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             File configDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
 
             // Load the swerve JSONs from the deploy folder so the robot and sim use the same hardware model.
-            SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+            // Reduce YAGSL telemetry during real matches to save loop time.
+            SwerveDriveTelemetry.verbosity = isFMSAttached() ? TelemetryVerbosity.LOW : TelemetryVerbosity.HIGH;
 
             // Build the swerve drive using the maximum speed limit from config.
             swerveDrive                    = new SwerveParser(configDirectory)
@@ -487,8 +486,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 // Simulation safety: disable corrections that assume real-world friction and inertia.
                 swerveDrive.setHeadingCorrection(false);
                 swerveDrive.setCosineCompensator(false);
-                // Keep telemetry verbose in sim to help students see more detail.
-                SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
             }
 
             // Cache the controller so we can tune its PID gains at runtime.
@@ -557,7 +554,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return true when the robot is on the red alliance
      */
     private boolean isRedAlliance() {
-        return DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red;
+        return RobotEnvironment.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red;
     }
 
     /**

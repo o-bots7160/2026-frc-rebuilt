@@ -9,10 +9,9 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.shared.RobotEnvironment;
 import frc.robot.shared.bindings.TriggerBindings;
 import frc.robot.shared.config.ConfigurationLoader;
 import frc.robot.shared.config.FieldLayoutConfig;
@@ -112,7 +111,7 @@ public class RobotContainer {
                     turretCommandFactory);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
-            DriverStation.reportError(message, e.getStackTrace());
+            RobotEnvironment.reportError(message, e.getStackTrace());
             throw e instanceof RuntimeException ? (RuntimeException) e : new IllegalStateException(message, e);
         }
     }
@@ -162,18 +161,18 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         if (!AutoBuilder.isConfigured()) {
-            DriverStation.reportWarning("AutoBuilder not configured; returning a no-op autonomous command.", false);
+            RobotEnvironment.reportWarning("AutoBuilder not configured; returning a no-op autonomous command.", false);
             return Commands.none();
         }
 
-        Command autoCommand = pathPlannerCommandFactory.createAutoCommandForPosition(DriverStation.getAlliance().get(),
-                DriverStation.getLocation().getAsInt());
+        Command autoCommand = pathPlannerCommandFactory.createAutoCommandForPosition(RobotEnvironment.getAlliance().get(),
+                RobotEnvironment.getLocation().getAsInt());
 
         return autoCommand;
     }
 
     private String resolveSubsystemsConfigFileName() {
-        if (RobotBase.isSimulation()) {
+        if (RobotEnvironment.isSimulation()) {
             return "subsystems-sim.json";
         }
 

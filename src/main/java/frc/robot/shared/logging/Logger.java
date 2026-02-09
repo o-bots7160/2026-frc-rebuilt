@@ -5,11 +5,15 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.shared.RobotEnvironment;
 
 /**
  * Logger is a utility class for logging messages with different levels of severity. It supports verbose, debug, info, warning, and error messages.
  * The output is color-coded for better readability in the console and automatically includes the class name to help diagnose where the log
  * originated. AdvantageKit is the preferred telemetry path; SmartDashboard helpers remain for operator-critical values only.
+ * <p>
+ * For robot mode detection, FMS state, and Driver Station reporting, see {@link RobotEnvironment}.
+ * </p>
  */
 public class Logger {
 
@@ -205,6 +209,82 @@ public class Logger {
      */
     public void processInputs(String key, LoggableInputs inputs) {
         org.littletonrobotics.junction.Logger.processInputs(className + '/' + key, inputs);
+    }
+
+    /**
+     * Records a boolean to AdvantageKit only when not attached to the FMS.
+     *
+     * @param key   telemetry key suffix
+     * @param value value to record
+     */
+    public void recordVerboseOutput(String key, boolean value) {
+        if (!RobotEnvironment.isFMSAttached()) {
+            recordOutput(key, value);
+        }
+    }
+
+    /**
+     * Records a numeric value to AdvantageKit only when not attached to the FMS.
+     *
+     * @param key   telemetry key suffix
+     * @param value value to record
+     */
+    public void recordVerboseOutput(String key, double value) {
+        if (!RobotEnvironment.isFMSAttached()) {
+            recordOutput(key, value);
+        }
+    }
+
+    /**
+     * Records an array of numeric values to AdvantageKit only when not attached to the FMS.
+     *
+     * @param key    telemetry key suffix
+     * @param values values to record
+     */
+    public void recordVerboseOutput(String key, double[] values) {
+        if (!RobotEnvironment.isFMSAttached()) {
+            recordOutput(key, values);
+        }
+    }
+
+    /**
+     * Records a struct-serializable value to AdvantageKit only when not attached to the FMS.
+     *
+     * @param key   telemetry key suffix
+     * @param value struct-serializable value to record
+     * @param <T>   value type that supports struct serialization
+     */
+    public <T extends StructSerializable> void recordVerboseOutput(String key, T value) {
+        if (!RobotEnvironment.isFMSAttached()) {
+            recordOutput(key, value);
+        }
+    }
+
+    /**
+     * Records an array of struct-serializable values to AdvantageKit only when not attached to the FMS.
+     *
+     * @param key   telemetry key suffix
+     * @param value struct-serializable values to record
+     * @param <T>   value type that supports struct serialization
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends StructSerializable> void recordVerboseOutput(String key, T... value) {
+        if (!RobotEnvironment.isFMSAttached()) {
+            recordOutput(key, value);
+        }
+    }
+
+    /**
+     * Records a 2D array of struct-serializable values to AdvantageKit only when not attached to the FMS.
+     *
+     * @param key   telemetry key suffix
+     * @param value struct-serializable values to record
+     * @param <T>   value type that supports struct serialization
+     */
+    public <T extends StructSerializable> void recordVerboseOutput(String key, T[][] value) {
+        if (!RobotEnvironment.isFMSAttached()) {
+            recordOutput(key, value);
+        }
     }
 
     /**

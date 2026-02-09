@@ -8,7 +8,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.shared.RobotEnvironment;
 
 /**
  * Base configuration bundle that mirrors values to AdvantageKit-backed SmartDashboard entries so they can be tuned without redeploying. Concrete
@@ -69,7 +69,7 @@ public abstract class AbstractConfig {
      * @return latest tunable number or the provided default when FMS is attached
      */
     protected double readTunableNumber(String key, double defaultValue) {
-        if (DriverStation.isFMSAttached()) {
+        if (RobotEnvironment.isFMSAttached()) {
             return defaultValue;
         }
         String              resolvedKey     = dashboardKey(key);
@@ -88,7 +88,7 @@ public abstract class AbstractConfig {
      * @return latest tunable boolean or the provided default when FMS is attached
      */
     protected boolean readTunableBoolean(String key, boolean defaultValue) {
-        if (DriverStation.isFMSAttached()) {
+        if (RobotEnvironment.isFMSAttached()) {
             return defaultValue;
         }
         String               resolvedKey      = dashboardKey(key);
@@ -107,7 +107,7 @@ public abstract class AbstractConfig {
      * @return latest tunable string or the provided default when FMS is attached
      */
     protected String readTunableString(String key, String defaultValue) {
-        if (DriverStation.isFMSAttached()) {
+        if (RobotEnvironment.isFMSAttached()) {
             return defaultValue;
         }
         String              resolvedKey     = dashboardKey(key);

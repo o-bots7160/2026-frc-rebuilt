@@ -19,10 +19,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.shared.RobotEnvironment;
 
 /**
  * Main robot class that owns the command scheduler and logging setup.
@@ -59,7 +59,7 @@ public class Robot extends LoggedRobot {
                 });
 
         if (isReal()) {
-            // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+            Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         } else {
             String replayPath = System.getenv("REPLAY_LOG");
@@ -92,12 +92,14 @@ public class Robot extends LoggedRobot {
         m_robotContainer = new RobotContainer();
 
         if (isSimulation()) {
-            DriverStation.silenceJoystickConnectionWarning(true);
+            RobotEnvironment.silenceJoystickConnectionWarning(true);
         }
     }
 
     @Override
     public void robotPeriodic() {
+        // Refresh the cached environment state so all code this cycle uses the same snapshot.
+        RobotEnvironment.refreshCycle();
         CommandScheduler.getInstance().run();
     }
 
@@ -208,10 +210,10 @@ public class Robot extends LoggedRobot {
      */
     private Pose2d getSimulationStartPose() {
         // Prefer the live driver station info, but default to Blue/center when not present in sim.
-        Optional<DriverStation.Alliance> alliance        = DriverStation.getAlliance();
-        OptionalInt                      stationPosition = DriverStation.getLocation();
+        Optional<edu.wpi.first.wpilibj.DriverStation.Alliance> alliance        = RobotEnvironment.getAlliance();
+        OptionalInt                      stationPosition = RobotEnvironment.getLocation();
 
-        boolean                          isRedAlliance   = alliance.orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red;
+        boolean                          isRedAlliance   = alliance.orElse(edu.wpi.first.wpilibj.DriverStation.Alliance.Blue) == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
         int                              station         = stationPosition.orElse(2);
 
         // Spread start locations by station: 1 (near edge), 2 (center), 3 (far edge).

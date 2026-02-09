@@ -15,10 +15,10 @@ import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.shared.RobotEnvironment;
 
 /**
  * Builds autonomous command sequences for each driver-station position.
@@ -93,7 +93,7 @@ public class PathPlannerCommandFactory {
         // Pull from the cache; fall back to a live load if the cache missed.
         PathPlannerAuto pathPlannerCommand = autoCache.get(autoName);
         if (pathPlannerCommand == null) {
-            DriverStation.reportWarning(
+            RobotEnvironment.reportWarning(
                     "Auto '" + autoName + "' was not pre-loaded. Loading now \u2014 expect a short delay.", false);
             pathPlannerCommand = new PathPlannerAuto(autoName);
             autoCache.put(autoName, pathPlannerCommand);
@@ -131,7 +131,7 @@ public class PathPlannerCommandFactory {
             try {
                 autoCache.put(autoName, new PathPlannerAuto(autoName));
             } catch (Exception e) {
-                DriverStation.reportError(
+                RobotEnvironment.reportError(
                         "Failed to pre-load auto '" + autoName + "': " + e.getMessage(),
                         e.getStackTrace());
             }
@@ -207,7 +207,7 @@ public class PathPlannerCommandFactory {
     private Pose2d resolveStartingPose(Alliance alliance, PathPlannerAuto autoCommand, String autoName) {
         Pose2d startingPose = autoCommand.getStartingPose();
         if (startingPose == null) {
-            DriverStation.reportWarning("Auto start pose missing for '" + autoName + "'. Skipping pose reset.", false);
+            RobotEnvironment.reportWarning("Auto start pose missing for '" + autoName + "'. Skipping pose reset.", false);
             return null;
         }
 
