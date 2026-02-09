@@ -19,7 +19,7 @@
     "rotationToleranceDegrees": 2.0
   },
   "turretSubsystem": {
-    "enabled": false,
+    "enabled": true,
     "verbose": true,
     "turretMotorConfig": {
       "enabled": true,
@@ -32,17 +32,17 @@
       "reverseSoftLimitDegrees": -180.0,
       "forwardSoftLimitDegrees": 180.0
     },
-    "maximumVelocityDegreesPerSecond": 110.0,
-    "maximumAccelerationDegreesPerSecondSquared": 50.0,
+    "maximumVelocityDegreesPerSecond": 65.0,
+    "maximumAccelerationDegreesPerSecondSquared": 45.0,
     "minimumSetpointDegrees": -180.0,
     "maximumSetpointDegrees": 180.0,
     "positionToleranceDegrees": 5.0,
     "velocityToleranceDegreesPerSecond": 10.0,
     "initialPositionDegrees": 0.0,
     "initialVelocityDegreesPerSecond": 0.0,
-    "kP": 18.5,
+    "kP": 12.0,
     "kI": 0.0,
-    "kD": 1.0,
+    "kD": 0.10,
     "kS": 0.30724,
     "kV": 6.3425,
     "kA": 0.59712
