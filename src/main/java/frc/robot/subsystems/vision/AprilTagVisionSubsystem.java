@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -13,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import frc.robot.shared.VisionMeasurementConsumer;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.vision.config.AprilTagVisionSubsystemConfig;
 import frc.robot.subsystems.vision.io.AprilTagVisionIO;
@@ -38,7 +38,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
 
     private final Map<String, CameraInstance> cameras;
 
-    private final BiConsumer<Pose2d, Double>  consumer;
+    private final VisionMeasurementConsumer    consumer;
 
     private final AprilTagFieldLayout         fieldLayout;
 
@@ -54,14 +54,14 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
      *
      * @param config       configuration for vision processing and tunable thresholds
      * @param fieldLayout  AprilTag field layout in meters
-     * @param consumer     consumer that receives accepted pose measurements in meters and radians
+     * @param consumer     consumer that receives accepted pose measurements with standard deviations
     * @param poseSupplier supplier for the current robot pose in meters and radians (used for simulation). Use raw odometry or ground-truth poses,
     *                     not the fused robot state pose, to avoid feedback loops in sim.
      */
     public AprilTagVisionSubsystem(
             AprilTagVisionSubsystemConfig config,
             AprilTagFieldLayout fieldLayout,
-            BiConsumer<Pose2d, Double> consumer,
+            VisionMeasurementConsumer consumer,
             Supplier<Pose2d> poseSupplier) {
 
         super(config);
@@ -202,7 +202,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             var measurement = maybeMeasurement.get();
             consumer.accept(
                     measurement.pose(),
-                    measurement.timestampSeconds());
+                    measurement.timestampSeconds(),
+                    measurement.standardDeviations());
         }
 
         // Log per-camera data so we can compare cameras side by side.

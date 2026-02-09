@@ -50,9 +50,7 @@
   "robotStateSubsystem": {
     "enabled": true,
     "verbose": false,
-    "enableVisionFusion": true,
-    "visionBlendFactor": 0.15,
-    "visionMeasurementMaxAgeSeconds": 0.25
+    "enableVisionFusion": true
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,

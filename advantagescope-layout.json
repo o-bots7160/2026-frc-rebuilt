@@ -9,7 +9,6 @@
         "sidebar": {
           "width": 442,
           "expanded": [
-            "/SmartDashboard/swerve",
             "/SmartDashboard/swerve/advantagescope",
             "/AdvantageKit/RealOutputs/SwerveStates",
             "/SmartDashboard/swerve/modules",
@@ -17,7 +16,6 @@
             "/SmartDashboard/swerve/modules/frontright",
             "/SmartDashboard/swerve/modules/backleft",
             "/SmartDashboard/swerve/modules/backright",
-            "/SmartDashboard/Swerve Drive",
             "/AdvantageKit/RealOutputs/Swerve",
             "/AdvantageKit/RealOutputs/Swerve/RobotRotation",
             "/AdvantageKit/RealOutputs/Pose",
@@ -28,7 +26,6 @@
             "/AdvantageKit/RealOutputs/Encoders/infos",
             "/AdvantageKit/RealOutputs/Encoders/warnings",
             "/AdvantageKit/NetworkInputs/SmartDashboard",
-            "/SmartDashboard/TurretSubsystem",
             "/LiveWindow/.status",
             "/AdvantageKit",
             "/AdvantageKit/NetworkInputs/SmartDashboard/TurretMotor",
@@ -38,12 +35,8 @@
             "/SmartDashboard/SubsystemsConfig/turretSubsystem",
             "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig",
             "/SmartDashboard/SubsystemsConfig/driveBaseSubsystem",
-            "/AdvantageKit/RealOutputs",
-            "/SmartDashboard/TurretMotor",
             "/AdvantageKit/TurretSubsystem/motor",
-            "/SmartDashboard/Field",
             "/AdvantageKit/RealOutputs/Pose/Estimated",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPoses",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPosesAccepted",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Arducam_OV9281_USB1/RobotPosesRejected",
@@ -55,7 +48,6 @@
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0/rotation",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0/translation",
-            "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/TagPoses/0/translation",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted/0",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted/0/translation",
@@ -63,11 +55,17 @@
             "/AdvantageKit/RealOutputs/RobotStateSubsystem",
             "/AdvantageKit/RealOutputs/RobotStateSubsystem/Pose",
             "/AdvantageKit/RobotStateSubsystem/RobotState",
-            "/AdvantageKit/RealOutputs/TurretSubsystem"
+            "/SmartDashboard/Field/OdometryPose",
+            "/SmartDashboard/SubsystemsConfig/aprilTagVisionSubsystem",
+            "/AdvantageKit/RealOutputs/DriveBaseSubsystem/Swerve",
+            "/AdvantageKit/RealOutputs/DriveBaseSubsystem/SwerveChassisSpeeds",
+            "/AdvantageKit/RealOutputs/DriveBaseSubsystem/SwerveStates",
+            "/AdvantageKit/RobotStateSubsystem",
+            "/AdvantageKit/RealOutputs"
           ]
         },
         "tabs": {
-          "selected": 2,
+          "selected": 4,
           "tabs": [
             {
               "type": 0,
@@ -387,12 +385,22 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/OdometryPose",
+                    "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/LastVisionPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "2026 KitBot",
-                      "color": "#00ff00"
+                      "model": "2026 CA26",
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/OdometryOnlyPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "2026 CA26",
+                      "color": "#0000ff"
                     }
                   }
                 ],
@@ -403,14 +411,14 @@
                 "cameraIndex": -2,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  2,
-                  1,
-                  1.0000000000000002
+                  2.3084331619827836,
+                  1.071850215468991,
+                  1.154216580991392
                 ],
                 "cameraTarget": [
-                  0,
-                  0.5,
-                  0
+                  -0.7885436526679197,
+                  0.30466020627708434,
+                  -0.39427182633395996
                 ]
               },
               "controlsHeight": 200

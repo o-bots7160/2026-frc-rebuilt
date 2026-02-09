@@ -1,7 +1,6 @@
 package frc.robot.subsystems.drivebase;
 
 import java.io.File;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -10,10 +9,13 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -49,9 +51,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
     private final DriveBaseIOInputsAutoLogged inputs                 = new DriveBaseIOInputsAutoLogged();
 
-    private Consumer<Pose2d>                  odometryPoseConsumer   = pose -> {
-                                                                     };
-
     /**
      * YAGSL swerve drive instance that handles kinematics, odometry, and module commands.
      * <p>
@@ -78,23 +77,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @param config drive base configuration values and tunables
      */
     public DriveBaseSubsystem(DriveBaseSubsystemConfig config) {
-        this(config, pose -> {
-        });
-    }
-
-    /**
-     * Creates the drive base subsystem and wires YAGSL hardware if enabled.
-     * <p>
-     * The odometry pose consumer is called each cycle with the latest drivebase pose.
-     * </p>
-     *
-     * @param config               drive base configuration values and tunables
-     * @param odometryPoseConsumer consumer that accepts the latest odometry pose
-     */
-    public DriveBaseSubsystem(DriveBaseSubsystemConfig config, Consumer<Pose2d> odometryPoseConsumer) {
         super(config);
-        this.odometryPoseConsumer = odometryPoseConsumer != null ? odometryPoseConsumer : pose -> {
-        };
 
         // If the subsystem is disabled in config, skip all hardware setup.
         if (isSubsystemDisabled()) {
@@ -184,7 +167,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         log.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
         log.recordOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
         log.recordOutput("Swerve/RobotRotation", getOdometryPose().getRotation());
-        odometryPoseConsumer.accept(getOdometryPose());
     }
 
     /**
@@ -205,21 +187,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Registers a consumer that will receive the latest odometry pose each loop.
+     * Returns the raw odometry-only pose derived from wheel encoders and gyro.
      * <p>
-     * Use this to pipe drivebase odometry into a centralized Robot State subsystem without tightly coupling the two subsystems.
+     * This pose does not include vision corrections, so it will drift over time. Compare it with the fused estimate in AdvantageScope to see how much
+     * vision corrects for odometry error.
      * </p>
      *
-     * @param consumer consumer that accepts the current odometry pose in meters and radians
+     * @return raw odometry pose in meters and radians, without vision fusion
      */
-    public void setOdometryPoseConsumer(Consumer<Pose2d> consumer) {
-        if (consumer == null) {
-            this.odometryPoseConsumer = pose -> {
-            };
-            return;
-        }
-
-        this.odometryPoseConsumer = consumer;
+    public Pose2d getOdometryOnlyPose() {
+        return inputs.odometryOnlyPose;
     }
 
     /**
@@ -234,6 +211,30 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
         // Use the swerve library helper to reset odometry and the gyro together.
         swerveDrive.resetOdometry(pose);
+
+        // Keep the raw odometry tracker in sync so it starts from the same origin.
+        if (io instanceof DriveBaseIOYagsl yagslIO) {
+            yagslIO.resetRawOdometry(pose);
+        }
+    }
+
+    /**
+     * Forwards a vision measurement to the YAGSL internal pose estimator for Kalman-filter-based fusion.
+     * <p>
+     * YAGSL wraps a {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator} that fuses encoder odometry with vision observations using latency
+     * compensation and configurable uncertainty weighting.
+     * </p>
+     *
+     * @param robotPose          vision-measured robot pose in meters and radians
+     * @param timestampSeconds   FPGA timestamp of the measurement in seconds
+     * @param standardDeviations uncertainty in x (meters), y (meters), and rotation (radians)
+     */
+    public void addVisionMeasurement(Pose2d robotPose, double timestampSeconds, Matrix<N3, N1> standardDeviations) {
+        if (isSubsystemDisabled() || swerveDrive == null) {
+            return;
+        }
+
+        swerveDrive.addVisionMeasurement(robotPose, timestampSeconds, standardDeviations);
     }
 
     /**
@@ -257,9 +258,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * @return translation request in meters per second for field-relative driving
      */
     public Translation2d mapDriverTranslation(double forwardAxis, double leftAxis) {
-        // Raw inputs: invert for driver preference and clamp to the joystick's legal range.
-        double        rawForward        = MathUtil.clamp(-forwardAxis, -1.0, 1.0);
-        double        rawLeft           = MathUtil.clamp(-leftAxis, -1.0, 1.0);
+        // Alliance flip: the WPILib field coordinate origin is on the blue wall with +X pointing
+        // toward the red wall. When the driver is on the red alliance, their "forward" push is
+        // field -X, so we negate both translation axes to keep the controls driver-relative.
+        // Evaluated every cycle so it adapts if the alliance changes during simulation or is
+        // assigned late by the FMS.
+        double        allianceSign      = isRedAlliance() ? -1.0 : 1.0;
+
+        // Raw inputs: invert for driver preference, apply alliance correction, and clamp to the joystick's legal range.
+        double        rawForward        = MathUtil.clamp(-forwardAxis * allianceSign, -1.0, 1.0);
+        double        rawLeft           = MathUtil.clamp(-leftAxis * allianceSign, -1.0, 1.0);
 
         // Deadband: ignore tiny stick noise near center so the robot stays still when hands are off.
         double        deadbandedForward = MathUtil.applyDeadband(rawForward, JOYSTICK_DEADBAND);
@@ -287,6 +295,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 scaledVector.getY() * config.getMaximumLinearSpeedMetersPerSecond().get());
 
         // Telemetry: record all driver input stages for tuning and debugging.
+        log.recordOutput("DriverInputs/allianceSign", allianceSign);
         log.recordOutput("DriverInputs/forward/raw", rawForward);
         log.recordOutput("DriverInputs/forward/deadbanded", deadbandedForward);
         log.recordOutput("DriverInputs/left/raw", rawLeft);
@@ -536,6 +545,19 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
 
         // Send the final request to the swerve library (field-relative, no open-loop).
         swerveDrive.drive(translation, rotation, true, false, centerOfRotationMeters);
+    }
+
+    /**
+     * Checks whether the robot is currently assigned to the red alliance.
+     * <p>
+     * This is evaluated every cycle so it responds dynamically when the FMS assigns an alliance color or when the alliance changes during simulation.
+     * Defaults to blue (false) when no alliance has been assigned yet.
+     * </p>
+     *
+     * @return true when the robot is on the red alliance
+     */
+    private boolean isRedAlliance() {
+        return DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red;
     }
 
     /**

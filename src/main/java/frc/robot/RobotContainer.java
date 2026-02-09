@@ -72,24 +72,28 @@ public class RobotContainer {
             fieldLayoutConfig           = ConfigurationLoader.load("field-layout.json", FieldLayoutConfig.class);
             aprilTagFieldLayoutSupplier = fieldLayoutConfig::loadLayout;
 
-            // Subsystems
-            robotStateSubsystem         = new RobotStateSubsystem(subsystemsConfig.robotStateSubsystem);
-            driveBaseSubsystem          = new DriveBaseSubsystem(
-                    subsystemsConfig.driveBaseSubsystem,
-                    robotStateSubsystem::updateOdometryPose);
-            robotStateSubsystem.setOdometryResetConsumer(driveBaseSubsystem::resetPose);
-            turretSubsystem           = new TurretSubsystem(subsystemsConfig.turretSubsystem);
-            aprilTagVisionSubsystem   = new AprilTagVisionSubsystem(
+            // Subsystems (order matters: drivebase is constructed first so robot state can reference it)
+            driveBaseSubsystem          = new DriveBaseSubsystem(subsystemsConfig.driveBaseSubsystem);
+            robotStateSubsystem         = new RobotStateSubsystem(
+                    subsystemsConfig.robotStateSubsystem,
+                    driveBaseSubsystem::getOdometryPose,
+                    driveBaseSubsystem::getOdometryOnlyPose,
+                    driveBaseSubsystem::addVisionMeasurement,
+                    driveBaseSubsystem::resetPose);
+            turretSubsystem             = new TurretSubsystem(subsystemsConfig.turretSubsystem);
+            aprilTagVisionSubsystem     = new AprilTagVisionSubsystem(
                     subsystemsConfig.aprilTagVisionSubsystem,
                     aprilTagFieldLayoutSupplier.get(),
                     robotStateSubsystem::addVisionMeasurement,
+                    // This is only for simulation purposes, in real life the vision subsystem will feed directly into the robot state subsystem and
+                    // not reset odometry
                     driveBaseSubsystem::getOdometryPose);
-            driverCameraSubsystem     = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
+            driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
 
             // Command factories
-            pathPlannerCommandFactory = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
-            driveBaseCommandFactory   = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
-            turretCommandFactory      = new TurretSubsystemCommandFactory(turretSubsystem);
+            pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
+            driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
+            turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
 
             // Default Commands
             turretCommandFactory.setDefaultTrackFieldTargetCommand(

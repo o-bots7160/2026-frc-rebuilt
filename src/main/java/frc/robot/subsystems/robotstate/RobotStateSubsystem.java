@@ -1,74 +1,93 @@
 package frc.robot.subsystems.robotstate;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.shared.VisionMeasurementConsumer;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
 import frc.robot.subsystems.robotstate.io.RobotStateIO;
 import frc.robot.subsystems.robotstate.io.RobotStateIOInputsAutoLogged;
 
 /**
- * Centralized pose tracking subsystem that fuses odometry and vision into a single robot pose.
+ * Centralized pose tracking subsystem that serves as the single authority for robot field pose.
  * <p>
- * Use this subsystem as the authoritative source of field pose so commands and other subsystems do not need to combine multiple sensor sources on
- * their own.
+ * All pose sources (cameras, LIDAR, future sensors) funnel their measurements through this subsystem via {@link #addVisionMeasurement}. Fusion math
+ * is delegated to the drivebase's internal YAGSL {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator}, which provides Kalman-filter-based
+ * fusion with latency compensation and uncertainty weighting. This subsystem reads the fused result each cycle and exposes it as the authoritative
+ * pose for commands and other subsystems.
  * </p>
  */
 public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemConfig> {
 
-    private final Field2d                      fieldDisplay                   = new Field2d();
+    private final Field2d                      fieldDisplay               = new Field2d();
 
     private final RobotStateIO                 io;
 
-    private final RobotStateIOInputsAutoLogged inputs                         = new RobotStateIOInputsAutoLogged();
+    private final RobotStateIOInputsAutoLogged inputs                     = new RobotStateIOInputsAutoLogged();
 
-    private Consumer<Pose2d>                   odometryResetConsumer          = pose -> {
-                                                                              };
+    private final Supplier<Pose2d>             fusedPoseSupplier;
 
-    private Pose2d                             odometryPose                   = new Pose2d();
+    private final Supplier<Pose2d>             odometryOnlyPoseSupplier;
 
-    private Pose2d                             estimatedPose                  = new Pose2d();
+    private final VisionMeasurementConsumer    visionForwarder;
 
-    private Pose2d                             lastVisionPose                 = new Pose2d();
+    private final Consumer<Pose2d>             odometryResetConsumer;
 
-    private double                             lastVisionTimestampSeconds     = Double.NaN;
+    private Pose2d                             estimatedPose              = new Pose2d();
 
-    private boolean                            hasVisionMeasurement           = false;
+    private Pose2d                             odometryOnlyPose           = new Pose2d();
 
-    private boolean                            enableVisionFusion             = true;
+    private Pose2d                             lastVisionPose             = new Pose2d();
 
-    private double                             visionBlendFactor              = 0.5;
+    private double                             lastVisionTimestampSeconds = Double.NaN;
 
-    private double                             visionMeasurementMaxAgeSeconds = 0.0;
+    private boolean                            hasVisionMeasurement       = false;
+
+    private boolean                            enableVisionFusion         = true;
 
     /**
-     * Creates the Robot State subsystem.
+     * Creates the Robot State subsystem with all cross-subsystem dependencies.
      * <p>
-     * This subsystem does not own hardware, but it still follows the command-based lifecycle for consistent updates and logging.
+     * This subsystem does not own hardware, but it still follows the command-based lifecycle for consistent updates and logging. Dependencies are
+     * injected here so every required wiring is enforced at compile time.
      * </p>
      *
-     * @param config configuration values for pose fusion and logging
+     * @param config                   configuration values for vision fusion gating and logging
+     * @param fusedPoseSupplier        supplier returning the Kalman-filtered pose from the drivebase in meters and radians
+     * @param odometryOnlyPoseSupplier supplier returning the raw wheel+gyro pose without vision corrections in meters and radians
+     * @param visionForwarder          consumer that forwards vision measurements to the drivebase's pose estimator
+     * @param odometryResetConsumer    consumer that resets the drivebase odometry to a given pose in meters and radians
      */
-    public RobotStateSubsystem(RobotStateSubsystemConfig config) {
+    public RobotStateSubsystem(
+            RobotStateSubsystemConfig config,
+            Supplier<Pose2d> fusedPoseSupplier,
+            Supplier<Pose2d> odometryOnlyPoseSupplier,
+            VisionMeasurementConsumer visionForwarder,
+            Consumer<Pose2d> odometryResetConsumer) {
         super(config);
 
-        this.io = this::updateInputs;
+        this.fusedPoseSupplier        = fusedPoseSupplier != null ? fusedPoseSupplier : Pose2d::new;
+        this.odometryOnlyPoseSupplier = odometryOnlyPoseSupplier != null ? odometryOnlyPoseSupplier : Pose2d::new;
+        this.visionForwarder          = visionForwarder != null ? visionForwarder : (pose, ts, sd) -> {
+                                      };
+        this.odometryResetConsumer    = odometryResetConsumer != null ? odometryResetConsumer : pose -> {
+                                      };
+        this.io                    = this::updateInputs;
 
         refreshTunables();
-        SmartDashboard.putData("Field", fieldDisplay);
+        SmartDashboard.putData("RobotStateSubsystem/Field", fieldDisplay);
     }
 
     /**
-     * Updates the internal pose estimate and logs telemetry each robot loop.
-     * <p>
-     * This method blends odometry with the most recent vision measurement when fusion is enabled and the measurement is fresh.
-     * </p>
+     * Reads the latest fused pose from the drivebase estimator and logs telemetry each robot loop.
      */
     @Override
     public void periodic() {
@@ -80,79 +99,59 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
             refreshTunables();
         }
 
-        updateEstimatedPose();
+        // Pull the latest fused pose from the drivebase's YAGSL estimator.
+        estimatedPose    = fusedPoseSupplier.get();
+
+        // Pull the raw odometry pose (wheel encoders + gyro only, no vision).
+        odometryOnlyPose = odometryOnlyPoseSupplier.get();
+
         io.updateInputs(inputs);
         log.processInputs("RobotState", inputs);
         fieldDisplay.setRobotPose(estimatedPose);
     }
 
     /**
-     * Registers a consumer that will reset odometry whenever the robot state pose is reset.
+     * Accepts a vision-based robot pose measurement and forwards it to the drivebase's pose estimator for fusion.
      * <p>
-     * Use this to keep drivebase odometry aligned with the fused pose without tightly coupling the subsystems.
+     * All pose sources (cameras, LIDAR, etc.) should call this single method. The measurement is forwarded to the drivebase's YAGSL
+     * {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator} which handles Kalman-filter-based fusion, latency compensation, and uncertainty
+     * weighting. When vision fusion is disabled in config, measurements are recorded for logging but not forwarded.
      * </p>
      *
-     * @param consumer consumer that accepts the reset pose in meters and radians
-     */
-    public void setOdometryResetConsumer(Consumer<Pose2d> consumer) {
-        if (consumer == null) {
-            this.odometryResetConsumer = pose -> {
-            };
-            return;
-        }
-
-        this.odometryResetConsumer = consumer;
-    }
-
-    /**
-     * Updates the odometry pose source for the robot state estimate.
-     * <p>
-     * Call this from the drivebase each loop so the estimator has the most recent encoder-based pose.
-     * </p>
-     *
-     * @param pose latest odometry pose in meters and radians
-     */
-    public void updateOdometryPose(Pose2d pose) {
-        if (isSubsystemDisabled()) {
-            logDisabled("updateOdometryPose");
-            return;
-        }
-
-        this.odometryPose = pose;
-        if (!enableVisionFusion || !hasVisionMeasurement) {
-            this.estimatedPose = pose;
-        }
-    }
-
-    /**
-     * Accepts a vision-based robot pose measurement for fusion.
-     * <p>
-     * The timestamp is used to reject stale measurements.
-     * </p>
-     *
-     * @param robotPose        pose measurement in meters and radians
-     * @param timestampSeconds timestamp of the measurement in seconds
+     * @param robotPose          pose measurement in meters and radians
+     * @param timestampSeconds   FPGA timestamp of the measurement in seconds
+     * @param standardDeviations uncertainty in x (meters), y (meters), and rotation (radians)
      */
     public void addVisionMeasurement(
             Pose2d robotPose,
-            double timestampSeconds) {
+            double timestampSeconds,
+            Matrix<N3, N1> standardDeviations) {
         if (isSubsystemDisabled()) {
             logDisabled("addVisionMeasurement");
             return;
         }
 
+        // Always record the measurement for telemetry regardless of fusion state.
         this.lastVisionPose             = robotPose;
         this.lastVisionTimestampSeconds = timestampSeconds;
         this.hasVisionMeasurement       = true;
+
+        if (!enableVisionFusion) {
+            return;
+        }
+
+        // Delegate the actual fusion to the drivebase's YAGSL pose estimator.
+        visionForwarder.accept(robotPose, timestampSeconds, standardDeviations);
     }
 
     /**
      * Resets all pose tracking to the provided pose.
      * <p>
-     * Use this at the start of autonomous or after localization resets so odometry and vision agree on the robot's position.
+     * Use this at the start of autonomous or after localization resets so odometry and vision agree on the robot's position. The reset is forwarded
+     * to the drivebase so the internal YAGSL estimator is also reset.
      * </p>
      *
-     * @param pose pose to apply to odometry and the fused estimate
+     * @param pose pose to apply to odometry and the fused estimate in meters and radians
      */
     public void resetPose(Pose2d pose) {
         if (isSubsystemDisabled()) {
@@ -160,7 +159,6 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
             return;
         }
 
-        this.odometryPose               = pose;
         this.estimatedPose              = pose;
         this.lastVisionPose             = pose;
         this.lastVisionTimestampSeconds = Double.NaN;
@@ -194,7 +192,8 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
     /**
      * Returns the current fused pose estimate.
      * <p>
-     * Commands and subsystems should use this pose for field-relative decisions.
+     * Commands and subsystems should use this pose for field-relative decisions. This is the single authoritative source of robot pose for the entire
+     * codebase.
      * </p>
      *
      * @return latest fused pose in meters and radians
@@ -203,38 +202,16 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         return estimatedPose;
     }
 
-    private void updateEstimatedPose() {
-        estimatedPose = odometryPose;
-
-        if (!enableVisionFusion || !hasVisionMeasurement) {
-            return;
-        }
-
-        double measurementAgeSeconds = Timer.getFPGATimestamp() - lastVisionTimestampSeconds;
-        if (Double.isNaN(lastVisionTimestampSeconds)
-                || measurementAgeSeconds > visionMeasurementMaxAgeSeconds) {
-            return;
-        }
-
-        double clampedBlendFactor = MathUtil.clamp(visionBlendFactor, 0.0, 1.0);
-        estimatedPose = estimatedPose.interpolate(lastVisionPose, clampedBlendFactor);
-        odometryPose = estimatedPose;
-    }
-
     private void updateInputs(RobotStateIO.RobotStateIOInputs inputs) {
-        inputs.odometryPose                   = odometryPose;
-        inputs.estimatedPose                  = estimatedPose;
-        inputs.lastVisionPose                 = lastVisionPose;
-        inputs.lastVisionTimestampSeconds     = lastVisionTimestampSeconds;
-        inputs.hasVisionMeasurement           = hasVisionMeasurement;
-        inputs.enableVisionFusion             = enableVisionFusion;
-        inputs.visionBlendFactor              = visionBlendFactor;
-        inputs.visionMeasurementMaxAgeSeconds = visionMeasurementMaxAgeSeconds;
+        inputs.estimatedPose              = estimatedPose;
+        inputs.odometryOnlyPose           = odometryOnlyPose;
+        inputs.lastVisionPose             = lastVisionPose;
+        inputs.lastVisionTimestampSeconds = lastVisionTimestampSeconds;
+        inputs.hasVisionMeasurement       = hasVisionMeasurement;
+        inputs.enableVisionFusion         = enableVisionFusion;
     }
 
     private void refreshTunables() {
-        enableVisionFusion             = config.getEnableVisionFusion();
-        visionBlendFactor              = config.getVisionBlendFactor();
-        visionMeasurementMaxAgeSeconds = config.getVisionMeasurementMaxAgeSeconds();
+        enableVisionFusion = config.getEnableVisionFusion();
     }
 }

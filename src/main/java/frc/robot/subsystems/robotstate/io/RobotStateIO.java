@@ -15,44 +15,37 @@ public interface RobotStateIO {
     @AutoLog
     public static class RobotStateIOInputs {
         /**
-         * Latest odometry pose in meters and radians.
-         */
-        public Pose2d  odometryPose                   = new Pose2d();
-
-        /**
          * Latest fused pose estimate in meters and radians.
          */
-        public Pose2d  estimatedPose                  = new Pose2d();
+        public Pose2d  estimatedPose              = new Pose2d();
+
+        /**
+         * Raw odometry-only pose from wheel encoders and gyro, without vision corrections.
+         * <p>
+         * Useful as an AdvantageScope ghost bot to visualize odometry drift compared to the fused estimate.
+         * </p>
+         */
+        public Pose2d  odometryOnlyPose           = new Pose2d();
 
         /**
          * Most recent vision pose in meters and radians.
          */
-        public Pose2d  lastVisionPose                 = new Pose2d();
+        public Pose2d  lastVisionPose             = new Pose2d();
 
         /**
          * Timestamp of the last vision pose in seconds.
          */
-        public double  lastVisionTimestampSeconds     = Double.NaN;
+        public double  lastVisionTimestampSeconds = Double.NaN;
 
         /**
          * True when a vision measurement has been received.
          */
-        public boolean hasVisionMeasurement           = false;
+        public boolean hasVisionMeasurement       = false;
 
         /**
          * True when vision measurements are allowed to blend into the estimate.
          */
-        public boolean enableVisionFusion             = true;
-
-        /**
-         * Blend factor used to interpolate between odometry and vision poses.
-         */
-        public double  visionBlendFactor              = 0.5;
-
-        /**
-         * Maximum age of a vision measurement in seconds before it is rejected.
-         */
-        public double  visionMeasurementMaxAgeSeconds = 0.0;
+        public boolean enableVisionFusion         = true;
     }
 
     /**

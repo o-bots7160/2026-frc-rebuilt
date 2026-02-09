@@ -24,6 +24,14 @@ public interface DriveBaseIO {
         public Pose2d              pose                     = new Pose2d();
 
         /**
+         * Raw odometry-only pose derived from wheel encoders and gyro, without any vision fusion.
+         * <p>
+         * Use this to visualize how far odometry drifts from the vision-corrected estimate.
+         * </p>
+         */
+        public Pose2d              odometryOnlyPose         = new Pose2d();
+
+        /**
          * Measured chassis speeds in meters per second and radians per second.
          */
         public ChassisSpeeds       chassisSpeeds            = new ChassisSpeeds();
