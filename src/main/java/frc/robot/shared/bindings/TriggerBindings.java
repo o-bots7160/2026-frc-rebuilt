@@ -50,11 +50,6 @@ public class TriggerBindings {
     private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 3.0;
 
     /**
-     * Small epsilon added to the throttle denominator to prevent division by zero.
-     */
-    private static final double                    THROTTLE_EPSILON                  = 0.001;
-
-    /**
      * Driver gamepad used for manual driving.
      */
     private final CommandXboxController            driverController;
@@ -152,21 +147,28 @@ public class TriggerBindings {
     }
 
     /**
-     * Computes a throttle multiplier from the trigger positions.
+     * Computes a throttle multiplier based on trigger state.
      * <p>
-     * The right trigger increases speed and the left trigger reduces it. The result is a ratio of (rightBase - rightAxis) / (leftBase - leftAxis).
-     * With default base scales of 1.0 and triggers at rest (0.0), the ratio is approximately 1.0 (full speed). Pressing the right trigger lowers the
-     * numerator, pressing the left trigger lowers the denominator.
+     * If the right trigger is pressed beyond the deadband, the configured speed-up factor is returned (e.g., 1.5 for +50 percent speed). Otherwise,
+     * if the left trigger is pressed beyond the deadband, the configured slow-down factor is returned (e.g., 0.5 for -50 percent speed). When neither
+     * trigger is pressed, 1.0 is returned (normal speed). The right trigger (speed-up) takes priority when both are pressed.
      * </p>
      *
-     * @return throttle multiplier, typically between 0 and 1 under normal use
+     * @return throttle multiplier applied to translation inputs
      */
     private double computeDriveThrottleScale() {
-        double speedUp  = triggerBindingsConfig.getRightTriggerBaseScale()
-                - driverController.getRightTriggerAxis();
-        double slowDown = triggerBindingsConfig.getLeftTriggerBaseScale()
-                - driverController.getLeftTriggerAxis();
-        return (speedUp + THROTTLE_EPSILON) / (slowDown + THROTTLE_EPSILON);
+        double deadband = triggerBindingsConfig.getTriggerDeadband();
+
+        // Speed-up takes priority over slow-down.
+        if (driverController.getRightTriggerAxis() > deadband) {
+            return triggerBindingsConfig.getSpeedUpTriggerFactor();
+        }
+
+        if (driverController.getLeftTriggerAxis() > deadband) {
+            return triggerBindingsConfig.getSlowDownTriggerFactor();
+        }
+
+        return 1.0;
     }
 
     private void configureTurretBindings() {

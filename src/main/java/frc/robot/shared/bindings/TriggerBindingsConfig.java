@@ -37,22 +37,30 @@ public class TriggerBindingsConfig extends AbstractConfig {
     public double rightStickXSensitivity = 1.0;
 
     /**
-     * Base value for the right trigger (speed-up) throttle scale.
+     * Speed multiplier applied when the right trigger (speed-up) is pressed.
      * <p>
-     * The raw trigger axis is subtracted from this value, so a higher base means a faster default
-     * speed before the trigger is pressed. At 1.0 the robot starts at full speed and slows as the
-     * trigger is released.
+     * A value of 1.5 means the drive input is scaled to 150 percent of its normal value. The factor is applied as a flat multiplier regardless of how
+     * far the trigger is pressed. If both triggers are held, the speed-up trigger takes priority.
      * </p>
      */
-    public double rightTriggerBaseScale = 1.0;
+    public double speedUpTriggerFactor   = 1.5;
 
     /**
-     * Base value for the left trigger (slow-down) throttle scale.
+     * Speed multiplier applied when the left trigger (slow-down) is pressed.
      * <p>
-     * Works the same way as {@code rightTriggerBaseScale} but for the braking trigger.
+     * A value of 0.5 means the drive input is scaled to 50 percent of its normal value. The factor is applied as a flat multiplier regardless of how
+     * far the trigger is pressed.
      * </p>
      */
-    public double leftTriggerBaseScale  = 1.0;
+    public double slowDownTriggerFactor  = 0.5;
+
+    /**
+     * Minimum trigger axis value required to consider a trigger "pressed."
+     * <p>
+     * Values below this threshold are ignored to prevent accidental activation from controller noise or resting position drift.
+     * </p>
+     */
+    public double triggerDeadband        = 0.1;
 
     /**
      * Reads the tunable sensitivity for the left stick Y axis.
@@ -82,20 +90,29 @@ public class TriggerBindingsConfig extends AbstractConfig {
     }
 
     /**
-     * Reads the tunable base scale for the right trigger (speed-up).
+     * Reads the tunable speed-up factor for the right trigger.
      *
-     * @return current right trigger base scale
+     * @return current speed-up trigger factor
      */
-    public double getRightTriggerBaseScale() {
-        return readTunableNumber("rightTriggerBaseScale", rightTriggerBaseScale);
+    public double getSpeedUpTriggerFactor() {
+        return readTunableNumber("speedUpTriggerFactor", speedUpTriggerFactor);
     }
 
     /**
-     * Reads the tunable base scale for the left trigger (slow-down).
+     * Reads the tunable slow-down factor for the left trigger.
      *
-     * @return current left trigger base scale
+     * @return current slow-down trigger factor
      */
-    public double getLeftTriggerBaseScale() {
-        return readTunableNumber("leftTriggerBaseScale", leftTriggerBaseScale);
+    public double getSlowDownTriggerFactor() {
+        return readTunableNumber("slowDownTriggerFactor", slowDownTriggerFactor);
+    }
+
+    /**
+     * Reads the tunable deadband threshold for trigger activation.
+     *
+     * @return minimum trigger axis value to count as pressed
+     */
+    public double getTriggerDeadband() {
+        return readTunableNumber("triggerDeadband", triggerDeadband);
     }
 }

@@ -276,6 +276,84 @@
       }
     },
     {
+      "name": "Tuning",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "leftStickXSensitivity",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickXSensitivity",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "leftStickYSensitivity",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickYSensitivity",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "rightStickXSensitivity",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/rightStickXSensitivity",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "slowDownTriggerFactor",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/slowDownTriggerFactor",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "speedUpTriggerFactor",
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/speedUpTriggerFactor",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "Turret",
       "grid_layout": {
         "layouts": [],
@@ -581,6 +659,20 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "rotationalLeadTimeSeconds",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TurretSubsystem/rotationalLeadTimeSeconds",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           }
         ]

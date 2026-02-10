@@ -84,7 +84,8 @@
     "leftStickYSensitivity": 1.0,
     "leftStickXSensitivity": 1.0,
     "rightStickXSensitivity": 1.0,
-    "rightTriggerBaseScale": 1.0,
-    "leftTriggerBaseScale": 1.0
+    "speedUpTriggerFactor": 1.5,
+    "slowDownTriggerFactor": 0.5,
+    "triggerDeadband": 0.1
   }
 }
