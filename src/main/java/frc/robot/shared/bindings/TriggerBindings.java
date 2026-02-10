@@ -1,37 +1,70 @@
 package frc.robot.shared.bindings;
 
 import edu.wpi.first.math.MathUtil;
-import frc.robot.devices.GameController;
-import frc.robot.devices.GameController.GameControllerAxes;
-import frc.robot.devices.GameController.GameControllerButton;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
 /**
  * Maps the driver controller to robot commands so RobotContainer stays lean. Currently wires the drive controller to the default manual drive
  * command.
+ * <p>
+ * Uses WPILib's {@link CommandXboxController} which is compatible with Logitech F310 controllers when set to XInput mode (back switch on X).
+ * </p>
  */
 public class TriggerBindings {
 
     /**
      * Default USB port for the driver controller.
      */
-    private static final int                       DEFAULT_DRIVE_CONTROLLER_PORT    = 0;
+    private static final int                       DEFAULT_DRIVE_CONTROLLER_PORT     = 0;
 
     /**
      * Default USB port for the operator controller.
      */
-    private static final int                       DEFAULT_OPERATOR_CONTROLLER_PORT = 1;
+    private static final int                       DEFAULT_OPERATOR_CONTROLLER_PORT  = 1;
+
+    /**
+     * Turret test angle for the A button in degrees (counterclockwise positive).
+     */
+    private static final double                    TURRET_TEST_ANGLE_LEFT_DEGREES    = -100.0;
+
+    /**
+     * Turret test angle for the B button in degrees (counterclockwise positive).
+     */
+    private static final double                    TURRET_TEST_ANGLE_RIGHT_DEGREES   = 100.0;
+
+    /**
+     * Delay before system identification begins in seconds.
+     */
+    private static final double                    SYSID_DELAY_SECONDS               = 1.0;
+
+    /**
+     * Timeout for the quasistatic (slow ramp) portion of system identification in seconds.
+     */
+    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 8.0;
+
+    /**
+     * Timeout for the dynamic (step voltage) portion of system identification in seconds.
+     */
+    private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 3.0;
+
+    /**
+     * Small epsilon added to the throttle denominator to prevent division by zero.
+     */
+    private static final double                    THROTTLE_EPSILON                  = 0.001;
 
     /**
      * Driver gamepad used for manual driving.
      */
-    private final GameController                   driverController;
+    private final CommandXboxController            driverController;
 
+    // TODO: Wire operator bindings once more subsystems and commands are available.
     /**
-     * Operator gamepad used for mechanism control (ex: turret).
+     * Operator gamepad used for mechanism control (turret, shooter, etc.).
      */
-    private final GameController                   operatorController;
+    @SuppressWarnings("unused")
+    private final CommandXboxController            operatorController;
 
     /**
      * Factory that creates drive base commands tied to the driver inputs.
@@ -49,7 +82,7 @@ public class TriggerBindings {
     private final TurretSubsystemCommandFactory    turretCommandFactory;
 
     /**
-     * Creates trigger bindings with the default driver and operator controller ports.
+     * Creates trigger bindings with the default driver controller port.
      *
      * @param driveBaseCommandFactory factory for creating drive base commands
      * @param triggerBindingsConfig   configuration for per-axis stick sensitivity
@@ -73,20 +106,20 @@ public class TriggerBindings {
      * @param driveBaseCommandFactory factory for creating drive base commands
      * @param triggerBindingsConfig   configuration for per-axis stick sensitivity
      * @param turretCommandFactory    factory for creating turret commands
-     * @param driveControllerPort     USB port for the driver controller
+     * @param driverControllerPort    USB port for the driver controller
      * @param operatorControllerPort  USB port for the operator controller
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
             TriggerBindingsConfig triggerBindingsConfig,
             TurretSubsystemCommandFactory turretCommandFactory,
-            int driveControllerPort,
+            int driverControllerPort,
             int operatorControllerPort) {
         this.driveBaseCommandFactory = driveBaseCommandFactory;
         this.triggerBindingsConfig   = triggerBindingsConfig;
         this.turretCommandFactory    = turretCommandFactory;
-        this.driverController        = new GameController(driveControllerPort);
-        this.operatorController      = new GameController(operatorControllerPort);
+        this.driverController        = new CommandXboxController(driverControllerPort);
+        this.operatorController      = new CommandXboxController(operatorControllerPort);
 
         configureDriveControllerBindings();
         configureTurretBindings();
@@ -100,45 +133,54 @@ public class TriggerBindings {
         // Per-axis sensitivity multipliers are read from the tunable config each cycle.
         driveBaseCommandFactory.setDefaultManualDriveCommand(
                 () -> MathUtil.clamp(
-                        driverController.getRawAxis(GameControllerAxes.LeftStickY.getValue())
+                        driverController.getLeftY()
                                 * triggerBindingsConfig.getLeftStickYSensitivity()
                                 * computeDriveThrottleScale(),
                         -1.0,
                         1.0),
                 () -> MathUtil.clamp(
-                        driverController.getRawAxis(GameControllerAxes.LeftStickX.getValue())
+                        driverController.getLeftX()
                                 * triggerBindingsConfig.getLeftStickXSensitivity()
                                 * computeDriveThrottleScale(),
                         -1.0,
                         1.0),
                 () -> MathUtil.clamp(
-                        driverController.getRawAxis(GameControllerAxes.RightStickX.getValue())
+                        driverController.getRightX()
                                 * triggerBindingsConfig.getRightStickXSensitivity(),
                         -1.0,
                         1.0));
     }
 
+    /**
+     * Computes a throttle multiplier from the trigger positions.
+     * <p>
+     * The right trigger increases speed and the left trigger reduces it. The result is a ratio of (rightBase - rightAxis) / (leftBase - leftAxis).
+     * With default base scales of 1.0 and triggers at rest (0.0), the ratio is approximately 1.0 (full speed). Pressing the right trigger lowers the
+     * numerator, pressing the left trigger lowers the denominator.
+     * </p>
+     *
+     * @return throttle multiplier, typically between 0 and 1 under normal use
+     */
     private double computeDriveThrottleScale() {
-        // Right trigger increases speed, left trigger reduces speed.
-        // Add a small offset so we never divide by zero when fully pressed.
         double speedUp  = triggerBindingsConfig.getRightTriggerBaseScale()
-                - driverController.getRawAxis(GameControllerAxes.RTrigger.getValue());
+                - driverController.getRightTriggerAxis();
         double slowDown = triggerBindingsConfig.getLeftTriggerBaseScale()
-                - driverController.getRawAxis(GameControllerAxes.LTrigger.getValue());
-        return (speedUp + 0.001) / (slowDown + 0.001);
+                - driverController.getLeftTriggerAxis();
+        return (speedUp + THROTTLE_EPSILON) / (slowDown + THROTTLE_EPSILON);
     }
 
     private void configureTurretBindings() {
         // Hold A/B to spin the turret to the configured angles (for testing and alignment).
-        driverController.onButtonHold(
-                GameControllerButton.A,
-                turretCommandFactory.createMoveToAngleCommand(-100.0));
-        driverController.onButtonHold(
-                GameControllerButton.B,
-                turretCommandFactory.createMoveToAngleCommand(100.0));
+        driverController.a().whileTrue(
+                turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_LEFT_DEGREES));
+        driverController.b().whileTrue(
+                turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_RIGHT_DEGREES));
 
-        driverController.onButtonHold(GameControllerButton.X,
-                turretCommandFactory.createSysIdFullSweepCommand(1, 8.0, 3.0));
+        driverController.x().whileTrue(
+                turretCommandFactory.createSysIdFullSweepCommand(
+                        SYSID_DELAY_SECONDS,
+                        SYSID_QUASISTATIC_TIMEOUT_SECONDS,
+                        SYSID_DYNAMIC_TIMEOUT_SECONDS));
     }
 
 }
