@@ -1,0 +1,13 @@
+{
+	"servers": {
+		"drawio-diagrams": {
+			"command": "bash",
+			"args": [
+				"-c",
+				"export PATH=\"$HOME/.nvm/versions/node/v20.11.1/bin:$PATH\" && npx drawio-mcp"
+			],
+			"type": "stdio"
+		}
+	},
+	"inputs": []
+}

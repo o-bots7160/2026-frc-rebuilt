@@ -8,6 +8,7 @@
         "vscjava.vscode-java-pack",
         "vscjava.vscode-gradle",
         "yzhang.markdown-all-in-one",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "hediet.vscode-drawio"
     ]
 }
