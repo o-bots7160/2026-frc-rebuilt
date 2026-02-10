@@ -19,6 +19,15 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
     public double turretZeroOffsetDegrees = 0.0;
 
     /**
+     * Look-ahead time for rotational velocity compensation in seconds.
+     * <p>
+     * When the robot is spinning, the turret can lead its aim by this many seconds of predicted heading
+     * change to stay on target. Set to zero to disable compensation.
+     * </p>
+     */
+    public double rotationalLeadTimeSeconds = 0.1;
+
+    /**
      * Returns the turret zero offset in degrees.
      * <p>
      * Positive values rotate the turret setpoint counter-clockwise relative to robot-forward.
@@ -28,6 +37,19 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
      */
     public double getTurretZeroOffsetDegrees() {
         return readTunableDegrees("turretZeroOffsetDegrees", turretZeroOffsetDegrees);
+    }
+
+    /**
+     * Returns the rotational lead time used for yaw-rate compensation.
+     * <p>
+     * The turret multiplies the robot's yaw rate by this value to predict how far the heading will change
+     * and pre-rotates accordingly. Tune this higher if the turret lags behind while the robot spins.
+     * </p>
+     *
+     * @return lead time in seconds
+     */
+    public double getRotationalLeadTimeSeconds() {
+        return readTunableNumber("rotationalLeadTimeSeconds", rotationalLeadTimeSeconds);
     }
 
 }

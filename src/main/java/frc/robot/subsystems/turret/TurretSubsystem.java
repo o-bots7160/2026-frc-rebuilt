@@ -62,17 +62,22 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
     }
 
     /**
-     * Computes the turret target angle needed to face a field-relative target.
+     * Computes the turret target angle needed to face a field-relative target while compensating for robot rotation.
      * <p>
-     * The result is expressed in turret degrees, where 0 degrees aligns with robot-forward plus the configured zero offset. The returned angle is
-     * clamped to the configured turret limits and will pick the closest equivalent angle within that range.
+     * The result is expressed in turret degrees, where 0 degrees aligns with robot-forward plus the configured zero offset. When the robot is
+     * spinning, the turret leads its aim by predicting how far the heading will change over the configured lead time so it stays on target instead of
+     * lagging behind. The returned angle is clamped to the configured turret limits and will pick the closest equivalent angle within that range.
      * </p>
      *
-     * @param robotPose                 current robot pose in meters and radians
-     * @param targetFieldPositionMeters target position on the field in meters
+     * @param robotPose                   current robot pose in meters and radians
+     * @param targetFieldPositionMeters   target position on the field in meters
+     * @param robotYawRateRadiansPerSecond current robot rotational velocity in radians per second (positive is counter-clockwise)
      * @return turret target angle in degrees
      */
-    public double calculateFieldTargetDegrees(Pose2d robotPose, Translation2d targetFieldPositionMeters) {
+    public double calculateFieldTargetDegrees(
+            Pose2d robotPose,
+            Translation2d targetFieldPositionMeters,
+            double robotYawRateRadiansPerSecond) {
         double deltaX              = targetFieldPositionMeters.getX() - robotPose.getX();
         double deltaY              = targetFieldPositionMeters.getY() - robotPose.getY();
 
@@ -80,7 +85,13 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         double robotHeadingRadians = robotPose.getRotation().getRadians();
         double zeroOffsetRadians   = Units.degreesToRadians(config.getTurretZeroOffsetDegrees());
         double rawTargetRadians    = fieldAngleRadians - robotHeadingRadians + zeroOffsetRadians;
-        return Units.radiansToDegrees(clampToTurretLimitsRadians(rawTargetRadians));
+
+        // Compensate for robot rotation by predicting where the heading will be after the configured lead time.
+        double leadTimeSeconds             = config.getRotationalLeadTimeSeconds();
+        double rotationalCompensationRadians = robotYawRateRadiansPerSecond * leadTimeSeconds;
+        double compensatedTargetRadians    = rawTargetRadians + rotationalCompensationRadians;
+
+        return Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
     }
 
     /**

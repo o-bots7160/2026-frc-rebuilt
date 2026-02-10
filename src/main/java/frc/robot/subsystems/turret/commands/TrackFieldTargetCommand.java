@@ -21,23 +21,29 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
 
     private final Supplier<Translation2d> targetFieldPositionSupplier;
 
+    private final Supplier<Double>        robotYawRateRadiansPerSecondSupplier;
+
     /**
-     * Creates a command that tracks a field-relative target position.
+     * Creates a command that tracks a field-relative target position while compensating for robot rotation.
      * <p>
-     * The target supplier should return the current target location in meters on the field coordinate system.
+     * The target supplier should return the current target location in meters on the field coordinate system. The yaw rate supplier provides the
+     * robot's current rotational velocity so the turret can lead its aim while the robot spins.
      * </p>
      *
-     * @param turretSubsystem             turret subsystem to control
-     * @param robotStateSubsystem         robot state subsystem providing the fused pose estimate
-     * @param targetFieldPositionSupplier supplier of the field-relative target position in meters
+     * @param turretSubsystem                       turret subsystem to control
+     * @param robotStateSubsystem                   robot state subsystem providing the fused pose estimate
+     * @param targetFieldPositionSupplier            supplier of the field-relative target position in meters
+     * @param robotYawRateRadiansPerSecondSupplier   supplier of the robot's yaw rate in radians per second (positive is counter-clockwise)
      */
     public TrackFieldTargetCommand(
             TurretSubsystem turretSubsystem,
             RobotStateSubsystem robotStateSubsystem,
-            Supplier<Translation2d> targetFieldPositionSupplier) {
+            Supplier<Translation2d> targetFieldPositionSupplier,
+            Supplier<Double> robotYawRateRadiansPerSecondSupplier) {
         super(turretSubsystem);
-        this.robotStateSubsystem         = robotStateSubsystem;
-        this.targetFieldPositionSupplier = targetFieldPositionSupplier;
+        this.robotStateSubsystem                     = robotStateSubsystem;
+        this.targetFieldPositionSupplier              = targetFieldPositionSupplier;
+        this.robotYawRateRadiansPerSecondSupplier     = robotYawRateRadiansPerSecondSupplier;
     }
 
     @Override
@@ -64,7 +70,8 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
     private void updateTarget() {
         Pose2d        robotPose           = robotStateSubsystem.getEstimatedPose();
         Translation2d targetFieldPosition = targetFieldPositionSupplier.get();
-        double        targetDegrees       = subsystem.calculateFieldTargetDegrees(robotPose, targetFieldPosition);
+        double        yawRateRadians      = robotYawRateRadiansPerSecondSupplier.get();
+        double        targetDegrees       = subsystem.calculateFieldTargetDegrees(robotPose, targetFieldPosition, yawRateRadians);
         if (subsystem.isVerbose()) {
             // Log inputs and the computed target so we can verify field-relative math in AdvantageScope.
             log.recordOutput("RobotPose", robotPose);
@@ -72,6 +79,7 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
                     "TargetFieldPositionMeters",
                     new double[] { targetFieldPosition.getX(), targetFieldPosition.getY() });
             log.recordOutput("TargetDegrees", targetDegrees);
+            log.recordOutput("RobotYawRateRadiansPerSecond", yawRateRadians);
         }
         subsystem.setTarget(targetDegrees);
     }

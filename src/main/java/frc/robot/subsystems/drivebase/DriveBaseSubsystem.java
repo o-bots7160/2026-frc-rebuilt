@@ -198,6 +198,19 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
+     * Returns the robot's current yaw rate (rotational velocity around the vertical axis).
+     * <p>
+     * This value comes from the measured chassis speeds reported by the swerve IO layer. Positive values indicate
+     * counter-clockwise rotation following WPILib conventions.
+     * </p>
+     *
+     * @return yaw rate in radians per second
+     */
+    public double getYawRateRadiansPerSecond() {
+        return inputs.chassisSpeeds.omegaRadiansPerSecond;
+    }
+
+    /**
      * Resets odometry and gyro heading to the supplied pose.
      *
      * @param pose Desired pose for the robot to assume immediately.

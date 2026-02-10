@@ -102,7 +102,8 @@ public class RobotContainer {
                         return layout.getTagPose(26)
                                 .map(pose -> pose.getTranslation().toTranslation2d())
                                 .orElseThrow();
-                    });
+                    },
+                    driveBaseSubsystem::getYawRateRadiansPerSecond);
 
             // Input bindings
             triggerBindings = new TriggerBindings(
