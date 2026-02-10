@@ -1,106 +1,40 @@
 # Turret subsystem
 
-## Role (game/mechanical)
+## Overview
 
-The turret is a single-axis rotating mount. It turns left and right so other
-mechanisms can aim without moving the entire robot. The turret uses one Spark
-MAX motor controller and a gear reduction so it can move smoothly and hold a
-stable heading.
+The turret is a single-axis rotating mount that turns left and right so the
+shooter can aim without moving the entire robot. It uses one Spark MAX motor
+controller driving through a gear reduction for smooth, precise positioning. The
+turret is the canonical example of the
+[set-and-seek](../../shared/README.md#the-set-and-seek-pattern) pattern — if you
+are building a new profiled mechanism, read this README first.
 
-## Control and configuration (programming)
+## How it works
 
-- `TurretSubsystem` extends `AbstractSetAndSeekSubsystem`, which provides the
-  trapezoidal motion profile and the set-and-seek API.
-- `TurretSubsystemConfig` holds the profile limits and control gains. The config
-  values are read through AdvantageKit tunables so they can be adjusted while
-  the robot is running.
-- `TurretMotorConfig` holds motor-specific details such as CAN ID, inversion,
-  current limits, and gear ratio.
-- When running in simulation, the subsystem uses `TurretSimMotor` (which extends
-  `AbstractSimMotor`) so the motion profile behaves the same without hardware.
+The turret follows the [set-and-seek](../../GLOSSARY.md#set-and-seek) pattern. A
+command sets a target angle in degrees, and the subsystem plans a smooth path to
+that angle using a
+[trapezoidal motion profile](../../GLOSSARY.md#trapezoidal-motion-profile). Each
+code cycle, the profile steps forward and a
+[profiled PID](../../GLOSSARY.md#profiled-pid) controller with
+[feedforward](../../GLOSSARY.md#feedforward) computes the motor voltage needed
+to track the moving setpoint.
 
-## Positioning and units (student guide)
+### Step-by-step move
 
-We use degrees in the public API because it is easier for humans to read and
-think about. WPILib math uses radians, so we convert once when a target is set.
-
-- Commands call `setTarget(double)` with a target in degrees.
-- `AbstractSetAndSeekSubsystem` clamps the target between the configured minimum
-  and maximum and then converts to radians for the controller.
-- `TurretMotor` configures the Spark MAX encoder conversion factors so the
-  encoder reports turret radians, not raw motor rotations.
-- AdvantageKit logs are recorded in degrees in the base class for clarity.
-
-## Gear setup and ratio math
-
-The Spark MAX uses the **internal relative encoder**, which measures motor
-rotations. The turret itself moves much slower because of the gear reduction. We
-must scale the encoder using the full gear ratio.
-
-We store the ratio as **motor rotations per turret rotation**:
-
-motor rotations per turret rotation = gearbox ratio × (driven teeth / driver
-teeth)
-
-Example: for a 5:1 gearbox with a 16-tooth gear driving a 152-tooth gear:
-
-ratio = 5 × (152 / 16) = 47.5
-
-That ratio is stored in `subsystems.json` as
-`turretSubsystem.turretMotorConfig.motorRotationsPerMechanismRotation`. The
-motor wrapper converts it to **radians per motor rotation** so the encoder
-reports true turret radians.
-
-If the turret moves twice as far as expected, the gear ratio is usually off by a
-factor of two. Check every gear stage and tooth count to confirm the real ratio.
-
-## Motion profiling and PID control
-
-The turret uses a **profiled PID controller** with a trapezoidal motion profile.
-This creates smooth movement that respects speed and acceleration limits.
-
-Key ideas:
-
-- **Profile limits**: `maximumVelocityDegreesPerSecond` and
-  `maximumAccelerationDegreesPerSecondSquared` cap the requested motion.
-- **PID gains**: `kP`, `kI`, `kD` correct error between the setpoint and the
-  measured position.
-- **Feedforward gains**: `kS`, `kV`, `kA` estimate the voltage needed for the
-  planned motion so PID only has to correct the leftover error.
-
-### Terminology deep dive (student friendly)
-
-- **Profile limits (velocity/acceleration limits)**: These are safety and
-  smoothness guards. The profile planner is not allowed to request speeds or
-  accelerations above these limits. If the target is far away, the motion ramps
-  up to the max speed, cruises, then ramps down. If the target is close, it
-  ramps up and down without ever reaching full speed.
-- **Trapezoidal profile**: A plan for how fast we should move over time. It uses
-  three phases: accelerate, cruise, and decelerate. The speed plot looks like a
-  trapezoid, which is why it has that name. This keeps motion smooth and
-  prevents belt or chain shock.
-- **Profiled PID**: PID is a feedback controller that compares where we are to
-  where we want to be. “Profiled” means the target is not a single jump; it is
-  the smooth moving setpoint from the trapezoid profile. PID reacts to error in
-  real time, so it can correct for friction, battery sag, or small bumps in the
-  mechanism.
-  - **`P` (proportional)**: Output is proportional to the current error. It
-    pushes harder when the error is large.
-  - **`I` (integral)**: Output is proportional to the accumulated error over
-    time. It fixes small leftover error by adding up error over time.
-  - **`D` (derivative)**: Output is proportional to the rate of change of the
-    error. It slows the system as it approaches the target to reduce overshoot.
-- **Feedforward**: A best-guess motor voltage based on the planned motion. This
-  handles the expected effort so PID only has to correct the difference.
-  Feedforward is open-loop, so it does not look at error; it just predicts how
-  much voltage the motion will need. When feedforward is close, the PID
-  corrections stay small and the turret feels smoother.
-  - **`kS` (static)**: Extra voltage to overcome static friction (the “stiction”
-    bump).
-  - **`kV` (velocity)**: Voltage per unit speed (how much it takes to keep
-    moving).
-  - **`kA` (acceleration)**: Voltage per unit acceleration (how much it takes to
-    speed up).
+1. A command calls `setTarget(degrees)`.
+2. The base class clamps the target to the configured min/max limits.
+3. The value is converted from degrees to radians for internal math.
+4. Each cycle, `seekTarget()` advances the
+   [trapezoidal profile](../../GLOSSARY.md#trapezoidal-motion-profile) by one
+   step.
+5. [PID](../../GLOSSARY.md#pid) computes a correction from the difference
+   between the setpoint and the measured position.
+6. [Feedforward](../../GLOSSARY.md#feedforward) estimates the voltage needed for
+   the planned motion (using [kS, kV, kA](../../GLOSSARY.md#feedforward-gains)).
+7. The combined PID + feedforward output is sent to the motor.
+8. The command finishes when `isProfileSettled()` reports that position and
+   velocity are within tolerance of the goal.
 
 ### Trapezoidal profile (ASCII sketch)
 
@@ -116,65 +50,123 @@ velocity
            accel            decel
 ```
 
-Position vs. time for the same move:
-
-```
-position
-  ^         _____________
-  |        /             \
-  |      _/               \_
-  |    _/                   \_
-  |___/                       \____  -> time
-```
-
-### How a move works, step by step
-
-1. A command sets a goal with `setTarget(double)` in degrees.
-2. The base class clamps the target to safety limits.
-3. The trapezoid profile produces a smooth setpoint each loop.
-4. PID + feedforward compute the voltage needed to track the setpoint.
-5. The motor wrapper applies the voltage and the base class logs telemetry.
+If the target is close, the profile ramps up and back down without ever reaching
+cruise speed — the trapezoid becomes a triangle.
 
 ### How commands drive the turret
 
 - `MoveTurretToAngleCommand` extends `AbstractSetAndSeekCommand`.
-- On initialize, the command calls `setTarget(double)` once using the supplier.
+- On initialize, the command calls `setTarget()` once using a supplier.
 - During execute, the command calls `seekTarget()` every loop to advance the
   profile.
 - The command finishes when `isProfileSettled()` returns true.
 - If the command is interrupted, the base command schedules a settle command so
   the turret decelerates safely.
+- `TrackFieldTargetCommand` continuously recalculates a field-relative target
+  each cycle and feeds it to `setTarget()`, allowing the turret to track a
+  moving or alliance-relative position.
 
-## Tuning checklist (student friendly)
+### Positioning and units
 
-- Confirm the gear ratio first.
-- Choose safe max speed and acceleration values before tuning gains.
-- Use SysId to get `kS`, `kV`, and `kA` so feedforward is close.
-- Increase `kP` until tracking is strong but not oscillating.
-- Add a small `kD` if you see overshoot.
-- Keep test moves simple and repeatable so changes are easy to compare.
+We use degrees in the public API because it is easier for humans to read and
+think about. WPILib math uses radians, so we convert once when a target is set.
 
-## Where to find the settings
+- Commands call `setTarget(double)` with a target in degrees.
+- `AbstractSetAndSeekSubsystem` clamps the target between the configured minimum
+  and maximum and then converts to radians for the controller.
+- `TurretMotor` configures the Spark MAX [encoder](../../GLOSSARY.md#encoder)
+  conversion factors so the encoder reports turret radians, not raw motor
+  rotations.
+- [AdvantageKit](../../GLOSSARY.md#advantagekit) logs are recorded in degrees in
+  the base class for clarity.
 
-- Turret configuration lives in `src/main/deploy/subsystems.json` under
-  `turretSubsystem`.
-- Motor configuration lives in the same file under
-  `turretSubsystem.turretMotorConfig`.
-- Shared base behavior lives in `AbstractSetAndSeekSubsystem` and
-  `AbstractMotor`.
+### Gear setup and ratio math
 
-## Code structure and maintenance
+The Spark MAX uses the internal relative encoder, which measures motor
+rotations. The turret itself moves much slower because of the gear reduction. We
+must scale the [encoder](../../GLOSSARY.md#encoder) using the full
+[gear ratio](../../GLOSSARY.md#gear-ratio).
 
-- `TurretSubsystem` builds either `TurretMotor` (real hardware) or
-  `TurretSimMotor` (simulation).
-- `TurretMotor` extends `AbstractMotor` and applies inversion, current limits,
-  and encoder scaling.
-- `MoveTurretToAngleCommand` is the main profiled move command.
-- `TurretSubsystemCommandFactory` builds commands so `RobotContainer` only wires
-  them.
-- Keep public APIs in degrees, keep command names ending in `Command`, and keep
-  command factories inside `commands/`.
+We store the ratio as **motor rotations per turret rotation**:
 
-## TODO
+```
+motor rotations per turret rotation = gearbox ratio × (driven teeth / driver teeth)
+```
+
+Example: for a 5 : 1 gearbox with a 16-tooth gear driving a 152-tooth gear:
+
+```
+ratio = 5 × (152 / 16) = 47.5
+```
+
+That ratio is stored in `subsystems.json` as
+`turretSubsystem.turretMotorConfig.motorRotationsPerMechanismRotation`. The
+motor wrapper converts it to **radians per motor rotation** so the encoder
+reports true turret radians.
+
+If the turret moves twice as far as expected, the gear ratio is usually off by a
+factor of two. Check every gear stage and tooth count to confirm the real ratio.
+
+## Configuration
+
+All turret settings live in `src/main/deploy/subsystems.json` (or the sim/test
+variants) under the `turretSubsystem` key. Values are
+[tunable](../../GLOSSARY.md#tunable) — you can adjust them on the fly through
+SmartDashboard without redeploying.
+
+### Key tunables
+
+| Setting                                      | Units      | Purpose                                                         |
+| -------------------------------------------- | ---------- | --------------------------------------------------------------- |
+| `minimumSetpointDegrees`                     | degrees    | Reverse rotation limit                                          |
+| `maximumSetpointDegrees`                     | degrees    | Forward rotation limit                                          |
+| `maximumVelocityDegreesPerSecond`            | deg/s      | Profile cruise speed                                            |
+| `maximumAccelerationDegreesPerSecondSquared` | deg/s²     | Profile ramp rate                                               |
+| `positionToleranceDegrees`                   | degrees    | How close is "close enough"                                     |
+| `velocityToleranceDegreesPerSecond`          | deg/s      | How slow is "stopped enough"                                    |
+| `kP`, `kI`, `kD`                             | unitless   | [PID gains](../../GLOSSARY.md#pid-gains)                        |
+| `kS`                                         | volts      | [Static feedforward](../../GLOSSARY.md#feedforward-gains)       |
+| `kV`                                         | V/(deg/s)  | [Velocity feedforward](../../GLOSSARY.md#feedforward-gains)     |
+| `kA`                                         | V/(deg/s²) | [Acceleration feedforward](../../GLOSSARY.md#feedforward-gains) |
+
+Motor-specific settings ([CAN](../../GLOSSARY.md#can-bus) ID, inversion, current
+limits, [gear ratio](../../GLOSSARY.md#gear-ratio)) live under
+`turretSubsystem.turretMotorConfig`.
+
+### Tuning checklist
+
+1. Confirm the [gear ratio](../../GLOSSARY.md#gear-ratio) first — wrong ratios
+   cause every other value to misbehave.
+2. Choose safe max speed and [acceleration](../../GLOSSARY.md#acceleration)
+   values before tuning gains.
+3. Use [SysId](../../GLOSSARY.md#sysid) to measure kS, kV, and kA so feedforward
+   is close from the start.
+4. Increase kP until tracking is strong but not oscillating.
+5. Add a small kD if you see [overshoot](../../GLOSSARY.md#overshoot).
+6. Keep test moves simple and repeatable so changes are easy to compare.
+
+## Code structure
+
+| File                                          | Purpose                                                                                             |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `TurretSubsystem.java`                        | Extends `AbstractSetAndSeekSubsystem`; builds either `TurretMotor` (real) or `TurretSimMotor` (sim) |
+| `commands/MoveTurretToAngleCommand.java`      | Profiled move command — extends `AbstractSetAndSeekCommand`                                         |
+| `commands/TrackFieldTargetCommand.java`       | Continuous field-relative tracking command                                                          |
+| `commands/TurretSubsystemCommandFactory.java` | Factory that builds commands for `RobotContainer` wiring                                            |
+| `config/TurretSubsystemConfig.java`           | Extends `AbstractSetAndSeekSubsystemConfig`; adds turret-specific fields                            |
+| `config/TurretMotorConfig.java`               | Motor-level config (CAN ID, gear ratio, current limits)                                             |
+| `devices/TurretMotor.java`                    | Real hardware motor wrapper — extends `AbstractMotor`                                               |
+| `devices/TurretSimMotor.java`                 | Simulation motor wrapper — extends `AbstractSimMotor`                                               |
+
+## Status / TODO
+
+### Done
+
+- Full set-and-seek profiled motion with PID + feedforward.
+- SysId characterization commands via the command factory.
+- Simulation support via `TurretSimMotor`.
+- Field-target tracking command for continuous aiming.
+
+### TODO
 
 - Revisit aiming presets and vision integration once shooter testing begins.

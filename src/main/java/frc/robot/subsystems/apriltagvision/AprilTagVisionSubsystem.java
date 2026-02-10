@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.apriltagvision;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,11 +14,11 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.shared.VisionMeasurementConsumer;
 import frc.robot.shared.subsystems.AbstractSubsystem;
-import frc.robot.subsystems.vision.config.AprilTagVisionSubsystemConfig;
-import frc.robot.subsystems.vision.io.AprilTagVisionIO;
-import frc.robot.subsystems.vision.io.AprilTagVisionIOInputsAutoLogged;
-import frc.robot.subsystems.vision.io.AprilTagVisionIOPhotonVision;
-import frc.robot.subsystems.vision.io.AprilTagVisionIOPhotonVisionSim;
+import frc.robot.subsystems.apriltagvision.config.AprilTagVisionSubsystemConfig;
+import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIO;
+import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIOInputsAutoLogged;
+import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIOPhotonVision;
+import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIOPhotonVisionSim;
 
 /**
  * Subsystem that processes AprilTag camera observations for robot pose estimation.

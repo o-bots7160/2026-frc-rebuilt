@@ -1,31 +1,69 @@
 # Climber subsystem
 
-## Role (game/mechanical)
+## Overview
 
-Raises the robot onto tower rungs (1, 2, or 3) for endgame points in REBUILT.
-Extends and retracts arms or hooks for staged climbs: latch lower rung, transfer
-weight, then reach higher. Holds position under load to prevent backdrive while
-waiting for the buzzer.
+The Climber subsystem raises the robot onto tower rungs for endgame points in
+REBUILT. It extends and retracts arms or hooks for staged climbs: latch a lower
+rung, transfer weight, then reach higher. Once the robot is hanging, the climber
+holds position under load to prevent backdrive while waiting for the buzzer.
 
-## Control and configuration (programming)
+## How it works
 
-- Add limit switches or encoders for each stage so the driver sees progress.
-- Provide a manual override mode for recovery if auto-sequences fail.
-- Include current limiting and soft stops to protect hardware on rung contact.
-- Default state should keep motors braked and stationary.
-- Autonomous/teleop commands should run scripted climb sequences with clear
-  abort paths.
-- Log stage transitions and time-to-climb so we can tune for faster endgame
-  cycles.
+<!-- TODO: fill in when hardware decisions are made -->
 
-## Code structure and maintenance
+The climber will use one or more actuators (motors, pneumatics, or a
+combination) to drive arms or hooks through a multi-stage climb. Each stage
+corresponds to a rung on the tower (1, 2, or 3), and the subsystem should track
+which stage the robot has reached.
 
-- Classes (planned): climber subsystem, command factory for staged climbs,
-  actuator IO wrappers, and sensor interfaces.
-- Reviewer notes: keep state machine for stages simple and observable; ensure
-  overrides can safely interrupt sequences.
+Planned behaviors:
 
-## TODO
+- **Stage detection** — limit switches or [encoders](../../GLOSSARY.md#encoder)
+  placed at each rung position so the driver sees live progress on the
+  dashboard.
+- **Scripted sequence** — an autonomous climb command runs stages in order with
+  clear abort paths if something goes wrong.
+- **Manual override** — a backup mode where the operator directly controls
+  extension and retraction, useful for recovery when auto-sequences fail.
+- **Hold under load** — once latched, the motors brake and current-limit to hold
+  the robot's weight without overheating.
 
-- Decide on actuator types, sensors, and sequencing before adding command
-  implementations.
+## Configuration
+
+<!-- TODO: add config fields and tunables once hardware is selected -->
+
+Expected settings (to be added to `subsystems.json`):
+
+| Setting                                     | Units               | Purpose                               |
+| ------------------------------------------- | ------------------- | ------------------------------------- |
+| `enabled`                                   | —                   | Master enable flag                    |
+| stage positions                             | rotations or inches | Target positions for each rung        |
+| current limits                              | amps                | Protect actuators during rung contact |
+| [soft limits](../../GLOSSARY.md#soft-limit) | rotations or inches | Prevent over-extension                |
+
+## Code structure
+
+<!-- TODO: update when classes are added -->
+
+Planned files:
+
+| File                                  | Purpose                                                                    |
+| ------------------------------------- | -------------------------------------------------------------------------- |
+| `ClimberSubsystem.java`               | Subsystem managing actuator state and stage tracking                       |
+| `commands/ClimberCommandFactory.java` | Factory for staged-climb and manual-override commands                      |
+| `config/ClimberSubsystemConfig.java`  | Configuration and [tunables](../../GLOSSARY.md#tunable)                    |
+| `io/ClimberIO.java`                   | [IO](../../GLOSSARY.md#io-inputoutput) interface for actuators and sensors |
+
+## Status / TODO
+
+### Done
+
+- README and folder structure created.
+
+### TODO
+
+- Decide on actuator types, sensors, and rung count.
+- Create IO interface and config class.
+- Implement staged-climb command sequence with abort logic.
+- Add manual override command for operator recovery.
+- Wire subsystem in `RobotContainer` and add to `subsystems.json`.

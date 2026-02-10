@@ -16,14 +16,14 @@ import frc.robot.shared.bindings.TriggerBindings;
 import frc.robot.shared.config.ConfigurationLoader;
 import frc.robot.shared.config.FieldLayoutConfig;
 import frc.robot.shared.config.SubsystemsConfig;
+import frc.robot.subsystems.apriltagvision.AprilTagVisionSubsystem;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
+import frc.robot.subsystems.drivercameravision.DriverCameraSubsystem;
 import frc.robot.subsystems.robotstate.RobotStateSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
-import frc.robot.subsystems.vision.AprilTagVisionSubsystem;
-import frc.robot.subsystems.vision.DriverCameraSubsystem;
 
 /**
  * Central wiring hub for subsystems, commands, and driver inputs.

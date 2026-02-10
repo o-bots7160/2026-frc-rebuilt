@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision.io;
+package frc.robot.subsystems.apriltagvision.io;
 
 import org.littletonrobotics.junction.AutoLog;
 

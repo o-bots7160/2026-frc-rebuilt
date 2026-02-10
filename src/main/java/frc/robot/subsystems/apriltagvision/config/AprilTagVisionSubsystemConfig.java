@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision.config;
+package frc.robot.subsystems.apriltagvision.config;
 
 import java.util.Map;
 

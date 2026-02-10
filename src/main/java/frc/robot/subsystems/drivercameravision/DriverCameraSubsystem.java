@@ -1,9 +1,9 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.drivercameravision;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.shared.subsystems.AbstractSubsystem;
-import frc.robot.subsystems.vision.config.DriverCameraSubsystemConfig;
+import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
 
 /**
  * Subsystem that manages a camera in driver mode for driver camera streaming.

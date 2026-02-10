@@ -175,58 +175,85 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-def readmeInputDir = file("src/main/java")
-def readmeOutputDir = file("$buildDir/generated/readme-html")
+def markdownInputDir = file("src/main/java")
+def markdownOutputDir = file("$buildDir/generated/readme-html")
 
-tasks.register("renderReadmes") {
-    description = "Render README.md files to HTML for Javadoc output."
+tasks.register("renderMarkdown") {
+    description = "Render Markdown files to HTML for Javadoc output."
     group = "documentation"
-    inputs.files(fileTree(readmeInputDir) { include "**/README.md" })
-    inputs.file(file("README.md"))
-    outputs.dir(readmeOutputDir)
+    inputs.files(fileTree(markdownInputDir) { include "**/*.md" })
+    inputs.files(fileTree(".") { include "*.md"; exclude "*License*" })
+    outputs.dir(markdownOutputDir)
 
     doLast {
-        def readmes = fileTree(readmeInputDir) { include "**/README.md" }.files
-        def rootReadme = file("README.md")
-        def allReadmes = []
-        allReadmes.addAll(readmes)
-        if (rootReadme.exists()) {
-            allReadmes.add(rootReadme)
-        }
-        if (allReadmes.isEmpty()) {
+        def markdownFiles = fileTree(markdownInputDir) { include "**/*.md" }.files
+        def rootMarkdownFiles = fileTree(".") { include "*.md"; exclude "*License*" }.files
+        def allMarkdownFiles = []
+        allMarkdownFiles.addAll(markdownFiles)
+        allMarkdownFiles.addAll(rootMarkdownFiles)
+        if (allMarkdownFiles.isEmpty()) {
             return
         }
 
-        def toDisplayName = { readmePath ->
-            if (readmePath == "README.md") {
-                return "Project README"
+        def toDisplayName = { mdPath ->
+            // Root-level files: README.md -> "Project README", GLOSSARY.md -> "Project Glossary"
+            if (!mdPath.contains("/")) {
+                def baseName = mdPath.replaceAll(/\.md$/, "")
+                def pretty = baseName.substring(0, 1).toUpperCase() + baseName.substring(1).toLowerCase()
+                return "Project ${pretty}"
             }
-            def match = (readmePath =~ /frc\/robot\/subsystems\/([^\\/]+)\/README\.md/)
-            if (match.matches()) {
-                def subsystemName = match[0][1]
-                def prettyName = subsystemName.substring(0, 1).toUpperCase() + subsystemName.substring(1)
-                return "${prettyName} Subsystem README"
+            // Subsystem files: frc/robot/subsystems/<name>/<file>.md
+            def subsystemMatch = (mdPath =~ /frc\/robot\/subsystems\/([^\\/]+)\/([^\\/]+)\.md/)
+            if (subsystemMatch.matches()) {
+                def subsystemName = subsystemMatch[0][1]
+                def fileName = subsystemMatch[0][2]
+                def prettySubsystem = subsystemName.substring(0, 1).toUpperCase() + subsystemName.substring(1)
+                def prettyFile = fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase()
+                return "${prettySubsystem} Subsystem ${prettyFile}"
             }
-            def cleaned = readmePath.replaceAll(/README\.md$/, "README").replaceAll("/", " ")
+            // Subsystems index: frc/robot/subsystems/<file>.md
+            def subsystemsIndexMatch = (mdPath =~ /frc\/robot\/subsystems\/([^\\/]+)\.md/)
+            if (subsystemsIndexMatch.matches()) {
+                def fileName = subsystemsIndexMatch[0][1]
+                def prettyFile = fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase()
+                return "Subsystems ${prettyFile}"
+            }
+            // Shared files: frc/robot/shared/**/<file>.md
+            def sharedMatch = (mdPath =~ /frc\/robot\/shared\/.*?([^\\/]+)\.md/)
+            if (sharedMatch.matches()) {
+                def fileName = sharedMatch[0][1]
+                def prettyFile = fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase()
+                return "Shared ${prettyFile}"
+            }
+            // Other files under frc/robot: frc/robot/<file>.md
+            def robotMatch = (mdPath =~ /frc\/robot\/([^\\/]+)\.md/)
+            if (robotMatch.matches()) {
+                def fileName = robotMatch[0][1]
+                def prettyFile = fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase()
+                return "Project ${prettyFile}"
+            }
+            // Fallback: strip .md, replace path separators, title-case
+            def cleaned = mdPath.replaceAll(/\.md$/, "").replaceAll("/", " ")
             return cleaned.replaceAll("\\s+", " ").trim()
         }
 
-        readmeOutputDir.mkdirs()
-        allReadmes.each { readme ->
-            def relativePath = readme == rootReadme
-                ? "README.md"
-                : readmeInputDir.toPath().relativize(readme.toPath()).toString()
-            def outputFile = new File(readmeOutputDir, relativePath.replaceAll(/README\.md$/, "README.html"))
+        markdownOutputDir.mkdirs()
+        allMarkdownFiles.each { mdFile ->
+            def isRootFile = rootMarkdownFiles.contains(mdFile)
+            def relativePath = isRootFile
+                ? mdFile.name
+                : markdownInputDir.toPath().relativize(mdFile.toPath()).toString()
+            def outputFile = new File(markdownOutputDir, relativePath.replaceAll(/\.md$/, ".html"))
             outputFile.parentFile.mkdirs()
 
             def markedOutput = new ByteArrayOutputStream()
             exec {
                 executable "npx"
-                args "--yes", "marked", readme.absolutePath
+                args "--yes", "marked", mdFile.absolutePath
                 standardOutput = markedOutput
             }
 
-            def relativeSegments = relativePath.replaceAll(/README\.md$/, "README.html").tokenize("/")
+            def relativeSegments = relativePath.replaceAll(/\.md$/, ".html").tokenize("/")
             def depth = Math.max(relativeSegments.size() - 1, 0)
             def rootPrefix = depth == 0 ? "" : "../" * depth
             def stylesheetPath = "${rootPrefix}stylesheet.css"
@@ -236,17 +263,17 @@ tasks.register("renderReadmes") {
             def jqueryUiCssPath = "${rootPrefix}script-dir/jquery-ui.min.css"
             def jqueryUiOverridesPath = "${rootPrefix}jquery-ui.overrides.css"
             def indexPath = "${rootPrefix}index.html"
-            def readmeTitle = toDisplayName(relativePath)
+            def pageTitle = toDisplayName(relativePath)
 
             outputFile.text = """
 <!DOCTYPE HTML>
 <html lang=\"en\">
 <head>
     <!-- Generated by javadoc (17) -->
-    <title>${readmeTitle} (2026-frc-rebuilt API)</title>
+    <title>${pageTitle} (2026-frc-rebuilt API)</title>
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
     <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">
-    <meta name=\"description\" content=\"README\">
+    <meta name=\"description\" content=\"documentation\">
     <meta name=\"generator\" content=\"javadoc/PackageIndexWriter\">
     <link rel=\"stylesheet\" type=\"text/css\" href=\"${stylesheetPath}\" title=\"Style\">
     <link rel=\"stylesheet\" type=\"text/css\" href=\"${jqueryUiCssPath}\" title=\"Style\">
@@ -291,13 +318,14 @@ tasks.register("renderReadmes") {
 <div class=\"flex-content\">
 <main role=\"main\">
 <div class=\"header\">
-<h1 class=\"title\">${readmeTitle}</h1>
+<h1 class=\"title\">${pageTitle}</h1>
 </div>
 <div class=\"contentContainer\">
 <div class=\"description\">
 <nav class=\"readme-nav\">
 <a href=\"${indexPath}\">Overview</a>
 <a href=\"${rootPrefix}README.html\">Project README</a>
+<a href=\"${rootPrefix}frc/robot/GLOSSARY.html\">Glossary</a>
 </nav>
 ${markedOutput.toString("UTF-8")}
 </div>
@@ -310,21 +338,21 @@ ${markedOutput.toString("UTF-8")}
 """
         }
 
-        def overviewFile = new File(readmeOutputDir, "overview.html")
-        def overviewLinks = allReadmes.collect { readme ->
-            def relativePath = readme == rootReadme
-                ? "README.md"
-                : readmeInputDir.toPath().relativize(readme.toPath()).toString()
-            def htmlPath = relativePath.replaceAll(/README\.md$/, "README.html")
+        def overviewFile = new File(markdownOutputDir, "overview.html")
+        def overviewLinks = allMarkdownFiles.collect { mdFile ->
+            def isRootFile = rootMarkdownFiles.contains(mdFile)
+            def relativePath = isRootFile
+                ? mdFile.name
+                : markdownInputDir.toPath().relativize(mdFile.toPath()).toString()
+            def htmlPath = relativePath.replaceAll(/\.md$/, ".html")
             def displayName = toDisplayName(relativePath)
             return [path: htmlPath, name: displayName]
         }.sort { a, b ->
-            if (a.path == "README.html") {
-                return -1
-            }
-            if (b.path == "README.html") {
-                return 1
-            }
+            // Project README first, then Project-level docs, then alphabetical
+            if (a.path == "README.html") return -1
+            if (b.path == "README.html") return 1
+            if (a.name.startsWith("Project") && !b.name.startsWith("Project")) return -1
+            if (!a.name.startsWith("Project") && b.name.startsWith("Project")) return 1
             return a.name <=> b.name
         }
 
@@ -340,10 +368,10 @@ ${markedOutput.toString("UTF-8")}
     <link rel=\"stylesheet\" type=\"text/css\" href=\"stylesheet.css\" title=\"Style\">
 </head>
 <body>
-<h1>Subsystem READMEs</h1>
-<p>Each README summarizes a subsystem’s purpose, key behaviors, and configuration details.</p>
+<h1>Project Documentation</h1>
+<p>Browse project guides, subsystem documentation, and the glossary of robotics and programming terms.</p>
 <ul>
-${overviewLinks.collect { "<li><a href=\"${it.path}\">${it.name}</a> (${it.path})</li>" }.join("\n")}
+${overviewLinks.collect { "<li><a href=\"${it.path}\">${it.name}</a></li>" }.join("\n")}
 </ul>
 </body>
 </html>
@@ -352,14 +380,14 @@ ${overviewLinks.collect { "<li><a href=\"${it.path}\">${it.name}</a> (${it.path}
 }
 
 tasks.named("javadoc") {
-    dependsOn tasks.named("renderReadmes")
-    options.overview = file("$readmeOutputDir/overview.html")
+    dependsOn tasks.named("renderMarkdown")
+    options.overview = file("$markdownOutputDir/overview.html")
     exclude("**/*AutoLogged.java")
     exclude("frc/robot/BuildConstants.java")
 
     doLast {
         copy {
-            from(readmeOutputDir)
+            from(markdownOutputDir)
             into(destinationDir)
         }
     }

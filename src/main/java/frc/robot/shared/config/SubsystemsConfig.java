@@ -1,11 +1,11 @@
 package frc.robot.shared.config;
 
 import frc.robot.shared.bindings.TriggerBindingsConfig;
+import frc.robot.subsystems.apriltagvision.config.AprilTagVisionSubsystemConfig;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
+import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
-import frc.robot.subsystems.vision.config.AprilTagVisionSubsystemConfig;
-import frc.robot.subsystems.vision.config.DriverCameraSubsystemConfig;
 
 /**
  * Root configuration bundle for every subsystem. Individual subsystems can be toggled or tuned via this object after loading JSON from the deploy

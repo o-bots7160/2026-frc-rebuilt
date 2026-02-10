@@ -12,6 +12,7 @@ Competition "REBUILT" season codebase.
   - [Build and test](#build-and-test)
   - [Simulation](#simulation)
   - [Deployment](#deployment)
+  - [Documentation](#documentation)
   - [Development reference](#development-reference)
     - [Project structure](#project-structure)
     - [Dependencies](#dependencies)
@@ -85,6 +86,30 @@ Competition "REBUILT" season codebase.
      joysticks/controllers.
    - Launch Advantage Scope to visualize logs and signals.
    - Open the Elastic dashboard to watch live telemetry and key widgets.
+
+## Documentation
+
+In-repo Markdown files are rendered as styled HTML pages when you run
+`./gradlew javadoc`. The generated site appears under `build/docs/javadoc/` and
+is published to GitHub Pages so students and mentors can browse without cloning
+the repo.
+
+Key starting points:
+
+- [Glossary](src/main/java/frc/robot/GLOSSARY.md) – definitions of robotics and
+  programming terms used throughout the codebase.
+- [Subsystems index](src/main/java/frc/robot/subsystems/README.md) – folder
+  layout, inheritance hierarchy, and links to every mechanism.
+- [Shared abstractions](src/main/java/frc/robot/shared/README.md) – the abstract
+  base classes, the set-and-seek pattern, and the disabled-subsystem lifecycle.
+
+### For other teams
+
+This repository is public. You are welcome to read, learn from, and adapt any of
+the code or documentation. If you have questions, open a GitHub Issue and we
+will do our best to help. Please note that the hardware configuration
+(`subsystems.json`, swerve configs, CAN IDs) is specific to our robot — you will
+need to adjust those values for your own machine.
 
 ## Development reference
 

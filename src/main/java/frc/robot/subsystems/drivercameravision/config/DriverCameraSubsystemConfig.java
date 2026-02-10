@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision.config;
+package frc.robot.subsystems.drivercameravision.config;
 
 import java.util.function.Supplier;
 

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision;
+package frc.robot.subsystems.apriltagvision;
 
 import java.util.Optional;
 
@@ -7,7 +7,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import frc.robot.subsystems.vision.io.AprilTagVisionIO.PoseObservation;
+import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIO.PoseObservation;
 
 /**
  * Processes AprilTag pose observations and produces vision measurements suitable for pose estimation.
