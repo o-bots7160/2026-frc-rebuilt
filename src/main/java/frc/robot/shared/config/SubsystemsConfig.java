@@ -1,5 +1,6 @@
 package frc.robot.shared.config;
 
+import frc.robot.shared.bindings.TriggerBindingsConfig;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
@@ -36,4 +37,9 @@ public class SubsystemsConfig {
      * Robot state configuration bundle.
      */
     public RobotStateSubsystemConfig robotStateSubsystem = new RobotStateSubsystemConfig();
+
+    /**
+     * Trigger bindings configuration bundle for driver controller sensitivity.
+     */
+    public TriggerBindingsConfig triggerBindings = new TriggerBindingsConfig();
 }

@@ -44,7 +44,7 @@ public class MoveFieldManualCommand extends AbstractSubsystemCommand<DriveBaseSu
         subsystem.driveFieldRelative(
                 forwardMetersPerSecondSupplier.getAsDouble(),
                 leftMetersPerSecondSupplier.getAsDouble(),
-                -ccwRadiansPerSecondSupplier.getAsDouble());
+                ccwRadiansPerSecondSupplier.getAsDouble());
     }
 
     /**

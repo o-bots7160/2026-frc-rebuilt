@@ -74,5 +74,12 @@
     "verbose": false,
     "cameraName": "limelight",
     "pipelineIndex": 0
+  },
+  "triggerBindings": {
+    "leftStickYSensitivity": 1.0,
+    "leftStickXSensitivity": 1.0,
+    "rightStickXSensitivity": 1.0,
+    "rightTriggerBaseScale": 1.0,
+    "leftTriggerBaseScale": 1.0
   }
 }

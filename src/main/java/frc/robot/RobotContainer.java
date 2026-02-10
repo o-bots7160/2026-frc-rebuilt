@@ -107,7 +107,7 @@ public class RobotContainer {
             // Input bindings
             triggerBindings = new TriggerBindings(
                     driveBaseCommandFactory,
-                    subsystemsConfig.driveBaseSubsystem,
+                    subsystemsConfig.triggerBindings,
                     turretCommandFactory);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
