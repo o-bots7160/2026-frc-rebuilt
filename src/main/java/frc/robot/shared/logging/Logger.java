@@ -4,6 +4,8 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.struct.StructSerializable;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.RobotEnvironment;
 
@@ -65,15 +67,27 @@ public class Logger {
 
     private Boolean verbose;
 
+    /** Persistent dashboard alert for the most recent error message. */
+    private final Alert errorAlert;
+
+    /** Persistent dashboard alert for the most recent warning message. */
+    private final Alert warningAlert;
+
     /**
      * Creates a logger scoped to the provided class name.
+     * <p>
+     * Two persistent {@link Alert} instances are created using the class name as the alert group so dashboard
+     * alerts are organized per-subsystem. Alerts remain active until explicitly cleared via {@link #clearAlerts()}.
+     * </p>
      *
      * @param className name to prefix all log messages with
      * @param verbose   true to enable verbose and debug output
      */
     protected Logger(String className, boolean verbose) {
-        this.className = className;
-        this.verbose   = verbose;
+        this.className    = className;
+        this.verbose      = verbose;
+        this.errorAlert   = new Alert(className, "", AlertType.kError);
+        this.warningAlert = new Alert(className, "", AlertType.kWarning);
     }
 
     /**
@@ -110,21 +124,45 @@ public class Logger {
     }
 
     /**
-     * Logs a warning message to the console. The message is prefixed with "WARN:" and the class name, and is displayed in yellow color.
+     * Logs a warning message to the console and activates a persistent dashboard {@link Alert}.
+     * <p>
+     * The alert remains visible on supported dashboards until dismissed via {@link #clearAlerts()}. Each call
+     * replaces the previous warning text, so only the most recent warning is displayed.
+     * </p>
      *
      * @param message The warning message to be logged.
      */
     public void warning(String message) {
         System.out.println("\u001B[33mWARN: " + className + ": " + message + "\u001B[0m");
+        warningAlert.setText(message);
+        warningAlert.set(true);
     }
 
     /**
-     * Logs a warning message to the standard error console. The message is prefixed with "ERROR:" and the class name, and is displayed in red color.
+     * Logs an error message to the standard error console and activates a persistent dashboard {@link Alert}.
+     * <p>
+     * The alert remains visible on supported dashboards until dismissed via {@link #clearAlerts()}. Each call
+     * replaces the previous error text, so only the most recent error is displayed.
+     * </p>
      *
      * @param message The error message to be logged.
      */
     public void error(String message) {
         System.err.println("\u001B[31mERROR: " + className + ": " + message + "\u001B[0m");
+        errorAlert.setText(message);
+        errorAlert.set(true);
+    }
+
+    /**
+     * Dismisses both the error and warning dashboard alerts.
+     * <p>
+     * Call this when a previously reported condition has recovered so stale alerts do not remain visible to
+     * operators. Safe to call even if no alerts are currently active.
+     * </p>
+     */
+    public void clearAlerts() {
+        errorAlert.set(false);
+        warningAlert.set(false);
     }
 
     /**

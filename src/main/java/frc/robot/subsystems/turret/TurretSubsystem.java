@@ -1,5 +1,6 @@
 package frc.robot.subsystems.turret;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -77,19 +78,20 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
 
         double fieldAngleRadians   = Math.atan2(deltaY, deltaX);
         double robotHeadingRadians = robotPose.getRotation().getRadians();
-        double zeroOffsetRadians   = Math.toRadians(config.getTurretZeroOffsetDegrees());
+        double zeroOffsetRadians   = Units.degreesToRadians(config.getTurretZeroOffsetDegrees());
         double rawTargetRadians    = fieldAngleRadians - robotHeadingRadians + zeroOffsetRadians;
-        return Math.toDegrees(clampToTurretLimitsRadians(rawTargetRadians));
+        return Units.radiansToDegrees(clampToTurretLimitsRadians(rawTargetRadians));
     }
 
     /**
      * Clamps a turret target angle to the configured setpoint limits.
      * <p>
-     * This method shifts the target by whole rotations to find the closest equivalent angle inside the allowed range.
+     * Uses {@link MathUtil#inputModulus(double, double, double)} to wrap the target into the turret's travel range, then snaps to the nearest limit
+     * if the range is smaller than a full rotation and the wrapped result is still outside the allowed band.
      * </p>
      *
-     * @param targetDegrees requested turret angle in degrees
-     * @return closest equivalent angle within the turret limits
+     * @param targetRadians requested turret angle in radians
+     * @return closest equivalent angle within the turret limits in radians
      */
     private double clampToTurretLimitsRadians(double targetRadians) {
         double minRadians = config.getMinimumSetpointRadians();
@@ -101,28 +103,12 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
             maxRadians = swap;
         }
 
-        double clampedTarget = targetRadians;
-        double rangeRadians  = maxRadians - minRadians;
-        if (rangeRadians <= 0.0) {
+        if (maxRadians - minRadians <= 0.0) {
             return minRadians;
         }
 
-        double fullRotation = Math.PI * 2.0;
-        while (clampedTarget < minRadians) {
-            clampedTarget += fullRotation;
-        }
-
-        while (clampedTarget > maxRadians) {
-            clampedTarget -= fullRotation;
-        }
-
-        if (clampedTarget < minRadians || clampedTarget > maxRadians) {
-            double minOffset = Math.abs(clampedTarget - minRadians);
-            double maxOffset = Math.abs(maxRadians - clampedTarget);
-            return minOffset <= maxOffset ? minRadians : maxRadians;
-        }
-
-        return clampedTarget;
+        double wrapped = MathUtil.inputModulus(targetRadians, minRadians, maxRadians);
+        return MathUtil.clamp(wrapped, minRadians, maxRadians);
     }
 
 }
