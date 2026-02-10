@@ -32,20 +32,25 @@
       "reverseSoftLimitDegrees": -180.0,
       "forwardSoftLimitDegrees": 180.0
     },
-    "maximumVelocityDegreesPerSecond": 50.0,
-    "maximumAccelerationDegreesPerSecondSquared": 15.0,
+    "maximumVelocityDegreesPerSecond": 100.0,
+    "maximumAccelerationDegreesPerSecondSquared": 45.0,
     "minimumSetpointDegrees": -180.0,
     "maximumSetpointDegrees": 180.0,
     "positionToleranceDegrees": 5.0,
     "velocityToleranceDegreesPerSecond": 10.0,
     "initialPositionDegrees": 0.0,
     "initialVelocityDegreesPerSecond": 0.0,
-    "kP": 1.1418,
+    "kP": 14.0,
     "kI": 0.0,
-    "kD": 0.01,
-    "kS": 0.016051,
-    "kV": 5.4145,
-    "kA": 87.501
+    "kD": 0.1,
+    "kS": 0.0,
+    "kV": 0.959,
+    "kA": 45.87,
+    "componentPoseConfig": {
+      "componentPivotX": 0.205,
+      "componentPivotY": 0.0,
+      "componentPivotZ": 0.375
+    }
   },
   "robotStateSubsystem": {
     "enabled": true,

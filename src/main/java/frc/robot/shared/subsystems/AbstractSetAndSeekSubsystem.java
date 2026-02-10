@@ -173,14 +173,20 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         log.processInputs("motor", motorInputs);
 
         // Use the profiled PID to calculate the next output from the current position.
-        double measuredPosition = getMeasuredPosition();
-        double controllerOutput = controller.calculate(measuredPosition);
+        double measuredPosition         = getMeasuredPosition();
+
+        // Capture the current setpoint velocity before advancing the profile so the
+        // discrete feedforward can compute the acceleration (kA) term.
+        double previousSetpointVelocity = controller.getSetpoint().velocity;
+        double controllerOutput         = controller.calculate(measuredPosition);
 
         // Grab the setpoint the profile wants us to follow this cycle.
         setpointState = controller.getSetpoint();
 
-        // Feedforward estimates the volts needed to maintain the desired velocity.
-        double feedforwardVolts = feedforward.calculate(setpointState.velocity);
+        // Feedforward estimates the volts needed to reach the next setpoint velocity.
+        // The two-velocity form uses discrete-time plant inversion so kA contributes
+        // the acceleration torque the profile demands.
+        double feedforwardVolts = feedforward.calculateWithVelocities(previousSetpointVelocity, setpointState.velocity);
         double voltageCommand   = controllerOutput + feedforwardVolts;
         double positionError    = goalState.position - measuredPosition;
 
@@ -278,6 +284,18 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     public void handleSeekInterrupted() {
         motor.stop();
+    }
+
+    /**
+     * Returns the current measured position in degrees.
+     * <p>
+     * Delegates to {@link #getMeasuredPosition()} and converts from radians. Use this for external consumers such as suppliers and telemetry.
+     * </p>
+     *
+     * @return measured mechanism position in degrees
+     */
+    public double getMeasuredPositionDegrees() {
+        return Units.radiansToDegrees(getMeasuredPosition());
     }
 
     /**

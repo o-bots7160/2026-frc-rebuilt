@@ -1,7 +1,10 @@
 package frc.robot.subsystems.turret;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.devices.motor.Motor;
 import frc.robot.shared.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
@@ -38,6 +41,23 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
 
     private TurretSubsystem(TurretSubsystemConfig config, Motor motor) {
         super(config, motor);
+    }
+
+    /**
+     * Publishes the turret's 3D component pose each cycle so AdvantageScope can animate the turret model.
+     * <p>
+     * The component pose combines the configured pivot offset with a Z-axis (yaw) rotation matching the measured turret angle.
+     * </p>
+     */
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        Pose3d turretComponentPose = new Pose3d(
+                config.componentPoseConfig.toTranslation3d(),
+                new Rotation3d(0.0, 0.0, Units.degreesToRadians(getMeasuredPositionDegrees())));
+
+        log.recordOutput("componentPoses", new Pose3d[] { turretComponentPose });
     }
 
     /**

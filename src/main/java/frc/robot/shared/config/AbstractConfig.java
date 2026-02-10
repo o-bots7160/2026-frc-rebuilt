@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.shared.RobotEnvironment;
 
@@ -15,6 +16,34 @@ import frc.robot.shared.RobotEnvironment;
  * configs inherit the tunable readers provided here.
  */
 public abstract class AbstractConfig {
+    /**
+     * Describes the 3D pivot offset for an articulated component in AdvantageScope.
+     * <p>
+     * Embed an instance in any mechanism config that has a corresponding model component in the robot's AdvantageScope asset. The pivot values
+     * represent the component's origin relative to the robot's floor-level origin in meters.
+     * </p>
+     */
+    public static class ComponentPoseConfig {
+
+        /** Forward/backward offset in meters (positive = forward). */
+        public double componentPivotX = 0.0;
+
+        /** Left/right offset in meters (positive = left). */
+        public double componentPivotY = 0.0;
+
+        /** Vertical offset in meters (positive = up). */
+        public double componentPivotZ = 0.0;
+
+        /**
+         * Converts the configured pivot offsets to a WPILib Translation3d.
+         *
+         * @return translation representing the component pivot in meters
+         */
+        public Translation3d toTranslation3d() {
+            return new Translation3d(componentPivotX, componentPivotY, componentPivotZ);
+        }
+    }
+
     private static final String SMART_DASHBOARD_PREFIX = "SmartDashboard/";
 
     private static String computeDefaultDashboardPrefix(Class<?> clazz) {

@@ -10,6 +10,9 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
     /** Motor configuration bundle for the turret mechanism. */
     public TurretMotorConfig turretMotorConfig = new TurretMotorConfig();
 
+    /** 3D pivot offset for AdvantageScope component visualization. */
+    public ComponentPoseConfig componentPoseConfig = new ComponentPoseConfig();
+
     /**
      * Zero offset between the turret's mechanical zero and robot-forward in degrees.
      */

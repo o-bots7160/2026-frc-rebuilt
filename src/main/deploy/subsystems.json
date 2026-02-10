@@ -45,7 +45,12 @@
     "kD": 1.0,
     "kS": 0.30724,
     "kV": 6.3425,
-    "kA": 0.59712
+    "kA": 0.59712,
+    "componentPoseConfig": {
+      "componentPivotX": 0.205,
+      "componentPivotY": 0.0,
+      "componentPivotZ": 0.375
+    }
   },
   "robotStateSubsystem": {
     "enabled": true,

@@ -2,9 +2,9 @@
   "hubs": [
     {
       "x": 0,
-      "y": 30,
-      "width": 1920,
-      "height": 1050,
+      "y": 33,
+      "width": 1470,
+      "height": 923,
       "state": {
         "sidebar": {
           "width": 442,
@@ -60,8 +60,9 @@
             "/AdvantageKit/RealOutputs/DriveBaseSubsystem/Swerve",
             "/AdvantageKit/RealOutputs/DriveBaseSubsystem/SwerveChassisSpeeds",
             "/AdvantageKit/RealOutputs/DriveBaseSubsystem/SwerveStates",
-            "/AdvantageKit/RobotStateSubsystem",
-            "/AdvantageKit/RealOutputs"
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/TurretSubsystem",
+            "/AdvantageKit/RealOutputs/TurretSubsystem/componentPoses"
           ]
         },
         "tabs": {
@@ -228,7 +229,7 @@
                     "type": "stripes",
                     "logKey": "NT:SmartDashboard/TurretSubsystem/kP",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#2b66a2"
                     }
@@ -237,7 +238,7 @@
                     "type": "stripes",
                     "logKey": "NT:SmartDashboard/TurretSubsystem/kI",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#3b875a"
                     }
@@ -246,7 +247,7 @@
                     "type": "stripes",
                     "logKey": "NT:SmartDashboard/TurretSubsystem/kD",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#80588e"
                     }
@@ -381,13 +382,29 @@
                     "visible": true,
                     "options": {
                       "model": "2026 CA26"
-                    }
+                    },
+                    "children": [
+                      {
+                        "type": "component",
+                        "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/componentPoses",
+                        "logType": "Pose3d[]",
+                        "visible": true,
+                        "options": {}
+                      }
+                    ]
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/componentPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
                   },
                   {
                     "type": "ghost",
                     "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/LastVisionPose",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "model": "2026 CA26",
                       "color": "#ff0000"
@@ -397,7 +414,7 @@
                     "type": "ghost",
                     "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/OdometryOnlyPose",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "model": "2026 CA26",
                       "color": "#0000ff"
@@ -411,17 +428,17 @@
                 "cameraIndex": -2,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  2.3084331619827836,
-                  1.071850215468991,
-                  1.154216580991392
+                  1.3449929262263796,
+                  1.1766098222818442,
+                  0.19478115642207616
                 ],
                 "cameraTarget": [
-                  -0.7885436526679197,
-                  0.30466020627708434,
-                  -0.39427182633395996
+                  0,
+                  0.5,
+                  0
                 ]
               },
-              "controlsHeight": 200
+              "controlsHeight": 270
             },
             {
               "type": 2,
