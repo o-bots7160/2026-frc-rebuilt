@@ -30,10 +30,10 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
      * robot's current rotational velocity so the turret can lead its aim while the robot spins.
      * </p>
      *
-     * @param turretSubsystem                       turret subsystem to control
-     * @param robotStateSubsystem                   robot state subsystem providing the fused pose estimate
-     * @param targetFieldPositionSupplier            supplier of the field-relative target position in meters
-     * @param robotYawRateRadiansPerSecondSupplier   supplier of the robot's yaw rate in radians per second (positive is counter-clockwise)
+     * @param turretSubsystem                      turret subsystem to control
+     * @param robotStateSubsystem                  robot state subsystem providing the fused pose estimate
+     * @param targetFieldPositionSupplier          supplier of the field-relative target position in meters
+     * @param robotYawRateRadiansPerSecondSupplier supplier of the robot's yaw rate in radians per second (positive is counter-clockwise)
      */
     public TrackFieldTargetCommand(
             TurretSubsystem turretSubsystem,
@@ -41,15 +41,21 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
             Supplier<Translation2d> targetFieldPositionSupplier,
             Supplier<Double> robotYawRateRadiansPerSecondSupplier) {
         super(turretSubsystem);
-        this.robotStateSubsystem                     = robotStateSubsystem;
-        this.targetFieldPositionSupplier              = targetFieldPositionSupplier;
-        this.robotYawRateRadiansPerSecondSupplier     = robotYawRateRadiansPerSecondSupplier;
+        this.robotStateSubsystem                  = robotStateSubsystem;
+        this.targetFieldPositionSupplier          = targetFieldPositionSupplier;
+        this.robotYawRateRadiansPerSecondSupplier = robotYawRateRadiansPerSecondSupplier;
     }
 
     @Override
     public void execute() {
         updateTarget();
-        subsystem.seekTarget();
+
+        // Skip seeking when the turret is already within tolerance of the current target.
+        // This prevents the profile from continuously applying small corrections that
+        // cause the mechanism to stutter instead of settling cleanly.
+        if (!subsystem.isProfileSettled()) {
+            subsystem.seekTarget();
+        }
     }
 
     @Override
