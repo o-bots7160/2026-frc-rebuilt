@@ -25,6 +25,22 @@ Two standalone files also live at this level:
 - **`VisionMeasurementConsumer.java`** — a functional interface that vision
   subsystems use to push accepted pose measurements into robot state.
 
+## The motor subsystem hierarchy
+
+All motor-driven mechanisms share a three-tier base-class hierarchy:
+
+```
+AbstractSubsystem
+  └─ AbstractMotorSubsystem            (motor, feedforward, SysId)
+       ├─ AbstractSetAndSeekSubsystem   (position profiling — turret, etc.)
+       └─ AbstractVelocitySubsystem     (velocity control — shooter, etc.)
+```
+
+`AbstractMotorSubsystem` owns the `Motor` instance, motor inputs, feedforward
+model, and SysId routine. It refreshes motor config and feedforward gains each
+cycle (when not FMS-attached) and provides `applyVoltage()`, `stopMotor()`, and
+telemetry helpers that both branches inherit.
+
 ## The set-and-seek pattern
 
 Many mechanisms on an FRC robot follow the same workflow: receive a target
@@ -64,23 +80,68 @@ Command checks isProfileSettled()
   └─ true when position and velocity are within tolerance of the goal
 ```
 
+## The velocity pattern
+
+Flywheel-type mechanisms (shooter, etc.) follow a different workflow: receive a
+target velocity in RPM, ramp to it, and hold it steady. The subsystem reports
+"at target" once the measured RPM stays within tolerance for a configurable
+settle time.
+
+### How it flows
+
+```
+Command calls setTargetVelocityRpm(rpm)
+        │
+        ▼
+AbstractVelocitySubsystem
+  ├─ converts RPM → radians/sec
+  ├─ optionally steps a trapezoid profile for acceleration limiting
+  └─ stores as the velocity goal
+        │
+Command calls seekVelocity() each cycle
+        │
+        ▼
+AbstractVelocitySubsystem
+  ├─ reads motor inputs (position, velocity)
+  ├─ PID computes correction from setpoint vs. measured velocity
+  ├─ feedforward estimates the expected voltage for the target speed
+  └─ sends combined output to the motor
+        │
+        ▼
+Motor wrapper applies the voltage
+        │
+Command checks isAtTargetVelocity()
+  └─ true when |actual − target| < tolerance for settleTimeSeconds
+```
+
+### Units convention
+
+The public API uses RPM, which always refers to the **mechanism (flywheel)
+speed** — not the motor shaft speed. The gear ratio in the motor config handles
+the conversion. Internally, all WPILib math (PID, feedforward, profiles) runs in
+radians per second.
+
 ## Base classes reference
 
 ### Subsystem base classes (`subsystems/`)
 
-| Class                         | Extends                | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ----------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AbstractSubsystem`           | WPILib `SubsystemBase` | Shared foundation for every subsystem. Provides the config reference, a scoped logger, enable/disable gating, simulation awareness, and Driver Station error/warning helpers. Every subsystem constructor receives a config object and inherits `isSubsystemDisabled()` and `logDisabled()` for safety guards.                                                                                                                                                                              |
-| `AbstractSetAndSeekSubsystem` | `AbstractSubsystem`    | Adds a [trapezoidal motion profile](../GLOSSARY.md#trapezoidal-motion-profile), a [profiled PID](../GLOSSARY.md#profiled-pid) controller, and a [feedforward](../GLOSSARY.md#feedforward) model. Exposes `setTarget()`, `seekTarget()`, `isProfileSettled()`, `retargetFromCurrent()`, and `getSysIdRoutine()`. Owns a `Motor` instance and logs position, velocity, target, and setpoint each cycle. Refreshes gains from tunables when not FMS-attached so you can tune live in the pits. |
-| `SysIdHelper`                 | —                      | Static factory that builds a WPILib `SysIdRoutine` for characterizing a single motor. Used by command factories to expose [SysId](../GLOSSARY.md#sysid) commands.                                                                                                                                                                                                                                                                                                                           |
+| Class                         | Extends                  | Purpose                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AbstractSubsystem`           | WPILib `SubsystemBase`   | Shared foundation for every subsystem. Provides the config reference, a scoped logger, enable/disable gating, simulation awareness, and Driver Station error/warning helpers. Every subsystem constructor receives a config object and inherits `isSubsystemDisabled()` and `logDisabled()` for safety guards.                                                               |
+| `AbstractMotorSubsystem`      | `AbstractSubsystem`      | Owns a `Motor`, feedforward, and SysId routine shared by both position and velocity mechanisms. Refreshes motor config and feedforward gains when not FMS-attached. Provides `applyVoltage()`, `stopMotor()`, and position/velocity accessors in radians.                                                                                                                    |
+| `AbstractSetAndSeekSubsystem` | `AbstractMotorSubsystem` | Adds a [trapezoidal motion profile](../GLOSSARY.md#trapezoidal-motion-profile), a [profiled PID](../GLOSSARY.md#profiled-pid) controller, and position tracking. Exposes `setTarget()`, `seekTarget()`, `isProfileSettled()`, `retargetFromCurrent()`. Refreshes gains from tunables when not FMS-attached so you can tune live in the pits.                                 |
+| `AbstractVelocitySubsystem`   | `AbstractMotorSubsystem` | Adds a PID velocity controller with optional trapezoidal acceleration limiting. Exposes `setTargetVelocityRpm()`, `seekVelocity()`, `isAtTargetVelocity()`. Public API uses RPM (mechanism speed, not motor shaft speed); internal math uses radians per second. Timer-based settle detection ensures the target is held for a configurable duration before reporting ready. |
+| `SysIdHelper`                 | —                        | Static factory that builds a WPILib `SysIdRoutine` for characterizing a single motor. Used by command factories to expose [SysId](../GLOSSARY.md#sysid) commands.                                                                                                                                                                                                            |
 
 ### Command base classes (`commands/`)
 
-| Class                       | Extends                    | Purpose                                                                                                                                                                                                                                                                                        |
-| --------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AbstractSubsystemCommand`  | WPILib `Command`           | Ties a command to one subsystem, auto-registers the requirement, and logs when the command starts. Subclasses override lifecycle hooks.                                                                                                                                                        |
-| `AbstractSetAndSeekCommand` | `AbstractSubsystemCommand` | Drives a set-and-seek subsystem. On initialize, calls `setTarget()` from a supplier. On execute, calls `seekTarget()`. Finishes when `isProfileSettled()` returns true. On interrupt, schedules a `SetAndSeekSettleCommand` so the mechanism decelerates safely instead of stopping instantly. |
-| `SetAndSeekSettleCommand`   | `AbstractSubsystemCommand` | Deceleration command that runs after an `AbstractSetAndSeekCommand` is interrupted. Calls `retargetFromCurrent()` to bleed off velocity smoothly within a timeout.                                                                                                                             |
+| Class                         | Extends                    | Purpose                                                                                                                                                                                                                                                                                        |
+| ----------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AbstractSubsystemCommand`    | WPILib `Command`           | Ties a command to one subsystem, auto-registers the requirement, and logs when the command starts. Subclasses override lifecycle hooks.                                                                                                                                                        |
+| `AbstractSetAndSeekCommand`   | `AbstractSubsystemCommand` | Drives a set-and-seek subsystem. On initialize, calls `setTarget()` from a supplier. On execute, calls `seekTarget()`. Finishes when `isProfileSettled()` returns true. On interrupt, schedules a `SetAndSeekSettleCommand` so the mechanism decelerates safely instead of stopping instantly. |
+| `SetAndSeekSettleCommand`     | `AbstractSubsystemCommand` | Deceleration command that runs after an `AbstractSetAndSeekCommand` is interrupted. Calls `retargetFromCurrent()` to bleed off velocity smoothly within a timeout.                                                                                                                             |
+| `AbstractVelocityCommand`     | `AbstractSubsystemCommand` | Drives a velocity subsystem to a target RPM from a supplier. On initialize, sets the target; on execute, calls `seekVelocity()`. Finishes when `isAtTargetVelocity()` returns true. On end, reverts to idle RPM or stops the motor depending on the interruption flag.                         |
+| `AbstractIdleVelocityCommand` | `AbstractSubsystemCommand` | Default command that holds a velocity subsystem at its configured idle RPM. Never finishes on its own — runs until interrupted by a higher-priority command.                                                                                                                                   |
 
 ### Command factory base classes (`commands/`)
 
@@ -88,17 +149,20 @@ Command checks isProfileSettled()
 | ---------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AbstractSubsystemCommandFactory`  | —                                 | Base factory holding a subsystem reference. Each subsystem's `commands/` folder has a concrete factory that extends this to keep command creation out of the subsystem class. |
 | `AbstractSetAndSeekCommandFactory` | `AbstractSubsystemCommandFactory` | Adds SysId command builders (quasistatic and dynamic, forward and reverse, with configurable timeouts) so every profiled mechanism gets characterization commands for free.   |
+| `AbstractVelocityCommandFactory`   | `AbstractSubsystemCommandFactory` | Adds SysId command builders for velocity mechanisms, mirroring the set-and-seek factory pattern.                                                                              |
 
 ### Config base classes (`config/`)
 
-| Class                               | Extends          | Purpose                                                                                                                                                                                                                                                                                                                                                                              |
-| ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `AbstractConfig`                    | —                | Base for all config bundles. Provides `enabled` and `verbose` flags, and [tunable](../GLOSSARY.md#tunable) readers (`readTunableNumber`, `readTunableBoolean`, `readTunableString`, `readTunableDegrees`, `readTunableDegreesAsRadians`) backed by [AdvantageKit](../GLOSSARY.md#advantagekit). When the robot is FMS-attached, tunables short-circuit to their defaults for safety. |
-| `AbstractSetAndSeekSubsystemConfig` | `AbstractConfig` | Adds fields for setpoint limits, velocity/acceleration limits, position/velocity tolerances, initial state, and [PID](../GLOSSARY.md#pid)/[feedforward](../GLOSSARY.md#feedforward) gains — all stored in degrees with radian getters. Every value is live-tunable on the dashboard.                                                                                                 |
-| `AbstractMotorConfig`               | `AbstractConfig` | Motor-level config: [CAN](../GLOSSARY.md#can-bus) ID, inversion, current limits, [gear ratio](../GLOSSARY.md#gear-ratio), and [soft limits](../GLOSSARY.md#soft-limit) in degrees.                                                                                                                                                                                                   |
-| `ConfigurationLoader`               | —                | Reads JSON config files from the `deploy/` folder and deserializes them into config objects.                                                                                                                                                                                                                                                                                         |
-| `SubsystemsConfig`                  | —                | Top-level config class that holds one config object per subsystem. Loaded from `subsystems.json` (or `subsystems-sim.json` / `subsystems-test.json`).                                                                                                                                                                                                                                |
-| `FieldLayoutConfig`                 | —                | Supplies the AprilTag field layout used by vision and robot state.                                                                                                                                                                                                                                                                                                                   |
+| Class                               | Extends                        | Purpose                                                                                                                                                                                                                                                                                                                                                                              |
+| ----------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `AbstractConfig`                    | —                              | Base for all config bundles. Provides `enabled` and `verbose` flags, and [tunable](../GLOSSARY.md#tunable) readers (`readTunableNumber`, `readTunableBoolean`, `readTunableString`, `readTunableDegrees`, `readTunableDegreesAsRadians`) backed by [AdvantageKit](../GLOSSARY.md#advantagekit). When the robot is FMS-attached, tunables short-circuit to their defaults for safety. |
+| `AbstractMotorSubsystemConfig`      | `AbstractConfig`               | Shared PID (kP, kI, kD) and feedforward (kS, kV, kA) gains with tunable getters. Used by both set-and-seek and velocity subsystem configs.                                                                                                                                                                                                                                           |
+| `AbstractSetAndSeekSubsystemConfig` | `AbstractMotorSubsystemConfig` | Adds fields for setpoint limits, velocity/acceleration limits, position/velocity tolerances, initial state — all stored in degrees with radian getters. Every value is live-tunable on the dashboard.                                                                                                                                                                                |
+| `AbstractVelocitySubsystemConfig`   | `AbstractMotorSubsystemConfig` | Adds RPM velocity/acceleration limits, velocity tolerance, settle time, and idle RPM. Public API in RPM with internal rad/s conversion helpers.                                                                                                                                                                                                                                      |
+| `AbstractMotorConfig`               | `AbstractConfig`               | Motor-level config: [CAN](../GLOSSARY.md#can-bus) ID, inversion, current limits, [gear ratio](../GLOSSARY.md#gear-ratio), and [soft limits](../GLOSSARY.md#soft-limit) in degrees.                                                                                                                                                                                                   |
+| `ConfigurationLoader`               | —                              | Reads JSON config files from the `deploy/` folder and deserializes them into config objects.                                                                                                                                                                                                                                                                                         |
+| `SubsystemsConfig`                  | —                              | Top-level config class that holds one config object per subsystem. Loaded from `subsystems.json` (or `subsystems-sim.json` / `subsystems-test.json`).                                                                                                                                                                                                                                |
+| `FieldLayoutConfig`                 | —                              | Supplies the AprilTag field layout used by vision and robot state.                                                                                                                                                                                                                                                                                                                   |
 
 ### Disabled-subsystem lifecycle
 

@@ -1,63 +1,42 @@
 package frc.robot.shared.subsystems;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.devices.motor.DisabledMotor;
 import frc.robot.devices.motor.Motor;
-import frc.robot.devices.motor.MotorIOInputsAutoLogged;
 import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
 
 /**
  * Base subsystem that generates and follows a trapezoidal motion profile.
  * <p>
  * Concrete mechanisms should extend this class to gain a simple "set and seek" API: call {@link #setTarget(double)} to define a goal and repeatedly
- * call {@link #seekTarget()} from a command to step the profile forward. Motor control is intentionally left as a no-op so hardware bindings can be
- * added later.
+ * call {@link #seekTarget()} from a command to step the profile forward. Motor control, feedforward, SysId support, and AdvantageKit input logging
+ * are provided by the {@link AbstractMotorSubsystem} parent class.
  * </p>
  */
-public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAndSeekSubsystemConfig> extends AbstractSubsystem<TConfig> {
-    /**
-     * Motor used to drive the set-and-seek mechanism.
-     */
-    protected final Motor                   motor;
-
-    /**
-     * Logged motor inputs snapshot used for telemetry and replay.
-     */
-    protected final MotorIOInputsAutoLogged motorInputs = new MotorIOInputsAutoLogged();
+public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAndSeekSubsystemConfig>
+        extends AbstractMotorSubsystem<TConfig> {
 
     /**
      * Trapezoid constraints that bound velocity and acceleration.
      */
-    protected TrapezoidProfile.Constraints  constraints;
+    protected TrapezoidProfile.Constraints constraints;
 
     /**
      * Profiled PID controller that tracks the trapezoid setpoint.
      */
-    protected final ProfiledPIDController   controller;
-
-    /**
-     * Feedforward model used to estimate needed voltage.
-     */
-    protected SimpleMotorFeedforward        feedforward;
+    protected final ProfiledPIDController  controller;
 
     /**
      * Desired goal state for the trapezoid profile.
      */
-    protected TrapezoidProfile.State        goalState;
+    protected TrapezoidProfile.State       goalState;
 
     /**
      * Current setpoint state produced by the trapezoid profile.
      */
-    protected TrapezoidProfile.State        setpointState;
-
-    private final SysIdRoutine              sysIdRoutine;
+    protected TrapezoidProfile.State       setpointState;
 
     /**
      * Creates a profiled subsystem with bounded setpoints, motion constraints, and a single motor.
@@ -66,9 +45,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      * @param motor  Motor controller that reports position/velocity and accepts duty-cycle commands, or null to use a disabled no-op motor.
      */
     protected AbstractSetAndSeekSubsystem(TConfig config, Motor motor) {
-        super(config);
-        // Use a no-op motor when hardware is absent so the subsystem can still run safely in sim or disabled mode.
-        this.motor  = motor != null ? motor : new DisabledMotor();
+        super(config, motor);
 
         // Trapezoid profile constraints define the max cruise speed and acceleration for smooth motion.
         constraints = new TrapezoidProfile.Constraints(
@@ -88,12 +65,6 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
                 config.getPositionToleranceRadians(),
                 config.getVelocityToleranceRadiansPerSecond());
 
-        // Feedforward estimates the voltage needed to maintain a desired velocity/acceleration.
-        feedforward = new SimpleMotorFeedforward(
-                config.getkS(),
-                config.getkV(),
-                config.getkA());
-
         // Seed the profile with the configured starting position/velocity so the first update is stable.
         double initialPosition = config.getInitialPositionRadians();
         double initialVelocity = config.getInitialVelocityRadiansPerSecond();
@@ -105,28 +76,18 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         // Reset the controller to the current state and then give it the initial goal.
         controller.reset(initialPosition, initialVelocity);
         controller.setGoal(goalState);
-
-        // SysId routine is used by characterization commands to identify feedforward gains.
-        sysIdRoutine = SysIdHelper.createSimpleRoutine(
-                this,
-                className + "/motor",
-                this.motor::setVoltage,
-                this.motor::getVoltage,
-                () -> this.motor.updateInputs(motorInputs),
-                () -> motorInputs.positionRadians,
-                () -> motorInputs.velocityRadPerSec);
     }
 
     /**
-     * Refreshes motor configuration when not attached to the FMS.
+     * Refreshes motor configuration and profile constraints when not attached to the FMS.
      * <p>
      * Override this if you need additional periodic behavior, but call {@code super.periodic()} to keep live tuning updates active.
      * </p>
      */
     @Override
     public void periodic() {
+        super.periodic();
         if (!isFMSAttached()) {
-            motor.refreshConfiguration();
             refreshConstraints();
         }
     }
@@ -169,8 +130,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         }
 
         // Refresh sensor data and log it before we compute the next setpoint.
-        motor.updateInputs(motorInputs);
-        log.processInputs("motor", motorInputs);
+        updateAndLogMotorInputs();
 
         // Use the profiled PID to calculate the next output from the current position.
         double measuredPosition         = getMeasuredPosition();
@@ -204,42 +164,10 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
-     * Exposes the underlying SysId routine so command factories can build characterization commands without subsystems manufacturing commands.
-     *
-     * @return configured SysId routine for the primary motor
+     * Hook for subclasses to respond when a seek command is interrupted. Default implementation stops the motor.
      */
-    public SysIdRoutine getSysIdRoutine() {
-        return sysIdRoutine;
-    }
-
-    /**
-     * Logs the start of a SysId routine for operator awareness.
-     * <p>
-     * Call this once before running a SysId command sequence so the console reflects the upcoming characterization sweep.
-     * </p>
-     */
-    public void logSysIdStart() {
-        log.info("Start SysID Routine");
-    }
-
-    /**
-     * Logs the successful completion of a SysId routine.
-     * <p>
-     * Call this after a SysId command finishes to confirm the characterization sweep completed.
-     * </p>
-     */
-    public void logSysIdEnd() {
-        log.info("End SysID Routine");
-    }
-
-    /**
-     * Logs when a SysId routine is interrupted before completion.
-     * <p>
-     * Call this when a SysId command is cancelled or interrupted so operators know the sweep did not finish.
-     * </p>
-     */
-    public void logSysIdInterrupted() {
-        log.warning("Interrupted SysID Routine");
+    public void handleSeekInterrupted() {
+        stopMotor();
     }
 
     /**
@@ -280,13 +208,6 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
-     * Hook for subclasses to respond when a seek command is interrupted. Default implementation stops the motor.
-     */
-    public void handleSeekInterrupted() {
-        motor.stop();
-    }
-
-    /**
      * Returns the current measured position in degrees.
      * <p>
      * Delegates to {@link #getMeasuredPosition()} and converts from radians. Use this for external consumers such as suppliers and telemetry.
@@ -305,27 +226,25 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      * @param voltageCommand requested motor voltage in volts before clamping
      */
     protected void applySetpoint(TrapezoidProfile.State setpoint, double voltageCommand) {
-        edu.wpi.first.units.measure.Voltage clampedVoltage = Volts.of(
-                MathUtil.clamp(voltageCommand, -12.0, 12.0));
-        motor.setVoltage(clampedVoltage);
+        applyVoltage(voltageCommand);
     }
 
     /**
      * Provides the measured mechanism position. Override to read from an encoder or other sensor.
      *
-     * @return The current measured position in radians. Defaults to the profiled setpoint for simulation-only usage.
+     * @return The current measured position in radians. Defaults to the motor's reported position.
      */
     protected double getMeasuredPosition() {
-        return motor.getPositionRadians();
+        return getMeasuredPositionRadians();
     }
 
     /**
      * Provides the measured mechanism velocity. Override to read from an encoder or other sensor.
      *
-     * @return The current measured velocity in radians per second. Defaults to the profiled setpoint velocity.
+     * @return The current measured velocity in radians per second. Defaults to the motor's reported velocity.
      */
     protected double getMeasuredVelocity() {
-        return motor.getVelocityRadiansPerSecond();
+        return getMeasuredVelocityRadiansPerSecond();
     }
 
     private void refreshConstraints() {
@@ -344,11 +263,5 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         controller.setTolerance(
                 config.getPositionToleranceRadians(),
                 config.getVelocityToleranceRadiansPerSecond());
-
-        // Refresh feedforward gains so voltage estimates track live tuning updates.
-        feedforward = new SimpleMotorFeedforward(
-                config.getkS(),
-                config.getkV(),
-                config.getkA());
     }
 }

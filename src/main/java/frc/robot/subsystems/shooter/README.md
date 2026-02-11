@@ -10,68 +10,87 @@ scoring zones.
 
 ## How it works
 
-<!-- TODO: fill in when hardware decisions are made -->
+The shooter uses a single flywheel wheel driven by a REV SparkMax motor
+controller. A [feedforward](../../GLOSSARY.md#feedforward) term maintains the
+target velocity, and a [PID](../../GLOSSARY.md#pid) controller corrects for
+disturbances when the [indexer](../indexer/README.md) loads a piece and
+momentarily slows the wheel.
 
-The shooter uses one or more flywheel wheels driven by motors. A
-[feedforward](../../GLOSSARY.md#feedforward) term maintains the target velocity,
-and a [PID](../../GLOSSARY.md#pid) controller corrects for disturbances when the
-[indexer](../indexer/README.md) loads a piece and momentarily slows the wheels.
+### Units convention
 
-Planned behaviors:
+The public API uses **RPM** (revolutions per minute) for all velocity values.
+Internally, the subsystem converts to **radians per second** for WPILib math
+(PID controllers, feedforward, trapezoidal profiles). RPM always refers to the
+**mechanism (flywheel) speed**, not the motor shaft speed. The gear ratio in
+`ShooterMotorConfig.motorRotationsPerMechanismRotation` handles the conversion
+between the two.
+
+### Key behaviors
 
 - **Spin-up to target** — commands set a target RPM and the shooter ramps to it
-  using a
-  [trapezoidal motion profile](../../GLOSSARY.md#trapezoidal-motion-profile) or
-  direct velocity control.
-- **Ready-to-fire signal** — a boolean that goes true when the actual RPM is
-  within a configurable tolerance of the target and has been stable for a
-  minimum time. The [indexer](../indexer/README.md) and autonomous commands wait
-  on this signal before feeding.
-- **Distance presets** — pre-tuned RPM values for common scoring distances so
-  drivers can select them quickly.
-- **Spin-down/idle** — when no shot is requested the shooter drops to idle speed
-  to save battery, with a quick-spool option for defense-heavy cycles where
-  reaction time matters.
-- **Reverse** — runs wheels backward for clearing stuck pieces.
+  using a PID controller plus feedforward. An optional
+  [trapezoidal motion profile](../../GLOSSARY.md#trapezoidal-motion-profile)
+  limits acceleration for smoother spool-up.
+- **Ready-to-fire signal** — `isReadyToFire()` returns true when the measured
+  RPM is within `velocityToleranceRpm` of the target and has been stable for at
+  least `settleTimeSeconds`. The [indexer](../indexer/README.md) and autonomous
+  commands wait on this signal before feeding.
+- **Idle** — when no shot is requested, the default `IdleShooterCommand` holds
+  the flywheel at `idleVelocityRpm` so re-spool is fast.
+- **Reverse** — `reverseVelocityRpm` config field allows backward spin for
+  clearing stuck pieces (command not yet wired).
+
+## Inheritance
+
+The shooter extends the shared velocity abstraction layer:
+
+```
+AbstractSubsystem
+  └─ AbstractMotorSubsystem        (motor, feedforward, SysId)
+       └─ AbstractVelocitySubsystem  (PID velocity control, settle detection)
+            └─ ShooterSubsystem       (concrete flywheel logic)
+```
 
 ## Configuration
 
-<!-- TODO: add config fields and tunables once hardware is selected -->
+Settings live in `subsystems.json` under `shooterSubsystem`:
 
-Expected settings (to be added to `subsystems.json`):
-
-| Setting                                             | Units                        | Purpose                                                 |
-| --------------------------------------------------- | ---------------------------- | ------------------------------------------------------- |
-| `enabled`                                           | —                            | Master enable flag                                      |
-| target RPMs                                         | [RPM](../../GLOSSARY.md#rpm) | Preset velocities for each scoring distance             |
-| RPM tolerance                                       | RPM                          | Window around target that counts as "ready"             |
-| settle time                                         | seconds                      | How long RPM must stay in tolerance before ready signal |
-| [feedforward](../../GLOSSARY.md#feedforward) kS, kV | volts, volts·s/rotation      | Static friction and velocity gains                      |
-| [PID](../../GLOSSARY.md#pid) kP, kI, kD             | —                            | Velocity controller gains                               |
+| Setting                           | Units   | Purpose                                                 |
+| --------------------------------- | ------- | ------------------------------------------------------- |
+| `enabled`                         | —       | Master enable flag                                      |
+| `maximumVelocityRpm`              | RPM     | Maximum safe flywheel speed                             |
+| `maximumAccelerationRpmPerSecond` | RPM/s   | Acceleration limit for the trapezoidal ramp             |
+| `velocityToleranceRpm`            | RPM     | Window around target that counts as "ready"             |
+| `settleTimeSeconds`               | seconds | How long RPM must stay in tolerance before ready signal |
+| `idleVelocityRpm`                 | RPM     | Default idle speed between shots                        |
+| `reverseVelocityRpm`              | RPM     | Reverse speed for clearing jams                         |
+| `kS`, `kV`, `kA`                  | volts   | Feedforward gains                                       |
+| `kP`, `kI`, `kD`                  | —       | PID velocity controller gains                           |
 
 ## Code structure
 
-<!-- TODO: update when classes are added -->
-
-Planned files:
-
-| File                                  | Purpose                                                                                   |
-| ------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `ShooterSubsystem.java`               | Subsystem managing flywheel velocity and ready-to-fire state                              |
-| `commands/ShooterCommandFactory.java` | Factory for spin-up, idle, preset, and reverse commands                                   |
-| `config/ShooterSubsystemConfig.java`  | Configuration and [tunables](../../GLOSSARY.md#tunable)                                   |
-| `io/ShooterIO.java`                   | [IO](../../GLOSSARY.md#io-inputoutput) interface for flywheel motors and velocity sensors |
+| File                                           | Purpose                                                          |
+| ---------------------------------------------- | ---------------------------------------------------------------- |
+| `ShooterSubsystem.java`                        | Concrete subsystem managing flywheel velocity and ready-to-fire  |
+| `commands/ShooterSubsystemCommandFactory.java` | Factory for spin-up, idle, stop, and SysId commands              |
+| `commands/SpinUpShooterCommand.java`           | Command that drives the flywheel to a target RPM                 |
+| `commands/IdleShooterCommand.java`             | Default command holding idle RPM                                 |
+| `config/ShooterSubsystemConfig.java`           | Configuration bundle extending `AbstractVelocitySubsystemConfig` |
+| `config/ShooterMotorConfig.java`               | Motor-level config (CAN ID, inversion, current limits)           |
+| `devices/ShooterMotor.java`                    | Real-hardware motor wrapper for SparkMax                         |
+| `devices/ShooterSimMotor.java`                 | Simulation motor wrapper                                         |
 
 ## Status / TODO
 
 ### Done
 
-- README and folder structure created.
+- Subsystem, commands, config, and device wrappers implemented.
+- Wired in `RobotContainer` and added to `subsystems.json`.
+- Operator right-bumper test binding for spin-up at 3000 RPM.
+- SysId sweep available on operator Y button.
 
 ### TODO
 
-- Choose wheel count, motor types, and sensors.
-- Create IO interface and config class.
-- Implement velocity control with feedforward + PID.
-- Add distance-based RPM presets with tuning support.
-- Wire subsystem in `RobotContainer` and add to `subsystems.json`.
+- Tune PID and feedforward gains on real hardware.
+- Add distance-based RPM lookup via supplier.
+- Wire reverse command to operator binding.

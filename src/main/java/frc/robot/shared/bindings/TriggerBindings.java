@@ -3,6 +3,7 @@ package frc.robot.shared.bindings;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
+import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
 /**
@@ -77,20 +78,28 @@ public class TriggerBindings {
     private final TurretSubsystemCommandFactory    turretCommandFactory;
 
     /**
+     * Factory that creates shooter commands tied to operator buttons.
+     */
+    private final ShooterSubsystemCommandFactory   shooterCommandFactory;
+
+    /**
      * Creates trigger bindings with the default driver controller port.
      *
      * @param driveBaseCommandFactory factory for creating drive base commands
      * @param triggerBindingsConfig   configuration for per-axis stick sensitivity
      * @param turretCommandFactory    factory for creating turret commands
+     * @param shooterCommandFactory   factory for creating shooter commands
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
             TriggerBindingsConfig triggerBindingsConfig,
-            TurretSubsystemCommandFactory turretCommandFactory) {
+            TurretSubsystemCommandFactory turretCommandFactory,
+            ShooterSubsystemCommandFactory shooterCommandFactory) {
         this(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
                 turretCommandFactory,
+                shooterCommandFactory,
                 DEFAULT_DRIVE_CONTROLLER_PORT,
                 DEFAULT_OPERATOR_CONTROLLER_PORT);
     }
@@ -101,6 +110,7 @@ public class TriggerBindings {
      * @param driveBaseCommandFactory factory for creating drive base commands
      * @param triggerBindingsConfig   configuration for per-axis stick sensitivity
      * @param turretCommandFactory    factory for creating turret commands
+     * @param shooterCommandFactory   factory for creating shooter commands
      * @param driverControllerPort    USB port for the driver controller
      * @param operatorControllerPort  USB port for the operator controller
      */
@@ -108,16 +118,19 @@ public class TriggerBindings {
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
             TriggerBindingsConfig triggerBindingsConfig,
             TurretSubsystemCommandFactory turretCommandFactory,
+            ShooterSubsystemCommandFactory shooterCommandFactory,
             int driverControllerPort,
             int operatorControllerPort) {
         this.driveBaseCommandFactory = driveBaseCommandFactory;
         this.triggerBindingsConfig   = triggerBindingsConfig;
         this.turretCommandFactory    = turretCommandFactory;
+        this.shooterCommandFactory   = shooterCommandFactory;
         this.driverController        = new CommandXboxController(driverControllerPort);
         this.operatorController      = new CommandXboxController(operatorControllerPort);
 
         configureDriveControllerBindings();
         configureTurretBindings();
+        configureShooterBindings();
     }
 
     private void configureDriveControllerBindings() {
@@ -169,6 +182,18 @@ public class TriggerBindings {
         }
 
         return 1.0;
+    }
+
+    private void configureShooterBindings() {
+        // Hold right bumper to spin the shooter up to a fixed test RPM.
+        operatorController.rightBumper().whileTrue(
+                shooterCommandFactory.createSpinUpCommand(3000.0));
+
+        operatorController.y().whileTrue(
+                shooterCommandFactory.createSysIdFullSweepCommand(
+                        SYSID_DELAY_SECONDS,
+                        SYSID_QUASISTATIC_TIMEOUT_SECONDS,
+                        SYSID_DYNAMIC_TIMEOUT_SECONDS));
     }
 
     private void configureTurretBindings() {

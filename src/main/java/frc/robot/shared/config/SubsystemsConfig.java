@@ -5,6 +5,7 @@ import frc.robot.subsystems.apriltagvision.config.AprilTagVisionSubsystemConfig;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
+import frc.robot.subsystems.shooter.config.ShooterSubsystemConfig;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
 
 /**
@@ -16,12 +17,17 @@ public class SubsystemsConfig {
     /**
      * Drive base configuration bundle.
      */
-    public DriveBaseSubsystemConfig driveBaseSubsystem = new DriveBaseSubsystemConfig();
+    public DriveBaseSubsystemConfig      driveBaseSubsystem      = new DriveBaseSubsystemConfig();
 
     /**
      * Turret configuration bundle.
      */
-    public TurretSubsystemConfig    turretSubsystem    = new TurretSubsystemConfig();
+    public TurretSubsystemConfig         turretSubsystem         = new TurretSubsystemConfig();
+
+    /**
+     * Shooter configuration bundle.
+     */
+    public ShooterSubsystemConfig        shooterSubsystem        = new ShooterSubsystemConfig();
 
     /**
      * AprilTag vision configuration bundle.
@@ -31,15 +37,15 @@ public class SubsystemsConfig {
     /**
      * Driver camera configuration bundle.
      */
-    public DriverCameraSubsystemConfig driverCameraSubsystem = new DriverCameraSubsystemConfig();
+    public DriverCameraSubsystemConfig   driverCameraSubsystem   = new DriverCameraSubsystemConfig();
 
     /**
      * Robot state configuration bundle.
      */
-    public RobotStateSubsystemConfig robotStateSubsystem = new RobotStateSubsystemConfig();
+    public RobotStateSubsystemConfig     robotStateSubsystem     = new RobotStateSubsystemConfig();
 
     /**
      * Trigger bindings configuration bundle for driver controller sensitivity.
      */
-    public TriggerBindingsConfig triggerBindings = new TriggerBindingsConfig();
+    public TriggerBindingsConfig         triggerBindings         = new TriggerBindingsConfig();
 }

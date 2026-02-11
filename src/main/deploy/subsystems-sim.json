@@ -52,6 +52,33 @@
       "componentPivotZ": 0.375
     }
   },
+  "shooterSubsystem": {
+    "enabled": true,
+    "verbose": true,
+    "shooterMotorConfig": {
+      "enabled": true,
+      "verbose": true,
+      "useSetpointLimits": false,
+      "motorCanId": 56,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 1.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 0.0
+    },
+    "maximumVelocityRpm": 5000.0,
+    "maximumAccelerationRpmPerSecond": 2500.0,
+    "velocityToleranceRpm": 50.0,
+    "settleTimeSeconds": 0.25,
+    "idleVelocityRpm": 500.0,
+    "reverseVelocityRpm": 1000.0,
+    "kP": 0.05,
+    "kI": 0.0,
+    "kD": 0.0,
+    "kS": 0.1,
+    "kV": 0.0229,
+    "kA": 0.01
+  },
   "robotStateSubsystem": {
     "enabled": true,
     "verbose": false,
