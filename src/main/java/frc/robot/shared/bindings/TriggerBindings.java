@@ -38,17 +38,17 @@ public class TriggerBindings {
     /**
      * Delay before system identification begins in seconds.
      */
-    private static final double                    SYSID_DELAY_SECONDS               = 1.0;
+    private static final double                    SYSID_DELAY_SECONDS               = 20.0;
 
     /**
      * Timeout for the quasistatic (slow ramp) portion of system identification in seconds.
      */
-    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 8.0;
+    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 10.0;
 
     /**
      * Timeout for the dynamic (step voltage) portion of system identification in seconds.
      */
-    private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 3.0;
+    private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 10.0;
 
     /**
      * Driver gamepad used for manual driving.
@@ -206,10 +206,10 @@ public class TriggerBindings {
 
     private void configureShooterBindings() {
         // Hold right bumper to spin the shooter up to a fixed test RPM.
-        operatorController.rightBumper().whileTrue(
+        driverController.rightBumper().whileTrue(
                 shooterCommandFactory.createSpinUpCommand(3000.0));
 
-        operatorController.y().whileTrue(
+        driverController.y().whileTrue(
                 shooterCommandFactory.createSysIdFullSweepCommand(
                         SYSID_DELAY_SECONDS,
                         SYSID_QUASISTATIC_TIMEOUT_SECONDS,
