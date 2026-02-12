@@ -72,11 +72,6 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
     public double pathRotationKd;
 
     /**
-     * Driver translation scale from 0 to 1.
-     */
-    public double translationScale;
-
-    /**
      * Additional translation scale applied in simulation.
      */
     public double simulationTranslationScale;
@@ -131,15 +126,6 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
      */
     public Supplier<Double> getHeadingKd() {
         return () -> readTunableNumber("headingKd", headingKd);
-    }
-
-    /**
-     * Supplies the joystick translation scale.
-     *
-     * @return supplier yielding the current translation scale (0–1)
-     */
-    public Supplier<Double> getTranslationScale() {
-        return () -> readTunableNumber("translationScale", translationScale);
     }
 
     /**

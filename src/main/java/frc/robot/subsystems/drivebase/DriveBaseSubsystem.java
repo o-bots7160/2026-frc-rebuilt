@@ -26,7 +26,6 @@ import frc.robot.subsystems.drivebase.io.DriveBaseIOInputsAutoLogged;
 import frc.robot.subsystems.drivebase.io.DriveBaseIOYagsl;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
-import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -36,14 +35,6 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
  * driving and pose targeting so commands can focus on higher-level logic.
  */
 public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConfig> {
-
-    /**
-     * Deadband size for joystick inputs.
-     * <p>
-     * Values inside this range are treated as zero to ignore tiny stick noise.
-     * </p>
-     */
-    private static final double               JOYSTICK_DEADBAND      = 0.08;
 
     private final Translation2d               centerOfRotationMeters = new Translation2d();
 
@@ -261,11 +252,11 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Converts raw driver axes into scaled translation speeds in meters per second. Use this to keep joystick shaping, deadband, and telemetry in one
-     * place.
+     * Converts pre-shaped driver axes into scaled translation speeds in meters per second. The input values should already have deadband and response
+     * curve processing applied by TriggerBindings.
      *
-     * @param forwardAxis forward stick value (+X on the field)
-     * @param leftAxis    left stick value (+Y on the field)
+     * @param forwardAxis shaped forward stick value (+X on the field), in the range [-1, 1]
+     * @param leftAxis    shaped left stick value (+Y on the field), in the range [-1, 1]
      * @return translation request in meters per second for field-relative driving
      */
     public Translation2d mapDriverTranslation(double forwardAxis, double leftAxis) {
@@ -274,47 +265,39 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         // field -X, so we negate both translation axes to keep the controls driver-relative.
         // Evaluated every cycle so it adapts if the alliance changes during simulation or is
         // assigned late by the FMS.
-        double        allianceSign      = isRedAlliance() ? -1.0 : 1.0;
+        double        allianceSign    = isRedAlliance() ? -1.0 : 1.0;
 
-        // Raw inputs: invert for driver preference, apply alliance correction, and clamp to the joystick's legal range.
-        double        rawForward        = MathUtil.clamp(-forwardAxis * allianceSign, -1.0, 1.0);
-        double        rawLeft           = MathUtil.clamp(-leftAxis * allianceSign, -1.0, 1.0);
-
-        // Deadband: ignore tiny stick noise near center so the robot stays still when hands are off.
-        double        deadbandedForward = MathUtil.applyDeadband(rawForward, JOYSTICK_DEADBAND);
-        double        deadbandedLeft    = MathUtil.applyDeadband(rawLeft, JOYSTICK_DEADBAND);
+        // Apply alliance correction and invert for driver preference, then clamp to the legal range.
+        double        adjustedForward = MathUtil.clamp(-forwardAxis * allianceSign, -1.0, 1.0);
+        double        adjustedLeft    = MathUtil.clamp(-leftAxis * allianceSign, -1.0, 1.0);
 
         // Vectorize: combine forward/left into a 2D translation request in joystick space.
-        Translation2d rawVector         = new Translation2d(deadbandedForward, deadbandedLeft);
+        Translation2d rawVector       = new Translation2d(adjustedForward, adjustedLeft);
 
-        // Scaling: limit how aggressive the driver translation feels (0 = no motion, 1 = full speed).
-        double        translationScale  = MathUtil.clamp(config.getTranslationScale().get(), 0.0, 1.0);
+        // Normalize: cap the vector magnitude to 1.0 so diagonal inputs (forward + left at full
+        // deflection) do not exceed the maximum speed. Without this, a full diagonal would have
+        // magnitude sqrt(2) and overshoot the speed limit.
+        double        magnitude         = rawVector.getNorm();
+        Translation2d clampedVector     = magnitude > 1.0 ? rawVector.div(magnitude) : rawVector;
         double        simulationScale   = 1.0;
 
         // Simulation: optionally tone down speeds and increase telemetry detail to help debugging.
         if (isSimulation()) {
-            simulationScale  = MathUtil.clamp(config.getSimulationTranslationScale().get(), 0.0, 1.0);
-            translationScale = translationScale * simulationScale;
+            simulationScale = MathUtil.clamp(config.getSimulationTranslationScale().get(), 0.0, 1.0);
         }
 
-        // Shape and scale the translation while preserving direction (prevents diagonal overspeed).
-        Translation2d scaledVector    = SwerveMath.scaleTranslation(rawVector, translationScale);
-
         // Convert the unitless vector into real robot speeds in meters per second.
-        Translation2d commandedSpeeds = new Translation2d(
-                scaledVector.getX() * config.getMaximumLinearSpeedMetersPerSecond().get(),
-                scaledVector.getY() * config.getMaximumLinearSpeedMetersPerSecond().get());
+        double        maxSpeed          = config.getMaximumLinearSpeedMetersPerSecond().get();
+        Translation2d commandedSpeeds   = new Translation2d(
+                clampedVector.getX() * simulationScale * maxSpeed,
+                clampedVector.getY() * simulationScale * maxSpeed);
 
         // Telemetry: record all driver input stages for tuning and debugging (non-essential during matches).
         log.recordVerboseOutput("DriverInputs/allianceSign", allianceSign);
-        log.recordVerboseOutput("DriverInputs/forward/raw", rawForward);
-        log.recordVerboseOutput("DriverInputs/forward/deadbanded", deadbandedForward);
-        log.recordVerboseOutput("DriverInputs/left/raw", rawLeft);
-        log.recordVerboseOutput("DriverInputs/left/deadbanded", deadbandedLeft);
-        log.recordVerboseOutput("DriverInputs/translation/scale", translationScale);
+        log.recordVerboseOutput("DriverInputs/forward/adjusted", adjustedForward);
+        log.recordVerboseOutput("DriverInputs/left/adjusted", adjustedLeft);
+        log.recordVerboseOutput("DriverInputs/translation/vectorMagnitude", magnitude);
         log.recordVerboseOutput("DriverInputs/translation/simulationScale", simulationScale);
-        log.recordVerboseOutput("DriverInputs/translation/scaledX", scaledVector.getX());
-        log.recordVerboseOutput("DriverInputs/translation/scaledY", scaledVector.getY());
         log.recordVerboseOutput("DriverInputs/translation/commandedX", commandedSpeeds.getX());
         log.recordVerboseOutput("DriverInputs/translation/commandedY", commandedSpeeds.getY());
 
@@ -337,21 +320,18 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Converts a raw driver omega axis into a scaled angular speed in radians per second. Use this so all deadbanding and scaling stays in the
-     * subsystem.
+     * Converts a pre-shaped driver omega axis into a scaled angular speed in radians per second. The input value should already have deadband and
+     * response curve processing applied by TriggerBindings.
      * <p>
      * Omega is the robot's rotational velocity around the vertical axis, measured in radians per second.
      * </p>
      *
-     * @param omegaAxis rotation stick value (positive for counter-clockwise)
+     * @param omegaAxis shaped rotation stick value (positive for counter-clockwise), in the range [-1, 1]
      * @return angular velocity request in radians per second
      */
     public double mapDriverOmega(double omegaAxis) {
-        // Raw input: invert for driver preference and clamp to the joystick's legal range.
-        double rawAxis         = MathUtil.clamp(-omegaAxis, -1.0, 1.0);
-
-        // Deadband: ignore tiny twist noise so the robot does not spin when the stick is centered.
-        double processed       = MathUtil.applyDeadband(rawAxis, JOYSTICK_DEADBAND);
+        // Invert for driver preference and clamp to the legal range.
+        double processed       = MathUtil.clamp(-omegaAxis, -1.0, 1.0);
         double simulationScale = 1.0;
 
         // Simulation: optionally reduce angular speed for safer testing.
@@ -365,8 +345,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 * config.getMaximumAngularSpeedRadiansPerSecond().get();
 
         // Telemetry: record all driver input stages for tuning and debugging (non-essential during matches).
-        log.recordVerboseOutput("DriverInputs/omega/raw", rawAxis);
-        log.recordVerboseOutput("DriverInputs/omega/deadbanded", processed);
+        log.recordVerboseOutput("DriverInputs/omega/processed", processed);
         log.recordVerboseOutput("DriverInputs/omega/simulationScale", simulationScale);
         log.recordVerboseOutput("DriverInputs/omega/radiansPerSecond", radiansPerSecond);
 

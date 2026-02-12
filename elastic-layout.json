@@ -245,20 +245,6 @@
             }
           },
           {
-            "title": "translationScale",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/translationScale",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "translationToleranceInches",
             "x": 896.0,
             "y": 256.0,
@@ -281,70 +267,112 @@
         "layouts": [],
         "containers": [
           {
-            "title": "leftStickXSensitivity",
+            "title": "leftStickYResponseExponent",
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickXSensitivity",
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickYResponseExponent",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "leftStickYSensitivity",
+            "title": "leftStickXResponseExponent",
             "x": 0.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickYSensitivity",
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickXResponseExponent",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "rightStickXSensitivity",
+            "title": "rightStickXResponseExponent",
             "x": 0.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/rightStickXSensitivity",
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/rightStickXResponseExponent",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "slowDownTriggerFactor",
-            "x": 384.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/slowDownTriggerFactor",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "speedUpTriggerFactor",
+            "title": "normalSpeedScale",
             "x": 384.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/speedUpTriggerFactor",
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/normalSpeedScale",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "sprintSpeedScale",
+            "x": 384.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/sprintSpeedScale",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "slowSpeedScale",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/slowSpeedScale",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "joystickDeadband",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/joystickDeadband",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "triggerDeadband",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/triggerDeadband",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true

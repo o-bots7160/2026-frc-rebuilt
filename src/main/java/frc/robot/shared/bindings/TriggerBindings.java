@@ -68,7 +68,7 @@ public class TriggerBindings {
     private final DriveBaseSubsystemCommandFactory driveBaseCommandFactory;
 
     /**
-     * Configuration for per-axis stick sensitivity.
+     * Configuration for per-axis response curves and speed tiers.
      */
     private final TriggerBindingsConfig            triggerBindingsConfig;
 
@@ -86,7 +86,7 @@ public class TriggerBindings {
      * Creates trigger bindings with the default driver controller port.
      *
      * @param driveBaseCommandFactory factory for creating drive base commands
-     * @param triggerBindingsConfig   configuration for per-axis stick sensitivity
+     * @param triggerBindingsConfig   configuration for per-axis response curves and speed tiers
      * @param turretCommandFactory    factory for creating turret commands
      * @param shooterCommandFactory   factory for creating shooter commands
      */
@@ -108,7 +108,7 @@ public class TriggerBindings {
      * Creates trigger bindings using explicit controller ports.
      *
      * @param driveBaseCommandFactory factory for creating drive base commands
-     * @param triggerBindingsConfig   configuration for per-axis stick sensitivity
+     * @param triggerBindingsConfig   configuration for per-axis response curves and speed tiers
      * @param turretCommandFactory    factory for creating turret commands
      * @param shooterCommandFactory   factory for creating shooter commands
      * @param driverControllerPort    USB port for the driver controller
@@ -137,51 +137,71 @@ public class TriggerBindings {
         // Map sticks to field-relative driving using the drive base command factory.
         // Left stick: translation (forward/back on Y, left/right on X).
         // Right stick X: rotation rate (omega).
-        // Triggers: scale translation speed for slow/fast control.
-        // Per-axis sensitivity multipliers are read from the tunable config each cycle.
+        // Triggers: select a speed tier (slow / normal / sprint).
+        // Response curve exponents and speed scales are read from tunable config each cycle.
         driveBaseCommandFactory.setDefaultManualDriveCommand(
-                () -> MathUtil.clamp(
-                        driverController.getLeftY()
-                                * triggerBindingsConfig.getLeftStickYSensitivity()
-                                * computeDriveThrottleScale(),
-                        -1.0,
-                        1.0),
-                () -> MathUtil.clamp(
-                        driverController.getLeftX()
-                                * triggerBindingsConfig.getLeftStickXSensitivity()
-                                * computeDriveThrottleScale(),
-                        -1.0,
-                        1.0),
-                () -> MathUtil.clamp(
-                        driverController.getRightX()
-                                * triggerBindingsConfig.getRightStickXSensitivity(),
-                        -1.0,
+                () -> applyResponseCurve(
+                        driverController.getLeftY(),
+                        triggerBindingsConfig.getLeftStickYResponseExponent(),
+                        computeTranslationSpeedScale()),
+                () -> applyResponseCurve(
+                        driverController.getLeftX(),
+                        triggerBindingsConfig.getLeftStickXResponseExponent(),
+                        computeTranslationSpeedScale()),
+                () -> applyResponseCurve(
+                        driverController.getRightX(),
+                        triggerBindingsConfig.getRightStickXResponseExponent(),
                         1.0));
     }
 
     /**
-     * Computes a throttle multiplier based on trigger state.
+     * Applies deadband, a response curve, and speed scaling to a raw joystick axis value.
      * <p>
-     * If the right trigger is pressed beyond the deadband, the configured speed-up factor is returned (e.g., 1.5 for +50 percent speed). Otherwise,
-     * if the left trigger is pressed beyond the deadband, the configured slow-down factor is returned (e.g., 0.5 for -50 percent speed). When neither
-     * trigger is pressed, 1.0 is returned (normal speed). The right trigger (speed-up) takes priority when both are pressed.
+     * The processing pipeline is: deadband, then {@code sign(input) * |input|^exponent}, then multiply by speedScale, then clamp to [-1, 1]. Applying
+     * the deadband first eliminates stick noise before the power function can amplify it. The response curve reshapes how quickly the output ramps
+     * up: an exponent of 1.0 is linear, 2.0 (quadratic) reduces sensitivity near center while keeping full range at the edges. The speed scale
+     * represents a fraction of maximum robot speed (e.g., 0.8 for normal, 1.0 for sprint, 0.4 for slow).
      * </p>
      *
-     * @return throttle multiplier applied to translation inputs
+     * @param rawValue   raw joystick axis value in the range [-1, 1]
+     * @param exponent   response curve exponent (1.0 = linear, 2.0 = quadratic, 0.5 = square root)
+     * @param speedScale fraction of maximum speed for the active trigger tier (e.g., 0.4, 0.8, or 1.0)
+     * @return shaped and scaled value clamped to the range [-1, 1]
      */
-    private double computeDriveThrottleScale() {
-        double deadband = triggerBindingsConfig.getTriggerDeadband();
+    private double applyResponseCurve(double rawValue, double exponent, double speedScale) {
+        double deadbanded = MathUtil.applyDeadband(rawValue, triggerBindingsConfig.getJoystickDeadband());
+        double shaped     = Math.signum(deadbanded) * Math.pow(Math.abs(deadbanded), exponent);
+        return Math.max(-1.0, Math.min(1.0, shaped * speedScale));
+    }
 
-        // Speed-up takes priority over slow-down.
+    /**
+     * Selects the active translation speed scale based on trigger state.
+     * <p>
+     * Each scale is an absolute fraction of the robot's configured maximum linear speed. The right trigger (sprint) takes priority when both triggers
+     * are pressed.
+     * </p>
+     *
+     * @return speed scale for the current trigger state (fraction of max speed)
+     */
+    private double computeTranslationSpeedScale() {
+        double deadband    = triggerBindingsConfig.getTriggerDeadband();
+
+        // Read all three scales every cycle so their tunable entries always
+        // exist in NetworkTables, even when a trigger is not pressed.
+        double sprintScale = triggerBindingsConfig.getSprintSpeedScale();
+        double slowScale   = triggerBindingsConfig.getSlowSpeedScale();
+        double normalScale = triggerBindingsConfig.getNormalSpeedScale();
+
+        // Sprint takes priority over slow.
         if (driverController.getRightTriggerAxis() > deadband) {
-            return triggerBindingsConfig.getSpeedUpTriggerFactor();
+            return sprintScale;
         }
 
         if (driverController.getLeftTriggerAxis() > deadband) {
-            return triggerBindingsConfig.getSlowDownTriggerFactor();
+            return slowScale;
         }
 
-        return 1.0;
+        return normalScale;
     }
 
     private void configureShooterBindings() {
