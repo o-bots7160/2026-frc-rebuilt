@@ -1,8 +1,8 @@
 package frc.robot.shared.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.shared.RobotEnvironment;
 import frc.robot.shared.config.AbstractConfig;
+import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.logging.Logger;
 
 /**

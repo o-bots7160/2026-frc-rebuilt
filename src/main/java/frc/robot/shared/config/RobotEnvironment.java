@@ -1,4 +1,4 @@
-package frc.robot.shared;
+package frc.robot.shared.config;
 
 import java.util.Optional;
 import java.util.OptionalInt;

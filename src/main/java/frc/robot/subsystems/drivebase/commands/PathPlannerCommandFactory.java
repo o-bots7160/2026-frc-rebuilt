@@ -18,7 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.shared.RobotEnvironment;
+import frc.robot.shared.config.RobotEnvironment;
 
 /**
  * Builds autonomous command sequences for each driver-station position.

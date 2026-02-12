@@ -9,7 +9,6 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.shared.RobotEnvironment;
 
 /**
  * Base configuration bundle that mirrors values to AdvantageKit-backed SmartDashboard entries so they can be tuned without redeploying. Concrete

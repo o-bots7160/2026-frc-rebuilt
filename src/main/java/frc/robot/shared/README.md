@@ -10,20 +10,13 @@ For a glossary of robotics and programming terms referenced below, see the
 
 ## What is in here?
 
-| Folder        | Purpose                                                                          |
-| ------------- | -------------------------------------------------------------------------------- |
-| `subsystems/` | Abstract subsystem base classes that handle logging, config, and profiled motion |
-| `commands/`   | Abstract command and command-factory base classes                                |
-| `config/`     | Abstract config classes, JSON loading, and the top-level `SubsystemsConfig`      |
-| `logging/`    | AdvantageKit logger wrapper scoped to each subsystem                             |
-| `bindings/`   | Trigger and input-binding helpers for controller buttons                         |
-
-Two standalone files also live at this level:
-
-- **`RobotEnvironment.java`** — utilities for detecting robot mode (real vs.
-  sim, FMS-attached, etc.).
-- **`VisionMeasurementConsumer.java`** — a functional interface that vision
-  subsystems use to push accepted pose measurements into robot state.
+| Folder        | Purpose                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------- |
+| `subsystems/` | Abstract subsystem base classes, profiled-motion helpers, and the `VisionMeasurementConsumer` interface |
+| `commands/`   | Abstract command and command-factory base classes                                                       |
+| `config/`     | Abstract config classes, JSON loading, `SubsystemsConfig`, and `RobotEnvironment`                       |
+| `logging/`    | AdvantageKit logger wrapper scoped to each subsystem                                                    |
+| `bindings/`   | Trigger and input-binding helpers for controller buttons                                                |
 
 ## The motor subsystem hierarchy
 

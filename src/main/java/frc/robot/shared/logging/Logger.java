@@ -7,7 +7,7 @@ import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.shared.RobotEnvironment;
+import frc.robot.shared.config.RobotEnvironment;
 
 /**
  * Logger is a utility class for logging messages with different levels of severity. It supports verbose, debug, info, warning, and error messages.

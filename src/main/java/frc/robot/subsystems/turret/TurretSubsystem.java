@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.devices.motor.Motor;
-import frc.robot.shared.RobotEnvironment;
+import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
 import frc.robot.subsystems.turret.devices.TurretMotor;

@@ -22,7 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.shared.RobotEnvironment;
+import frc.robot.shared.config.RobotEnvironment;
 
 /**
  * Main robot class that owns the command scheduler and logging setup.

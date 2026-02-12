@@ -2,7 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.util.Units;
 import frc.robot.devices.motor.Motor;
-import frc.robot.shared.RobotEnvironment;
+import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractVelocitySubsystem;
 import frc.robot.subsystems.shooter.config.ShooterSubsystemConfig;
 import frc.robot.subsystems.shooter.devices.ShooterMotor;

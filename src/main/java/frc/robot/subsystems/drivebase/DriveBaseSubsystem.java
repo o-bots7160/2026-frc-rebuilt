@@ -18,7 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import frc.robot.shared.RobotEnvironment;
+import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.drivebase.io.DriveBaseIO;
