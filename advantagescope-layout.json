@@ -2,9 +2,9 @@
   "hubs": [
     {
       "x": 0,
-      "y": 33,
-      "width": 1470,
-      "height": 923,
+      "y": 30,
+      "width": 1920,
+      "height": 1050,
       "state": {
         "sidebar": {
           "width": 442,
@@ -66,7 +66,7 @@
           ]
         },
         "tabs": {
-          "selected": 4,
+          "selected": 3,
           "tabs": [
             {
               "type": 0,
@@ -407,7 +407,7 @@
                     "type": "stepped",
                     "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/velocityErrorRpm",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#2b66a2",
                       "size": "normal"
@@ -660,7 +660,7 @@
               },
               "controllerUUID": "ztkf03bdgdjptjcsubrpgrc0iajaovq0",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 190
             }
           ]
         }

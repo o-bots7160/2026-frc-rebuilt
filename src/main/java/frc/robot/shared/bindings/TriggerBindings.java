@@ -205,29 +205,29 @@ public class TriggerBindings {
     }
 
     private void configureShooterBindings() {
-        // Hold right bumper to spin the shooter up to a fixed test RPM.
+        // Hold right bumper to spin the shooter up to a fixed test RPM and hold it there.
         driverController.rightBumper().whileTrue(
-                shooterCommandFactory.createSpinUpCommand(3000.0));
+                shooterCommandFactory.createSpinUpAndHoldCommand(3000.0));
 
-        driverController.y().whileTrue(
-                shooterCommandFactory.createSysIdFullSweepCommand(
-                        SYSID_DELAY_SECONDS,
-                        SYSID_QUASISTATIC_TIMEOUT_SECONDS,
-                        SYSID_DYNAMIC_TIMEOUT_SECONDS));
+        // driverController.y().whileTrue(
+        //         shooterCommandFactory.createSysIdFullSweepCommand(
+        //                 SYSID_DELAY_SECONDS,
+        //                 SYSID_QUASISTATIC_TIMEOUT_SECONDS,
+        //                 SYSID_DYNAMIC_TIMEOUT_SECONDS));
     }
 
     private void configureTurretBindings() {
         // Hold A/B to spin the turret to the configured angles (for testing and alignment).
-        driverController.a().whileTrue(
-                turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_LEFT_DEGREES));
-        driverController.b().whileTrue(
-                turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_RIGHT_DEGREES));
+        // driverController.a().whileTrue(
+        //         turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_LEFT_DEGREES));
+        // driverController.b().whileTrue(
+        //         turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_RIGHT_DEGREES));
 
-        driverController.x().whileTrue(
-                turretCommandFactory.createSysIdFullSweepCommand(
-                        SYSID_DELAY_SECONDS,
-                        SYSID_QUASISTATIC_TIMEOUT_SECONDS,
-                        SYSID_DYNAMIC_TIMEOUT_SECONDS));
+        // driverController.x().whileTrue(
+        //         turretCommandFactory.createSysIdFullSweepCommand(
+        //                 SYSID_DELAY_SECONDS,
+        //                 SYSID_QUASISTATIC_TIMEOUT_SECONDS,
+        //                 SYSID_DYNAMIC_TIMEOUT_SECONDS));
     }
 
 }

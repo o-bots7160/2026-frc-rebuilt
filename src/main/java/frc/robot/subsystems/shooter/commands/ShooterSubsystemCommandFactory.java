@@ -54,6 +54,33 @@ public class ShooterSubsystemCommandFactory extends AbstractVelocityCommandFacto
     }
 
     /**
+     * Builds a command that spins the flywheel to a supplied RPM and then holds that velocity indefinitely.
+     * <p>
+     * Use this with {@code whileTrue} so the flywheel maintains the target while a button is held and returns to idle when released.
+     * </p>
+     *
+     * @param targetRpmSupplier provider for the target flywheel RPM; evaluated on initialize
+     * @return command that spins up and then holds velocity until interrupted
+     */
+    public Command createSpinUpAndHoldCommand(Supplier<Double> targetRpmSupplier) {
+        return createSpinUpCommand(targetRpmSupplier)
+                .andThen(Commands.run(subsystem::seekVelocity, subsystem));
+    }
+
+    /**
+     * Builds a command that spins the flywheel to a fixed RPM and then holds that velocity indefinitely.
+     * <p>
+     * Use this with {@code whileTrue} so the flywheel maintains the target while a button is held and returns to idle when released.
+     * </p>
+     *
+     * @param targetRpm fixed target flywheel RPM
+     * @return command that spins up and then holds velocity until interrupted
+     */
+    public Command createSpinUpAndHoldCommand(double targetRpm) {
+        return createSpinUpAndHoldCommand(() -> targetRpm);
+    }
+
+    /**
      * Builds a command that stops the flywheel immediately.
      *
      * @return command that sets the shooter to 0 RPM and stops the motor

@@ -121,9 +121,9 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
 
         targetVelocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(clampedRpm);
 
-        // Reset profile state so the ramp starts from the current setpoint.
+        // Reset profile state so the ramp starts from the actual measured velocity.
         if (velocityProfile != null) {
-            profileState = new TrapezoidProfile.State(setpointVelocityRadPerSec, 0.0);
+            profileState = new TrapezoidProfile.State(getMeasuredVelocityRadiansPerSecond(), 0.0);
         }
 
         // Reset settle tracking since we have a new target.
@@ -244,13 +244,17 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
 
     /**
      * Rebuilds the optional trapezoidal velocity profile from the current config.
+     * <p>
+     * The profile is used to ramp velocity, so profile "position" represents motor velocity in radians per second. The profile's
+     * {@code maxVelocity} constraint controls the rate of velocity change (motor acceleration), and jerk limiting is disabled for a simple linear
+     * ramp.
+     * </p>
      */
     private void rebuildVelocityProfile() {
         double maxAccelRadPerSecSq = config.getMaximumAccelerationRadiansPerSecondSquared();
         if (maxAccelRadPerSecSq > 0.0) {
-            double maxVelRadPerSec = config.getMaximumVelocityRadiansPerSecond();
             velocityProfile = new TrapezoidProfile(
-                    new TrapezoidProfile.Constraints(maxVelRadPerSec, maxAccelRadPerSecSq));
+                    new TrapezoidProfile.Constraints(maxAccelRadPerSecSq, Double.POSITIVE_INFINITY));
             profileState    = new TrapezoidProfile.State(setpointVelocityRadPerSec, 0.0);
         } else {
             velocityProfile = null;

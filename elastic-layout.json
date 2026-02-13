@@ -53,6 +53,27 @@
               "period": 0.06,
               "sort_options": false
             }
+          },
+          {
+            "title": "Measured RPM",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/measuredRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "start_angle": -140.0,
+              "end_angle": 140.0,
+              "min_value": -3000.0,
+              "max_value": 3000.0,
+              "number_of_labels": 4,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
+            }
           }
         ]
       }
@@ -312,49 +333,58 @@
             "title": "normalSpeedScale",
             "x": 384.0,
             "y": 0.0,
-            "width": 256.0,
+            "width": 768.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Number Slider",
             "properties": {
               "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/normalSpeedScale",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": true
+              "min_value": 0.0,
+              "max_value": 2.0,
+              "divisions": 9,
+              "update_continuously": true
             }
           },
           {
             "title": "sprintSpeedScale",
             "x": 384.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 768.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Number Slider",
             "properties": {
               "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/sprintSpeedScale",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": true
+              "min_value": 0.0,
+              "max_value": 2.0,
+              "divisions": 9,
+              "update_continuously": true
             }
           },
           {
             "title": "slowSpeedScale",
             "x": 384.0,
             "y": 256.0,
-            "width": 256.0,
+            "width": 768.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Number Slider",
             "properties": {
               "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/slowSpeedScale",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": true
+              "min_value": 0.0,
+              "max_value": 2.0,
+              "divisions": 9,
+              "update_continuously": true
             }
           },
           {
             "title": "joystickDeadband",
             "x": 768.0,
-            "y": 0.0,
-            "width": 256.0,
+            "y": 384.0,
+            "width": 384.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -366,9 +396,9 @@
           },
           {
             "title": "triggerDeadband",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 256.0,
+            "x": 384.0,
+            "y": 384.0,
+            "width": 384.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -455,28 +485,36 @@
             "title": "AppliedVolts",
             "x": 0.0,
             "y": 128.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/TurretSubsystem/motor/AppliedVolts",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "min_value": 4.0,
+              "max_value": 13.0,
+              "divisions": 3,
+              "inverted": false,
+              "orientation": "horizontal"
             }
           },
           {
             "title": "CommandedVolts",
-            "x": 128.0,
+            "x": 256.0,
             "y": 128.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/TurretSubsystem/motor/CommandedVolts",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "min_value": 4.0,
+              "max_value": 13.0,
+              "divisions": 3,
+              "inverted": false,
+              "orientation": "horizontal"
             }
           },
           {
@@ -839,8 +877,8 @@
           },
           {
             "title": "settleTimeSeconds",
-            "x": 896.0,
-            "y": 128.0,
+            "x": 0.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -853,8 +891,8 @@
           },
           {
             "title": "idleVelocityRpm",
-            "x": 1152.0,
-            "y": 128.0,
+            "x": 0.0,
+            "y": 512.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -922,23 +960,9 @@
             }
           },
           {
-            "title": "Measured RPM",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/measuredRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "Velocity Error RPM",
-            "x": 1024.0,
-            "y": 256.0,
+            "x": 256.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -951,9 +975,9 @@
           },
           {
             "title": "Ready to Fire",
-            "x": 1280.0,
-            "y": 256.0,
-            "width": 128.0,
+            "x": 896.0,
+            "y": 0.0,
+            "width": 384.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -964,6 +988,27 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Measured RPM",
+            "x": 896.0,
+            "y": 128.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/measuredRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "start_angle": -140.0,
+              "end_angle": 140.0,
+              "min_value": -3000.0,
+              "max_value": 3000.0,
+              "number_of_labels": 4,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
             }
           }
         ]
@@ -1000,6 +1045,182 @@
               "period": 0.06,
               "data_type": "int[]",
               "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Driver Assistance",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Zone Assist Kp",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistKp",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Zone Assist Kd",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistKd",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Zone Assist Max (deg/s)",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistMaxDegreesPerSecond",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Zone Assist Active",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/AssistedFieldDriveCommand/zoneAssistActive",
+              "period": 0.06,
+              "true_color": 4278255360,
+              "false_color": 4294901760,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Zone Assist Omega (rad/s)",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/AssistedFieldDriveCommand/zoneAssistOmegaRadPerSec",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "BumpAvoidance Enabled",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "BumpAvoidance Min X (m)",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.minXMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Min Y (m)",
+            "x": 256.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.minYMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Max X (m)",
+            "x": 512.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.maxXMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Max Y (m)",
+            "x": 768.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.maxYMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Target Heading (deg)",
+            "x": 0.0,
+            "y": 640.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.targetHeadingDegrees",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Kp Override",
+            "x": 384.0,
+            "y": 640.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.rotationAssistGain",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           }
         ]
