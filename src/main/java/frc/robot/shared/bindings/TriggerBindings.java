@@ -205,9 +205,11 @@ public class TriggerBindings {
     }
 
     private void configureShooterBindings() {
-        // Hold right bumper to spin the shooter up to a fixed test RPM and hold it there.
+        // Hold right bumper to spin the shooter at the tunable test RPM.
+        // Uses continuous spin so slider changes take effect immediately.
         driverController.rightBumper().whileTrue(
-                shooterCommandFactory.createSpinUpAndHoldCommand(1700.0));
+                shooterCommandFactory.createContinuousSpinCommand(
+                        triggerBindingsConfig::getShooterTestSpeedRpm));
 
         // driverController.y().whileTrue(
         //         shooterCommandFactory.createSysIdFullSweepCommand(

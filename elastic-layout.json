@@ -337,7 +337,7 @@
             "height": 128.0,
             "type": "Number Slider",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/normalSpeedScale",
+              "topic": "SmartDashboard/TriggerBindings/normalSpeedScale",
               "period": 0.06,
               "data_type": "double",
               "min_value": 0.0,
@@ -354,7 +354,7 @@
             "height": 128.0,
             "type": "Number Slider",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/sprintSpeedScale",
+              "topic": "SmartDashboard/TriggerBindings/sprintSpeedScale",
               "period": 0.06,
               "data_type": "double",
               "min_value": 0.0,
@@ -371,7 +371,7 @@
             "height": 128.0,
             "type": "Number Slider",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/slowSpeedScale",
+              "topic": "SmartDashboard/TriggerBindings/slowSpeedScale",
               "period": 0.06,
               "data_type": "double",
               "min_value": 0.0,
@@ -382,13 +382,13 @@
           },
           {
             "title": "joystickDeadband",
-            "x": 768.0,
-            "y": 384.0,
+            "x": 1152.0,
+            "y": 128.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/joystickDeadband",
+              "topic": "/SmartDashboard/SubsystemsConfig/TriggerBindings/joystickDeadband",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -396,16 +396,33 @@
           },
           {
             "title": "triggerDeadband",
-            "x": 384.0,
-            "y": 384.0,
+            "x": 1152.0,
+            "y": 0.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/triggerDeadband",
+              "topic": "/SmartDashboard/SubsystemsConfig/TriggerBindings/triggerDeadband",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
+            }
+          },
+          {
+            "title": "shooterTestSpeedRpm",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 768.0,
+            "height": 128.0,
+            "type": "Number Slider",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/shooterTestSpeedRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": 0.0,
+              "max_value": 3000.0,
+              "divisions": 6,
+              "update_continuously": true
             }
           }
         ]

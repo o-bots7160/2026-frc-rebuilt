@@ -84,6 +84,15 @@ public class TriggerBindingsConfig extends AbstractConfig {
     public double joystickDeadband            = 0.08;
 
     /**
+     * Test RPM target used when the driver holds the shooter spin-up button.
+     * <p>
+     * This value is tunable so operators can adjust the shooter speed from NetworkTables without redeploying code. Typical competition values range
+     * from 1000 to 4000 RPM depending on shot distance.
+     * </p>
+     */
+    public double shooterTestSpeedRpm         = 1700.0;
+
+    /**
      * Reads the tunable response curve exponent for the left stick Y axis.
      *
      * @return current left stick Y response exponent (1.0 = linear, 2.0 = quadratic)
@@ -153,5 +162,14 @@ public class TriggerBindingsConfig extends AbstractConfig {
      */
     public double getJoystickDeadband() {
         return readTunableNumber("joystickDeadband", joystickDeadband);
+    }
+
+    /**
+     * Reads the tunable shooter test speed used for the spin-up button binding.
+     *
+     * @return shooter target speed in RPM (e.g., 1700.0)
+     */
+    public double getShooterTestSpeedRpm() {
+        return readTunableNumber("shooterTestSpeedRpm", shooterTestSpeedRpm);
     }
 }

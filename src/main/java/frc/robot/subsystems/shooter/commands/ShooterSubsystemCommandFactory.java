@@ -81,6 +81,23 @@ public class ShooterSubsystemCommandFactory extends AbstractVelocityCommandFacto
     }
 
     /**
+     * Builds a command that continuously reads a target RPM from a supplier and seeks that velocity every cycle.
+     * <p>
+     * Unlike {@link #createSpinUpAndHoldCommand(Supplier)}, which locks the target at command start, this command re-evaluates the supplier each
+     * cycle. Use this when the target is backed by a tunable value that operators may adjust while the command is running.
+     * </p>
+     *
+     * @param targetRpmSupplier provider for the target flywheel RPM; evaluated every execute cycle
+     * @return command that continuously tracks the supplied RPM until interrupted
+     */
+    public Command createContinuousSpinCommand(Supplier<Double> targetRpmSupplier) {
+        return Commands.run(() -> {
+            subsystem.setTargetVelocityRpm(targetRpmSupplier.get());
+            subsystem.seekVelocity();
+        }, subsystem);
+    }
+
+    /**
      * Builds a command that stops the flywheel immediately.
      *
      * @return command that sets the shooter to 0 RPM and stops the motor
