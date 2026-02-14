@@ -186,9 +186,9 @@ public class PathPlannerCommandFactory {
      */
     private String resolveAutoName(int allianceLocation) {
         return switch (allianceLocation) {
-        case 1 -> "Start Position 1 - Shoot and Collect";
-        case 2 -> "Start Position 2 - Shoot and Collect";
-        case 3 -> "zigzag";
+        case 1 -> "b1";
+        case 2 -> "b2";
+        case 3 -> "b3";
         default -> "Default Auto";
         };
     }
