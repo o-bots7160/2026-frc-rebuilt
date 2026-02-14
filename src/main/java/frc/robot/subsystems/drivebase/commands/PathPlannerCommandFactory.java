@@ -188,7 +188,7 @@ public class PathPlannerCommandFactory {
         return switch (allianceLocation) {
         case 1 -> "Start Position 1 - Shoot and Collect";
         case 2 -> "Start Position 2 - Shoot and Collect";
-        case 3 -> "Start Position 3 - Shoot and Collect";
+        case 3 -> "zigzag";
         default -> "Default Auto";
         };
     }
