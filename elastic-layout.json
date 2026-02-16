@@ -1037,8 +1037,21 @@
         "layouts": [],
         "containers": [
           {
+            "title": "Use USB Camera",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/SmartDashboard/DriverCamera/useUsbCameraStream",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
             "title": "USB2 TagIds",
-            "x": 256.0,
+            "x": 128.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -1052,7 +1065,7 @@
           },
           {
             "title": "USB1 TagIds",
-            "x": 128.0,
+            "x": 0.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -1062,6 +1075,19 @@
               "period": 0.06,
               "data_type": "int[]",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "limelight",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 768.0,
+            "height": 640.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight",
+              "period": 0.06,
+              "rotation_turns": 0
             }
           }
         ]

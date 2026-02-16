@@ -15,6 +15,14 @@ public class DriverCameraSubsystemConfig extends AbstractConfig {
     public String cameraName;
 
     /**
+     * Startup stream mode for Limelight driver feed selection.
+     * <p>
+     * 1 = Limelight onboard camera, 2 = external USB camera, 0 = both (unused in this project).
+     * </p>
+     */
+    public int    defaultStream;
+
+    /**
      * Pipeline index to use for driver mode (typically 0 for a driver camera pipeline).
      */
     public int    pipelineIndex;
@@ -26,6 +34,15 @@ public class DriverCameraSubsystemConfig extends AbstractConfig {
      */
     public Supplier<String> getCameraName() {
         return () -> readTunableString("cameraName", cameraName);
+    }
+
+    /**
+     * Returns the default stream to use at startup in the case there are multiple available.
+     *
+     * @return the stream to show at startup
+     */
+    public Supplier<Integer> getDefaultStream() {
+        return () -> (int) readTunableNumber("defaultStream", defaultStream);
     }
 
     /**
