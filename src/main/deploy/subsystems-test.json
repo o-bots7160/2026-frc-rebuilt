@@ -104,7 +104,8 @@
     "enabled": false,
     "verbose": false,
     "cameraName": "limelight",
-    "pipelineIndex": 0
+    "pipelineIndex": 0,
+    "defaultStream": 2
   },
   "triggerBindings": {
     "leftStickYResponseExponent": 2.0,
