@@ -16,8 +16,8 @@ visibility so drivers can align the robot during teleop.
    driver mode the camera acts as a plain video pass-through — no vision
    processing, no overlays — which keeps [latency](../../GLOSSARY.md#latency)
    low and the video feed clear.
-3. Stream selection uses Limelight's `stream` NetworkTables entry:
-   `1` = Limelight onboard feed, `2` = external USB feed.
+3. Stream selection uses Limelight's `stream` NetworkTables entry: `1` =
+   Limelight onboard feed, `2` = external USB feed.
 4. Operators can toggle streams in Elastic using
    `SmartDashboard/DriverCameraSubsystem/useUsbCameraStream`.
 
@@ -43,15 +43,17 @@ Settings live in `subsystems.json` under `driverCameraSubsystem`.
 | `defaultStream` | enum  | Startup stream (`1` = onboard, `2` = USB)                    |
 
 Runtime dashboard controls:
-- `SmartDashboard/DriverCameraSubsystem/useUsbCameraStream` (`boolean`):
-  `false` uses stream `1`, `true` uses stream `2`.
+
+- `SmartDashboard/DriverCameraSubsystem/useUsbCameraStream` (`boolean`): `false`
+  uses stream `1`, `true` uses stream `2`.
 
 ## Code structure
 
-| File                                      | Purpose                                                                                |
-| ----------------------------------------- | -------------------------------------------------------------------------------------- |
-| `DriverCameraSubsystem.java`              | Subsystem that configures Limelight driver mode and manages stream selection/toggling  |
-| `config/DriverCameraSubsystemConfig.java` | Configuration for camera name, startup stream, and driver pipeline                     |
+| File                                                | Purpose                                                                               |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `DriverCameraSubsystem.java`                        | Subsystem that configures Limelight driver mode and manages stream selection/toggling |
+| `commands/DriverCameraSubsystemCommandFactory.java` | Factory for stream-toggle and future driver camera commands                           |
+| `config/DriverCameraSubsystemConfig.java`           | Configuration for camera name, startup stream, and driver pipeline                    |
 
 ## Status / TODO
 

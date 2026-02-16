@@ -5,8 +5,6 @@ import java.util.Optional;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
 
@@ -31,7 +29,10 @@ public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsyst
         USB_CAMERA(2);
 
         /**
-         * Maybe be used in config or NT at runtime and value could come in as typo.
+         * Resolves a NetworkTables integer value to its corresponding stream mode.
+         *
+         * @param networkTableValue integer value read from config or NetworkTables
+         * @return matching stream mode, or empty if the value is not recognized
          */
         public static Optional<StreamMode> from(int networkTableValue) {
             for (StreamMode streamMode : values()) {
@@ -42,7 +43,7 @@ public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsyst
             return Optional.empty();
         }
 
-        public final int networkTableValue;
+        private final int networkTableValue;
 
         StreamMode(int networkTableValue) {
             this.networkTableValue = networkTableValue;
@@ -64,7 +65,7 @@ public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsyst
     private static final String SMART_DASHBOARD_TABLE      = "SmartDashboard";
 
     /** Dashboard topic to toggle between onboard and USB camera streams. */
-    private static final String USE_USB_STREAM_TOPIC       = "DriverCamera/useUsbCameraStream";
+    private static final String USE_USB_STREAM_TOPIC       = "DriverCameraSubsystem/useUsbCameraStream";
 
     /** The topic used in limelight table to set the pipeline index. */
     private static final String LIMELIGHT_PIPELINE_TOPIC   = "pipeline";
@@ -105,19 +106,7 @@ public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsyst
 
         useUsbStreamEntry.setBoolean(activeStreamMode == StreamMode.USB_CAMERA);
 
-        // put a command into the dashboard to toggle camera stream
-        log.dashboard("ToggleStreamCommand", createToggleStreamCommand());
-
         log.info("DriverCameraSubsystem initialized for camera: " + cameraName);
-    }
-
-    /**
-     * Creates a one-shot command that toggles the active driver stream.
-     *
-     * @return command for dashboard or button bindings
-     */
-    public Command createToggleStreamCommand() {
-        return Commands.runOnce(this::toggleStreamMode, this);
     }
 
     @Override
@@ -186,6 +175,12 @@ public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsyst
         log.info("drive camera configured for driver mode");
     }
 
+    /**
+     * Reads the configured default stream value and maps it to a valid stream mode, falling back to
+     * the Limelight onboard feed when the value is unrecognized.
+     *
+     * @return startup stream mode derived from config
+     */
     private StreamMode parseConfiguredDefaultStreamMode() {
         int configuredValue = config.getDefaultStream().get();
         return StreamMode.from(configuredValue)

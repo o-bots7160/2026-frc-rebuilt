@@ -21,6 +21,7 @@ import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
 import frc.robot.subsystems.drivercameravision.DriverCameraSubsystem;
+import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
 import frc.robot.subsystems.robotstate.RobotStateSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
@@ -64,6 +65,9 @@ public class RobotContainer {
 
     private final ShooterSubsystemCommandFactory   shooterCommandFactory;
 
+    @SuppressWarnings("unused")
+    private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
+
     // Input bindings
     @SuppressWarnings("unused")
     private final TriggerBindings                  triggerBindings;
@@ -101,6 +105,7 @@ public class RobotContainer {
             driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
             turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
             shooterCommandFactory       = new ShooterSubsystemCommandFactory(shooterSubsystem);
+            driverCameraCommandFactory  = new DriverCameraSubsystemCommandFactory(driverCameraSubsystem);
 
             // Default Commands
             shooterCommandFactory.setDefaultIdleCommand();
