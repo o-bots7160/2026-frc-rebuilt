@@ -79,6 +79,182 @@
       }
     },
     {
+      "name": "Driver Assistance",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Zone Assist Kp",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistKp",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Zone Assist Kd",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistKd",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Zone Assist Max (deg/s)",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistMaxDegreesPerSecond",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Zone Assist Active",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/AssistedFieldDriveCommand/zoneAssistActive",
+              "period": 0.06,
+              "true_color": 4278255360,
+              "false_color": 4294901760,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Zone Assist Omega (rad/s)",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/AssistedFieldDriveCommand/zoneAssistOmegaRadPerSec",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "BumpAvoidance Enabled",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "BumpAvoidance Min X (m)",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.minXMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Min Y (m)",
+            "x": 256.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.minYMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Max X (m)",
+            "x": 512.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.maxXMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Max Y (m)",
+            "x": 768.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.maxYMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Target Heading (deg)",
+            "x": 0.0,
+            "y": 640.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.targetHeadingDegrees",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "BumpAvoidance Kp Override",
+            "x": 384.0,
+            "y": 640.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.rotationAssistGain",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "DriveBase",
       "grid_layout": {
         "layouts": [],
@@ -1037,7 +1213,7 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Use USB Camera",
+            "title": "Front Camera?",
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
@@ -1088,182 +1264,6 @@
               "topic": "/CameraPublisher/limelight",
               "period": 0.06,
               "rotation_turns": 0
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Driver Assistance",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "title": "Zone Assist Kp",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistKp",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Zone Assist Kd",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistKd",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Zone Assist Max (deg/s)",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistMaxDegreesPerSecond",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Zone Assist Active",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/AssistedFieldDriveCommand/zoneAssistActive",
-              "period": 0.06,
-              "true_color": 4278255360,
-              "false_color": 4294901760,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Zone Assist Omega (rad/s)",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/AssistedFieldDriveCommand/zoneAssistOmegaRadPerSec",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "BumpAvoidance Enabled",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Toggle Switch",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.enabled",
-              "period": 0.06
-            }
-          },
-          {
-            "title": "BumpAvoidance Min X (m)",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.minXMeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Min Y (m)",
-            "x": 256.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.minYMeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Max X (m)",
-            "x": 512.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.maxXMeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Max Y (m)",
-            "x": 768.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.maxYMeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Target Heading (deg)",
-            "x": 0.0,
-            "y": 640.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.targetHeadingDegrees",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Kp Override",
-            "x": 384.0,
-            "y": 640.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.rotationAssistGain",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
             }
           }
         ]
