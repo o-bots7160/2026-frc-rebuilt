@@ -189,7 +189,7 @@ public class PathPlannerCommandFactory {
         case 1 -> "b1";
         case 2 -> "b2";
         case 3 -> "b3";
-        default -> "Default Auto";
+        default -> "b2";
         };
     }
 
