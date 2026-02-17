@@ -89,6 +89,24 @@
           "data": {
             "pathName": "b1 travel back"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "extend climb"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "b1 climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "retract climb"
+          }
         }
       ]
     }

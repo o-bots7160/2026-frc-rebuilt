@@ -95,6 +95,24 @@
           "data": {
             "name": "shoot"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "extend climb"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "b3 climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "retract climb"
+          }
         }
       ]
     }

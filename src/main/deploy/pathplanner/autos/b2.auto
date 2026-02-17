@@ -13,7 +13,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "b2"
+            "pathName": "b2 travel"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "extend climb"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "b2 climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "retract climb"
           }
         }
       ]
