@@ -2,6 +2,7 @@ package frc.robot.shared.config;
 
 import frc.robot.shared.bindings.TriggerBindingsConfig;
 import frc.robot.subsystems.apriltagvision.config.AprilTagVisionSubsystemConfig;
+import frc.robot.subsystems.climber.config.ClimberSubsystemConfig;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
@@ -43,6 +44,11 @@ public class SubsystemsConfig {
      * Robot state configuration bundle.
      */
     public RobotStateSubsystemConfig     robotStateSubsystem     = new RobotStateSubsystemConfig();
+
+    /**
+     * Climber configuration bundle.
+     */
+    public ClimberSubsystemConfig        climberSubsystem        = new ClimberSubsystemConfig();
 
     /**
      * Trigger bindings configuration bundle for driver controller sensitivity.

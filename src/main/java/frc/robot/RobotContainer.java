@@ -17,6 +17,8 @@ import frc.robot.shared.config.FieldLayoutConfig;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.SubsystemsConfig;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
@@ -55,6 +57,8 @@ public class RobotContainer {
     @SuppressWarnings("unused")
     private final DriverCameraSubsystem            driverCameraSubsystem;
 
+    private final ClimberSubsystem                 climberSubsystem;
+
     // Command factories
 
     private final PathPlannerCommandFactory        pathPlannerCommandFactory;
@@ -67,6 +71,9 @@ public class RobotContainer {
 
     @SuppressWarnings("unused")
     private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
+
+    @SuppressWarnings("unused")
+    private final ClimberSubsystemCommandFactory   climberCommandFactory;
 
     // Input bindings
     @SuppressWarnings("unused")
@@ -99,6 +106,7 @@ public class RobotContainer {
                     // not reset odometry
                     driveBaseSubsystem::getOdometryPose);
             driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
+            climberSubsystem            = new ClimberSubsystem(subsystemsConfig.climberSubsystem);
 
             // Command factories
             pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
@@ -106,6 +114,7 @@ public class RobotContainer {
             turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
             shooterCommandFactory       = new ShooterSubsystemCommandFactory(shooterSubsystem);
             driverCameraCommandFactory  = new DriverCameraSubsystemCommandFactory(driverCameraSubsystem);
+            climberCommandFactory       = new ClimberSubsystemCommandFactory(climberSubsystem);
 
             // Default Commands
             shooterCommandFactory.setDefaultIdleCommand();
@@ -124,7 +133,8 @@ public class RobotContainer {
                     driveBaseCommandFactory,
                     subsystemsConfig.triggerBindings,
                     turretCommandFactory,
-                    shooterCommandFactory);
+                    shooterCommandFactory,
+                    climberCommandFactory);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
             RobotEnvironment.reportError(message, e.getStackTrace());

@@ -2,6 +2,7 @@ package frc.robot.shared.bindings;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
@@ -83,23 +84,32 @@ public class TriggerBindings {
     private final ShooterSubsystemCommandFactory   shooterCommandFactory;
 
     /**
+     * Factory that creates climber commands tied to operator buttons.
+     */
+    @SuppressWarnings("unused")
+    private final ClimberSubsystemCommandFactory    climberCommandFactory;
+
+    /**
      * Creates trigger bindings with the default driver controller port.
      *
      * @param driveBaseCommandFactory factory for creating drive base commands
      * @param triggerBindingsConfig   configuration for per-axis response curves and speed tiers
      * @param turretCommandFactory    factory for creating turret commands
      * @param shooterCommandFactory   factory for creating shooter commands
+     * @param climberCommandFactory   factory for creating climber commands
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
             TriggerBindingsConfig triggerBindingsConfig,
             TurretSubsystemCommandFactory turretCommandFactory,
-            ShooterSubsystemCommandFactory shooterCommandFactory) {
+            ShooterSubsystemCommandFactory shooterCommandFactory,
+            ClimberSubsystemCommandFactory climberCommandFactory) {
         this(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
                 turretCommandFactory,
                 shooterCommandFactory,
+                climberCommandFactory,
                 DEFAULT_DRIVE_CONTROLLER_PORT,
                 DEFAULT_OPERATOR_CONTROLLER_PORT);
     }
@@ -111,6 +121,7 @@ public class TriggerBindings {
      * @param triggerBindingsConfig   configuration for per-axis response curves and speed tiers
      * @param turretCommandFactory    factory for creating turret commands
      * @param shooterCommandFactory   factory for creating shooter commands
+     * @param climberCommandFactory   factory for creating climber commands
      * @param driverControllerPort    USB port for the driver controller
      * @param operatorControllerPort  USB port for the operator controller
      */
@@ -119,18 +130,21 @@ public class TriggerBindings {
             TriggerBindingsConfig triggerBindingsConfig,
             TurretSubsystemCommandFactory turretCommandFactory,
             ShooterSubsystemCommandFactory shooterCommandFactory,
+            ClimberSubsystemCommandFactory climberCommandFactory,
             int driverControllerPort,
             int operatorControllerPort) {
         this.driveBaseCommandFactory = driveBaseCommandFactory;
         this.triggerBindingsConfig   = triggerBindingsConfig;
         this.turretCommandFactory    = turretCommandFactory;
         this.shooterCommandFactory   = shooterCommandFactory;
+        this.climberCommandFactory   = climberCommandFactory;
         this.driverController        = new CommandXboxController(driverControllerPort);
         this.operatorController      = new CommandXboxController(operatorControllerPort);
 
         configureDriveControllerBindings();
         configureTurretBindings();
         configureShooterBindings();
+        configureClimberBindings();
     }
 
     private void configureDriveControllerBindings() {
@@ -230,6 +244,10 @@ public class TriggerBindings {
         //                 SYSID_DELAY_SECONDS,
         //                 SYSID_QUASISTATIC_TIMEOUT_SECONDS,
         //                 SYSID_DYNAMIC_TIMEOUT_SECONDS));
+    }
+
+    private void configureClimberBindings() {
+        // TODO: wire climber commands when motor hardware is selected
     }
 
 }

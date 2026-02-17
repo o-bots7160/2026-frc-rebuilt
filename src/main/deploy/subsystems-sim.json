@@ -107,6 +107,44 @@
     "pipelineIndex": 0,
     "defaultStream": 2
   },
+  "climberSubsystem": {
+    "enabled": true,
+    "verbose": true,
+    "climberMotorConfig": {
+      "enabled": false,
+      "verbose": true,
+      "useSetpointLimits": true,
+      "motorCanId": 0,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 1.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 360.0
+    },
+    "climberSensorConfig": {
+      "enabled": true,
+      "verbose": true,
+      "leftSensorCanId": 60,
+      "rightSensorCanId": 61,
+      "alignmentToleranceMillimeters": 25.0,
+      "maximumDetectionDistanceMillimeters": 300.0,
+      "sampleTimeMilliseconds": 24.0
+    },
+    "maximumVelocityDegreesPerSecond": 0.0,
+    "maximumAccelerationDegreesPerSecondSquared": 0.0,
+    "minimumSetpointDegrees": 0.0,
+    "maximumSetpointDegrees": 360.0,
+    "positionToleranceDegrees": 5.0,
+    "velocityToleranceDegreesPerSecond": 10.0,
+    "initialPositionDegrees": 0.0,
+    "initialVelocityDegreesPerSecond": 0.0,
+    "kP": 0.0,
+    "kI": 0.0,
+    "kD": 0.0,
+    "kS": 0.0,
+    "kV": 0.0,
+    "kA": 0.0
+  },
   "triggerBindings": {
     "leftStickYResponseExponent": 2.0,
     "leftStickXResponseExponent": 2.0,
