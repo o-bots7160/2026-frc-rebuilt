@@ -44,28 +44,37 @@ Expected settings (to be added to `subsystems.json`):
 
 ## Code structure
 
-<!-- TODO: update when classes are added -->
-
-Planned files:
-
-| File                                 | Purpose                                                                       |
-| ------------------------------------ | ----------------------------------------------------------------------------- |
-| `HopperSubsystem.java`               | Subsystem managing the active floor and piece sensing                         |
-| `commands/HopperCommandFactory.java` | Factory for stage-fuel, reverse, and idle commands                            |
-| `config/HopperSubsystemConfig.java`  | Configuration and [tunables](../../GLOSSARY.md#tunable)                       |
-| `io/HopperIO.java`                   | [IO](../../GLOSSARY.md#io-inputoutput) interface for floor motors and sensors |
+| File                                          | Purpose                                                              |
+| --------------------------------------------- | -------------------------------------------------------------------- |
+| `HopperSubsystem.java`                        | Subsystem managing the belt motor for transporting and purging Fuel  |
+| `commands/HopperSubsystemCommandFactory.java` | Factory for idle, purge, forward-and-hold, and stop commands         |
+| `commands/IdleHopperCommand.java`             | Default command that keeps the belt running forward at idle RPM      |
+| `commands/PurgeHopperCommand.java`            | Command that reverses the belt to eject Fuel back through the intake |
+| `config/HopperSubsystemConfig.java`           | Configuration and [tunables](../../GLOSSARY.md#tunable)              |
+| `config/HopperMotorConfig.java`               | Motor controller configuration (CAN ID, gear ratio, current limit)   |
+| `devices/HopperMotor.java`                    | SparkMax motor wrapper for real hardware                             |
+| `devices/HopperSimMotor.java`                 | Simulation motor wrapper for testing without hardware                |
 
 ## Status / TODO
 
 ### Done
 
 - README and folder structure created.
+- IO interface, config classes, motor wrappers, and subsystem implemented.
+- Idle and purge commands implemented with command factory.
+- Subsystem wired in `RobotContainer` with default idle command.
+- Configuration added to `subsystems.json`, `subsystems-sim.json`, and
+  `subsystems-test.json`.
+- Elastic and AdvantageScope tuning layouts added.
 
 ### TODO
 
 - Define sensor placement and motor configuration once mechanical packaging is
   set.
-- Create IO interface and config class.
+- Update CAN ID, gear ratio, and current limit in config when hardware is
+  selected.
+- Run SysId characterization to determine feedforward gains (kS, kV, kA).
+- Tune PID gains for accurate velocity tracking.
 - Implement floor coordination with feeder subsystem.
 - Add piece-count or sensor-based throttling.
-- Wire subsystem in `RobotContainer` and add to `subsystems.json`.
+- Add purge button binding in `TriggerBindings`.
