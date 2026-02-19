@@ -29,7 +29,7 @@ public class HoldCommand extends AbstractSubsystemCommand<IndexerSubsystem> {
 
     @Override
     public void end(boolean interrupted) {
-        subsystem.stopIndexer();
+        subsystem.stop();
     }
 
     @Override

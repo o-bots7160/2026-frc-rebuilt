@@ -103,7 +103,7 @@ public class ShooterSubsystemCommandFactory extends AbstractVelocityCommandFacto
      * @return command that sets the shooter to 0 RPM and stops the motor
      */
     public Command createStopCommand() {
-        return Commands.runOnce(subsystem::stopMechanism, subsystem);
+        return Commands.runOnce(subsystem::stop, subsystem);
     }
 
     /**

@@ -231,24 +231,27 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
     }
 
     /**
-     * Stops the motor and resets the target velocity to zero.
+     * Resets velocity controller state to zero and stops the motor.
+     * <p>
+     * Clears the target velocity, setpoint, tolerance flag, and trapezoidal profile state so the mechanism is fully idle.
+     * </p>
      */
-    public void stopMechanism() {
+    @Override
+    public void stop() {
         targetVelocityRadPerSec   = 0.0;
         setpointVelocityRadPerSec = 0.0;
         withinTolerance           = false;
         if (velocityProfile != null) {
             profileState = new TrapezoidProfile.State(0.0, 0.0);
         }
-        stopMotor();
+        super.stop();
     }
 
     /**
      * Rebuilds the optional trapezoidal velocity profile from the current config.
      * <p>
-     * The profile is used to ramp velocity, so profile "position" represents motor velocity in radians per second. The profile's
-     * {@code maxVelocity} constraint controls the rate of velocity change (motor acceleration), and jerk limiting is disabled for a simple linear
-     * ramp.
+     * The profile is used to ramp velocity, so profile "position" represents motor velocity in radians per second. The profile's {@code maxVelocity}
+     * constraint controls the rate of velocity change (motor acceleration), and jerk limiting is disabled for a simple linear ramp.
      * </p>
      */
     private void rebuildVelocityProfile() {

@@ -164,10 +164,31 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
-     * Hook for subclasses to respond when a seek command is interrupted. Default implementation stops the motor.
+     * Resets the profiled controller and goal state, then stops the motor.
+     * <p>
+     * Use this for a full stop that clears all profile state. For a light-touch interruption that preserves profile state (so settle commands can
+     * decelerate smoothly), use {@link #handleSeekInterrupted()} instead.
+     * </p>
+     */
+    @Override
+    public void stop() {
+        double measuredPosition = getMeasuredPosition();
+        double measuredVelocity = getMeasuredVelocity();
+        goalState     = new TrapezoidProfile.State(measuredPosition, 0.0);
+        setpointState = new TrapezoidProfile.State(measuredPosition, measuredVelocity);
+        controller.reset(measuredPosition, measuredVelocity);
+        controller.setGoal(goalState);
+        super.stop();
+    }
+
+    /**
+     * Hook for subclasses to respond when a seek command is interrupted. Default implementation stops the motor without resetting profile state.
+     * <p>
+     * Settle commands depend on the preserved profile state to decelerate smoothly. If you need a full reset, call {@link #stop()} instead.
+     * </p>
      */
     public void handleSeekInterrupted() {
-        stopMotor();
+        motor.stop();
     }
 
     /**

@@ -56,7 +56,7 @@ public class UnjamCommand extends AbstractSubsystemCommand<IndexerSubsystem> {
     @Override
     public void end(boolean interrupted) {
         cycleTimer.stop();
-        subsystem.stopIndexer();
+        subsystem.stop();
     }
 
     @Override

@@ -125,10 +125,4 @@ public class IndexerSubsystem extends AbstractVelocitySubsystem<IndexerSubsystem
         setTargetVelocityRpm(config.getFeedVelocityRpm());
     }
 
-    /**
-     * Stops the indexer motor and resets the target velocity to zero.
-     */
-    public void stopIndexer() {
-        stopMechanism();
-    }
 }

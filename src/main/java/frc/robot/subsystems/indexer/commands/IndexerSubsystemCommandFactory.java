@@ -140,7 +140,7 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
      * {@code RobotContainer}.
      * </p>
      *
-     * @param shooterReadySupplier supplier that returns true when the shooter flywheel is at the target RPM
+     * @param shooterReadySupplier   supplier that returns true when the shooter flywheel is at the target RPM
      * @param turretOnTargetSupplier supplier that returns true when the turret is aimed at the scoring target
      * @return composite command that waits for readiness then feeds
      */
@@ -156,7 +156,7 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
      * @return command that sets the indexer to 0 RPM and stops the motor
      */
     public Command createStopCommand() {
-        return Commands.runOnce(subsystem::stopIndexer, subsystem);
+        return Commands.runOnce(subsystem::stop, subsystem);
     }
 
     /**

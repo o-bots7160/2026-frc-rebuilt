@@ -144,6 +144,17 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
     }
 
     /**
+     * Stops the motor and resets subsystem state to a safe idle condition.
+     * <p>
+     * Subclasses override this method to zero out controller state (velocity targets, profile goals, etc.) and then call {@code super.stop()} so the
+     * motor is always halted at the end of the chain.
+     * </p>
+     */
+    public void stop() {
+        motor.stop();
+    }
+
+    /**
      * Refreshes motor sensor data and logs it via AdvantageKit for telemetry and replay.
      * <p>
      * Call this from the concrete subsystem's control loop before computing PID/feedforward so the controller reads fresh sensor values.
@@ -162,13 +173,6 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
     protected void applyVoltage(double voltageCommand) {
         Voltage clampedVoltage = Volts.of(MathUtil.clamp(voltageCommand, -12.0, 12.0));
         motor.setVoltage(clampedVoltage);
-    }
-
-    /**
-     * Stops the motor immediately.
-     */
-    protected void stopMotor() {
-        motor.stop();
     }
 
     /**
