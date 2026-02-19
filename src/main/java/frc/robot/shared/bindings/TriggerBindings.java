@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
+import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
@@ -84,6 +85,11 @@ public class TriggerBindings {
     private final ShooterSubsystemCommandFactory   shooterCommandFactory;
 
     /**
+     * Factory that creates indexer commands tied to operator buttons.
+     */
+    private final IndexerSubsystemCommandFactory   indexerCommandFactory;
+
+    /**
      * Factory that creates climber commands tied to operator buttons.
      */
     @SuppressWarnings("unused")
@@ -96,6 +102,7 @@ public class TriggerBindings {
      * @param triggerBindingsConfig   configuration for per-axis response curves and speed tiers
      * @param turretCommandFactory    factory for creating turret commands
      * @param shooterCommandFactory   factory for creating shooter commands
+     * @param indexerCommandFactory   factory for creating indexer commands
      * @param climberCommandFactory   factory for creating climber commands
      */
     public TriggerBindings(
@@ -103,12 +110,14 @@ public class TriggerBindings {
             TriggerBindingsConfig triggerBindingsConfig,
             TurretSubsystemCommandFactory turretCommandFactory,
             ShooterSubsystemCommandFactory shooterCommandFactory,
+            IndexerSubsystemCommandFactory indexerCommandFactory,
             ClimberSubsystemCommandFactory climberCommandFactory) {
         this(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
                 turretCommandFactory,
                 shooterCommandFactory,
+                indexerCommandFactory,
                 climberCommandFactory,
                 DEFAULT_DRIVE_CONTROLLER_PORT,
                 DEFAULT_OPERATOR_CONTROLLER_PORT);
@@ -121,6 +130,7 @@ public class TriggerBindings {
      * @param triggerBindingsConfig   configuration for per-axis response curves and speed tiers
      * @param turretCommandFactory    factory for creating turret commands
      * @param shooterCommandFactory   factory for creating shooter commands
+     * @param indexerCommandFactory   factory for creating indexer commands
      * @param climberCommandFactory   factory for creating climber commands
      * @param driverControllerPort    USB port for the driver controller
      * @param operatorControllerPort  USB port for the operator controller
@@ -130,6 +140,7 @@ public class TriggerBindings {
             TriggerBindingsConfig triggerBindingsConfig,
             TurretSubsystemCommandFactory turretCommandFactory,
             ShooterSubsystemCommandFactory shooterCommandFactory,
+            IndexerSubsystemCommandFactory indexerCommandFactory,
             ClimberSubsystemCommandFactory climberCommandFactory,
             int driverControllerPort,
             int operatorControllerPort) {
@@ -137,6 +148,7 @@ public class TriggerBindings {
         this.triggerBindingsConfig   = triggerBindingsConfig;
         this.turretCommandFactory    = turretCommandFactory;
         this.shooterCommandFactory   = shooterCommandFactory;
+        this.indexerCommandFactory   = indexerCommandFactory;
         this.climberCommandFactory   = climberCommandFactory;
         this.driverController        = new CommandXboxController(driverControllerPort);
         this.operatorController      = new CommandXboxController(operatorControllerPort);
@@ -144,6 +156,7 @@ public class TriggerBindings {
         configureDriveControllerBindings();
         configureTurretBindings();
         configureShooterBindings();
+        configureIndexerBindings();
         configureClimberBindings();
     }
 
@@ -248,6 +261,20 @@ public class TriggerBindings {
 
     private void configureClimberBindings() {
         // TODO: wire climber commands when motor hardware is selected
+    }
+
+    private void configureIndexerBindings() {
+        // Hold left bumper to feed Fuel into the shooter at the configured feed RPM.
+        driverController.leftBumper().whileTrue(
+                indexerCommandFactory.createFeedAndHoldCommand());
+
+        // Hold D-pad down to run the unjam cycle (alternating forward/reverse pulses).
+        driverController.povDown().whileTrue(
+                indexerCommandFactory.createUnjamCommand());
+
+        // Hold D-pad left to reverse the indexer and back Fuel toward the hopper.
+        driverController.povLeft().whileTrue(
+                indexerCommandFactory.createReverseCommand());
     }
 
 }

@@ -24,6 +24,8 @@ import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
 import frc.robot.subsystems.drivercameravision.DriverCameraSubsystem;
 import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
+import frc.robot.subsystems.indexer.IndexerSubsystem;
+import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.robotstate.RobotStateSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
@@ -49,6 +51,8 @@ public class RobotContainer {
 
     private final ShooterSubsystem                 shooterSubsystem;
 
+    private final IndexerSubsystem                 indexerSubsystem;
+
     private final RobotStateSubsystem              robotStateSubsystem;
 
     @SuppressWarnings("unused")
@@ -68,6 +72,8 @@ public class RobotContainer {
     private final TurretSubsystemCommandFactory    turretCommandFactory;
 
     private final ShooterSubsystemCommandFactory   shooterCommandFactory;
+
+    private final IndexerSubsystemCommandFactory   indexerCommandFactory;
 
     @SuppressWarnings("unused")
     private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
@@ -98,6 +104,7 @@ public class RobotContainer {
                     driveBaseSubsystem::resetPose);
             turretSubsystem             = new TurretSubsystem(subsystemsConfig.turretSubsystem);
             shooterSubsystem            = new ShooterSubsystem(subsystemsConfig.shooterSubsystem);
+            indexerSubsystem            = new IndexerSubsystem(subsystemsConfig.indexerSubsystem);
             aprilTagVisionSubsystem     = new AprilTagVisionSubsystem(
                     subsystemsConfig.aprilTagVisionSubsystem,
                     aprilTagFieldLayoutSupplier.get(),
@@ -113,11 +120,13 @@ public class RobotContainer {
             driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
             turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
             shooterCommandFactory       = new ShooterSubsystemCommandFactory(shooterSubsystem);
+            indexerCommandFactory       = new IndexerSubsystemCommandFactory(indexerSubsystem);
             driverCameraCommandFactory  = new DriverCameraSubsystemCommandFactory(driverCameraSubsystem);
             climberCommandFactory       = new ClimberSubsystemCommandFactory(climberSubsystem);
 
             // Default Commands
             shooterCommandFactory.setDefaultIdleCommand();
+            indexerCommandFactory.setDefaultIdleCommand();
             turretCommandFactory.setDefaultTrackFieldTargetCommand(
                     robotStateSubsystem,
                     () -> {
@@ -134,6 +143,7 @@ public class RobotContainer {
                     subsystemsConfig.triggerBindings,
                     turretCommandFactory,
                     shooterCommandFactory,
+                    indexerCommandFactory,
                     climberCommandFactory);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";

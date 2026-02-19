@@ -78,6 +78,36 @@
     "kV": 0.0,
     "kA": 0.0
   },
+  "indexerSubsystem": {
+    "enabled": false,
+    "verbose": true,
+    "indexerMotorConfig": {
+      "enabled": false,
+      "verbose": true,
+      "useSetpointLimits": false,
+      "motorCanId": 0,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 30,
+      "motorRotationsPerMechanismRotation": 1.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 0.0
+    },
+    "maximumVelocityRpm": 3000.0,
+    "maximumAccelerationRpmPerSecond": 0.0,
+    "velocityToleranceRpm": 50.0,
+    "settleTimeSeconds": 0.1,
+    "idleVelocityRpm": 0.0,
+    "feedVelocityRpm": 2000.0,
+    "reverseVelocityRpm": 1000.0,
+    "unjamForwardDurationSeconds": 0.3,
+    "unjamReverseDurationSeconds": 0.3,
+    "kP": 0.0,
+    "kI": 0.0,
+    "kD": 0.0,
+    "kS": 0.0,
+    "kV": 0.0,
+    "kA": 0.0
+  },
   "robotStateSubsystem": {
     "enabled": true,
     "verbose": false,

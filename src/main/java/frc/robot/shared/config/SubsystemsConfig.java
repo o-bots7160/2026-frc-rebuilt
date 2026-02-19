@@ -5,6 +5,7 @@ import frc.robot.subsystems.apriltagvision.config.AprilTagVisionSubsystemConfig;
 import frc.robot.subsystems.climber.config.ClimberSubsystemConfig;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
+import frc.robot.subsystems.indexer.config.IndexerSubsystemConfig;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
 import frc.robot.subsystems.shooter.config.ShooterSubsystemConfig;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
@@ -29,6 +30,11 @@ public class SubsystemsConfig {
      * Shooter configuration bundle.
      */
     public ShooterSubsystemConfig        shooterSubsystem        = new ShooterSubsystemConfig();
+
+    /**
+     * Indexer configuration bundle.
+     */
+    public IndexerSubsystemConfig        indexerSubsystem        = new IndexerSubsystemConfig();
 
     /**
      * AprilTag vision configuration bundle.

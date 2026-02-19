@@ -98,12 +98,13 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
     }
 
     /**
-     * Sets a new target velocity for the mechanism. Values are clamped to the configured maximum.
+     * Sets a new target velocity for the mechanism. Values are clamped to the configured maximum in both directions.
      * <p>
-     * The target is in mechanism RPM (after gear reduction). Requested and clamped values are logged for tuning visibility.
+     * The target is in mechanism RPM (after gear reduction). Positive values spin the mechanism forward; negative values spin it in reverse.
+     * Requested and clamped values are logged for tuning visibility.
      * </p>
      *
-     * @param targetRpm desired mechanism velocity in RPM (0 to stop, positive to spin forward)
+     * @param targetRpm desired mechanism velocity in RPM (0 to stop, positive for forward, negative for reverse)
      */
     public void setTargetVelocityRpm(double targetRpm) {
         if (isSubsystemDisabled()) {
@@ -112,7 +113,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         }
 
         double  maximumRpm = config.getMaximumVelocityRpm();
-        double  clampedRpm = MathUtil.clamp(targetRpm, 0.0, maximumRpm);
+        double  clampedRpm = MathUtil.clamp(targetRpm, -maximumRpm, maximumRpm);
         boolean wasClamped = targetRpm != clampedRpm;
 
         log.recordVerboseOutput("targetRequestedRpm", targetRpm);
@@ -232,7 +233,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
     /**
      * Stops the motor and resets the target velocity to zero.
      */
-    public void stopShooter() {
+    public void stopMechanism() {
         targetVelocityRadPerSec   = 0.0;
         setpointVelocityRadPerSec = 0.0;
         withinTolerance           = false;

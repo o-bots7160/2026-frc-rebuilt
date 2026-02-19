@@ -11,62 +11,98 @@ autonomous or volley sequences.
 
 ## How it works
 
-<!-- TODO: fill in when hardware decisions are made -->
+The indexer uses a single roller driven by a REV SparkMax motor controller. A
+[feedforward](../../GLOSSARY.md#feedforward) term maintains the target velocity,
+and a [PID](../../GLOSSARY.md#pid) controller corrects for disturbances. The
+motor can spin in both directions, enabling forward feeding and reverse
+clearing.
 
-The indexer sits directly upstream of the [shooter](../shooter/README.md). It
-receives centered pieces from the [feeder](../feeder/README.md) and releases
-them into the shooter flywheels on demand.
+### Units convention
 
-Planned behaviors:
+The public API uses **RPM** (revolutions per minute) for all velocity values.
+Internally, the subsystem converts to **radians per second** for WPILib math
+(PID controllers, feedforward, trapezoidal profiles). RPM always refers to the
+**mechanism speed**, not the motor shaft speed. The gear ratio in
+`IndexerMotorConfig.motorRotationsPerMechanismRotation` handles the conversion
+between the two.
 
-- **Fire/hold gate** — the indexer does not spin unless the shooter
-  [RPM](../../GLOSSARY.md#rpm) is within tolerance and the
-  [turret](../turret/README.md) aim is on target.
-- **Shot-ready signal** — a boolean flag for autonomous commands to wait on
-  before advancing to the next step.
-- **Single-step and burst** — commands support feeding one piece at a time or
-  running continuously for rapid volleys.
-- **Reverse/clear** — a reverse mode backs pieces out when the shooter is
-  disabled or a jam is detected.
-- **Piece detection** — sensors at the gate detect when a piece is staged and
-  when it has been launched, enabling accurate shot counting.
+### Key behaviors
+
+- **Feed** — `FeedCommand` spins the roller at `feedVelocityRpm` to push a piece
+  into the [shooter](../shooter/README.md) flywheels.
+- **Hold** — `HoldCommand` keeps the roller stopped (0 RPM) while a piece is
+  staged, preventing it from entering the shooter until conditions are met.
+- **Fire-when-ready** — `createFireWhenReadyCommand()` accepts suppliers for
+  shooter readiness and turret aim. It waits until both signals are true, then
+  feeds. This is the primary autonomous and teleop firing path.
+- **Reverse** — `ReverseIndexerCommand` spins backward at `reverseVelocityRpm`
+  to clear a stuck piece.
+- **Unjam** — `UnjamCommand` alternates between forward and reverse at
+  configurable durations (`unjamForwardDurationSeconds` /
+  `unjamReverseDurationSeconds`) to free a jammed piece.
+- **Idle** — when no command is active, the default `IdleIndexerCommand` holds
+  the roller at 0 RPM so the motor is not free-spinning.
+
+## Inheritance
+
+The indexer extends the shared velocity abstraction layer:
+
+```
+AbstractSubsystem
+  └─ AbstractMotorSubsystem        (motor, feedforward, SysId)
+       └─ AbstractVelocitySubsystem  (PID velocity control, settle detection)
+            └─ IndexerSubsystem       (concrete roller logic)
+```
 
 ## Configuration
 
-<!-- TODO: add config fields and tunables once hardware is selected -->
+Settings live in `subsystems.json` under `indexerSubsystem`:
 
-Expected settings (to be added to `subsystems.json`):
-
-| Setting                | Units                                   | Purpose                                                     |
-| ---------------------- | --------------------------------------- | ----------------------------------------------------------- |
-| `enabled`              | —                                       | Master enable flag                                          |
-| feed speed             | percent or [RPM](../../GLOSSARY.md#rpm) | Motor output for feeding into shooter                       |
-| reverse speed          | percent or RPM                          | Motor output for clearing                                   |
-| shot detection timeout | seconds                                 | How long after a feed pulse to wait before declaring a miss |
+| Setting                           | Units   | Purpose                                           |
+| --------------------------------- | ------- | ------------------------------------------------- |
+| `enabled`                         | —       | Master enable flag                                |
+| `maximumVelocityRpm`              | RPM     | Maximum safe roller speed (clamp limit)           |
+| `maximumAccelerationRpmPerSecond` | RPM/s   | Acceleration limit for the trapezoidal ramp       |
+| `velocityToleranceRpm`            | RPM     | Window around target that counts as "at velocity" |
+| `settleTimeSeconds`               | seconds | How long RPM must stay in tolerance before ready  |
+| `idleVelocityRpm`                 | RPM     | Default idle speed (normally 0)                   |
+| `feedVelocityRpm`                 | RPM     | Forward speed for feeding into shooter            |
+| `reverseVelocityRpm`              | RPM     | Reverse speed for clearing jams                   |
+| `unjamForwardDurationSeconds`     | seconds | Forward phase duration in the unjam cycle         |
+| `unjamReverseDurationSeconds`     | seconds | Reverse phase duration in the unjam cycle         |
+| `kS`, `kV`, `kA`                  | volts   | Feedforward gains                                 |
+| `kP`, `kI`, `kD`                  | —       | PID velocity controller gains                     |
 
 ## Code structure
 
-<!-- TODO: update when classes are added -->
-
-Planned files:
-
-| File                                  | Purpose                                                                           |
-| ------------------------------------- | --------------------------------------------------------------------------------- |
-| `IndexerSubsystem.java`               | Subsystem managing the gate motor and piece sensing                               |
-| `commands/IndexerCommandFactory.java` | Factory for fire, hold, burst, and reverse commands                               |
-| `config/IndexerSubsystemConfig.java`  | Configuration and [tunables](../../GLOSSARY.md#tunable)                           |
-| `io/IndexerIO.java`                   | [IO](../../GLOSSARY.md#io-inputoutput) interface for gate motor and piece sensors |
+| File                                           | Purpose                                                            |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| `IndexerSubsystem.java`                        | Concrete subsystem managing roller velocity and ready-to-feed flag |
+| `commands/IndexerSubsystemCommandFactory.java` | Factory for feed, hold, reverse, unjam, fire-when-ready, and idle  |
+| `commands/FeedCommand.java`                    | Drives the roller at feed RPM                                      |
+| `commands/HoldCommand.java`                    | Holds the roller at 0 RPM while a piece is staged                  |
+| `commands/ReverseIndexerCommand.java`          | Drives the roller in reverse at a configurable RPM                 |
+| `commands/UnjamCommand.java`                   | Alternates forward and reverse to free a jammed piece              |
+| `commands/IdleIndexerCommand.java`             | Default command holding idle RPM                                   |
+| `config/IndexerSubsystemConfig.java`           | Configuration bundle extending `AbstractVelocitySubsystemConfig`   |
+| `config/IndexerMotorConfig.java`               | Motor-level config (CAN ID, inversion, current limits)             |
+| `devices/IndexerMotor.java`                    | Real-hardware motor wrapper for SparkMax                           |
+| `devices/IndexerSimMotor.java`                 | Simulation motor wrapper                                           |
 
 ## Status / TODO
 
 ### Done
 
-- README and folder structure created.
+- Subsystem, commands, config, and device wrappers implemented.
+- Wired in `RobotContainer` and added to `subsystems.json`.
+- Operator left-bumper binding for feed-and-hold.
+- Operator D-pad down binding for unjam.
+- Operator D-pad left binding for reverse.
+- Fire-when-ready composite command available via factory.
 
 ### TODO
 
-- Add hardware map, sensors, and command factory once the physical gate design
-  is finalized.
-- Implement ready-to-fire signal for autonomous gating.
-- Guard against double-commanding the gate when the shooter is not ready.
-- Wire subsystem in `RobotContainer` and add to `subsystems.json`.
+- Tune PID and feedforward gains on real hardware.
+- Update CAN ID in `subsystems.json` once hardware is assigned.
+- Add piece-detection sensor logic for accurate shot counting.
+- Add Elastic and AdvantageScope dashboard tabs for tuning.

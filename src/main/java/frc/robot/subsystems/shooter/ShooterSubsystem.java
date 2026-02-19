@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import frc.robot.devices.motor.Motor;
 import frc.robot.shared.config.RobotEnvironment;
@@ -78,6 +79,20 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
         log.recordOutput("readyToFire", isReadyToFire());
         log.recordOutput("measuredRpm", getMeasuredVelocityRpm());
         log.recordOutput("targetRpm", getTargetVelocityRpm());
+    }
+
+    /**
+     * Sets a new target velocity, clamped to forward-only rotation.
+     * <p>
+     * Flywheels should never reverse through the velocity controller. Negative values are clamped to zero before delegating to the base class.
+     * </p>
+     *
+     * @param targetRpm desired flywheel velocity in RPM (0 to stop, positive to spin forward)
+     */
+    @Override
+    public void setTargetVelocityRpm(double targetRpm) {
+        double forwardOnlyRpm = MathUtil.clamp(targetRpm, 0.0, config.getMaximumVelocityRpm());
+        super.setTargetVelocityRpm(forwardOnlyRpm);
     }
 
     /**

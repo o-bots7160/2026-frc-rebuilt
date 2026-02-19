@@ -30,7 +30,7 @@ public class AbstractIdleVelocityCommand<TSubsystem extends AbstractVelocitySubs
     @Override
     public void end(boolean interrupted) {
         if (!interrupted) {
-            subsystem.stopShooter();
+            subsystem.stopMechanism();
         }
     }
 
