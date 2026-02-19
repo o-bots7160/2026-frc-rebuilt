@@ -18,8 +18,21 @@ public abstract class AbstractVelocitySubsystemConfig extends AbstractMotorSubsy
      * @param rpm value in rotations per minute
      * @return equivalent value in radians per second
      */
-    private static double rpmToRadiansPerSecond(double rpm) {
+    public static double rpmToRadiansPerSecond(double rpm) {
         return Units.rotationsPerMinuteToRadiansPerSecond(rpm);
+    }
+
+    /**
+     * Converts an RPM value to degrees per second.
+     * <p>
+     * Subsystems use this when building simulation motors that expect degrees-per-second suppliers.
+     * </p>
+     *
+     * @param rpm value in rotations per minute
+     * @return equivalent value in degrees per second
+     */
+    public static double rpmToDegreesPerSecond(double rpm) {
+        return Units.radiansToDegrees(Units.rotationsPerMinuteToRadiansPerSecond(rpm));
     }
 
     /** Maximum allowed mechanism velocity in RPM. Targets above this value are clamped. */

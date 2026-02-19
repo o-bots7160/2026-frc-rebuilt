@@ -1,12 +1,17 @@
 package frc.robot.shared.subsystems;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.devices.motor.Motor;
+import frc.robot.shared.config.AbstractMotorConfig;
 import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
+import frc.robot.shared.config.RobotEnvironment;
 
 /**
  * Base subsystem for mechanisms that maintain a target velocity using feedforward and PID control.
@@ -24,6 +29,59 @@ import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
  */
 public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocitySubsystemConfig>
         extends AbstractMotorSubsystem<TConfig> {
+
+    /**
+     * Functional interface for a three-argument function used by {@link #buildVelocityMotor}.
+     *
+     * @param <A> first argument type
+     * @param <B> second argument type
+     * @param <C> third argument type
+     * @param <R> return type
+     */
+    @FunctionalInterface
+    protected interface TriFunction<A, B, C, R> {
+
+        /**
+         * Applies this function to the given arguments.
+         *
+         * @param a first argument
+         * @param b second argument
+         * @param c third argument
+         * @return function result
+         */
+        R apply(A a, B b, C c);
+    }
+
+    /**
+     * Builds the correct motor implementation for the current environment using the shared velocity subsystem pattern.
+     * <p>
+     * Returns null when the config is disabled so the parent falls back to {@link frc.robot.devices.motor.DisabledMotor}. Real and simulation motors
+     * are selected using the provided factory functions.
+     * </p>
+     *
+     * @param <TMotorConfig>  concrete motor config type
+     * @param config          velocity subsystem config supplying max velocity and acceleration for sim motor suppliers
+     * @param motorConfig     motor-specific configuration bundle (CAN ID, gear ratio, inversion, etc.)
+     * @param realFactory     factory function that creates the real motor from a motor config
+     * @param simFactory      factory function that creates the sim motor from a motor config and velocity/acceleration suppliers
+     * @return configured motor, or null when the subsystem is disabled
+     */
+    protected static <TMotorConfig extends AbstractMotorConfig> Motor buildVelocityMotor(
+            AbstractVelocitySubsystemConfig config,
+            TMotorConfig motorConfig,
+            Function<TMotorConfig, Motor> realFactory,
+            TriFunction<TMotorConfig, Supplier<Double>, Supplier<Double>, Motor> simFactory) {
+        if (!config.enabled) {
+            return null;
+        }
+
+        return RobotEnvironment.isReal()
+                ? realFactory.apply(motorConfig)
+                : simFactory.apply(
+                        motorConfig,
+                        () -> AbstractVelocitySubsystemConfig.rpmToDegreesPerSecond(config.getMaximumVelocityRpm()),
+                        () -> AbstractVelocitySubsystemConfig.rpmToDegreesPerSecond(config.getMaximumAccelerationRpmPerSecond()));
+    }
 
     /**
      * PID controller that corrects velocity error.
@@ -84,9 +142,10 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
     }
 
     /**
-     * Refreshes motor, feedforward, and PID configuration when not attached to the FMS.
+     * Refreshes motor, feedforward, and PID configuration when not attached to the FMS, and logs common velocity telemetry.
      * <p>
-     * Override this if you need additional periodic behavior, but call {@code super.periodic()} to keep live tuning updates active.
+     * Override this if you need additional periodic behavior, but call {@code super.periodic()} to keep live tuning updates and common telemetry
+     * active.
      * </p>
      */
     @Override
@@ -95,6 +154,10 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         if (!isFMSAttached()) {
             refreshVelocityController();
         }
+
+        log.recordOutput("isReady", isReady());
+        log.recordOutput("measuredRpm", getMeasuredVelocityRpm());
+        log.recordOutput("targetRpm", getTargetVelocityRpm());
     }
 
     /**
@@ -198,6 +261,19 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         boolean atTarget = withinTolerance && settledTimer.hasElapsed(config.getSettleTimeSeconds());
         log.recordOutput("atTargetVelocity", atTarget);
         return atTarget;
+    }
+
+    /**
+     * Reports whether the subsystem is ready for downstream consumers.
+     * <p>
+     * This is a stable, uniform API that all velocity subsystems expose. Composite commands and cross-subsystem suppliers should prefer this method
+     * over subsystem-specific readiness checks so wiring code stays consistent across mechanisms.
+     * </p>
+     *
+     * @return true when the mechanism is at the target velocity and has been stable long enough
+     */
+    public boolean isReady() {
+        return isAtTargetVelocity();
     }
 
     /**

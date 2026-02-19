@@ -26,6 +26,7 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
      *
      * @return command that idles the indexer roller
      */
+    @Override
     public IdleIndexerCommand createIdleCommand() {
         return new IdleIndexerCommand(subsystem);
     }
@@ -126,10 +127,7 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
      * @return command that continuously tracks the supplied RPM until interrupted
      */
     public Command createContinuousFeedCommand(Supplier<Double> targetRpmSupplier) {
-        return Commands.run(() -> {
-            subsystem.setTargetVelocityRpm(targetRpmSupplier.get());
-            subsystem.seekVelocity();
-        }, subsystem);
+        return createContinuousVelocityCommand(targetRpmSupplier);
     }
 
     /**
@@ -148,25 +146,5 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
         return Commands.waitUntil(() -> shooterReadySupplier.get() && turretOnTargetSupplier.get())
                 .andThen(createFeedAndHoldCommand())
                 .withName("FireWhenReady");
-    }
-
-    /**
-     * Builds a command that stops the indexer immediately.
-     *
-     * @return command that sets the indexer to 0 RPM and stops the motor
-     */
-    public Command createStopCommand() {
-        return Commands.runOnce(subsystem::stop, subsystem);
-    }
-
-    /**
-     * Sets the idle command as the default command for the indexer subsystem.
-     *
-     * @return the idle command that was set as default
-     */
-    public Command setDefaultIdleCommand() {
-        Command command = createIdleCommand();
-        subsystem.setDefaultCommand(command);
-        return command;
     }
 }

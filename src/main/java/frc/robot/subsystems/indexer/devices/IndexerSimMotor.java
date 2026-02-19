@@ -2,7 +2,7 @@ package frc.robot.subsystems.indexer.devices;
 
 import java.util.function.Supplier;
 
-import frc.robot.devices.motor.AbstractSimMotor;
+import frc.robot.devices.motor.AbstractVelocitySimMotor;
 import frc.robot.subsystems.indexer.config.IndexerMotorConfig;
 
 /**
@@ -12,7 +12,7 @@ import frc.robot.subsystems.indexer.config.IndexerMotorConfig;
  * by the subsystem to ensure gearing matches the real device.
  * </p>
  */
-public class IndexerSimMotor extends AbstractSimMotor {
+public class IndexerSimMotor extends AbstractVelocitySimMotor<IndexerMotorConfig> {
 
     /**
      * Creates a simulated indexer motor wrapper using the supplied configuration values.

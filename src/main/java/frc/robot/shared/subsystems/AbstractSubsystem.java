@@ -57,6 +57,15 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
     }
 
     /**
+     * Returns the subsystem configuration bundle for command factories and external consumers that need access to subsystem-specific settings.
+     *
+     * @return subsystem configuration
+     */
+    public TConfig getConfig() {
+        return config;
+    }
+
+    /**
      * States whether this subsystem is marked as enabled in configuration.
      *
      * @return True when the subsystem should execute its normal behavior.

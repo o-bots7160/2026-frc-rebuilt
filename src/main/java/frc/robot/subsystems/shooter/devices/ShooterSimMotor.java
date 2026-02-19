@@ -2,7 +2,7 @@ package frc.robot.subsystems.shooter.devices;
 
 import java.util.function.Supplier;
 
-import frc.robot.devices.motor.AbstractSimMotor;
+import frc.robot.devices.motor.AbstractVelocitySimMotor;
 import frc.robot.subsystems.shooter.config.ShooterMotorConfig;
 
 /**
@@ -12,7 +12,7 @@ import frc.robot.subsystems.shooter.config.ShooterMotorConfig;
  * used by the subsystem to ensure gearing matches the real device.
  * </p>
  */
-public class ShooterSimMotor extends AbstractSimMotor {
+public class ShooterSimMotor extends AbstractVelocitySimMotor<ShooterMotorConfig> {
 
     /**
      * Creates a simulated shooter motor wrapper using the supplied configuration values.

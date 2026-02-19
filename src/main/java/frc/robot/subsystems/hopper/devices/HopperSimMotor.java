@@ -2,7 +2,7 @@ package frc.robot.subsystems.hopper.devices;
 
 import java.util.function.Supplier;
 
-import frc.robot.devices.motor.AbstractSimMotor;
+import frc.robot.devices.motor.AbstractVelocitySimMotor;
 import frc.robot.subsystems.hopper.config.HopperMotorConfig;
 
 /**
@@ -12,7 +12,7 @@ import frc.robot.subsystems.hopper.config.HopperMotorConfig;
  * by the subsystem to ensure gearing matches the real device.
  * </p>
  */
-public class HopperSimMotor extends AbstractSimMotor {
+public class HopperSimMotor extends AbstractVelocitySimMotor<HopperMotorConfig> {
 
     /**
      * Creates a simulated hopper motor wrapper using the supplied configuration values.

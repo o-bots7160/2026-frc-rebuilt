@@ -61,6 +61,12 @@ Follow them whenever you add code, documentation, or tests.
   (e.g., `maximumSetpointDegrees`, `maximumAngularSpeedDegreesPerSecond`).
 - Abstractions are encouraged when they reduce duplication, but keep them simple
   enough to understand in a quick code review.
+- When creating a new subsystem, command, config, or device wrapper, compare it
+  against existing siblings in the same abstract hierarchy (e.g., other velocity
+  subsystems, other motor wrappers). If two or more concrete classes share
+  identical methods, extract the shared logic into the appropriate abstract base
+  class to follow DRY. Check subsystems, configs, motors, sim motors, commands,
+  and command factories — duplication can appear at any layer.
 
 ## SOLID design principles
 

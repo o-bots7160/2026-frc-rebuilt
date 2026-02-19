@@ -26,6 +26,7 @@ public class HopperSubsystemCommandFactory extends AbstractVelocityCommandFactor
      *
      * @return command that idles the hopper belt
      */
+    @Override
     public IdleHopperCommand createIdleCommand() {
         return new IdleHopperCommand(subsystem);
     }
@@ -92,29 +93,6 @@ public class HopperSubsystemCommandFactory extends AbstractVelocityCommandFactor
      * @return command that continuously tracks the supplied RPM until interrupted
      */
     public Command createContinuousTransportCommand(Supplier<Double> targetRpmSupplier) {
-        return Commands.run(() -> {
-            subsystem.setTargetVelocityRpm(targetRpmSupplier.get());
-            subsystem.seekVelocity();
-        }, subsystem);
-    }
-
-    /**
-     * Builds a command that stops the hopper belt immediately.
-     *
-     * @return command that sets the hopper to 0 RPM and stops the motor
-     */
-    public Command createStopCommand() {
-        return Commands.runOnce(subsystem::stop, subsystem);
-    }
-
-    /**
-     * Sets the idle command as the default command for the hopper subsystem.
-     *
-     * @return the idle command that was set as default
-     */
-    public Command setDefaultIdleCommand() {
-        Command command = createIdleCommand();
-        subsystem.setDefaultCommand(command);
-        return command;
+        return createContinuousVelocityCommand(targetRpmSupplier);
     }
 }

@@ -1,5 +1,7 @@
 package frc.robot.shared.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -11,7 +13,7 @@ import frc.robot.shared.subsystems.AbstractVelocitySubsystem;
  *
  * @param <TSubsystem> concrete velocity subsystem type
  */
-public class AbstractVelocityCommandFactory<TSubsystem extends AbstractVelocitySubsystem<?>>
+public abstract class AbstractVelocityCommandFactory<TSubsystem extends AbstractVelocitySubsystem<?>>
         extends AbstractSubsystemCommandFactory<TSubsystem> {
 
     private static final double DEFAULT_SYSID_TIMEOUT_SECONDS = 3.0;
@@ -107,6 +109,58 @@ public class AbstractVelocityCommandFactory<TSubsystem extends AbstractVelocityS
                 .andThen(Commands.waitSeconds(delaySeconds))
                 .andThen(routine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(dynamicTimeoutSecs)));
     }
+
+    /**
+     * Builds a command that stops the mechanism immediately by setting velocity to zero.
+     *
+     * @return command that stops the motor in a single cycle
+     */
+    public Command createStopCommand() {
+        return Commands.runOnce(subsystem::stop, subsystem);
+    }
+
+    /**
+     * Sets the idle command as the default command for this velocity subsystem.
+     * <p>
+     * Call this once during {@code RobotContainer} construction so the subsystem returns to its
+     * idle behavior whenever no other command is scheduled.
+     * </p>
+     *
+     * @return the idle command that was set as default
+     */
+    public Command setDefaultIdleCommand() {
+        Command command = createIdleCommand();
+        subsystem.setDefaultCommand(command);
+        return command;
+    }
+
+    /**
+     * Builds a command that continuously reads a target RPM from a supplier and seeks that velocity every cycle.
+     * <p>
+     * Unlike commands that lock the target at initialization, this command re-evaluates the supplier each cycle. Use this
+     * when the target is backed by a tunable value that operators may adjust while the command is running.
+     * </p>
+     *
+     * @param targetRpmSupplier provider for the target RPM; evaluated every execute cycle
+     * @return command that continuously tracks the supplied RPM until interrupted
+     */
+    public Command createContinuousVelocityCommand(Supplier<Double> targetRpmSupplier) {
+        return Commands.run(() -> {
+            subsystem.setTargetVelocityRpm(targetRpmSupplier.get());
+            subsystem.seekVelocity();
+        }, subsystem);
+    }
+
+    /**
+     * Builds the idle command for this velocity subsystem.
+     * <p>
+     * Each concrete factory returns its own idle command type. The base factory uses this method in
+     * {@link #setDefaultIdleCommand()} to wire the subsystem's default behavior.
+     * </p>
+     *
+     * @return command that idles the mechanism at its configured idle RPM
+     */
+    protected abstract Command createIdleCommand();
 
     private Command wrapSysIdCommand(Command sysIdCommand) {
         return Commands.sequence(
