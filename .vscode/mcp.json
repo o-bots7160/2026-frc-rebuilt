@@ -1,10 +1,9 @@
 {
 	"servers": {
 		"drawio-diagrams": {
-			"command": "bash",
+			"command": "npx",
 			"args": [
-				"-c",
-				"export PATH=\"$HOME/.nvm/versions/node/v20.11.1/bin:$PATH\" && npx drawio-mcp"
+				"github:brandonmartinez/drawio-mcp"
 			],
 			"type": "stdio"
 		}

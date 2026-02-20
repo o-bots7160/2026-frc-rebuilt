@@ -432,3 +432,114 @@ Follow this pattern when adding a new subsystem that can be toggled off:
 - Commit messages should use imperative mood ("Add turret tracking command", not
   "Added" or "Adding"). Keep the summary under 72 characters and add a body
   paragraph for non-trivial changes.
+
+## Architecture diagram (`7160-frc-rebuilt.drawio.svg`)
+
+The root-level `7160-frc-rebuilt.drawio.svg` is the single source-of-truth
+architecture diagram, managed via the `drawio-mcp` MCP server (configured in
+`.vscode/mcp.json`). Always read the diagram with `get_diagram_info` before
+making changes so you understand current node/edge IDs and positions.
+
+### MCP server reference
+
+- The diagram MCP server is defined in `.vscode/mcp.json` as
+  `drawio-diagrams`, using `npx github:brandonmartinez/drawio-mcp`.
+- Because it pulls from a GitHub repo (not an npm registry package), clearing
+  the npx cache requires deleting the matching directories under
+  `~/.npm/_npx/` and then restarting the MCP server from VS Code.
+- Available tools: `new_diagram`, `add_nodes`, `edit_nodes`, `link_nodes`,
+  `remove_nodes`, `get_diagram_info`.
+- `link_nodes` supports `edgeStyle` (`orthogonal`, `segment`, `elbow`,
+  `entity-relation`, `straight`) and `waypoints` (array of `{x, y}` objects)
+  for multi-point routing.
+
+### Diagram layout structure
+
+The diagram is arranged in horizontal bands, top to bottom:
+
+1. **Legend row** (y ≈ 0) — color-coded key boxes at the very top.
+2. **Robot / RobotContainer bar** (y = 50–120) — full-width blue bars.
+3. **Configuration** (y = 130) — yellow config box, right-aligned.
+4. **Subsystem row** (y = 200) — all subsystem nodes in a horizontal line,
+   grouped by function:
+   - DRIVE & POSITIONING (x = 0–880): DriveBase, Turret, Climber.
+   - SENSING & VISION (x = 920–1800): RobotState, AprilTagVision,
+     DriverCamera.
+   - BALL PATH (x = 1820–2360): Shooter, Indexer, Feeder, Hopper (Feeder and
+     Hopper sit in a second row at y = 370).
+5. **Command factory row** (y = 440–660) — purple factory nodes below their
+   respective subsystems.
+6. **Command row** (y = 600–1025) — red command nodes below their factories.
+7. **Controller / bindings row** (y = 1040–1180) — yellow driver/operator
+   controllers and TriggerBindings bar.
+
+### Node conventions
+
+- Each node type has a consistent color and style. Do not invent new colors:
+
+  | Category         | Fill        | Stroke      | Font style |
+  | ---------------- | ----------- | ----------- | ---------- |
+  | Subsystem        | `#d5e8d4`   | `#82b366`   | bold       |
+  | Command Factory  | `#e1d5e7`   | `#9673a6`   | bold       |
+  | Command          | `#f8cecc`   | `#b85450`   | bold       |
+  | Config / Binding | `#fff2cc`   | `#d6b656`   | bold       |
+  | Infrastructure   | `#dae8fc`   | `#6c8ebf`   | bold       |
+  | Data Flow legend | `#dae8fc`   | `#0066cc`   | bold+italic|
+
+- Node IDs use kebab-case with a short descriptive slug: `db-sub`,
+  `turret-factory`, `cmd-shooter-idle`, `trigger`.
+- Default commands are prefixed with a star emoji: `⭐`.
+- Font size is `11` for most nodes, `12–13` for the Robot/RobotContainer bars.
+- Use `RoundedRectangle` with appropriate `arcSize` for all nodes (subsystems
+  use `arcSize=16` or `arcSize=32`; factories/commands `arcSize=12` or `24`).
+
+### Edge conventions and lane routing
+
+Each edge belongs to one of four semantic categories. Assign the correct
+color, style, and routing lane so edges never stack on top of each other.
+
+| Category       | Color       | Style    | Label    | Routing lane   |
+| -------------- | ----------- | -------- | -------- | -------------- |
+| Data flow      | `#0066CC`   | solid 2px| varies   | Above subsystem row (y = 140–165) using waypoints |
+| Owns ref       | `#9673a6`   | solid 1px| "owns ref" | **Left lane** — waypoints ~15–20px outside the left edge of the column |
+| Creates        | `#b85450`   | dashed 1px| "creates" | **Center** — direct orthogonal, or right-side waypoints when bypassing intermediate nodes |
+| Requires       | `#82b366`   | solid 1px| "requires" | **Right lane** — waypoints ~5–20px outside the right edge of the column |
+| Trigger → factory | `#d6b656` | solid 1px| "uses" | Horizontal bus along y = 1020–1040 with waypoints, then vertical to target |
+
+- **Lane separation is critical.** When a subsystem column has all three
+  vertical edge types (owns ref, creates, requires), they must run in
+  separate vertical lanes so labels do not overlap. Use `segment` edge style
+  with explicit waypoints for left/right lanes; use `orthogonal` for center
+  connections that go straight down.
+- When multiple edges share the same lane (e.g., two "requires" edges to the
+  same subsystem), offset their waypoint x-coordinates by 5px each to prevent
+  overlap.
+- Edge IDs follow the pattern `source-2-target` (e.g.,
+  `turret-factory-2-turret-sub`, `cmd-track-2-turret-sub`).
+- Font size on all edge labels is `10`.
+- Data flow edges (blue) are `strokeWidth=2`; all other edges are default
+  width.
+- Data flow edges between non-adjacent subsystems use waypoints routed above
+  the subsystem row (y = 140–165) to avoid crossing through subsystem nodes.
+  Each horizontal data flow line uses a distinct y-value so parallel blue
+  lines do not overlap.
+
+### Keeping the diagram in sync
+
+- When adding a new subsystem, add a subsystem node (green), a command
+  factory node (purple), and any command nodes (red) in the correct x-region.
+  Wire all three edge types (owns ref, creates, requires) using the lane
+  conventions above.
+- When adding a new command to an existing subsystem, add the command node
+  below the existing commands, create a dashed "creates" edge from the
+  factory, and a solid "requires" edge back to the subsystem using the right
+  lane.
+- When adding cross-subsystem data flow, use blue edges with waypoints routed
+  above the subsystem row.
+- When adding a new trigger binding, add a "uses" edge from `trigger` to the
+  relevant factory using waypoints along the horizontal bus (y = 1020–1040).
+- Update the driver/operator controller node labels when button mappings
+  change.
+- Always use `get_diagram_info` first to confirm current node positions and
+  IDs before editing. Node positions may have shifted from manual edits in
+  the draw.io VS Code extension.
