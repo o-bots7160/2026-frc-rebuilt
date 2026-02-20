@@ -81,4 +81,12 @@
   "wpilib.skipTests": true,
   "wpilib.skipSelectSimulateExtension": true,
   "chat.agent.maxRequests": 100,
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "7160-frc-rebuilt\\.drawio\\.svg$",
+        "cmd": "node \"${workspaceFolder}/scripts/export-drawio-png.mjs\" \"${workspaceFolder}/7160-frc-rebuilt.drawio.svg\" \"${workspaceFolder}/7160-frc-rebuilt.png\""
+      }
+    ]
+  },
 }

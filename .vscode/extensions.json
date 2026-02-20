@@ -9,6 +9,7 @@
         "vscjava.vscode-gradle",
         "yzhang.markdown-all-in-one",
         "esbenp.prettier-vscode",
-        "hediet.vscode-drawio"
+        "hediet.vscode-drawio",
+        "emeraldwalk.runonsave"
     ]
 }

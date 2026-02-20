@@ -13,8 +13,10 @@ Competition "REBUILT" season codebase.
   - [Simulation](#simulation)
   - [Deployment](#deployment)
   - [Documentation](#documentation)
+    - [For other teams](#for-other-teams)
   - [Development reference](#development-reference)
     - [Project structure](#project-structure)
+    - [Pose ownership](#pose-ownership)
     - [Dependencies](#dependencies)
 
 ## Prerequisites
@@ -34,6 +36,9 @@ Competition "REBUILT" season codebase.
    - macOS: if you see a malware warning, allow it via System Settings → Privacy
      & Security → Open Anyway, or run `sudo xattr -rd com.apple.quarantine`
      followed by the PathPlanner app folder.
+4. **Install [Node.js](https://nodejs.org/)** (LTS recommended) for draw.io
+   tooling in this repo, including MCP-based diagram editing and export scripts.
+   - Verify the install with `node -v`.
 
 ## Getting started
 
@@ -141,7 +146,7 @@ The key folders under `src/main` you will touch most often are:
 - Resetting pose flows through robot state so the drivebase and estimator stay
   aligned.
 
-![System overview diagram for the 2026 robot](./7160-frc-rebuilt.drawio.svg)
+![System overview diagram for the 2026 robot](./7160-frc-rebuilt.png)
 
 This architecture diagram lives in `7160-frc-rebuilt.drawio.svg`; open and edit
 it with [draw.io](https://www.drawio.com/download) to keep the visuals current
