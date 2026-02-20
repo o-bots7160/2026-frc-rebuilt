@@ -24,6 +24,8 @@ import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
 import frc.robot.subsystems.drivercameravision.DriverCameraSubsystem;
 import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
+import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
 import frc.robot.subsystems.hopper.HopperSubsystem;
 import frc.robot.subsystems.hopper.commands.HopperSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
@@ -67,6 +69,8 @@ public class RobotContainer {
 
     private final HopperSubsystem                  hopperSubsystem;
 
+    private final FeederSubsystem                  feederSubsystem;
+
     // Command factories
 
     private final PathPlannerCommandFactory        pathPlannerCommandFactory;
@@ -86,6 +90,8 @@ public class RobotContainer {
     private final ClimberSubsystemCommandFactory   climberCommandFactory;
 
     private final HopperSubsystemCommandFactory    hopperCommandFactory;
+
+    private final FeederSubsystemCommandFactory    feederCommandFactory;
 
     // Input bindings
     @SuppressWarnings("unused")
@@ -121,6 +127,7 @@ public class RobotContainer {
             driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
             climberSubsystem            = new ClimberSubsystem(subsystemsConfig.climberSubsystem);
             hopperSubsystem             = new HopperSubsystem(subsystemsConfig.hopperSubsystem);
+            feederSubsystem             = new FeederSubsystem(subsystemsConfig.feederSubsystem);
 
             // Command factories
             pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
@@ -131,11 +138,13 @@ public class RobotContainer {
             driverCameraCommandFactory  = new DriverCameraSubsystemCommandFactory(driverCameraSubsystem);
             climberCommandFactory       = new ClimberSubsystemCommandFactory(climberSubsystem);
             hopperCommandFactory        = new HopperSubsystemCommandFactory(hopperSubsystem);
+            feederCommandFactory        = new FeederSubsystemCommandFactory(feederSubsystem);
 
             // Default Commands
             shooterCommandFactory.setDefaultIdleCommand();
             indexerCommandFactory.setDefaultIdleCommand();
             hopperCommandFactory.setDefaultIdleCommand();
+            feederCommandFactory.setDefaultIdleCommand();
             turretCommandFactory.setDefaultTrackFieldTargetCommand(
                     robotStateSubsystem,
                     () -> {

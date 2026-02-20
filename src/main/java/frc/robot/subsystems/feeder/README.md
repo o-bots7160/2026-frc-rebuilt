@@ -2,65 +2,75 @@
 
 ## Overview
 
-The Feeder subsystem centers [FUEL](../../GLOSSARY.md#fuel) inside the hopper so
-the [indexer](../indexer/README.md) always receives a clean handoff. It pulls
-pieces from the left or right side into the middle lane and hands them forward,
-keeping the conveyor balanced during REBUILT cycles.
+The Feeder subsystem transports [FUEL](../../GLOSSARY.md#fuel) from the
+[hopper](../hopper/README.md) toward the [indexer](../indexer/README.md). It
+uses a belt or roller driven by a single motor to keep pieces moving through the
+middle lane of the robot during REBUILT cycles.
 
 ## How it works
 
-<!-- TODO: fill in when hardware decisions are made -->
+The feeder sits between the hopper and the indexer. It extends
+`AbstractVelocitySubsystem` for bidirectional velocity control with feedforward
+and PID. Positive RPM moves Fuel forward (toward the indexer); negative RPM
+reverses the belt (toward the hopper).
 
-The feeder sits between the [hopper](../hopper/README.md) and the
-[indexer](../indexer/README.md). It uses one or more belts or rollers to move
-game pieces toward the center of the robot.
+Behaviors:
 
-Planned behaviors:
-
-- **Center-feed** — pull pieces from whichever side has them into the middle
-  lane, coordinating speed with the hopper to avoid double-feeding.
-- **Jam detection** — monitor motor current spikes or proximity sensors to
-  detect side jams, then switch to a pulse/alternate pattern to clear them.
-- **Reverse/clear** — a quick reverse mode to back pieces out when the operator
-  needs to clear a jam manually.
-- **Idle by default** — the feeder stays stopped until intake is active and
-  `RobotContainer` triggers a centering command.
+- **Idle forward** — the default command keeps the belt spinning at a low
+  forward RPM (`idleVelocityRpm`) so Fuel continuously moves toward the indexer
+  without operator intervention.
+- **Forward transport** — a higher-speed forward mode (`forwardVelocityRpm`) for
+  active feeding during scoring cycles.
+- **Reverse/clear** — spins the belt backward (`reverseVelocityRpm`) to back
+  Fuel out when the operator needs to clear a jam.
 
 ## Configuration
 
-<!-- TODO: add config fields and tunables once hardware is selected -->
+Settings are loaded from `subsystems.json` under the `feederSubsystem` key. All
+RPM values represent belt (mechanism) speed after gear reduction, not motor
+shaft speed.
 
-Expected settings (to be added to `subsystems.json`):
-
-| Setting               | Units          | Purpose                                   |
-| --------------------- | -------------- | ----------------------------------------- |
-| `enabled`             | —              | Master enable flag                        |
-| belt speeds           | percent or RPM | Forward and reverse motor outputs         |
-| jam current threshold | amps           | Current level that triggers jam detection |
+| Setting                           | Units       | Purpose                                                   |
+| --------------------------------- | ----------- | --------------------------------------------------------- |
+| `enabled`                         | —           | Master enable flag                                        |
+| `verbose`                         | —           | Enables detailed telemetry logging                        |
+| `feederMotorConfig.motorCanId`    | —           | CAN ID for the belt motor controller                      |
+| `maximumVelocityRpm`              | RPM         | Velocity clamp applied to all targets                     |
+| `maximumAccelerationRpmPerSecond` | RPM/s       | Trapezoidal ramp rate (0 = direct PID)                    |
+| `velocityToleranceRpm`            | RPM         | Acceptable error for at-target checks                     |
+| `settleTimeSeconds`               | seconds     | How long velocity must stay within tolerance before ready |
+| `idleVelocityRpm`                 | RPM         | Default forward idle speed                                |
+| `forwardVelocityRpm`              | RPM         | Active transport speed toward the indexer                 |
+| `reverseVelocityRpm`              | RPM         | Clearing speed toward the hopper (stored positive)        |
+| `kP`, `kI`, `kD`                  | —           | PID gains for velocity control                            |
+| `kS`, `kV`, `kA`                  | volts / ... | Feedforward gains for motor voltage estimation            |
 
 ## Code structure
 
-<!-- TODO: update when classes are added -->
-
-Planned files:
-
-| File                                 | Purpose                                                                      |
-| ------------------------------------ | ---------------------------------------------------------------------------- |
-| `FeederSubsystem.java`               | Subsystem managing left/right belt control and jam detection                 |
-| `commands/FeederCommandFactory.java` | Factory for center-feed, reverse, and jam-clear commands                     |
-| `config/FeederSubsystemConfig.java`  | Configuration and [tunables](../../GLOSSARY.md#tunable)                      |
-| `io/FeederIO.java`                   | [IO](../../GLOSSARY.md#io-inputoutput) interface for belt motors and sensors |
+| File                                          | Purpose                                                  |
+| --------------------------------------------- | -------------------------------------------------------- |
+| `FeederSubsystem.java`                        | Velocity subsystem with forward/reverse convenience APIs |
+| `commands/IdleFeederCommand.java`             | Default command that holds the belt at the idle RPM      |
+| `commands/ReverseFeederCommand.java`          | Command that spins the belt backward to clear Fuel       |
+| `commands/FeederSubsystemCommandFactory.java` | Factory for idle, reverse, forward-hold, and SysId cmds  |
+| `config/FeederSubsystemConfig.java`           | Configuration and tunables for the feeder                |
+| `config/FeederMotorConfig.java`               | Motor-specific configuration (CAN ID, gearing, etc.)     |
+| `devices/FeederMotor.java`                    | SparkMax motor wrapper for real hardware                 |
+| `devices/FeederSimMotor.java`                 | Simulation motor wrapper for sim testing                 |
 
 ## Status / TODO
 
 ### Done
 
 - README and folder structure created.
+- Subsystem, config, motor, sim motor, commands, and factory implemented.
+- Wired into `SubsystemsConfig`, `RobotContainer`, and all three JSON configs.
+- Elastic and AdvantageScope tuning tabs added.
 
 ### TODO
 
-- Lock in motor layout and sensing approach.
-- Create IO interface and config class.
-- Implement centering command with hopper speed coordination.
-- Add jam-detection logic and auto-pulse recovery.
-- Wire subsystem in `RobotContainer` and add to `subsystems.json`.
+- Lock in real motor CAN ID and gear ratio once hardware is selected.
+- Run SysId to characterize feedforward gains (kS, kV, kA).
+- Tune PID gains for stable velocity tracking.
+- Add jam-detection logic (current spike monitoring) and auto-pulse recovery.
+- Coordinate feeder speed with hopper output for balanced Fuel flow.

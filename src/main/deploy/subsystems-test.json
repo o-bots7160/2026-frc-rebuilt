@@ -203,6 +203,34 @@
     "kV": 0.0,
     "kA": 0.0
   },
+  "feederSubsystem": {
+    "enabled": false,
+    "verbose": true,
+    "feederMotorConfig": {
+      "enabled": false,
+      "verbose": true,
+      "useSetpointLimits": false,
+      "motorCanId": 57,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 30,
+      "motorRotationsPerMechanismRotation": 1.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 0.0
+    },
+    "maximumVelocityRpm": 3000.0,
+    "maximumAccelerationRpmPerSecond": 0.0,
+    "velocityToleranceRpm": 50.0,
+    "settleTimeSeconds": 0.15,
+    "idleVelocityRpm": 500.0,
+    "forwardVelocityRpm": 1500.0,
+    "reverseVelocityRpm": 1000.0,
+    "kP": 0.0,
+    "kI": 0.0,
+    "kD": 0.0,
+    "kS": 0.0,
+    "kV": 0.0,
+    "kA": 0.0
+  },
   "triggerBindings": {
     "leftStickYResponseExponent": 2.0,
     "leftStickXResponseExponent": 2.0,
