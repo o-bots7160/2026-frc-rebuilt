@@ -65,6 +65,17 @@
       "reverseSoftLimitDegrees": 0.0,
       "forwardSoftLimitDegrees": 0.0
     },
+    "shooterFollowerMotorConfig": {
+      "enabled": false,
+      "verbose": true,
+      "useSetpointLimits": false,
+      "motorCanId": 0,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 1.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 0.0
+    },
     "maximumVelocityRpm": 3000.0,
     "maximumAccelerationRpmPerSecond": 2500.0,
     "velocityToleranceRpm": 50.0,

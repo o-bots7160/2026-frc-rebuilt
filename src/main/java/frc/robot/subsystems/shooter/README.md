@@ -10,11 +10,29 @@ scoring zones.
 
 ## How it works
 
-The shooter uses a single flywheel wheel driven by a REV SparkMax motor
-controller. A [feedforward](../../GLOSSARY.md#feedforward) term maintains the
-target velocity, and a [PID](../../GLOSSARY.md#pid) controller corrects for
-disturbances when the [indexer](../indexer/README.md) loads a piece and
-momentarily slows the wheel.
+The shooter uses a dual-motor flywheel driven by two REV SparkMax motor
+controllers. Both motors are mechanically coupled to the same flywheel shaft. A
+[feedforward](../../GLOSSARY.md#feedforward) term maintains the target velocity,
+and a [PID](../../GLOSSARY.md#pid) controller corrects for disturbances when the
+[indexer](../indexer/README.md) loads a piece and momentarily slows the wheel.
+
+### Dual-motor configuration
+
+The competition robot uses two motors: a **primary** motor whose encoder
+provides position and velocity feedback, and a **follower** motor that mirrors
+the same voltage commands. Each motor has its own `ShooterMotorConfig` block in
+the JSON config, so they can have independent CAN IDs, inversion flags, and
+current limits.
+
+At the code level, both motors are wrapped in a
+[`CompositeMotor`](../../devices/motor/CompositeMotor.java) adapter that
+implements the standard `Motor` interface. The subsystem hierarchy
+(`AbstractMotorSubsystem`, `AbstractVelocitySubsystem`) never knows multiple
+motors exist — it sees a single `Motor`.
+
+On robots with only one shooter motor (e.g., the test robot), set
+`shooterFollowerMotorConfig.enabled = false` in `subsystems-test.json` and the
+subsystem falls back to using the primary motor alone.
 
 ### Units convention
 
@@ -66,6 +84,10 @@ Settings live in `subsystems.json` under `shooterSubsystem`:
 | `reverseVelocityRpm`              | RPM     | Reverse speed for clearing jams                         |
 | `kS`, `kV`, `kA`                  | volts   | Feedforward gains                                       |
 | `kP`, `kI`, `kD`                  | —       | PID velocity controller gains                           |
+
+Motor-level settings live in `shooterMotorConfig` (primary) and
+`shooterFollowerMotorConfig` (follower) blocks. Set the follower's `enabled` to
+`false` on robots with a single shooter motor.
 
 ## Code structure
 

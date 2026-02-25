@@ -1,6 +1,8 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.MathUtil;
+import frc.robot.devices.motor.CompositeMotor;
+import frc.robot.devices.motor.Motor;
 import frc.robot.shared.subsystems.AbstractVelocitySubsystem;
 import frc.robot.subsystems.shooter.config.ShooterSubsystemConfig;
 import frc.robot.subsystems.shooter.devices.ShooterMotor;
@@ -8,6 +10,12 @@ import frc.robot.subsystems.shooter.devices.ShooterSimMotor;
 
 /**
  * Shooter subsystem that spins a flywheel to launch Fuel into the scoring hub.
+ * <p>
+ * The competition robot uses two mechanically coupled motors: a primary and a follower. The follower can be
+ * independently inverted and current-limited via its own config block. On robots with only one shooter motor
+ * (e.g., the test robot), set {@code shooterFollowerMotorConfig.enabled = false} and the subsystem operates
+ * with a single motor transparently.
+ * </p>
  * <p>
  * All RPM values in the public API represent flywheel (mechanism) speed after gear reduction, not motor shaft speed. The gear ratio is applied at the
  * motor encoder conversion layer, so callers never deal with motor-side rotations.
@@ -21,12 +29,49 @@ import frc.robot.subsystems.shooter.devices.ShooterSimMotor;
 public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystemConfig> {
 
     /**
-     * Builds the shooter subsystem with a single SparkMax-driven flywheel motor.
+     * Builds the correct motor configuration for the shooter, wrapping two motors in a {@link CompositeMotor}
+     * when the follower is enabled, or returning a single motor when it is not.
+     *
+     * @param config shooter subsystem config containing both motor config bundles
+     * @return configured motor (composite or single), or null when the subsystem is disabled
+     */
+    private static Motor buildShooterMotor(ShooterSubsystemConfig config) {
+        if (!config.enabled) {
+            return null;
+        }
+
+        Motor primary = buildVelocityMotor(
+                config,
+                config.shooterMotorConfig,
+                ShooterMotor::create,
+                ShooterSimMotor::create);
+
+        // When the follower config is disabled, operate with the primary motor only.
+        if (!config.shooterFollowerMotorConfig.enabled) {
+            return primary;
+        }
+
+        Motor follower = buildVelocityMotor(
+                config,
+                config.shooterFollowerMotorConfig,
+                ShooterMotor::create,
+                ShooterSimMotor::create);
+
+        return new CompositeMotor(primary, follower);
+    }
+
+    /**
+     * Builds the shooter subsystem with a primary motor and an optional follower motor.
+     * <p>
+     * When the follower motor config is enabled, both motors are wrapped in a {@link CompositeMotor} so the
+     * subsystem hierarchy sees a single {@link Motor}. When the follower is disabled, only the primary motor
+     * is used.
+     * </p>
      *
      * @param config shooter configuration bundle loaded from JSON; velocities are expressed in RPM
      */
     public ShooterSubsystem(ShooterSubsystemConfig config) {
-        super(config, buildVelocityMotor(config, config.shooterMotorConfig, ShooterMotor::create, ShooterSimMotor::create));
+        super(config, buildShooterMotor(config));
     }
 
     /**

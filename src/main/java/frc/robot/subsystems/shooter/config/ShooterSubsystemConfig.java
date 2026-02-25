@@ -11,8 +11,17 @@ import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
  */
 public class ShooterSubsystemConfig extends AbstractVelocitySubsystemConfig {
 
-    /** Motor configuration bundle for the shooter flywheel motor. */
-    public ShooterMotorConfig shooterMotorConfig = new ShooterMotorConfig();
+    /** Motor configuration bundle for the primary shooter flywheel motor. */
+    public ShooterMotorConfig shooterMotorConfig         = new ShooterMotorConfig();
+
+    /**
+     * Motor configuration bundle for the follower shooter flywheel motor.
+     * <p>
+     * Set {@code enabled = false} in the JSON config when the robot has only one shooter motor (e.g., the test robot).
+     * The follower can have independent inversion, current limits, and CAN ID.
+     * </p>
+     */
+    public ShooterMotorConfig shooterFollowerMotorConfig = new ShooterMotorConfig();
 
     /** Reverse velocity used for clearing stuck pieces, in RPM. Set to 0 to disable reverse mode. */
     public double             reverseVelocityRpm;
