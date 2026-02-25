@@ -7,7 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "deploy harvester"
           }
         },
         {
@@ -17,34 +17,21 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "start intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "b1 intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "end intake"
+            "pathName": "b1 intake"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "b1 travel back"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "b1 adjust"
           }
         },
         {
@@ -56,62 +43,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "b1 travel out"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "start intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "b1 intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "end intake"
+            "pathName": "b1 to depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "b1 travel back"
+            "pathName": "b1 from depot"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "extend climb"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "b1 climb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "retract climb"
+            "name": "shoot"
           }
         }
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }
