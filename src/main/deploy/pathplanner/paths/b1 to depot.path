@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 5.5
+        "y": 7.5
       },
       "prevControl": null,
       "nextControl": {
         "x": 3.75,
-        "y": 5.5
+        "y": 7.5
       },
       "isLocked": false,
-      "linkedName": "b1a end"
+      "linkedName": "b1to start"
     },
     {
       "anchor": {
-        "x": 1.25,
-        "y": 6.0
+        "x": 0.5,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 1.0,
-        "y": 6.0
+        "x": 0.25,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.75,
-      "rotationDegrees": 180.0
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 1.0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "b1",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -56.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -28,8 +28,6 @@ import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
 import frc.robot.subsystems.harvester.HarvesterSubsystem;
 import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
-import frc.robot.subsystems.hopper.HopperSubsystem;
-import frc.robot.subsystems.hopper.commands.HopperSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -71,8 +69,6 @@ public class RobotContainer {
 
     private final ClimberSubsystem                 climberSubsystem;
 
-    private final HopperSubsystem                  hopperSubsystem;
-
     private final FeederSubsystem                  feederSubsystem;
 
     private final IntakeSubsystem                  intakeSubsystem;
@@ -96,8 +92,6 @@ public class RobotContainer {
 
     @SuppressWarnings("unused")
     private final ClimberSubsystemCommandFactory   climberCommandFactory;
-
-    private final HopperSubsystemCommandFactory    hopperCommandFactory;
 
     private final FeederSubsystemCommandFactory    feederCommandFactory;
 
@@ -138,7 +132,6 @@ public class RobotContainer {
                     driveBaseSubsystem::getOdometryPose);
             driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
             climberSubsystem            = new ClimberSubsystem(subsystemsConfig.climberSubsystem);
-            hopperSubsystem             = new HopperSubsystem(subsystemsConfig.hopperSubsystem);
             feederSubsystem             = new FeederSubsystem(subsystemsConfig.feederSubsystem);
             intakeSubsystem             = new IntakeSubsystem(subsystemsConfig.intakeSubsystem);
             harvesterSubsystem          = new HarvesterSubsystem(subsystemsConfig.harvesterSubsystem);
@@ -151,7 +144,6 @@ public class RobotContainer {
             indexerCommandFactory       = new IndexerSubsystemCommandFactory(indexerSubsystem);
             driverCameraCommandFactory  = new DriverCameraSubsystemCommandFactory(driverCameraSubsystem);
             climberCommandFactory       = new ClimberSubsystemCommandFactory(climberSubsystem);
-            hopperCommandFactory        = new HopperSubsystemCommandFactory(hopperSubsystem);
             feederCommandFactory        = new FeederSubsystemCommandFactory(feederSubsystem);
             intakeCommandFactory        = new IntakeSubsystemCommandFactory(intakeSubsystem);
             harvesterCommandFactory     = new HarvesterSubsystemCommandFactory(harvesterSubsystem);
@@ -159,7 +151,6 @@ public class RobotContainer {
             // Default Commands
             shooterCommandFactory.setDefaultIdleCommand();
             indexerCommandFactory.setDefaultIdleCommand();
-            hopperCommandFactory.setDefaultIdleCommand();
             feederCommandFactory.setDefaultIdleCommand();
             intakeCommandFactory.setDefaultIdleCommand();
             harvesterCommandFactory.setDefaultStowCommand();

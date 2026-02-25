@@ -7,7 +7,7 @@ import frc.robot.subsystems.feeder.FeederSubsystem;
  * Default command that maintains the feeder belt at the configured idle RPM.
  * <p>
  * Set this as the default command so the belt keeps running forward at a low RPM when no other command is active. This ensures Fuel continuously
- * moves from the hopper toward the indexer without operator intervention. The command never finishes on its own and stops the motor when interrupted.
+ * moves from the intake toward the indexer without operator intervention. The command never finishes on its own and stops the motor when interrupted.
  * </p>
  */
 public class IdleFeederCommand extends AbstractIdleVelocityCommand<FeederSubsystem> {

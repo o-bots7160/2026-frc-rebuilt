@@ -465,8 +465,7 @@ The diagram is arranged in horizontal bands, top to bottom:
    - DRIVE & POSITIONING (x = 0–880): DriveBase, Turret, Climber.
    - SENSING & VISION (x = 920–1800): RobotState, AprilTagVision,
      DriverCamera.
-   - BALL PATH (x = 1820–2360): Shooter, Indexer, Feeder, Hopper (Feeder and
-     Hopper sit in a second row at y = 370).
+   - BALL PATH (x = 1820–2360): Shooter, Indexer, Feeder.
 5. **Command factory row** (y = 440–660) — purple factory nodes below their
    respective subsystems.
 6. **Command row** (y = 600–1025) — red command nodes below their factories.

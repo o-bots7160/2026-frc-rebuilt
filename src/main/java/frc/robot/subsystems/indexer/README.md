@@ -3,11 +3,10 @@
 ## Overview
 
 The Indexer subsystem controls when [FUEL](../../GLOSSARY.md#fuel) leaves the
-robot. It acts as the gate between storage
-([hopper](../hopper/README.md)/[feeder](../feeder/README.md)) and the
-[shooter](../shooter/README.md), metering one piece at a time so shots can be
-timed during REBUILT scoring windows. The indexer can hold a preloaded piece for
-autonomous or volley sequences.
+robot. It acts as the gate between storage ([feeder](../feeder/README.md)) and
+the [shooter](../shooter/README.md), metering one piece at a time so shots can
+be timed during REBUILT scoring windows. The indexer can hold a preloaded piece
+for autonomous or volley sequences.
 
 ## How it works
 

@@ -7,7 +7,6 @@ import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
 import frc.robot.subsystems.feeder.config.FeederSubsystemConfig;
 import frc.robot.subsystems.harvester.config.HarvesterSubsystemConfig;
-import frc.robot.subsystems.hopper.config.HopperSubsystemConfig;
 import frc.robot.subsystems.indexer.config.IndexerSubsystemConfig;
 import frc.robot.subsystems.intake.config.IntakeSubsystemConfig;
 import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
@@ -59,11 +58,6 @@ public class SubsystemsConfig {
      * Climber configuration bundle.
      */
     public ClimberSubsystemConfig        climberSubsystem        = new ClimberSubsystemConfig();
-
-    /**
-     * Hopper configuration bundle.
-     */
-    public HopperSubsystemConfig         hopperSubsystem         = new HopperSubsystemConfig();
 
     /**
      * Feeder configuration bundle.

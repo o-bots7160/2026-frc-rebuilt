@@ -14,7 +14,7 @@ public class IntakeSubsystemConfig extends AbstractVelocitySubsystemConfig {
     /** Motor configuration bundle for the intake roller motor. */
     public IntakeMotorConfig intakeMotorConfig = new IntakeMotorConfig();
 
-    /** Default forward velocity used for pulling Fuel from the field into the hopper, in RPM. */
+    /** Default forward velocity used for pulling Fuel from the field into the feeder, in RPM. */
     public double            forwardVelocityRpm;
 
     /** Reverse velocity used for ejecting Fuel back onto the field, in RPM. Stored as a positive value; the subsystem negates it. */

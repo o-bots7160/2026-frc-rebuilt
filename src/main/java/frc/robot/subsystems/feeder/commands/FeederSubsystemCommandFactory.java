@@ -34,7 +34,7 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
     /**
      * Builds a reverse command that reads its target RPM from a supplier.
      * <p>
-     * The supplier should return a negative RPM so the belt spins backward toward the hopper.
+     * The supplier should return a negative RPM so the belt spins backward toward the intake.
      * </p>
      *
      * @param targetRpmSupplier provider for the target reverse RPM (negative value); evaluated on initialize
@@ -47,7 +47,7 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
     /**
      * Builds a reverse command using the configured default reverse velocity.
      * <p>
-     * The configured reverse RPM is negated so the belt spins backward toward the hopper.
+     * The configured reverse RPM is negated so the belt spins backward toward the intake.
      * </p>
      *
      * @return command that spins the belt in reverse at the default clearing RPM

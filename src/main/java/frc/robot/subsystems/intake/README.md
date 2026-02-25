@@ -3,7 +3,7 @@
 ## Overview
 
 The intake subsystem spins rollers to pull [Fuel](../../GLOSSARY.md#fuel) from
-the carpet and push it into the [hopper](../hopper/README.md). It has no storage
+the carpet and push it into the [feeder](../feeder/README.md). It has no storage
 of its own — it is a pass-through that runs fast in teleop for cycle speed and
 stops when pieces are not wanted.
 
@@ -15,7 +15,7 @@ direct references and are composed through trigger bindings in `RobotContainer`.
 
 The intake is the first mechanism a game piece touches after leaving the field.
 Rollers spin forward (positive RPM) to grab Fuel off the carpet and push it into
-the hopper, or reverse (negative RPM) to eject unwanted pieces back onto the
+the feeder, or reverse (negative RPM) to eject unwanted pieces back onto the
 field. When no command is active, the default idle command holds the rollers at
 0 RPM.
 

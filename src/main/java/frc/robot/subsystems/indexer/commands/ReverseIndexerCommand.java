@@ -6,7 +6,7 @@ import frc.robot.shared.commands.AbstractVelocityCommand;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 
 /**
- * Command that spins the indexer roller in reverse to back Fuel toward the hopper.
+ * Command that spins the indexer roller in reverse to back Fuel toward the feeder.
  * <p>
  * The target RPM supplier is evaluated once on initialize. Pass a negative RPM to reverse the roller direction. The command finishes when the roller
  * reaches the target velocity and has been stable for the configured settle time.

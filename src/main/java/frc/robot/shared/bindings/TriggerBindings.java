@@ -272,7 +272,7 @@ public class TriggerBindings {
         driverController.povDown().whileTrue(
                 indexerCommandFactory.createUnjamCommand());
 
-        // Hold D-pad left to reverse the indexer and back Fuel toward the hopper.
+        // Hold D-pad left to reverse the indexer and back Fuel toward the feeder.
         driverController.povLeft().whileTrue(
                 indexerCommandFactory.createReverseCommand());
     }

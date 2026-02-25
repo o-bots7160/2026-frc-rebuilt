@@ -6,7 +6,7 @@ import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
  * Configuration bundle for the feeder subsystem. All RPM values represent belt (mechanism) speed after gear reduction, not motor shaft speed.
  * <p>
  * Velocity limits, PID gains, feedforward gains, and settle time are inherited from {@link AbstractVelocitySubsystemConfig}. Feeder-specific fields
- * cover the default forward transport speed and the reverse speed used for clearing Fuel back toward the hopper.
+ * cover the default forward transport speed and the reverse speed used for clearing Fuel back toward the intake.
  * </p>
  */
 public class FeederSubsystemConfig extends AbstractVelocitySubsystemConfig {
@@ -17,7 +17,7 @@ public class FeederSubsystemConfig extends AbstractVelocitySubsystemConfig {
     /** Default forward velocity used for transporting Fuel toward the indexer, in RPM. */
     public double            forwardVelocityRpm;
 
-    /** Reverse velocity used for clearing Fuel back toward the hopper, in RPM. Stored as a positive value; the subsystem negates it. */
+    /** Reverse velocity used for clearing Fuel back toward the intake, in RPM. Stored as a positive value; the subsystem negates it. */
     public double            reverseVelocityRpm;
 
     /**

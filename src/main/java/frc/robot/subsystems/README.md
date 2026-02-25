@@ -100,10 +100,9 @@ configuration reference, and code-structure table. Click through for details.
 | [Climber](climber/README.md)                         | Raises the robot onto tower rungs for endgame points         | Planned     |
 | [Drivebase](drivebase/README.md)                     | Swerve drivetrain for field movement and autonomous paths    | Implemented |
 | [Driver Camera Vision](drivercameravision/README.md) | Provides a driver-facing camera feed for operator visibility | Implemented |
-| [Feeder](feeder/README.md)                           | Centers FUEL from the hopper sides into the indexer lane     | Planned     |
-| [Hopper](hopper/README.md)                           | Stores and stages collected FUEL for the feeder              | Planned     |
+| [Feeder](feeder/README.md)                           | Transports FUEL from the intake into the indexer lane        | Planned     |
 | [Indexer](indexer/README.md)                         | Gates FUEL release into the shooter for timed shots          | Planned     |
-| [Intake](intake/README.md)                           | Collects FUEL from the field and passes it to the hopper     | Planned     |
+| [Intake](intake/README.md)                           | Collects FUEL from the field and passes it to the feeder     | Planned     |
 | [Robot State](robotstate/README.md)                  | Single authoritative source of robot pose on the field       | Implemented |
 | [Shooter](shooter/README.md)                         | Spins flywheels to launch FUEL at scoring targets            | Planned     |
 | [Turret](turret/README.md)                           | Single-axis rotating mount for aiming the shooter            | Implemented |

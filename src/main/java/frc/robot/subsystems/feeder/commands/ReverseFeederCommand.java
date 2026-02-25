@@ -6,7 +6,7 @@ import frc.robot.shared.commands.AbstractVelocityCommand;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 
 /**
- * Command that spins the feeder belt in reverse to clear Fuel back toward the hopper.
+ * Command that spins the feeder belt in reverse to clear Fuel back toward the intake.
  * <p>
  * The target RPM supplier is evaluated once on initialize. Pass a negative RPM to reverse the belt direction. The command finishes when the belt
  * reaches the target velocity and has been stable for the configured settle time. Bind this with {@code whileTrue} so the belt returns to its default

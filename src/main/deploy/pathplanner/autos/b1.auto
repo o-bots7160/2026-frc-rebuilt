@@ -29,12 +29,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "b1 adjust"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"

@@ -86,8 +86,7 @@ them, the stored rotational energy accelerates the piece outward.
 ## FUEL
 
 The game piece for the 2026 FRC game REBUILT. FUEL is collected by the intake,
-stored in the hopper, centered by the feeder, gated by the indexer, and launched
-by the shooter.
+transported by the feeder, gated by the indexer, and launched by the shooter.
 
 ## Gear ratio
 

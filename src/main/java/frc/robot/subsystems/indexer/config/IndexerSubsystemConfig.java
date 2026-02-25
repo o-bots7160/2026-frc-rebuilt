@@ -17,7 +17,7 @@ public class IndexerSubsystemConfig extends AbstractVelocitySubsystemConfig {
     /** Default forward velocity used for feeding Fuel into the shooter, in RPM. */
     public double             feedVelocityRpm;
 
-    /** Reverse velocity used for clearing jams or backing Fuel toward the hopper, in RPM. Stored as a positive value; the subsystem negates it. */
+    /** Reverse velocity used for clearing jams or backing Fuel toward the feeder, in RPM. Stored as a positive value; the subsystem negates it. */
     public double             reverseVelocityRpm;
 
     /** Duration of each forward pulse during unjam cycling, in seconds. */

@@ -85,7 +85,7 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
     /**
      * Builds a reverse command using the configured default reverse velocity.
      * <p>
-     * The configured reverse RPM is negated so the roller spins backward toward the hopper.
+     * The configured reverse RPM is negated so the roller spins backward toward the feeder.
      * </p>
      *
      * @return command that spins the roller in reverse at the default RPM

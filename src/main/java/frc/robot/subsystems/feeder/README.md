@@ -3,16 +3,18 @@
 ## Overview
 
 The Feeder subsystem transports [FUEL](../../GLOSSARY.md#fuel) from the
-[hopper](../hopper/README.md) toward the [indexer](../indexer/README.md). It
+[intake](../intake/README.md) toward the [indexer](../indexer/README.md). It
 uses a belt or roller driven by a single motor to keep pieces moving through the
-middle lane of the robot during REBUILT cycles.
+middle lane of the robot during REBUILT cycles. The feeder also drives the
+rollers that were previously part of a separate hopper mechanism, consolidating
+transport into a single subsystem.
 
 ## How it works
 
-The feeder sits between the hopper and the indexer. It extends
+The feeder sits between the intake and the indexer. It extends
 `AbstractVelocitySubsystem` for bidirectional velocity control with feedforward
 and PID. Positive RPM moves Fuel forward (toward the indexer); negative RPM
-reverses the belt (toward the hopper).
+reverses the belt (toward the intake).
 
 Behaviors:
 
@@ -41,7 +43,7 @@ shaft speed.
 | `settleTimeSeconds`               | seconds     | How long velocity must stay within tolerance before ready |
 | `idleVelocityRpm`                 | RPM         | Default forward idle speed                                |
 | `forwardVelocityRpm`              | RPM         | Active transport speed toward the indexer                 |
-| `reverseVelocityRpm`              | RPM         | Clearing speed toward the hopper (stored positive)        |
+| `reverseVelocityRpm`              | RPM         | Clearing speed toward the intake (stored positive)        |
 | `kP`, `kI`, `kD`                  | —           | PID gains for velocity control                            |
 | `kS`, `kV`, `kA`                  | volts / ... | Feedforward gains for motor voltage estimation            |
 
@@ -73,4 +75,3 @@ shaft speed.
 - Run SysId to characterize feedforward gains (kS, kV, kA).
 - Tune PID gains for stable velocity tracking.
 - Add jam-detection logic (current spike monitoring) and auto-pulse recovery.
-- Coordinate feeder speed with hopper output for balanced Fuel flow.

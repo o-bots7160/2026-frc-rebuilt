@@ -9,12 +9,12 @@ import frc.robot.subsystems.indexer.devices.IndexerSimMotor;
  * Indexer subsystem that controls when Fuel leaves the robot and enters the shooter.
  * <p>
  * The indexer sits directly upstream of the shooter and downstream of the feeder. It can spin forward to feed Fuel into the shooter flywheels, or
- * reverse to back Fuel toward the hopper. All RPM values in the public API represent roller (mechanism) speed after gear reduction, not motor shaft
+ * reverse to back Fuel toward the feeder. All RPM values in the public API represent roller (mechanism) speed after gear reduction, not motor shaft
  * speed.
  * </p>
  * <p>
  * The subsystem extends {@link AbstractVelocitySubsystem} which provides bidirectional velocity control. Positive RPM feeds forward (toward the
- * shooter); negative RPM feeds backward (toward the hopper).
+ * shooter); negative RPM feeds backward (toward the feeder).
  * </p>
  */
 public class IndexerSubsystem extends AbstractVelocitySubsystem<IndexerSubsystemConfig> {
@@ -31,7 +31,7 @@ public class IndexerSubsystem extends AbstractVelocitySubsystem<IndexerSubsystem
     /**
      * Convenience method that sets the roller to reverse at the configured reverse velocity.
      * <p>
-     * The configured reverse RPM is stored as a positive value; this method negates it so the roller spins backward toward the hopper.
+     * The configured reverse RPM is stored as a positive value; this method negates it so the roller spins backward toward the feeder.
      * </p>
      */
     public void setReverseVelocity() {
