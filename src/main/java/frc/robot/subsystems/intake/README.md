@@ -1,75 +1,47 @@
-# Intake subsystem
+# Intake Subsystem
 
 ## Overview
 
-The Intake subsystem grabs loose [FUEL](../../GLOSSARY.md#fuel) from the carpet
-and hands it to the [hopper](../hopper/README.md). It deploys rollers that pull
-game pieces from the field and pass them straight into the hopper entrance. The
-intake has no storage of its own — it is a pass-through that runs fast in teleop
-for cycle speed and retracts when stray pieces are not wanted.
+The intake subsystem spins rollers to pull [Fuel](../../GLOSSARY.md#fuel) from
+the carpet and push it into the [hopper](../hopper/README.md). It has no storage
+of its own — it is a pass-through that runs fast in teleop for cycle speed and
+stops when pieces are not wanted.
+
+The arm that deploys and retracts the rollers is managed by the separate
+[harvester](../harvester/README.md) subsystem. The two subsystems share no
+direct references and are composed through trigger bindings in `RobotContainer`.
 
 ## How it works
 
-<!-- TODO: fill in when hardware decisions are made -->
-
 The intake is the first mechanism a game piece touches after leaving the field.
-It is typically mounted at the front of the robot with a deployable arm or
-fixed-position rollers.
+Rollers spin forward (positive RPM) to grab Fuel off the carpet and push it into
+the hopper, or reverse (negative RPM) to eject unwanted pieces back onto the
+field. When no command is active, the default idle command holds the rollers at
+0 RPM.
 
-Planned behaviors:
+## Key classes
 
-- **Deploy and spin** — a single command extends the intake and spins the
-  rollers inward to grab pieces off the carpet.
-- **Retract and stop** — pulling the intake in protects it during travel and
-  prevents accidental collection in protected zones.
-- **Outtake/reverse** — reverses the rollers to eject a piece, useful for
-  clearing jams or discarding unwanted game pieces.
-- **Jam detection** — monitors motor current to detect stuck pieces and
-  auto-pulses the rollers to free them.
-- **Idle by default** — rollers stay stopped and the intake stays retracted
-  until the operator presses the intake button in `RobotContainer`.
-- **Sim support** — timing mirrors real hardware so
-  [hopper](../hopper/README.md)/[feeder](../feeder/README.md) logic can still be
-  tested in simulation.
+| File                                          | Purpose                                           |
+| --------------------------------------------- | ------------------------------------------------- |
+| `IntakeSubsystem.java`                        | Velocity subsystem with forward/reverse helpers   |
+| `config/IntakeSubsystemConfig.java`           | Forward/reverse RPM, PID, tolerance, and tunables |
+| `config/IntakeMotorConfig.java`               | CAN ID, gear ratio, current limit                 |
+| `devices/IntakeMotor.java`                    | SparkMax velocity motor wrapper                   |
+| `devices/IntakeSimMotor.java`                 | Simulation velocity motor for testing             |
+| `commands/IdleIntakeCommand.java`             | Default command — holds idle RPM (0)              |
+| `commands/EjectIntakeCommand.java`            | Reverses rollers at configured eject RPM          |
+| `commands/IntakeSubsystemCommandFactory.java` | Factory for idle, eject, intake, and continuous   |
 
 ## Configuration
 
-<!-- TODO: add config fields and tunables once hardware is selected -->
+All velocities are stored in RPM in `subsystems.json` (and sim/test variants).
+The subsystem config provides tunable getters so speeds can be adjusted on the
+fly from Elastic without redeploying.
 
-Expected settings (to be added to `subsystems.json`):
-
-| Setting                  | Units                                   | Purpose                                   |
-| ------------------------ | --------------------------------------- | ----------------------------------------- |
-| `enabled`                | —                                       | Master enable flag                        |
-| roller speed             | percent or [RPM](../../GLOSSARY.md#rpm) | Inward roller output                      |
-| reverse speed            | percent or RPM                          | Outtake roller output                     |
-| jam current threshold    | amps                                    | Current level that triggers jam detection |
-| deploy/retract positions | rotations or degrees                    | Arm positions (if applicable)             |
-
-## Code structure
-
-<!-- TODO: update when classes are added -->
-
-Planned files:
-
-| File                                 | Purpose                                                                                 |
-| ------------------------------------ | --------------------------------------------------------------------------------------- |
-| `IntakeSubsystem.java`               | Subsystem managing roller and deploy/retract control                                    |
-| `commands/IntakeCommandFactory.java` | Factory for intake, outtake, and jam-clear commands                                     |
-| `config/IntakeSubsystemConfig.java`  | Configuration and [tunables](../../GLOSSARY.md#tunable)                                 |
-| `io/IntakeIO.java`                   | [IO](../../GLOSSARY.md#io-inputoutput) interface for rollers, deploy motor, and sensors |
-
-## Status / TODO
-
-### Done
-
-- README and folder structure created.
-
-### TODO
-
-- Flesh out command list and sensor strategy once hardware layout and wiring are
-  finalized.
-- Create IO interface and config class.
-- Implement deploy/retract with position tracking.
-- Add jam-detection with auto-pulse recovery.
-- Wire subsystem in `RobotContainer` and add to `subsystems.json`.
+| Setting              | Units | Purpose                            |
+| -------------------- | ----- | ---------------------------------- |
+| `enabled`            | —     | Master enable flag                 |
+| `forwardVelocityRpm` | RPM   | Inward roller speed for collection |
+| `reverseVelocityRpm` | RPM   | Reverse roller speed for ejection  |
+| `idleVelocityRpm`    | RPM   | Speed when idle (typically 0)      |
+| `maximumVelocityRpm` | RPM   | Motor velocity ceiling             |
