@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SpinUpShooterCommand"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "b1 travel out"
