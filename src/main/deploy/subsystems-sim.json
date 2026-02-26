@@ -18,7 +18,7 @@
     "rotationToleranceDegrees": 2.0
   },
   "turretSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "turretMotorConfig": {
       "enabled": true,
@@ -52,7 +52,7 @@
     }
   },
   "shooterSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "shooterMotorConfig": {
       "enabled": true,
@@ -66,7 +66,7 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "shooterFollowerMotorConfig": {
-      "enabled": true,
+      "enabled": false,
       "verbose": true,
       "useSetpointLimits": false,
       "motorCanId": 55,
@@ -90,7 +90,7 @@
     "kA": 0.33909
   },
   "indexerSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "indexerMotorConfig": {
       "enabled": true,
@@ -149,7 +149,7 @@
     "defaultStream": 2
   },
   "climberSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "climberMotorConfig": {
       "enabled": false,
@@ -163,7 +163,7 @@
       "forwardSoftLimitDegrees": 360.0
     },
     "climberSensorConfig": {
-      "enabled": true,
+      "enabled": false,
       "verbose": true,
       "leftSensorCanId": 60,
       "rightSensorCanId": 61,
@@ -187,7 +187,7 @@
     "kA": 0.0
   },
   "feederSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "feederMotorConfig": {
       "enabled": true,
@@ -215,7 +215,7 @@
     "kA": 0.0
   },
   "intakeSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "intakeMotorConfig": {
       "enabled": true,
@@ -243,7 +243,7 @@
     "kA": 0.0
   },
   "harvesterSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "harvesterMotorConfig": {
       "enabled": true,
