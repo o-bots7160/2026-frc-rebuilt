@@ -19,19 +19,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "b3 travel out"
+            "pathName": "b2tb1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "b3 intake"
+            "pathName": "b1 travel out"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "b3 travel back"
+            "pathName": "b1 intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "b1 travel back"
           }
         },
         {
@@ -43,13 +49,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "b3 to outpost"
+            "pathName": "b1 to depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "b3 from outpost"
+            "pathName": "b1 from depot"
           }
         },
         {
