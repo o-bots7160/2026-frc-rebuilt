@@ -21,7 +21,7 @@
     "enabled": false,
     "verbose": true,
     "turretMotorConfig": {
-      "enabled": true,
+      "enabled": false,
       "verbose": true,
       "useSetpointLimits": true,
       "motorCanId": 56,
@@ -52,10 +52,10 @@
     }
   },
   "shooterSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "shooterMotorConfig": {
-      "enabled": true,
+      "enabled": false,
       "verbose": true,
       "useSetpointLimits": false,
       "motorCanId": 54,
@@ -120,12 +120,12 @@
     "kA": 0.0
   },
   "robotStateSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": false,
     "enableVisionFusion": true
   },
   "aprilTagVisionSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": true,
     "linearStandardDeviationBaseline": 0.08,
     "angularStandardDeviationBaseline": 1.0,
@@ -163,7 +163,7 @@
       "forwardSoftLimitDegrees": 360.0
     },
     "climberSensorConfig": {
-      "enabled": true,
+      "enabled": false,
       "verbose": true,
       "leftSensorCanId": 60,
       "rightSensorCanId": 61,
