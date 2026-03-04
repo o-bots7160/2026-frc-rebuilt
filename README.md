@@ -11,6 +11,7 @@ Competition "REBUILT" season codebase.
   - [Getting started](#getting-started)
   - [Build and test](#build-and-test)
   - [Simulation](#simulation)
+  - [Persisting tuned values](#persisting-tuned-values)
   - [Deployment](#deployment)
   - [Documentation](#documentation)
     - [For other teams](#for-other-teams)
@@ -72,6 +73,94 @@ Competition "REBUILT" season codebase.
    - WPILib Command Palette: **“WPILib: Simulate Robot Code”**.
 2. **Use the WPILib simulator UI** to view NetworkTables, control inputs, and
    AdvantageKit logs while iterating.
+
+## Persisting tuned values
+
+When tuning PID gains, motion profiles, or other config values live through
+Elastic or AdvantageScope, the changes exist only in NetworkTables and are lost
+when the robot restarts. The `persist-tuned-values` script reads the current
+values from the running NT4 server and patches the local `subsystems.json` so
+changes survive a redeploy.
+
+### One-time setup
+
+```bash
+cd scripts && npm install
+```
+
+### Usage
+
+Convenience npm scripts are provided in `scripts/package.json`:
+
+| Script                 | Target                       | Config file            |
+| ---------------------- | ---------------------------- | ---------------------- |
+| `npm run persist:prod` | Production robot (team 7160) | `subsystems.json`      |
+| `npm run persist:test` | Test robot (team 7160)       | `subsystems-test.json` |
+| `npm run persist:sim`  | Simulator (localhost)        | `subsystems-sim.json`  |
+
+Append extra flags after `--`:
+
+```bash
+# Preview changes from the simulator without writing
+npm run persist:sim -- --subsystem turretSubsystem --dry-run
+
+# Persist turret changes from the production robot
+npm run persist:prod -- --subsystem turretSubsystem
+
+# Watch mode — monitor changes live, press Enter to persist
+npm run persist:sim -- --watch --subsystem turretSubsystem
+```
+
+You can also call the script directly:
+
+```bash
+node scripts/persist-tuned-values.mjs --team 7160 --subsystem turretSubsystem
+```
+
+### Valid subsystem keys
+
+Use the top-level keys from `subsystems.json`:
+
+`driveBaseSubsystem`, `turretSubsystem`, `shooterSubsystem`, `indexerSubsystem`,
+`robotStateSubsystem`, `aprilTagVisionSubsystem`, `driverCameraSubsystem`,
+`climberSubsystem`, `feederSubsystem`, `intakeSubsystem`, `harvesterSubsystem`,
+`triggerBindings`
+
+### How it works
+
+The robot publishes config values to NetworkTables under two namespaces:
+
+- **System 2 (preferred):**
+  `AdvantageKit/NetworkInputs/SmartDashboard/<ClassName>/<field>` — created
+  lazily by `AbstractConfig.readTunableNumber` via AdvantageKit's
+  `LoggedNetworkNumber`. This is the namespace Elastic edits live.
+- **System 1 (fallback):** `SmartDashboard/SubsystemsConfig/<json/path>` —
+  seeded at startup by `ConfigurationLoader.iterateFields`. Mirrors the JSON
+  structure exactly.
+
+The script connects via the NT4 WebSocket protocol, reads all SmartDashboard
+topics for the specified subsystem (including nested motor configs), checks
+System 2 first and falls back to System 1, then compares against the JSON file
+and writes back only the fields that changed. Non-tunable fields like CAN IDs,
+motor inversion, and enabled flags are never modified unless they were edited in
+Elastic.
+
+In **watch mode** (`--watch`), the script stays connected and polls every 2
+seconds. When changes are detected it displays them; press Enter to persist or
+keep tuning. It automatically reconnects if the robot or simulator restarts.
+
+### Known limitations
+
+- **Disabled subsystems**: If a subsystem is disabled, its getters may never
+  run, so System 2 keys won't exist. The script falls back to System 1 keys
+  (startup seed), which still reflect any edits made in Elastic at that level.
+- **FMS mode**: Tunables are not created when the Field Management System is
+  attached, so the script only works in practice or simulation.
+- **Class-name collisions**: If two nested configs share the same Java class
+  name (e.g., a leader and follower motor using the same `MotorConfig` type),
+  their System 2 keys collide. The script cannot distinguish them and will apply
+  the value from NT to both JSON entries. Use distinct config classes to avoid
+  this.
 
 ## Deployment
 

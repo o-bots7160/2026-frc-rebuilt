@@ -1,0 +1,16 @@
+{
+  "name": "frc-7160-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Development scripts for the 7160 robot codebase.",
+  "scripts": {
+    "persist:prod": "node persist-tuned-values.mjs --team 7160",
+    "persist:test": "node persist-tuned-values.mjs --team 7160 --config ../src/main/deploy/subsystems-test.json",
+    "persist:sim": "node persist-tuned-values.mjs --config ../src/main/deploy/subsystems-sim.json"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^3.0.0",
+    "ws": "^8.18.0"
+  }
+}

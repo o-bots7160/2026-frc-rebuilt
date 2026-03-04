@@ -189,5 +189,9 @@ compile_commands.json
 # Gversion generated files
 src/main/java/frc/robot/BuildConstants.java
 
+# Node.js dependencies (scripts/ tooling)
+scripts/node_modules/
+scripts/package-lock.json
+
 # Draw.io backup files
 .$7160-frc-rebuilt.drawio.svg.bkp
