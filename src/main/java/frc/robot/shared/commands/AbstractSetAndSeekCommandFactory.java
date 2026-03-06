@@ -24,6 +24,19 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
     }
 
     /**
+     * Creates an instant command that zeros the motor encoder and resets all profile state.
+     * <p>
+     * Use this to publish a dashboard-triggerable button so operators can recalibrate a mechanism after manually repositioning it.
+     * </p>
+     *
+     * @return command that resets the encoder position to zero
+     */
+    public Command createResetEncoderCommand() {
+        return Commands.runOnce(subsystem::resetEncoderPosition, subsystem)
+                .withName("Reset " + subsystem.getName() + " Encoder");
+    }
+
+    /**
      * Creates a quasistatic SysId characterization command that ramps voltage slowly in the requested direction.
      *
      * @param direction sweep direction (forward or reverse)

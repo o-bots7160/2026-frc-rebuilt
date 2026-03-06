@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -79,7 +80,7 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
                                       };
         this.odometryResetConsumer    = odometryResetConsumer != null ? odometryResetConsumer : pose -> {
                                       };
-        this.io                    = this::updateInputs;
+        this.io                       = this::updateInputs;
 
         refreshTunables();
         SmartDashboard.putData("RobotStateSubsystem/Field", fieldDisplay);
@@ -199,6 +200,19 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
      */
     public Pose2d getEstimatedPose() {
         return estimatedPose;
+    }
+
+    /**
+     * Computes the straight-line distance from the robot's current estimated position to a field-relative target point.
+     * <p>
+     * Use this for distance-based calculations such as shooter RPM scaling or approach detection.
+     * </p>
+     *
+     * @param targetFieldPositionMeters target position on the field in meters
+     * @return distance in meters from the robot to the target point
+     */
+    public double getDistanceToPointMeters(Translation2d targetFieldPositionMeters) {
+        return estimatedPose.getTranslation().getDistance(targetFieldPositionMeters);
     }
 
     private void updateInputs(RobotStateIO.RobotStateIOInputs inputs) {

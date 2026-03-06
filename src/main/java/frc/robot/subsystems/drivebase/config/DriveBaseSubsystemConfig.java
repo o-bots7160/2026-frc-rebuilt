@@ -82,6 +82,20 @@ public class DriveBaseSubsystemConfig extends AbstractConfig {
     public double simulationOmegaScale;
 
     /**
+     * Name of the swerve configuration directory under the deploy folder (e.g., "swerve" or "swerve-test").
+     */
+    public String swerveConfigDirectory = "swerve";
+
+    /**
+     * Returns the swerve configuration directory name relative to the deploy folder.
+     *
+     * @return directory name such as "swerve" or "swerve-test"
+     */
+    public String getSwerveConfigDirectory() {
+        return swerveConfigDirectory;
+    }
+
+    /**
      * Supplies the maximum linear speed in meters per second.
      *
      * @return supplier yielding the current max linear speed (m/s)

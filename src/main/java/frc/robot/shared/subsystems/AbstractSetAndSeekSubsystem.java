@@ -182,6 +182,32 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
+     * Resets the motor encoder to zero and reinitializes the profile state so the mechanism treats its current physical position as the origin.
+     * <p>
+     * Call this from a dashboard button or utility command after manually repositioning a mechanism (e.g., centering a turret by hand). The motor is
+     * stopped before the reset to avoid applying stale voltage at the new position.
+     * </p>
+     */
+    public void resetEncoderPosition() {
+        if (isSubsystemDisabled()) {
+            logDisabled("resetEncoderPosition");
+            return;
+        }
+
+        // Stop motion before resetting so no stale voltage is applied at the new origin.
+        motor.stop();
+        motor.setEncoderPosition(0.0);
+
+        // Reinitialize all profile state so the controller starts fresh from zero.
+        goalState     = new TrapezoidProfile.State(0.0, 0.0);
+        setpointState = new TrapezoidProfile.State(0.0, 0.0);
+        controller.reset(0.0, 0.0);
+        controller.setGoal(goalState);
+
+        log.recordOutput("encoderReset", true);
+    }
+
+    /**
      * Hook for subclasses to respond when a seek command is interrupted. Default implementation stops the motor without resetting profile state.
      * <p>
      * Settle commands depend on the preserved profile state to decelerate smoothly. If you need a full reset, call {@link #stop()} instead.

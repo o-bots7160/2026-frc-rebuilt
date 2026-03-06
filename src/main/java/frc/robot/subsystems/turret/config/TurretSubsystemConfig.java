@@ -1,6 +1,7 @@
 package frc.robot.subsystems.turret.config;
 
 import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
+import frc.robot.shared.field.FieldTargetConfig;
 
 /**
  * Configuration bundle for the turret mechanism. Values are stored in degrees for readability but converted to radians at runtime where needed.
@@ -12,6 +13,9 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
 
     /** 3D pivot offset for AdvantageScope component visualization. */
     public ComponentPoseConfig componentPoseConfig = new ComponentPoseConfig();
+
+    /** Field target positions and zone boundaries for zone-aware turret tracking. */
+    public FieldTargetConfig fieldTargets = new FieldTargetConfig();
 
     /**
      * Zero offset between the turret's mechanical zero and robot-forward in degrees.

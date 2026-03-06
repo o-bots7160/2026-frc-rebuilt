@@ -242,6 +242,19 @@ public abstract class AbstractMotor implements Motor {
     }
 
     /**
+     * Overwrites the encoder's stored position so the mechanism's logical zero matches its physical location.
+     *
+     * @param positionRadians new encoder position in mechanism radians
+     */
+    @Override
+    public void setEncoderPosition(double positionRadians) {
+        if (!ensureInitialized("setEncoderPosition")) {
+            return;
+        }
+        motor.getEncoder().setPosition(positionRadians);
+    }
+
+    /**
      * Reports the current measured velocity in radians per second.
      *
      * @return mechanism velocity (radians/second)

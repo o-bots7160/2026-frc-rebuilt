@@ -2,6 +2,7 @@
   "driveBaseSubsystem": {
     "enabled": true,
     "verbose": false,
+    "swerveConfigDirectory": "swerve",
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
     "headingKp": 0.85,
@@ -19,10 +20,10 @@
   },
   "turretSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "turretMotorConfig": {
-      "enabled": true,
-      "verbose": true,
+      "enabled": false,
+      "verbose": false,
       "useSetpointLimits": true,
       "motorCanId": 56,
       "motorInverted": false,
@@ -49,14 +50,25 @@
       "componentPivotX": 0.205,
       "componentPivotY": 0.0,
       "componentPivotZ": 0.375
+    },
+    "fieldTargets": {
+      "fieldLengthMeters": 16.54,
+      "fieldWidthMeters": 8.21,
+      "allianceZoneBoundaryXMeters": 5.5,
+      "hubPositionXMeters": 3.0,
+      "hubPositionYMeters": 4.1,
+      "leftZonePositionXMeters": 2.0,
+      "leftZonePositionYMeters": 6.5,
+      "rightZonePositionXMeters": 2.0,
+      "rightZonePositionYMeters": 1.7
     }
   },
   "shooterSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "shooterMotorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 54,
       "motorInverted": false,
@@ -67,7 +79,7 @@
     },
     "shooterFollowerMotorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 55,
       "motorInverted": true,
@@ -82,6 +94,15 @@
     "settleTimeSeconds": 0.25,
     "idleVelocityRpm": 500.0,
     "reverseVelocityRpm": 1000.0,
+    "distanceRpmPoints": [
+      { "distanceMeters": 1.0, "rpm": 2000.0 },
+      { "distanceMeters": 3.0, "rpm": 3000.0 },
+      { "distanceMeters": 5.0, "rpm": 3800.0 },
+      { "distanceMeters": 8.0, "rpm": 4500.0 }
+    ],
+    "minimumShootingRpm": 1500.0,
+    "maximumShootingRpm": 5000.0,
+    "distanceRpmMultiplier": 1.0,
     "kP": 0.0,
     "kI": 0.0,
     "kD": 0.0,
@@ -90,11 +111,11 @@
     "kA": 0.0
   },
   "indexerSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "indexerMotorConfig": {
-      "enabled": false,
-      "verbose": true,
+      "enabled": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 53,
       "motorInverted": false,
@@ -107,7 +128,7 @@
     "maximumAccelerationRpmPerSecond": 0.0,
     "velocityToleranceRpm": 50.0,
     "settleTimeSeconds": 0.1,
-    "idleVelocityRpm": 0.0,
+    "idleVelocityRpm": 500.0,
     "feedVelocityRpm": 2000.0,
     "reverseVelocityRpm": 1000.0,
     "unjamForwardDurationSeconds": 0.3,
@@ -126,7 +147,7 @@
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "linearStandardDeviationBaseline": 0.08,
     "angularStandardDeviationBaseline": 1.0,
     "maximumAmbiguity": 0.3,
@@ -150,10 +171,10 @@
   },
   "climberSubsystem": {
     "enabled": false,
-    "verbose": true,
+    "verbose": false,
     "climberMotorConfig": {
       "enabled": false,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": true,
       "motorCanId": 62,
       "motorInverted": false,
@@ -164,7 +185,7 @@
     },
     "climberSensorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "leftSensorCanId": 60,
       "rightSensorCanId": 61,
       "alignmentToleranceMillimeters": 25.0,
@@ -187,11 +208,11 @@
     "kA": 0.0
   },
   "feederSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "feederMotorConfig": {
-      "enabled": false,
-      "verbose": true,
+      "enabled": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 52,
       "motorInverted": false,
@@ -215,11 +236,11 @@
     "kA": 0.0
   },
   "intakeSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "intakeMotorConfig": {
-      "enabled": false,
-      "verbose": true,
+      "enabled": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 50,
       "motorInverted": false,
@@ -232,7 +253,7 @@
     "maximumAccelerationRpmPerSecond": 0.0,
     "velocityToleranceRpm": 50.0,
     "settleTimeSeconds": 0.15,
-    "idleVelocityRpm": 0.0,
+    "idleVelocityRpm": 500.0,
     "forwardVelocityRpm": 1500.0,
     "reverseVelocityRpm": 1000.0,
     "kP": 0.0,
@@ -243,11 +264,11 @@
     "kA": 0.0
   },
   "harvesterSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "harvesterMotorConfig": {
-      "enabled": false,
-      "verbose": true,
+      "enabled": true,
+      "verbose": false,
       "useSetpointLimits": true,
       "motorCanId": 51,
       "motorInverted": false,

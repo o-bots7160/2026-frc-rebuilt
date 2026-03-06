@@ -94,4 +94,18 @@ public class ShooterSubsystemCommandFactory extends AbstractVelocityCommandFacto
     public Command createContinuousSpinCommand(Supplier<Double> targetRpmSupplier) {
         return createContinuousVelocityCommand(targetRpmSupplier);
     }
+
+    /**
+     * Builds a command that continuously computes flywheel RPM from the robot's distance to a target.
+     * <p>
+     * Each cycle, the command reads the current distance from the supplier, converts it to an RPM via the subsystem's interpolation table, and seeks
+     * that velocity. Use this as a default command or bind it to a button so the shooter automatically adjusts speed as the robot moves.
+     * </p>
+     *
+     * @param distanceMetersSupplier supplier returning the distance from the robot to the active target in meters
+     * @return command that continuously tracks distance-based RPM until interrupted
+     */
+    public Command createDistanceBasedSpinCommand(Supplier<Double> distanceMetersSupplier) {
+        return createContinuousSpinCommand(() -> subsystem.calculateRpmFromDistanceMeters(distanceMetersSupplier.get()));
+    }
 }

@@ -1,0 +1,46 @@
+{
+  "location": {
+    "front": 11,
+    "left": -11.5
+  },
+  "conversionFactors": {
+    "angle": {
+      "gearRatio": 18.75
+    },
+    "drive": {
+      "gearRatio": 5.9,
+      "diameter": 4
+    }
+  },
+  "absoluteEncoderOffset": 304.98046875,
+  "drive": {
+    "type": "sparkflex_vortex",
+    "id": 42,
+    "p": 0.07003,
+    "i": 0,
+    "d": 0.0,
+    "f": 0,
+    "iz": 0,
+    "canbus": null
+  },
+  "inverted": {
+    "drive": true,
+    "angle": true
+  },
+  "angle": {
+    "type": "sparkflex_vortex",
+    "id": 40,
+    "p": 1.8952,
+    "i": 0,
+    "d": 56.839,
+    "f": 0,
+    "iz": 0,
+    "canbus": null
+  },
+  "encoder": {
+    "type": "cancoder",
+    "id": 41,
+    "canbus": null
+  },
+  "absoluteEncoderInverted": false
+}

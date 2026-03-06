@@ -7,8 +7,10 @@ package frc.robot;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.bindings.TriggerBindings;
@@ -16,6 +18,7 @@ import frc.robot.shared.config.ConfigurationLoader;
 import frc.robot.shared.config.FieldLayoutConfig;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.SubsystemsConfig;
+import frc.robot.shared.field.FieldTargetSelector;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
@@ -44,64 +47,67 @@ import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 public class RobotContainer {
 
     // Configuration
-    private final SubsystemsConfig                 subsystemsConfig;
+    private final SubsystemsConfig                    subsystemsConfig;
 
-    private final FieldLayoutConfig                fieldLayoutConfig;
+    private final FieldLayoutConfig                   fieldLayoutConfig;
 
-    private final Supplier<AprilTagFieldLayout>    aprilTagFieldLayoutSupplier;
+    private final Supplier<AprilTagFieldLayout>       aprilTagFieldLayoutSupplier;
 
     // Subsystems
-    private final DriveBaseSubsystem               driveBaseSubsystem;
+    private final DriveBaseSubsystem                  driveBaseSubsystem;
 
-    private final TurretSubsystem                  turretSubsystem;
+    private final TurretSubsystem                     turretSubsystem;
 
-    private final ShooterSubsystem                 shooterSubsystem;
+    private final ShooterSubsystem                    shooterSubsystem;
 
-    private final IndexerSubsystem                 indexerSubsystem;
+    private final IndexerSubsystem                    indexerSubsystem;
 
-    private final RobotStateSubsystem              robotStateSubsystem;
-
-    @SuppressWarnings("unused")
-    private final AprilTagVisionSubsystem          aprilTagVisionSubsystem;
+    private final RobotStateSubsystem                 robotStateSubsystem;
 
     @SuppressWarnings("unused")
-    private final DriverCameraSubsystem            driverCameraSubsystem;
+    private final AprilTagVisionSubsystem             aprilTagVisionSubsystem;
 
-    private final ClimberSubsystem                 climberSubsystem;
+    @SuppressWarnings("unused")
+    private final DriverCameraSubsystem               driverCameraSubsystem;
 
-    private final FeederSubsystem                  feederSubsystem;
+    private final ClimberSubsystem                    climberSubsystem;
 
-    private final IntakeSubsystem                  intakeSubsystem;
+    private final FeederSubsystem                     feederSubsystem;
 
-    private final HarvesterSubsystem               harvesterSubsystem;
+    private final IntakeSubsystem                     intakeSubsystem;
+
+    private final HarvesterSubsystem                  harvesterSubsystem;
 
     // Command factories
 
-    private final PathPlannerCommandFactory        pathPlannerCommandFactory;
+    private final PathPlannerCommandFactory           pathPlannerCommandFactory;
 
-    private final DriveBaseSubsystemCommandFactory driveBaseCommandFactory;
+    private final DriveBaseSubsystemCommandFactory    driveBaseCommandFactory;
 
-    private final TurretSubsystemCommandFactory    turretCommandFactory;
+    private final TurretSubsystemCommandFactory       turretCommandFactory;
 
-    private final ShooterSubsystemCommandFactory   shooterCommandFactory;
+    private final ShooterSubsystemCommandFactory      shooterCommandFactory;
 
-    private final IndexerSubsystemCommandFactory   indexerCommandFactory;
+    private final IndexerSubsystemCommandFactory      indexerCommandFactory;
 
     @SuppressWarnings("unused")
     private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
 
     @SuppressWarnings("unused")
-    private final ClimberSubsystemCommandFactory   climberCommandFactory;
+    private final ClimberSubsystemCommandFactory      climberCommandFactory;
 
-    private final FeederSubsystemCommandFactory    feederCommandFactory;
+    private final FeederSubsystemCommandFactory       feederCommandFactory;
 
-    private final IntakeSubsystemCommandFactory    intakeCommandFactory;
+    private final IntakeSubsystemCommandFactory       intakeCommandFactory;
 
-    private final HarvesterSubsystemCommandFactory harvesterCommandFactory;
+    private final HarvesterSubsystemCommandFactory    harvesterCommandFactory;
+
+    // Cross-subsystem utilities
+    private final FieldTargetSelector                 fieldTargetSelector;
 
     // Input bindings
     @SuppressWarnings("unused")
-    private final TriggerBindings                  triggerBindings;
+    private final TriggerBindings                     triggerBindings;
 
     /**
      * Builds the robot container and wires subsystems, command factories, and bindings.
@@ -136,8 +142,13 @@ public class RobotContainer {
             intakeSubsystem             = new IntakeSubsystem(subsystemsConfig.intakeSubsystem);
             harvesterSubsystem          = new HarvesterSubsystem(subsystemsConfig.harvesterSubsystem);
 
+            // Cross-subsystem utilities
+            fieldTargetSelector         = new FieldTargetSelector(
+                    subsystemsConfig.turretSubsystem.fieldTargets,
+                    robotStateSubsystem::getEstimatedPose,
+                    RobotEnvironment::getAlliance);
+
             // Command factories
-            pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
             driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
             turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
             shooterCommandFactory       = new ShooterSubsystemCommandFactory(shooterSubsystem);
@@ -148,21 +159,45 @@ public class RobotContainer {
             intakeCommandFactory        = new IntakeSubsystemCommandFactory(intakeSubsystem);
             harvesterCommandFactory     = new HarvesterSubsystemCommandFactory(harvesterSubsystem);
 
-            // Default Commands
-            shooterCommandFactory.setDefaultIdleCommand();
-            indexerCommandFactory.setDefaultIdleCommand();
-            feederCommandFactory.setDefaultIdleCommand();
-            intakeCommandFactory.setDefaultIdleCommand();
-            harvesterCommandFactory.setDefaultStowCommand();
-            turretCommandFactory.setDefaultTrackFieldTargetCommand(
-                    robotStateSubsystem,
-                    () -> {
-                        var layout = aprilTagFieldLayoutSupplier.get();
-                        return layout.getTagPose(26)
-                                .map(pose -> pose.getTranslation().toTranslation2d())
-                                .orElseThrow();
-                    },
-                    driveBaseSubsystem::getYawRateRadiansPerSecond);
+            // Register named commands for PathPlanner autos before pre-loading
+            NamedCommands.registerCommand("MoveHarvesterToPositionCommand", harvesterCommandFactory.createDeployCommand());
+            NamedCommands.registerCommand("SpinUpShooterCommand",
+                    shooterCommandFactory.createSpinUpCommand(subsystemsConfig.shooterSubsystem::getMaximumShootingRpm));
+
+            pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
+
+            // Default commands are disabled during shop testing so the A/B test
+            // bindings can control each subsystem without interference.
+            // Uncomment once subsystems are characterized and test bindings are removed.
+            // shooterCommandFactory.setDefaultIdleCommand();
+            // indexerCommandFactory.setDefaultIdleCommand();
+            // feederCommandFactory.setDefaultIdleCommand();
+            // intakeCommandFactory.setDefaultIdleCommand();
+            // harvesterCommandFactory.setDefaultStowCommand();
+
+            // Zone-aware turret field tracking is disabled during shop testing.
+            // Uncomment once vision and robot state are validated.
+            // turretCommandFactory.setDefaultTrackFieldTargetCommand(
+            // robotStateSubsystem,
+            // fieldTargetSelector::getActiveTargetPosition,
+            // driveBaseSubsystem::getYawRateRadiansPerSecond);
+
+            // Distance-based shooter RPM is disabled during shop testing.
+            // Uncomment once the interpolation table is tuned.
+            // shooterSubsystem.setDefaultCommand(
+            // shooterCommandFactory.createDistanceBasedSpinCommand(
+            // () -> robotStateSubsystem.getDistanceToPointMeters(
+            // fieldTargetSelector.getActiveTargetPosition())));
+
+            // Dashboard commands (clickable buttons in Elastic Dashboard)
+            SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());
+            SmartDashboard.putData("HarvesterSubsystem/ResetEncoder", harvesterCommandFactory.createResetEncoderCommand());
+            SmartDashboard.putData("ClimberSubsystem/ResetEncoder", climberCommandFactory.createResetEncoderCommand());
+            SmartDashboard.putData("ResetAllEncoders", Commands.parallel(
+                    turretCommandFactory.createResetEncoderCommand(),
+                    harvesterCommandFactory.createResetEncoderCommand(),
+                    climberCommandFactory.createResetEncoderCommand())
+                    .withName("Reset All Encoders"));
 
             // Input bindings
             triggerBindings = new TriggerBindings(
@@ -171,7 +206,10 @@ public class RobotContainer {
                     turretCommandFactory,
                     shooterCommandFactory,
                     indexerCommandFactory,
-                    climberCommandFactory);
+                    climberCommandFactory,
+                    feederCommandFactory,
+                    intakeCommandFactory,
+                    harvesterCommandFactory);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
             RobotEnvironment.reportError(message, e.getStackTrace());
@@ -248,6 +286,6 @@ public class RobotContainer {
 
     private boolean isTestRobot() {
         // TODO: hardware check to see if we're using the test robot
-        return true;
+        return false;
     }
 }

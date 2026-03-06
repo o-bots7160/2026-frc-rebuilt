@@ -1,5 +1,8 @@
 package frc.robot.shared.subsystems;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.shared.config.AbstractConfig;
 import frc.robot.shared.config.RobotEnvironment;
@@ -42,6 +45,11 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
      * True when the subsystem is allowed to run hardware actions.
      */
     protected boolean       enabled;
+
+    /**
+     * Tracks method names that have already been logged as disabled so each message prints only once.
+     */
+    private final Set<String> loggedDisabledMethods = new HashSet<>();
 
     /**
      * Creates a subsystem base with shared configuration and logging support.
@@ -160,6 +168,8 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
      * @param methodName name of the method that was skipped
      */
     protected void logDisabled(String methodName) {
-        log.verbose(methodName + " called, but subsystem is disabled.");
+        if (loggedDisabledMethods.add(methodName)) {
+            log.verbose(methodName + " called, but subsystem is disabled.");
+        }
     }
 }

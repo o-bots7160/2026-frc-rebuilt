@@ -17,8 +17,8 @@ public class ShooterSubsystemConfig extends AbstractVelocitySubsystemConfig {
     /**
      * Motor configuration bundle for the follower shooter flywheel motor.
      * <p>
-     * Set {@code enabled = false} in the JSON config when the robot has only one shooter motor (e.g., the test robot).
-     * The follower can have independent inversion, current limits, and CAN ID.
+     * Set {@code enabled = false} in the JSON config when the robot has only one shooter motor (e.g., the test robot). The follower can have
+     * independent inversion, current limits, and CAN ID.
      * </p>
      */
     public ShooterMotorConfig shooterFollowerMotorConfig = new ShooterMotorConfig();
@@ -27,11 +27,60 @@ public class ShooterSubsystemConfig extends AbstractVelocitySubsystemConfig {
     public double             reverseVelocityRpm;
 
     /**
+     * Lookup table mapping distance in meters to target RPM for distance-based shooting.
+     * <p>
+     * The subsystem linearly interpolates between these points at runtime. Add more points for finer control over the distance-to-RPM curve. Points
+     * do not need to be sorted; the interpolation table handles ordering.
+     * </p>
+     */
+    public DistanceRpmPoint[] distanceRpmPoints          = new DistanceRpmPoint[0];
+
+    /** Minimum RPM floor for distance-based shooting. Values below this are clamped up. */
+    public double             minimumShootingRpm         = 1500.0;
+
+    /** Maximum RPM ceiling for distance-based shooting. Values above this are clamped down. */
+    public double             maximumShootingRpm         = 5000.0;
+
+    /** Scale factor applied to the interpolated RPM for quick field adjustments. */
+    public double             distanceRpmMultiplier      = 1.0;
+
+    /**
      * Returns the reverse velocity for clearing jams, tuned via SmartDashboard.
      *
      * @return reverse velocity in RPM (positive value; the subsystem applies the sign)
      */
     public double getReverseVelocityRpm() {
         return readTunableNumber("reverseVelocityRpm", reverseVelocityRpm);
+    }
+
+    /**
+     * Returns the minimum RPM floor for distance-based shooting, tuned via SmartDashboard.
+     *
+     * @return minimum shooting RPM
+     */
+    public double getMinimumShootingRpm() {
+        return readTunableNumber("minimumShootingRpm", minimumShootingRpm);
+    }
+
+    /**
+     * Returns the maximum RPM ceiling for distance-based shooting, tuned via SmartDashboard.
+     *
+     * @return maximum shooting RPM
+     */
+    public double getMaximumShootingRpm() {
+        return readTunableNumber("maximumShootingRpm", maximumShootingRpm);
+    }
+
+    /**
+     * Returns the scale factor applied to interpolated distance-based RPM, tuned via SmartDashboard.
+     * <p>
+     * Use this to quickly adjust all distance-based RPM values up or down without changing individual lookup table points. A value of 1.0 applies no
+     * scaling.
+     * </p>
+     *
+     * @return RPM multiplier (1.0 = no change)
+     */
+    public double getDistanceRpmMultiplier() {
+        return readTunableNumber("distanceRpmMultiplier", distanceRpmMultiplier);
     }
 }

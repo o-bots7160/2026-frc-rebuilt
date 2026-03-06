@@ -69,7 +69,7 @@ public abstract class AbstractConfig {
      * Use this during tuning to print extra debug information.
      * </p>
      */
-    public boolean                                  verbose         = true;
+    public boolean                                  verbose         = false;
 
     private final Map<String, LoggedNetworkBoolean> tunableBooleans = new HashMap<>();
 
