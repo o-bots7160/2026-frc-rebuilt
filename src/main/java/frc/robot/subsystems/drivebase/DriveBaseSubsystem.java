@@ -464,7 +464,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     private void configureSwerveDrive() {
         try {
-            File configDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
+            File configDirectory = new File(Filesystem.getDeployDirectory(), config.getSwerveConfigDirectory());
 
             // Load the swerve JSONs from the deploy folder so the robot and sim use the same hardware model.
             // Reduce YAGSL telemetry during real matches to save loop time.

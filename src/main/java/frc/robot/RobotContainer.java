@@ -248,6 +248,6 @@ public class RobotContainer {
 
     private boolean isTestRobot() {
         // TODO: hardware check to see if we're using the test robot
-        return true;
+        return false;
     }
 }
