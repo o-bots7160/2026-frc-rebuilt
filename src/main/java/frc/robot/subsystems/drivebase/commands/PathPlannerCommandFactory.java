@@ -73,7 +73,7 @@ public class PathPlannerCommandFactory {
      */
     public PathPlannerCommandFactory(Supplier<Pose2d> currentPoseSupplier) {
         this.currentPoseSupplier = currentPoseSupplier;
-        initializeAutos();
+        //initializeAutos();
     }
 
     /**

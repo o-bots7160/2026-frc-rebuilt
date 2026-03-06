@@ -149,21 +149,26 @@ public class RobotContainer {
             intakeCommandFactory        = new IntakeSubsystemCommandFactory(intakeSubsystem);
             harvesterCommandFactory     = new HarvesterSubsystemCommandFactory(harvesterSubsystem);
 
-            // Default Commands
-            shooterCommandFactory.setDefaultIdleCommand();
-            indexerCommandFactory.setDefaultIdleCommand();
-            feederCommandFactory.setDefaultIdleCommand();
-            intakeCommandFactory.setDefaultIdleCommand();
-            harvesterCommandFactory.setDefaultStowCommand();
-            turretCommandFactory.setDefaultTrackFieldTargetCommand(
-                    robotStateSubsystem,
-                    () -> {
-                        var layout = aprilTagFieldLayoutSupplier.get();
-                        return layout.getTagPose(26)
-                                .map(pose -> pose.getTranslation().toTranslation2d())
-                                .orElseThrow();
-                    },
-                    driveBaseSubsystem::getYawRateRadiansPerSecond);
+            // Default commands are disabled during shop testing so the A/B test
+            // bindings can control each subsystem without interference.
+            // Uncomment once subsystems are characterized and test bindings are removed.
+            // shooterCommandFactory.setDefaultIdleCommand();
+            // indexerCommandFactory.setDefaultIdleCommand();
+            // feederCommandFactory.setDefaultIdleCommand();
+            // intakeCommandFactory.setDefaultIdleCommand();
+            // harvesterCommandFactory.setDefaultStowCommand();
+
+            // Turret field tracking is disabled during shop testing.
+            // Uncomment once vision and robot state are validated.
+            // turretCommandFactory.setDefaultTrackFieldTargetCommand(
+            // robotStateSubsystem,
+            // () -> {
+            // var layout = aprilTagFieldLayoutSupplier.get();
+            // return layout.getTagPose(26)
+            // .map(pose -> pose.getTranslation().toTranslation2d())
+            // .orElseThrow();
+            // },
+            // driveBaseSubsystem::getYawRateRadiansPerSecond);
 
             // Dashboard commands (clickable buttons in Elastic Dashboard)
             SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());
@@ -182,7 +187,10 @@ public class RobotContainer {
                     turretCommandFactory,
                     shooterCommandFactory,
                     indexerCommandFactory,
-                    climberCommandFactory);
+                    climberCommandFactory,
+                    feederCommandFactory,
+                    intakeCommandFactory,
+                    harvesterCommandFactory);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
             RobotEnvironment.reportError(message, e.getStackTrace());

@@ -20,10 +20,10 @@
   },
   "turretSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "turretMotorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": true,
       "motorCanId": 56,
       "motorInverted": false,
@@ -53,11 +53,11 @@
     }
   },
   "shooterSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "shooterMotorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 54,
       "motorInverted": true,
@@ -67,8 +67,8 @@
       "forwardSoftLimitDegrees": 0
     },
     "shooterFollowerMotorConfig": {
-      "enabled": false,
-      "verbose": true,
+      "enabled": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 55,
       "motorInverted": false,
@@ -91,11 +91,11 @@
     "kA": 0.33909
   },
   "indexerSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "indexerMotorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 53,
       "motorInverted": false,
@@ -127,7 +127,7 @@
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "linearStandardDeviationBaseline": 0.08,
     "angularStandardDeviationBaseline": 1,
     "maximumAmbiguity": 0.3,
@@ -151,10 +151,10 @@
   },
   "climberSubsystem": {
     "enabled": false,
-    "verbose": true,
+    "verbose": false,
     "climberMotorConfig": {
-      "enabled": false,
-      "verbose": true,
+      "enabled": true,
+      "verbose": false,
       "useSetpointLimits": true,
       "motorCanId": 62,
       "motorInverted": false,
@@ -164,8 +164,8 @@
       "forwardSoftLimitDegrees": 360
     },
     "climberSensorConfig": {
-      "enabled": false,
-      "verbose": true,
+      "enabled": true,
+      "verbose": false,
       "leftSensorCanId": 60,
       "rightSensorCanId": 61,
       "alignmentToleranceMillimeters": 25,
@@ -188,11 +188,11 @@
     "kA": 0
   },
   "feederSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "feederMotorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 52,
       "motorInverted": false,
@@ -216,11 +216,11 @@
     "kA": 0
   },
   "intakeSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "intakeMotorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": false,
       "motorCanId": 50,
       "motorInverted": false,
@@ -244,11 +244,11 @@
     "kA": 0
   },
   "harvesterSubsystem": {
-    "enabled": false,
-    "verbose": true,
+    "enabled": true,
+    "verbose": false,
     "harvesterMotorConfig": {
       "enabled": true,
-      "verbose": true,
+      "verbose": false,
       "useSetpointLimits": true,
       "motorCanId": 51,
       "motorInverted": false,
