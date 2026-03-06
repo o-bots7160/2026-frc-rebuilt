@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -148,7 +149,6 @@ public class RobotContainer {
                     RobotEnvironment::getAlliance);
 
             // Command factories
-            pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
             driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
             turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
             shooterCommandFactory       = new ShooterSubsystemCommandFactory(shooterSubsystem);
@@ -158,6 +158,13 @@ public class RobotContainer {
             feederCommandFactory        = new FeederSubsystemCommandFactory(feederSubsystem);
             intakeCommandFactory        = new IntakeSubsystemCommandFactory(intakeSubsystem);
             harvesterCommandFactory     = new HarvesterSubsystemCommandFactory(harvesterSubsystem);
+
+            // Register named commands for PathPlanner autos before pre-loading
+            NamedCommands.registerCommand("MoveHarvesterToPositionCommand", harvesterCommandFactory.createDeployCommand());
+            NamedCommands.registerCommand("SpinUpShooterCommand",
+                    shooterCommandFactory.createSpinUpCommand(subsystemsConfig.shooterSubsystem::getMaximumShootingRpm));
+
+            pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
 
             // Default commands are disabled during shop testing so the A/B test
             // bindings can control each subsystem without interference.
