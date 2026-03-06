@@ -74,6 +74,20 @@
               "show_pointer": true,
               "show_ticks": true
             }
+          },
+          {
+            "title": "ResetAllEncoders",
+            "x": 1152.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/ResetAllEncoders",
+              "period": 0.06,
+              "show_type": false,
+              "maximize_button_space": true
+            }
           }
         ]
       }
@@ -933,6 +947,20 @@
               "data_type": "double",
               "show_submit_button": true
             }
+          },
+          {
+            "title": "ResetEncoder",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/TurretSubsystem/ResetEncoder",
+              "period": 0.06,
+              "show_type": false,
+              "maximize_button_space": true
+            }
           }
         ]
       }
@@ -1396,6 +1424,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/towerDetected",
               "period": 0.06,
+              "data_type": "boolean",
               "true_color": 4278255360,
               "false_color": 4294901760,
               "true_icon": "None",
@@ -1412,6 +1441,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/alignedToTower",
               "period": 0.06,
+              "data_type": "boolean",
               "true_color": 4278255360,
               "false_color": 4294901760,
               "true_icon": "None",
@@ -1428,6 +1458,7 @@
             "properties": {
               "topic": "/AdvantageKit/ClimberSubsystem/sensors/LeftSensorConnected",
               "period": 0.06,
+              "data_type": "boolean",
               "true_color": 4283215696,
               "false_color": 4294198070,
               "true_icon": "None",
@@ -1444,6 +1475,7 @@
             "properties": {
               "topic": "/AdvantageKit/ClimberSubsystem/sensors/RightSensorConnected",
               "period": 0.06,
+              "data_type": "boolean",
               "true_color": 4283215696,
               "false_color": 4294198070,
               "true_icon": "None",
@@ -1549,6 +1581,20 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
+            }
+          },
+          {
+            "title": "ResetEncoder",
+            "x": 1024.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/ClimberSubsystem/ResetEncoder",
+              "period": 0.06,
+              "show_type": false,
+              "maximize_button_space": true
             }
           }
         ]
@@ -2433,6 +2479,20 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "ResetEncoder",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/HarvesterSubsystem/ResetEncoder",
+              "period": 0.06,
+              "show_type": false,
+              "maximize_button_space": true
             }
           }
         ]

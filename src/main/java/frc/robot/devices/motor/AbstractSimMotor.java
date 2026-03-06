@@ -127,6 +127,17 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     }
 
     /**
+     * Overwrites both the real encoder and the simulation model position.
+     *
+     * @param positionRadians new encoder position in mechanism radians
+     */
+    @Override
+    public void setEncoderPosition(double positionRadians) {
+        super.setEncoderPosition(positionRadians);
+        sparkMaxSim.setPosition(positionRadians);
+    }
+
+    /**
      * Applies the base configuration for the simulated Spark MAX.
      * <p>
      * This mirrors the inversion, current limits, and voltage compensation used on the real controller so the simulation follows the same control
@@ -139,8 +150,8 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     @Override
     protected SparkMaxConfig configureMotor(SparkMaxConfig sparkConfig) {
         sparkConfig
-            .inverted(config.getMotorInverted())
-            .smartCurrentLimit(config.getSmartCurrentLimitAmps())
+                .inverted(config.getMotorInverted())
+                .smartCurrentLimit(config.getSmartCurrentLimitAmps())
                 .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
         return sparkConfig;
     }

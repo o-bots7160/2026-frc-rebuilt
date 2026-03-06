@@ -45,6 +45,17 @@ public interface Motor extends MotorIO {
     double getPositionRadians();
 
     /**
+     * Overwrites the encoder's stored position so the mechanism's logical zero matches its physical location.
+     * <p>
+     * Call this after manually repositioning a mechanism (e.g., centering a turret) so the encoder reading reflects the true position. The value is
+     * in radians, post-gearing, matching the units returned by {@link #getPositionRadians()}.
+     * </p>
+     *
+     * @param positionRadians new encoder position in mechanism radians
+     */
+    void setEncoderPosition(double positionRadians);
+
+    /**
      * Reports the current mechanism velocity.
      * <p>
      * The returned value should already include any gearing needed to express the mechanism velocity in radians per second.

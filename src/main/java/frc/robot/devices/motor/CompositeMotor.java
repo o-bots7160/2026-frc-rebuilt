@@ -11,15 +11,13 @@ import edu.wpi.first.units.measure.Voltage;
 /**
  * Motor adapter that forwards commands to multiple physical motors while presenting a single {@link Motor} interface.
  * <p>
- * Use this when two or more motors are mechanically coupled on the same mechanism (e.g., dual-motor shooter flywheels).
- * One motor is designated the primary; its encoder feedback is used for position, velocity, and telemetry reporting.
- * All other motors are followers that receive identical voltage and speed commands but can have independent configurations
- * (inversion, current limits, gear ratio) defined in their own motor config.
+ * Use this when two or more motors are mechanically coupled on the same mechanism (e.g., dual-motor shooter flywheels). One motor is designated the
+ * primary; its encoder feedback is used for position, velocity, and telemetry reporting. All other motors are followers that receive identical
+ * voltage and speed commands but can have independent configurations (inversion, current limits, gear ratio) defined in their own motor config.
  * </p>
  * <p>
- * This class lives in {@code devices/motor/} so any subsystem that needs paired motors can reuse it. Because the
- * adapter implements {@link Motor}, the subsystem hierarchy ({@code AbstractMotorSubsystem},
- * {@code AbstractVelocitySubsystem}) remains completely unaware of multi-motor wiring.
+ * This class lives in {@code devices/motor/} so any subsystem that needs paired motors can reuse it. Because the adapter implements {@link Motor},
+ * the subsystem hierarchy ({@code AbstractMotorSubsystem}, {@code AbstractVelocitySubsystem}) remains completely unaware of multi-motor wiring.
  * </p>
  *
  * @see Motor
@@ -30,7 +28,7 @@ public final class CompositeMotor implements Motor {
     /**
      * Primary motor whose encoder provides position and velocity feedback.
      */
-    private final Motor primary;
+    private final Motor       primary;
 
     /**
      * Additional motors that receive the same commands as the primary but do not contribute encoder feedback.
@@ -40,8 +38,8 @@ public final class CompositeMotor implements Motor {
     /**
      * Creates a composite motor from a primary motor and one or more followers.
      * <p>
-     * Each motor instance should already be fully configured (CAN ID, inversion, current limits, etc.) before
-     * being passed here. The composite does not alter any motor configuration; it only forwards commands.
+     * Each motor instance should already be fully configured (CAN ID, inversion, current limits, etc.) before being passed here. The composite does
+     * not alter any motor configuration; it only forwards commands.
      * </p>
      *
      * @param primary   motor whose encoder is authoritative for position and velocity readings
@@ -106,6 +104,19 @@ public final class CompositeMotor implements Motor {
     }
 
     /**
+     * Overwrites the encoder position on the primary motor and all followers.
+     *
+     * @param positionRadians new encoder position in mechanism radians
+     */
+    @Override
+    public void setEncoderPosition(double positionRadians) {
+        primary.setEncoderPosition(positionRadians);
+        for (Motor follower : followers) {
+            follower.setEncoderPosition(positionRadians);
+        }
+    }
+
+    /**
      * Returns the voltage applied to the primary motor.
      *
      * @return primary motor's applied voltage
@@ -129,8 +140,7 @@ public final class CompositeMotor implements Motor {
     /**
      * Refreshes configuration on the primary motor and all followers.
      * <p>
-     * Each motor reads its own config independently, so per-motor tunable values (inversion, current limits)
-     * take effect on the correct controller.
+     * Each motor reads its own config independently, so per-motor tunable values (inversion, current limits) take effect on the correct controller.
      * </p>
      */
     @Override
@@ -154,9 +164,8 @@ public final class CompositeMotor implements Motor {
     /**
      * Updates telemetry inputs from the primary motor's encoder and sensors.
      * <p>
-     * Only the primary motor's readings are captured because both motors are mechanically coupled and share
-     * the same mechanism state. Follower health (current draw, temperature) can be monitored separately
-     * if needed by accessing follower motors directly.
+     * Only the primary motor's readings are captured because both motors are mechanically coupled and share the same mechanism state. Follower health
+     * (current draw, temperature) can be monitored separately if needed by accessing follower motors directly.
      * </p>
      *
      * @param inputs mutable inputs container to fill for logging

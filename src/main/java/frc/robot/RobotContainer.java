@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.bindings.TriggerBindings;
@@ -44,64 +45,64 @@ import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 public class RobotContainer {
 
     // Configuration
-    private final SubsystemsConfig                 subsystemsConfig;
+    private final SubsystemsConfig                    subsystemsConfig;
 
-    private final FieldLayoutConfig                fieldLayoutConfig;
+    private final FieldLayoutConfig                   fieldLayoutConfig;
 
-    private final Supplier<AprilTagFieldLayout>    aprilTagFieldLayoutSupplier;
+    private final Supplier<AprilTagFieldLayout>       aprilTagFieldLayoutSupplier;
 
     // Subsystems
-    private final DriveBaseSubsystem               driveBaseSubsystem;
+    private final DriveBaseSubsystem                  driveBaseSubsystem;
 
-    private final TurretSubsystem                  turretSubsystem;
+    private final TurretSubsystem                     turretSubsystem;
 
-    private final ShooterSubsystem                 shooterSubsystem;
+    private final ShooterSubsystem                    shooterSubsystem;
 
-    private final IndexerSubsystem                 indexerSubsystem;
+    private final IndexerSubsystem                    indexerSubsystem;
 
-    private final RobotStateSubsystem              robotStateSubsystem;
-
-    @SuppressWarnings("unused")
-    private final AprilTagVisionSubsystem          aprilTagVisionSubsystem;
+    private final RobotStateSubsystem                 robotStateSubsystem;
 
     @SuppressWarnings("unused")
-    private final DriverCameraSubsystem            driverCameraSubsystem;
+    private final AprilTagVisionSubsystem             aprilTagVisionSubsystem;
 
-    private final ClimberSubsystem                 climberSubsystem;
+    @SuppressWarnings("unused")
+    private final DriverCameraSubsystem               driverCameraSubsystem;
 
-    private final FeederSubsystem                  feederSubsystem;
+    private final ClimberSubsystem                    climberSubsystem;
 
-    private final IntakeSubsystem                  intakeSubsystem;
+    private final FeederSubsystem                     feederSubsystem;
 
-    private final HarvesterSubsystem               harvesterSubsystem;
+    private final IntakeSubsystem                     intakeSubsystem;
+
+    private final HarvesterSubsystem                  harvesterSubsystem;
 
     // Command factories
 
-    private final PathPlannerCommandFactory        pathPlannerCommandFactory;
+    private final PathPlannerCommandFactory           pathPlannerCommandFactory;
 
-    private final DriveBaseSubsystemCommandFactory driveBaseCommandFactory;
+    private final DriveBaseSubsystemCommandFactory    driveBaseCommandFactory;
 
-    private final TurretSubsystemCommandFactory    turretCommandFactory;
+    private final TurretSubsystemCommandFactory       turretCommandFactory;
 
-    private final ShooterSubsystemCommandFactory   shooterCommandFactory;
+    private final ShooterSubsystemCommandFactory      shooterCommandFactory;
 
-    private final IndexerSubsystemCommandFactory   indexerCommandFactory;
+    private final IndexerSubsystemCommandFactory      indexerCommandFactory;
 
     @SuppressWarnings("unused")
     private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
 
     @SuppressWarnings("unused")
-    private final ClimberSubsystemCommandFactory   climberCommandFactory;
+    private final ClimberSubsystemCommandFactory      climberCommandFactory;
 
-    private final FeederSubsystemCommandFactory    feederCommandFactory;
+    private final FeederSubsystemCommandFactory       feederCommandFactory;
 
-    private final IntakeSubsystemCommandFactory    intakeCommandFactory;
+    private final IntakeSubsystemCommandFactory       intakeCommandFactory;
 
-    private final HarvesterSubsystemCommandFactory harvesterCommandFactory;
+    private final HarvesterSubsystemCommandFactory    harvesterCommandFactory;
 
     // Input bindings
     @SuppressWarnings("unused")
-    private final TriggerBindings                  triggerBindings;
+    private final TriggerBindings                     triggerBindings;
 
     /**
      * Builds the robot container and wires subsystems, command factories, and bindings.
@@ -163,6 +164,16 @@ public class RobotContainer {
                                 .orElseThrow();
                     },
                     driveBaseSubsystem::getYawRateRadiansPerSecond);
+
+            // Dashboard commands (clickable buttons in Elastic Dashboard)
+            SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());
+            SmartDashboard.putData("HarvesterSubsystem/ResetEncoder", harvesterCommandFactory.createResetEncoderCommand());
+            SmartDashboard.putData("ClimberSubsystem/ResetEncoder", climberCommandFactory.createResetEncoderCommand());
+            SmartDashboard.putData("ResetAllEncoders", Commands.parallel(
+                    turretCommandFactory.createResetEncoderCommand(),
+                    harvesterCommandFactory.createResetEncoderCommand(),
+                    climberCommandFactory.createResetEncoderCommand())
+                    .withName("Reset All Encoders"));
 
             // Input bindings
             triggerBindings = new TriggerBindings(

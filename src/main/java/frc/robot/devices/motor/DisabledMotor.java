@@ -80,6 +80,16 @@ public final class DisabledMotor implements Motor {
     }
 
     /**
+     * Ignores encoder position changes because no hardware exists.
+     *
+     * @param positionRadians ignored
+     */
+    @Override
+    public void setEncoderPosition(double positionRadians) {
+        // No-op: no encoder to reset.
+    }
+
+    /**
      * Returns {@code null} because no controller exists when disabled.
      *
      * @return null SparkMax instance
@@ -96,7 +106,7 @@ public final class DisabledMotor implements Motor {
      */
     @Override
     public void updateInputs(MotorIOInputs inputs) {
-        inputs.positionRadians            = 0.0;
+        inputs.positionRadians         = 0.0;
         inputs.velocityRadPerSec       = 0.0;
         inputs.appliedVolts            = Units.Volts.of(lastCommandedVolts);
         inputs.commandedVolts          = Units.Volts.of(lastCommandedVolts);
