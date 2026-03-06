@@ -125,20 +125,20 @@
       "forwardSoftLimitDegrees": 0
     },
     "maximumVelocityRpm": 3000,
-    "maximumAccelerationRpmPerSecond": 0,
+    "maximumAccelerationRpmPerSecond": 100,
     "velocityToleranceRpm": 50,
     "settleTimeSeconds": 0.1,
-    "idleVelocityRpm": 0,
+    "idleVelocityRpm": 500,
     "feedVelocityRpm": 2000,
     "reverseVelocityRpm": 1000,
     "unjamForwardDurationSeconds": 0.3,
     "unjamReverseDurationSeconds": 0.3,
-    "kP": 0,
+    "kP": 0.18,
     "kI": 0,
     "kD": 0,
     "kS": 0,
-    "kV": 0,
-    "kA": 0
+    "kV": 0.025,
+    "kA": 0.33909
   },
   "robotStateSubsystem": {
     "enabled": true,
@@ -228,12 +228,12 @@
     "idleVelocityRpm": 500,
     "forwardVelocityRpm": 1500,
     "reverseVelocityRpm": 1000,
-    "kP": 0,
+    "kP": 0.18,
     "kI": 0,
     "kD": 0,
     "kS": 0,
-    "kV": 0,
-    "kA": 0
+    "kV": 0.025,
+    "kA": 0.33909
   },
   "intakeSubsystem": {
     "enabled": true,
@@ -253,15 +253,15 @@
     "maximumAccelerationRpmPerSecond": 0,
     "velocityToleranceRpm": 50,
     "settleTimeSeconds": 0.15,
-    "idleVelocityRpm": 0,
+    "idleVelocityRpm": 500,
     "forwardVelocityRpm": 1500,
     "reverseVelocityRpm": 1000,
-    "kP": 0,
+    "kP": 0.18,
     "kI": 0,
     "kD": 0,
     "kS": 0,
-    "kV": 0,
-    "kA": 0
+    "kV": 0.025,
+    "kA": 0.33909
   },
   "harvesterSubsystem": {
     "enabled": true,

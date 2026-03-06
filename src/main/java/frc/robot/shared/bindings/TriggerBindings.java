@@ -27,35 +27,40 @@ public class TriggerBindings {
     /**
      * Default USB port for the driver controller.
      */
-    private static final int    DEFAULT_DRIVE_CONTROLLER_PORT     = 0;
+    private static final int                       DEFAULT_DRIVE_CONTROLLER_PORT     = 0;
 
     /**
      * Default USB port for the operator controller.
      */
-    private static final int    DEFAULT_OPERATOR_CONTROLLER_PORT  = 1;
+    private static final int                       DEFAULT_OPERATOR_CONTROLLER_PORT  = 1;
 
     /**
      * Delay before system identification begins in seconds.
      */
-    private static final double SYSID_DELAY_SECONDS               = 20.0;
+    private static final double                    SYSID_DELAY_SECONDS               = 20.0;
 
     /**
      * Timeout for the quasistatic (slow ramp) portion of system identification in seconds.
      */
-    private static final double SYSID_QUASISTATIC_TIMEOUT_SECONDS = 10.0;
+    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 10.0;
 
     /**
      * Timeout for the dynamic (step voltage) portion of system identification in seconds.
      */
-    private static final double SYSID_DYNAMIC_TIMEOUT_SECONDS     = 10.0;
+    private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 10.0;
 
     // Chooser option constants for subsystem test selection.
-    private static final String TEST_SUBSYSTEM_SHOOTER             = "Shooter";
-    private static final String TEST_SUBSYSTEM_INDEXER             = "Indexer";
-    private static final String TEST_SUBSYSTEM_FEEDER              = "Feeder";
-    private static final String TEST_SUBSYSTEM_INTAKE              = "Intake";
-    private static final String TEST_SUBSYSTEM_TURRET              = "Turret";
-    private static final String TEST_SUBSYSTEM_HARVESTER           = "Harvester";
+    private static final String                    TEST_SUBSYSTEM_SHOOTER            = "Shooter";
+
+    private static final String                    TEST_SUBSYSTEM_INDEXER            = "Indexer";
+
+    private static final String                    TEST_SUBSYSTEM_FEEDER             = "Feeder";
+
+    private static final String                    TEST_SUBSYSTEM_INTAKE             = "Intake";
+
+    private static final String                    TEST_SUBSYSTEM_TURRET             = "Turret";
+
+    private static final String                    TEST_SUBSYSTEM_HARVESTER          = "Harvester";
 
     /**
      * Driver gamepad used for manual driving.
@@ -197,7 +202,7 @@ public class TriggerBindings {
         this.operatorController      = new CommandXboxController(operatorControllerPort);
 
         // Build the subsystem test chooser and publish it to SmartDashboard.
-        testSubsystemChooser = new SendableChooser<>();
+        testSubsystemChooser         = new SendableChooser<>();
         testSubsystemChooser.setDefaultOption(TEST_SUBSYSTEM_SHOOTER, TEST_SUBSYSTEM_SHOOTER);
         testSubsystemChooser.addOption(TEST_SUBSYSTEM_INDEXER, TEST_SUBSYSTEM_INDEXER);
         testSubsystemChooser.addOption(TEST_SUBSYSTEM_FEEDER, TEST_SUBSYSTEM_FEEDER);
@@ -241,9 +246,8 @@ public class TriggerBindings {
     /**
      * Wires A, B, and X buttons on the driver controller to test the dashboard-selected subsystem.
      * <p>
-     * A = reverse/min, B = forward/max, X = full SysId sweep. The subsystem under test is chosen via
-     * the {@code TriggerBindings/TestSubsystem} SendableChooser on the dashboard. Commands are
-     * resolved at button-press time using deferred proxy so the chooser selection is always current.
+     * A = reverse/min, B = forward/max, X = full SysId sweep. The subsystem under test is chosen via the {@code TriggerBindings/TestSubsystem}
+     * SendableChooser on the dashboard. Commands are resolved at button-press time using deferred proxy so the chooser selection is always current.
      * </p>
      */
     private void configureSubsystemTestBindings() {
@@ -264,8 +268,8 @@ public class TriggerBindings {
     /**
      * Creates the reverse/min command for the currently selected test subsystem.
      * <p>
-     * For velocity subsystems this spins the motor in reverse at the configured idle RPM. For
-     * set-and-seek subsystems this moves to the minimum setpoint (soft limit).
+     * For velocity subsystems this spins the motor in reverse at the configured idle RPM. For set-and-seek subsystems this moves to the minimum
+     * setpoint (soft limit).
      * </p>
      *
      * @return command for the selected subsystem, or {@link Commands#none()} if nothing is selected
@@ -277,34 +281,34 @@ public class TriggerBindings {
         }
 
         switch (selected) {
-            case TEST_SUBSYSTEM_SHOOTER:
-                return shooterCommandFactory.createContinuousVelocityCommand(
-                        () -> -shooterCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
-            case TEST_SUBSYSTEM_INDEXER:
-                return indexerCommandFactory.createContinuousVelocityCommand(
-                        () -> -indexerCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
-            case TEST_SUBSYSTEM_FEEDER:
-                return feederCommandFactory.createContinuousVelocityCommand(
-                        () -> -feederCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
-            case TEST_SUBSYSTEM_INTAKE:
-                return intakeCommandFactory.createContinuousVelocityCommand(
-                        () -> -intakeCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
-            case TEST_SUBSYSTEM_TURRET:
-                return turretCommandFactory.createMoveToAngleCommand(
-                        turretCommandFactory.getSubsystem().getConfig()::getMinimumSetpointDegrees);
-            case TEST_SUBSYSTEM_HARVESTER:
-                return harvesterCommandFactory.createMoveToPositionCommand(
-                        harvesterCommandFactory.getSubsystem().getConfig()::getMinimumSetpointDegrees);
-            default:
-                return Commands.none();
+        case TEST_SUBSYSTEM_SHOOTER:
+            return shooterCommandFactory.createContinuousVelocityCommand(
+                    () -> -shooterCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
+        case TEST_SUBSYSTEM_INDEXER:
+            return indexerCommandFactory.createContinuousVelocityCommand(
+                    () -> -indexerCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
+        case TEST_SUBSYSTEM_FEEDER:
+            return feederCommandFactory.createContinuousVelocityCommand(
+                    () -> -feederCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
+        case TEST_SUBSYSTEM_INTAKE:
+            return intakeCommandFactory.createContinuousVelocityCommand(
+                    () -> -intakeCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
+        case TEST_SUBSYSTEM_TURRET:
+            return turretCommandFactory.createMoveToAngleCommand(
+                    turretCommandFactory.getSubsystem().getConfig()::getMinimumSetpointDegrees);
+        case TEST_SUBSYSTEM_HARVESTER:
+            return harvesterCommandFactory.createMoveToPositionCommand(
+                    harvesterCommandFactory.getSubsystem().getConfig()::getMinimumSetpointDegrees);
+        default:
+            return Commands.none();
         }
     }
 
     /**
      * Creates the forward/max command for the currently selected test subsystem.
      * <p>
-     * For velocity subsystems this spins the motor forward at the configured idle RPM. For
-     * set-and-seek subsystems this moves to the maximum setpoint (soft limit).
+     * For velocity subsystems this spins the motor forward at the configured idle RPM. For set-and-seek subsystems this moves to the maximum setpoint
+     * (soft limit).
      * </p>
      *
      * @return command for the selected subsystem, or {@link Commands#none()} if nothing is selected
@@ -316,34 +320,34 @@ public class TriggerBindings {
         }
 
         switch (selected) {
-            case TEST_SUBSYSTEM_SHOOTER:
-                return shooterCommandFactory.createContinuousVelocityCommand(
-                        shooterCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
-            case TEST_SUBSYSTEM_INDEXER:
-                return indexerCommandFactory.createContinuousVelocityCommand(
-                        indexerCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
-            case TEST_SUBSYSTEM_FEEDER:
-                return feederCommandFactory.createContinuousVelocityCommand(
-                        feederCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
-            case TEST_SUBSYSTEM_INTAKE:
-                return intakeCommandFactory.createContinuousVelocityCommand(
-                        intakeCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
-            case TEST_SUBSYSTEM_TURRET:
-                return turretCommandFactory.createMoveToAngleCommand(
-                        turretCommandFactory.getSubsystem().getConfig()::getMaximumSetpointDegrees);
-            case TEST_SUBSYSTEM_HARVESTER:
-                return harvesterCommandFactory.createMoveToPositionCommand(
-                        harvesterCommandFactory.getSubsystem().getConfig()::getMaximumSetpointDegrees);
-            default:
-                return Commands.none();
+        case TEST_SUBSYSTEM_SHOOTER:
+            return shooterCommandFactory.createContinuousVelocityCommand(
+                    shooterCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
+        case TEST_SUBSYSTEM_INDEXER:
+            return indexerCommandFactory.createContinuousVelocityCommand(
+                    indexerCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
+        case TEST_SUBSYSTEM_FEEDER:
+            return feederCommandFactory.createContinuousVelocityCommand(
+                    feederCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
+        case TEST_SUBSYSTEM_INTAKE:
+            return intakeCommandFactory.createContinuousVelocityCommand(
+                    intakeCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
+        case TEST_SUBSYSTEM_TURRET:
+            return turretCommandFactory.createMoveToAngleCommand(
+                    turretCommandFactory.getSubsystem().getConfig()::getMaximumSetpointDegrees);
+        case TEST_SUBSYSTEM_HARVESTER:
+            return harvesterCommandFactory.createMoveToPositionCommand(
+                    harvesterCommandFactory.getSubsystem().getConfig()::getMaximumSetpointDegrees);
+        default:
+            return Commands.none();
         }
     }
 
     /**
      * Creates a full SysId characterization sweep for the currently selected test subsystem.
      * <p>
-     * The sweep runs all four phases (quasistatic forward, quasistatic reverse, dynamic forward,
-     * dynamic reverse) with configurable delays and timeouts, totaling approximately 60 seconds.
+     * The sweep runs all four phases (quasistatic forward, quasistatic reverse, dynamic forward, dynamic reverse) with configurable delays and
+     * timeouts, totaling approximately 60 seconds.
      * </p>
      *
      * @return SysId sweep command for the selected subsystem, or {@link Commands#none()} if nothing is selected
@@ -355,26 +359,26 @@ public class TriggerBindings {
         }
 
         switch (selected) {
-            case TEST_SUBSYSTEM_SHOOTER:
-                return shooterCommandFactory.createSysIdFullSweepCommand(
-                        SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
-            case TEST_SUBSYSTEM_INDEXER:
-                return indexerCommandFactory.createSysIdFullSweepCommand(
-                        SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
-            case TEST_SUBSYSTEM_FEEDER:
-                return feederCommandFactory.createSysIdFullSweepCommand(
-                        SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
-            case TEST_SUBSYSTEM_INTAKE:
-                return intakeCommandFactory.createSysIdFullSweepCommand(
-                        SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
-            case TEST_SUBSYSTEM_TURRET:
-                return turretCommandFactory.createSysIdFullSweepCommand(
-                        SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
-            case TEST_SUBSYSTEM_HARVESTER:
-                return harvesterCommandFactory.createSysIdFullSweepCommand(
-                        SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
-            default:
-                return Commands.none();
+        case TEST_SUBSYSTEM_SHOOTER:
+            return shooterCommandFactory.createSysIdFullSweepCommand(
+                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+        case TEST_SUBSYSTEM_INDEXER:
+            return indexerCommandFactory.createSysIdFullSweepCommand(
+                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+        case TEST_SUBSYSTEM_FEEDER:
+            return feederCommandFactory.createSysIdFullSweepCommand(
+                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+        case TEST_SUBSYSTEM_INTAKE:
+            return intakeCommandFactory.createSysIdFullSweepCommand(
+                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+        case TEST_SUBSYSTEM_TURRET:
+            return turretCommandFactory.createSysIdFullSweepCommand(
+                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+        case TEST_SUBSYSTEM_HARVESTER:
+            return harvesterCommandFactory.createSysIdFullSweepCommand(
+                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+        default:
+            return Commands.none();
         }
     }
 
@@ -433,30 +437,30 @@ public class TriggerBindings {
     // methods once subsystems are characterized and test bindings are no longer needed.
 
     // private void configureShooterBindings() {
-    //     driverController.rightBumper().whileTrue(
-    //             shooterCommandFactory.createContinuousSpinCommand(
-    //                     triggerBindingsConfig::getShooterTestSpeedRpm));
+    // driverController.rightBumper().whileTrue(
+    // shooterCommandFactory.createContinuousSpinCommand(
+    // triggerBindingsConfig::getShooterTestSpeedRpm));
     // }
 
     // private void configureTurretBindings() {
-    //     // Hold A/B to spin the turret to the configured angles (for testing and alignment).
-    //     // driverController.a().whileTrue(
-    //     //         turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_LEFT_DEGREES));
-    //     // driverController.b().whileTrue(
-    //     //         turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_RIGHT_DEGREES));
+    // // Hold A/B to spin the turret to the configured angles (for testing and alignment).
+    // // driverController.a().whileTrue(
+    // // turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_LEFT_DEGREES));
+    // // driverController.b().whileTrue(
+    // // turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_RIGHT_DEGREES));
     // }
 
     // private void configureClimberBindings() {
-    //     // TODO: wire climber commands when motor hardware is selected
+    // // TODO: wire climber commands when motor hardware is selected
     // }
 
     // private void configureIndexerBindings() {
-    //     driverController.leftBumper().whileTrue(
-    //             indexerCommandFactory.createFeedAndHoldCommand());
-    //     driverController.povDown().whileTrue(
-    //             indexerCommandFactory.createUnjamCommand());
-    //     driverController.povLeft().whileTrue(
-    //             indexerCommandFactory.createReverseCommand());
+    // driverController.leftBumper().whileTrue(
+    // indexerCommandFactory.createFeedAndHoldCommand());
+    // driverController.povDown().whileTrue(
+    // indexerCommandFactory.createUnjamCommand());
+    // driverController.povLeft().whileTrue(
+    // indexerCommandFactory.createReverseCommand());
     // }
 
 }

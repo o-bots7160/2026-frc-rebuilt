@@ -122,8 +122,7 @@ public abstract class AbstractVelocityCommandFactory<TSubsystem extends Abstract
     /**
      * Sets the idle command as the default command for this velocity subsystem.
      * <p>
-     * Call this once during {@code RobotContainer} construction so the subsystem returns to its
-     * idle behavior whenever no other command is scheduled.
+     * Call this once during {@code RobotContainer} construction so the subsystem returns to its idle behavior whenever no other command is scheduled.
      * </p>
      *
      * @return the idle command that was set as default
@@ -137,25 +136,32 @@ public abstract class AbstractVelocityCommandFactory<TSubsystem extends Abstract
     /**
      * Builds a command that continuously reads a target RPM from a supplier and seeks that velocity every cycle.
      * <p>
-     * Unlike commands that lock the target at initialization, this command re-evaluates the supplier each cycle. Use this
-     * when the target is backed by a tunable value that operators may adjust while the command is running.
+     * Unlike commands that lock the target at initialization, this command re-evaluates the supplier each cycle. Use this when the target is backed
+     * by a tunable value that operators may adjust while the command is running.
+     * </p>
+     * <p>
+     * When the command ends (button released or interrupted), the subsystem targets zero RPM and runs one final control cycle so the motor,
+     * simulation model, and telemetry all reflect the stopped state.
      * </p>
      *
      * @param targetRpmSupplier provider for the target RPM; evaluated every execute cycle
-     * @return command that continuously tracks the supplied RPM until interrupted
+     * @return command that continuously tracks the supplied RPM until interrupted, then stops cleanly
      */
     public Command createContinuousVelocityCommand(Supplier<Double> targetRpmSupplier) {
         return Commands.run(() -> {
             subsystem.setTargetVelocityRpm(targetRpmSupplier.get());
             subsystem.seekVelocity();
-        }, subsystem);
+        }, subsystem).finallyDo(() -> {
+            subsystem.setTargetVelocityRpm(0.0);
+            subsystem.seekVelocity();
+        });
     }
 
     /**
      * Builds the idle command for this velocity subsystem.
      * <p>
-     * Each concrete factory returns its own idle command type. The base factory uses this method in
-     * {@link #setDefaultIdleCommand()} to wire the subsystem's default behavior.
+     * Each concrete factory returns its own idle command type. The base factory uses this method in {@link #setDefaultIdleCommand()} to wire the
+     * subsystem's default behavior.
      * </p>
      *
      * @return command that idles the mechanism at its configured idle RPM
