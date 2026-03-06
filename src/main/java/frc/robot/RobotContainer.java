@@ -17,6 +17,7 @@ import frc.robot.shared.config.ConfigurationLoader;
 import frc.robot.shared.config.FieldLayoutConfig;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.SubsystemsConfig;
+import frc.robot.shared.field.FieldTargetSelector;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionSubsystem;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
@@ -100,6 +101,9 @@ public class RobotContainer {
 
     private final HarvesterSubsystemCommandFactory    harvesterCommandFactory;
 
+    // Cross-subsystem utilities
+    private final FieldTargetSelector                 fieldTargetSelector;
+
     // Input bindings
     @SuppressWarnings("unused")
     private final TriggerBindings                     triggerBindings;
@@ -137,6 +141,12 @@ public class RobotContainer {
             intakeSubsystem             = new IntakeSubsystem(subsystemsConfig.intakeSubsystem);
             harvesterSubsystem          = new HarvesterSubsystem(subsystemsConfig.harvesterSubsystem);
 
+            // Cross-subsystem utilities
+            fieldTargetSelector         = new FieldTargetSelector(
+                    subsystemsConfig.turretSubsystem.fieldTargets,
+                    robotStateSubsystem::getEstimatedPose,
+                    RobotEnvironment::getAlliance);
+
             // Command factories
             pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
             driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);
@@ -158,17 +168,19 @@ public class RobotContainer {
             // intakeCommandFactory.setDefaultIdleCommand();
             // harvesterCommandFactory.setDefaultStowCommand();
 
-            // Turret field tracking is disabled during shop testing.
+            // Zone-aware turret field tracking is disabled during shop testing.
             // Uncomment once vision and robot state are validated.
             // turretCommandFactory.setDefaultTrackFieldTargetCommand(
             // robotStateSubsystem,
-            // () -> {
-            // var layout = aprilTagFieldLayoutSupplier.get();
-            // return layout.getTagPose(26)
-            // .map(pose -> pose.getTranslation().toTranslation2d())
-            // .orElseThrow();
-            // },
+            // fieldTargetSelector::getActiveTargetPosition,
             // driveBaseSubsystem::getYawRateRadiansPerSecond);
+
+            // Distance-based shooter RPM is disabled during shop testing.
+            // Uncomment once the interpolation table is tuned.
+            // shooterSubsystem.setDefaultCommand(
+            // shooterCommandFactory.createDistanceBasedSpinCommand(
+            // () -> robotStateSubsystem.getDistanceToPointMeters(
+            // fieldTargetSelector.getActiveTargetPosition())));
 
             // Dashboard commands (clickable buttons in Elastic Dashboard)
             SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());

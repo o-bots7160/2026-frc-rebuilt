@@ -93,176 +93,172 @@
       }
     },
     {
-      "name": "Driver Assistance",
+      "name": "Controls",
       "grid_layout": {
         "layouts": [],
         "containers": [
           {
-            "title": "Zone Assist Kp",
+            "title": "leftStickYResponseExponent",
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistKp",
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickYResponseExponent",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "Zone Assist Kd",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistKd",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Zone Assist Max (deg/s)",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/zoneRotationAssistMaxDegreesPerSecond",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Zone Assist Active",
+            "title": "leftStickXResponseExponent",
             "x": 0.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Boolean Box",
+            "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/AssistedFieldDriveCommand/zoneAssistActive",
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickXResponseExponent",
               "period": 0.06,
-              "true_color": 4278255360,
-              "false_color": 4294901760,
-              "true_icon": "None",
-              "false_icon": "None"
+              "data_type": "double",
+              "show_submit_button": true
             }
           },
           {
-            "title": "Zone Assist Omega (rad/s)",
-            "x": 256.0,
+            "title": "rightStickXResponseExponent",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/rightStickXResponseExponent",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "normalSpeedScale",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 768.0,
+            "height": 128.0,
+            "type": "Number Slider",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/normalSpeedScale",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": 0.0,
+              "max_value": 2.0,
+              "divisions": 9,
+              "update_continuously": true
+            }
+          },
+          {
+            "title": "sprintSpeedScale",
+            "x": 384.0,
+            "y": 128.0,
+            "width": 768.0,
+            "height": 128.0,
+            "type": "Number Slider",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/sprintSpeedScale",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": 0.0,
+              "max_value": 2.0,
+              "divisions": 9,
+              "update_continuously": true
+            }
+          },
+          {
+            "title": "slowSpeedScale",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 768.0,
+            "height": 128.0,
+            "type": "Number Slider",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/slowSpeedScale",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": 0.0,
+              "max_value": 2.0,
+              "divisions": 9,
+              "update_continuously": true
+            }
+          },
+          {
+            "title": "joystickDeadband",
+            "x": 1152.0,
             "y": 128.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/AssistedFieldDriveCommand/zoneAssistOmegaRadPerSec",
+              "topic": "/SmartDashboard/SubsystemsConfig/TriggerBindings/joystickDeadband",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "BumpAvoidance Enabled",
+            "title": "triggerDeadband",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/SubsystemsConfig/TriggerBindings/triggerDeadband",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "shooterTestSpeedRpm",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 768.0,
+            "height": 128.0,
+            "type": "Number Slider",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/shooterTestSpeedRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": 0.0,
+              "max_value": 3000.0,
+              "divisions": 6,
+              "update_continuously": true
+            }
+          },
+          {
+            "title": "Test Subsystem",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/TriggerBindings/TestSubsystem",
+              "period": 0.06,
+              "sort_options": true
+            }
+          },
+          {
+            "title": "TestSubsystem",
             "x": 0.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Toggle Switch",
+            "type": "ComboBox Chooser",
             "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.enabled",
-              "period": 0.06
-            }
-          },
-          {
-            "title": "BumpAvoidance Min X (m)",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.minXMeters",
+              "topic": "/SmartDashboard/TriggerBindings/TestSubsystem",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Min Y (m)",
-            "x": 256.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.minYMeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Max X (m)",
-            "x": 512.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.maxXMeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Max Y (m)",
-            "x": 768.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.maxYMeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Target Heading (deg)",
-            "x": 0.0,
-            "y": 640.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.targetHeadingDegrees",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "BumpAvoidance Kp Override",
-            "x": 384.0,
-            "y": 640.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/fieldZone.BumpAvoidance.rotationAssistGain",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "sort_options": false
             }
           }
         ]
@@ -467,165 +463,6 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Controls",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "title": "leftStickYResponseExponent",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickYResponseExponent",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "leftStickXResponseExponent",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickXResponseExponent",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "rightStickXResponseExponent",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/rightStickXResponseExponent",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "normalSpeedScale",
-            "x": 384.0,
-            "y": 0.0,
-            "width": 768.0,
-            "height": 128.0,
-            "type": "Number Slider",
-            "properties": {
-              "topic": "SmartDashboard/TriggerBindings/normalSpeedScale",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 2.0,
-              "divisions": 9,
-              "update_continuously": true
-            }
-          },
-          {
-            "title": "sprintSpeedScale",
-            "x": 384.0,
-            "y": 128.0,
-            "width": 768.0,
-            "height": 128.0,
-            "type": "Number Slider",
-            "properties": {
-              "topic": "SmartDashboard/TriggerBindings/sprintSpeedScale",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 2.0,
-              "divisions": 9,
-              "update_continuously": true
-            }
-          },
-          {
-            "title": "slowSpeedScale",
-            "x": 384.0,
-            "y": 256.0,
-            "width": 768.0,
-            "height": 128.0,
-            "type": "Number Slider",
-            "properties": {
-              "topic": "SmartDashboard/TriggerBindings/slowSpeedScale",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 2.0,
-              "divisions": 9,
-              "update_continuously": true
-            }
-          },
-          {
-            "title": "joystickDeadband",
-            "x": 1152.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/TriggerBindings/joystickDeadband",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "triggerDeadband",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/TriggerBindings/triggerDeadband",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "shooterTestSpeedRpm",
-            "x": 384.0,
-            "y": 384.0,
-            "width": 768.0,
-            "height": 128.0,
-            "type": "Number Slider",
-            "properties": {
-              "topic": "SmartDashboard/TriggerBindings/shooterTestSpeedRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 3000.0,
-              "divisions": 6,
-              "update_continuously": true
-            }
-          },
-          {
-            "title": "Test Subsystem",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/TriggerBindings/TestSubsystem",
-              "period": 0.06,
-              "sort_options": true
             }
           }
         ]
