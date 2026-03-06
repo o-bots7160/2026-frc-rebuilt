@@ -151,10 +151,7 @@ public abstract class AbstractVelocityCommandFactory<TSubsystem extends Abstract
         return Commands.run(() -> {
             subsystem.setTargetVelocityRpm(targetRpmSupplier.get());
             subsystem.seekVelocity();
-        }, subsystem).finallyDo(() -> {
-            subsystem.setTargetVelocityRpm(0.0);
-            subsystem.seekVelocity();
-        });
+        }, subsystem).finallyDo(subsystem::stop);
     }
 
     /**
