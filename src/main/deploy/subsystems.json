@@ -1,6 +1,6 @@
 {
   "driveBaseSubsystem": {
-    "enabled": false,
+    "enabled": true,
     "verbose": false,
     "swerveConfigDirectory": "swerve",
     "maximumLinearSpeedFeetPerSecond": 17.2,
