@@ -236,12 +236,12 @@
     "idleVelocityRpm": 500.0,
     "forwardVelocityRpm": 1500.0,
     "reverseVelocityRpm": 1000.0,
-    "kP": 0.2,
+    "kP": 0.013927,
     "kI": 0.0,
     "kD": 0.01,
-    "kS": 0.0,
-    "kV": 0.0,
-    "kA": 0.0
+    "kS": 0.60502,
+    "kV": 0.51256,
+    "kA": 0.0585
   },
   "intakeSubsystem": {
     "enabled": true,

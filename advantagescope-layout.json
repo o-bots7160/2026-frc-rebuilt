@@ -1,13 +1,13 @@
 {
   "hubs": [
     {
-      "x": 0,
-      "y": 30,
-      "width": 1920,
-      "height": 1050,
+      "x": -8,
+      "y": -8,
+      "width": 1552,
+      "height": 832,
       "state": {
         "sidebar": {
-          "width": 442,
+          "width": 307,
           "expanded": [
             "/SmartDashboard/swerve/advantagescope",
             "/AdvantageKit/RealOutputs/SwerveStates",
@@ -70,14 +70,14 @@
           ]
         },
         "tabs": {
-          "selected": 3,
+          "selected": 5,
           "tabs": [
             {
               "type": 0,
               "title": "",
               "controller": null,
               "controllerUUID": "h4gl1hvr7k8d7jhu04a5odapknmz6j40",
-              "renderer": "",
+              "renderer": "#/",
               "controlsHeight": 0
             },
             {
@@ -89,416 +89,6 @@
                 "highlight": false
               },
               "controlsHeight": 0
-            },
-            {
-              "type": 1,
-              "title": "Turret Tuning",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/AppliedVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/CommandedVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#7c5cff",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/controllerOutputVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#858584",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/feedforwardVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#d993aa",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/voltageCommandVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#ff7f50",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/SupplyCurrentAmps",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#3b875a",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/goalPositionDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/setpointPositionDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#af2437",
-                      "size": "bold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#c0b487",
-                      "size": "verybold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/positionErrorDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/goalVelocityDegreesPerSec",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#5fb3a1",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/setpointVelocityDegreesPerSec",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#f39c12",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/VelocityRadPerSec",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#9b59b6",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "discreteSources": [
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kP",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kI",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kD",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#80588e"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kS",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e48b32"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kV",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#af2437"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kA",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e5b31b"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/profileSettled",
-                    "logType": "Boolean",
-                    "visible": true,
-                    "options": {
-                      "color": "#1abc9c"
-                    }
-                  }
-                ],
-                "leftLockedRange": null,
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "y3v1a6w0n49b8t7u5p2kcz1r0xm7qjds",
-              "renderer": null,
-              "controlsHeight": 391
-            },
-            {
-              "type": 1,
-              "title": "Shooter Tuning",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/ShooterSubsystem/motor/AppliedVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/ShooterSubsystem/motor/CommandedVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#7c5cff",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/pidOutputVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#858584",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/feedforwardVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#d993aa",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/voltageCommandVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#ff7f50",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/ShooterSubsystem/motor/SupplyCurrentAmps",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#3b875a",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/targetRpm",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/setpointRpm",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#af2437",
-                      "size": "bold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/measuredRpm",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#c0b487",
-                      "size": "verybold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/velocityErrorRpm",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "discreteSources": [
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kP",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kI",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kD",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#80588e"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kS",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e48b32"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kV",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#af2437"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kA",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e5b31b"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/readyToFire",
-                    "logType": "Boolean",
-                    "visible": true,
-                    "options": {
-                      "color": "#1abc9c"
-                    }
-                  }
-                ],
-                "leftLockedRange": null,
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "sh00t3r7un1ng4b8c9d0e1f2g3h4i5j6",
-              "renderer": null,
-              "controlsHeight": 391
             },
             {
               "type": 9,
@@ -980,6 +570,407 @@
             },
             {
               "type": 1,
+              "title": "Intake Tuning",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/AppliedVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/CommandedVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#7c5cff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/pidOutputVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/feedforwardVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/voltageCommandVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#ff7f50",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/SupplyCurrentAmps",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/targetRpm",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/setpointRpm",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/measuredRpm",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "verybold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/velocityErrorRpm",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kP",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kI",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kD",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kS",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kV",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kA",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "intk_tun_01_velocity_tab_uuid",
+              "renderer": null,
+              "controlsHeight": 391
+            },
+            {
+              "type": 1,
+              "title": "Harvester Tuning",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/AppliedVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/CommandedVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#7c5cff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/controllerOutputVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/feedforwardVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/voltageCommandVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#ff7f50",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/SupplyCurrentAmps",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/goalPositionDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/setpointPositionDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/PositionDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "verybold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/positionErrorDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/goalVelocityDegreesPerSec",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#5fb3a1",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/setpointVelocityDegreesPerSec",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#f39c12",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/VelocityRadPerSec",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#9b59b6",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kP",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kI",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kD",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kS",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kV",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kA",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/profileSettled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#1abc9c"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "hvst_tun_01_setandseek_tab_uuid",
+              "renderer": null,
+              "controlsHeight": 391
+            },
+            {
+              "type": 1,
               "title": "Feeder Tuning",
               "controller": {
                 "leftSources": [
@@ -1360,12 +1351,12 @@
             },
             {
               "type": 1,
-              "title": "Intake Tuning",
+              "title": "Turret Tuning",
               "controller": {
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/AppliedVolts",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/AppliedVolts",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1375,7 +1366,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/CommandedVolts",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/CommandedVolts",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1385,7 +1376,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/pidOutputVolts",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/controllerOutputVolts",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1395,7 +1386,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/feedforwardVolts",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/feedforwardVolts",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1405,7 +1396,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/voltageCommandVolts",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/voltageCommandVolts",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1415,7 +1406,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/SupplyCurrentAmps",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/SupplyCurrentAmps",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1427,7 +1418,7 @@
                 "rightSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/targetRpm",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/goalPositionDegrees",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1437,7 +1428,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/setpointRpm",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/setpointPositionDegrees",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1447,7 +1438,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/measuredRpm",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/PositionDegrees",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1457,302 +1448,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/velocityErrorRpm",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#2b66a2",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "discreteSources": [
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kP",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kI",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kD",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#80588e"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kS",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e48b32"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kV",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#af2437"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kA",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e5b31b"
-                    }
-                  }
-                ],
-                "leftLockedRange": null,
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "intk_tun_01_velocity_tab_uuid",
-              "renderer": null,
-              "controlsHeight": 391
-            },
-            {
-              "type": 1,
-              "title": "Intake Encoder Debug (TEMP)",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/RawEncoderVelocity",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "verybold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/VelocityMotorRpm",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#7c5cff",
-                      "size": "bold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/IntakeSubsystem/motor/VelocityRadPerSec",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#858584",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/targetRpm",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a",
-                      "size": "bold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/measuredRpm",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#af2437",
-                      "size": "verybold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeSubsystem/setpointRpm",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#c0b487",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "discreteSources": [
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeMotor/gearRatio",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeMotor/positionRadiansPerMotorRotation",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e48b32"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeMotor/velocityRadPerSecPerMotorRpm",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#80588e"
-                    }
-                  }
-                ],
-                "leftLockedRange": null,
-                "rightLockedRange": null,
-                "leftUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "rightUnitConversion": {
-                  "autoTarget": null,
-                  "preset": null
-                },
-                "leftFilter": 0,
-                "rightFilter": 0
-              },
-              "controllerUUID": "intk_enc_debug_temp_uuid",
-              "renderer": null,
-              "controlsHeight": 300
-            },
-            {
-              "type": 1,
-              "title": "Harvester Tuning",
-              "controller": {
-                "leftSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/AppliedVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/CommandedVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#7c5cff",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/controllerOutputVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#858584",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/feedforwardVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#d993aa",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/voltageCommandVolts",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#ff7f50",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/SupplyCurrentAmps",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#3b875a",
-                      "size": "normal"
-                    }
-                  }
-                ],
-                "rightSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/goalPositionDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/setpointPositionDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#af2437",
-                      "size": "bold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/PositionDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#c0b487",
-                      "size": "verybold"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/positionErrorDegrees",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/positionErrorDegrees",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1762,7 +1458,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/goalVelocityDegreesPerSec",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/goalVelocityDegreesPerSec",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1772,7 +1468,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/setpointVelocityDegreesPerSec",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/setpointVelocityDegreesPerSec",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1782,7 +1478,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/HarvesterSubsystem/motor/VelocityRadPerSec",
+                    "logKey": "NT:/AdvantageKit/TurretSubsystem/motor/VelocityRadPerSec",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1794,7 +1490,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kP",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kP",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1803,7 +1499,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kI",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kI",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1812,7 +1508,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kD",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kD",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1821,7 +1517,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kS",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kS",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1830,7 +1526,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kV",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kV",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1839,7 +1535,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kA",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/kA",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1848,7 +1544,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/HarvesterSubsystem/profileSettled",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TurretSubsystem/profileSettled",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {
@@ -1869,7 +1565,197 @@
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "hvst_tun_01_setandseek_tab_uuid",
+              "controllerUUID": "y3v1a6w0n49b8t7u5p2kcz1r0xm7qjds",
+              "renderer": null,
+              "controlsHeight": 391
+            },
+            {
+              "type": 1,
+              "title": "Shooter Tuning",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/ShooterSubsystem/motor/AppliedVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/ShooterSubsystem/motor/CommandedVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#7c5cff",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/pidOutputVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/feedforwardVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/voltageCommandVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#ff7f50",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/ShooterSubsystem/motor/SupplyCurrentAmps",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/targetRpm",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/setpointRpm",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/measuredRpm",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "verybold"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/velocityErrorRpm",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kP",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kI",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kD",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kS",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kV",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kA",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/readyToFire",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#1abc9c"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "sh00t3r7un1ng4b8c9d0e1f2g3h4i5j6",
               "renderer": null,
               "controlsHeight": 391
             }
