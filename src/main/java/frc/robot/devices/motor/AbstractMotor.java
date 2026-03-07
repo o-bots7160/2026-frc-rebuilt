@@ -154,6 +154,9 @@ public abstract class AbstractMotor implements Motor {
         motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         initialized = true;
         log.recordOutput("initialized", true);
+        log.recordOutput("positionRadiansPerMotorRotation", positionRadiansPerMotorRotation);
+        log.recordOutput("velocityRadPerSecPerMotorRpm", velocityRadPerSecPerMotorRpm);
+        log.recordOutput("gearRatio", motorRotationsPerMechanismRotationSupplier.get());
     }
 
     /**
@@ -229,6 +232,10 @@ public abstract class AbstractMotor implements Motor {
 
     /**
      * Reports the current measured position in radians.
+     * <p>
+     * The raw encoder value is in motor rotations. This method multiplies by the stored conversion factor to return mechanism radians. The
+     * conversion is done in Java rather than relying on SparkMax firmware conversion factors for reliability across REVLib versions.
+     * </p>
      *
      * @return mechanism position (radians)
      */
@@ -237,12 +244,15 @@ public abstract class AbstractMotor implements Motor {
         if (!ensureInitialized("getPositionRadians")) {
             return 0.0;
         }
-        // Encoder conversion factors are configured so SparkMax reports mechanism radians.
-        return motor.getEncoder().getPosition();
+        // Convert motor rotations to mechanism radians in Java.
+        return motor.getEncoder().getPosition() * positionRadiansPerMotorRotation;
     }
 
     /**
      * Overwrites the encoder's stored position so the mechanism's logical zero matches its physical location.
+     * <p>
+     * The caller provides the value in mechanism radians. This method converts back to motor rotations before writing to the encoder.
+     * </p>
      *
      * @param positionRadians new encoder position in mechanism radians
      */
@@ -251,11 +261,17 @@ public abstract class AbstractMotor implements Motor {
         if (!ensureInitialized("setEncoderPosition")) {
             return;
         }
-        motor.getEncoder().setPosition(positionRadians);
+        // Convert mechanism radians back to motor rotations for the raw encoder.
+        double motorRotations = positionRadians / positionRadiansPerMotorRotation;
+        motor.getEncoder().setPosition(motorRotations);
     }
 
     /**
      * Reports the current measured velocity in radians per second.
+     * <p>
+     * The raw encoder value is in motor RPM. This method multiplies by the stored conversion factor to return mechanism radians per second. The
+     * conversion is done in Java rather than relying on SparkMax firmware conversion factors for reliability across REVLib versions.
+     * </p>
      *
      * @return mechanism velocity (radians/second)
      */
@@ -264,8 +280,8 @@ public abstract class AbstractMotor implements Motor {
         if (!ensureInitialized("getVelocityRadiansPerSecond")) {
             return 0.0;
         }
-        // Encoder conversion factors are configured so SparkMax reports radians per second.
-        return motor.getEncoder().getVelocity();
+        // Convert motor RPM to mechanism radians per second in Java.
+        return motor.getEncoder().getVelocity() * velocityRadPerSecPerMotorRpm;
     }
 
     @Override
@@ -297,6 +313,7 @@ public abstract class AbstractMotor implements Motor {
             inputs.positionRadians         = 0.0;
             inputs.velocityRadPerSec       = 0.0;
             inputs.velocityMotorRpm        = 0.0;
+            inputs.rawEncoderVelocity      = 0.0;
             inputs.appliedVolts            = edu.wpi.first.units.Units.Volts.of(0.0);
             inputs.busVoltageVolts         = 0.0;
             inputs.commandedVolts          = edu.wpi.first.units.Units.Volts.of(0.0);
@@ -307,13 +324,14 @@ public abstract class AbstractMotor implements Motor {
             return;
         }
         // Pull fresh sensor data for logging and telemetry dashboards.
-        inputs.positionRadians         = getPositionRadians();
-        inputs.positionMotorRotations  = inputs.positionRadians / positionRadiansPerMotorRotation;
+        double rawEncoderVelocity      = motor.getEncoder().getVelocity();
+        double rawEncoderPosition      = motor.getEncoder().getPosition();
+        inputs.rawEncoderVelocity      = rawEncoderVelocity;
+        inputs.positionRadians         = rawEncoderPosition * positionRadiansPerMotorRotation;
+        inputs.positionMotorRotations  = rawEncoderPosition;
         inputs.positionDegrees         = Math.toDegrees(inputs.positionRadians);
-        inputs.velocityRadPerSec       = getVelocityRadiansPerSecond();
-        inputs.velocityMotorRpm        = velocityRadPerSecPerMotorRpm != 0.0
-                ? inputs.velocityRadPerSec / velocityRadPerSecPerMotorRpm
-                : 0.0;
+        inputs.velocityRadPerSec       = rawEncoderVelocity * velocityRadPerSecPerMotorRpm;
+        inputs.velocityMotorRpm        = rawEncoderVelocity;
         inputs.appliedVolts            = getVoltage();
         inputs.busVoltageVolts         = motor.getBusVoltage();
         inputs.commandedVolts          = edu.wpi.first.units.Units.Volts.of(lastCommandedVolts);
@@ -384,12 +402,14 @@ public abstract class AbstractMotor implements Motor {
                 .reverseSoftLimitEnabled(hasReverseLimit)
                 .forwardSoftLimitEnabled(hasForwardLimit);
 
+        // Soft limits are enforced by SparkMax firmware using raw encoder units (motor rotations)
+        // since conversion factors are applied Java-side. Convert mechanism radians to motor rotations.
         if (hasReverseLimit) {
-            baseConfig.softLimit.reverseSoftLimit(reverseSoftLimitRadians);
+            baseConfig.softLimit.reverseSoftLimit(reverseSoftLimitRadians / positionRadiansPerMotorRotation);
         }
 
         if (hasForwardLimit) {
-            baseConfig.softLimit.forwardSoftLimit(forwardSoftLimitRadians);
+            baseConfig.softLimit.forwardSoftLimit(forwardSoftLimitRadians / positionRadiansPerMotorRotation);
         }
     }
 
@@ -398,9 +418,12 @@ public abstract class AbstractMotor implements Motor {
                 motorRotationsPerMechanismRotationSupplier.get());
         velocityRadPerSecPerMotorRpm    = positionRadiansPerMotorRotation / 60.0;
 
+        // Explicitly reset SparkMax encoder conversion factors to 1.0 so previously
+        // persisted values are cleared. All unit conversion is done Java-side in
+        // getPositionRadians() and getVelocityRadiansPerSecond() for reliability.
         baseConfig.encoder
-                .positionConversionFactor(positionRadiansPerMotorRotation)
-                .velocityConversionFactor(velocityRadPerSecPerMotorRpm);
+                .positionConversionFactor(1.0)
+                .velocityConversionFactor(1.0);
     }
 
 }

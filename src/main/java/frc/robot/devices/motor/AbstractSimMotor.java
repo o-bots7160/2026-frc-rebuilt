@@ -134,7 +134,10 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     @Override
     public void setEncoderPosition(double positionRadians) {
         super.setEncoderPosition(positionRadians);
-        sparkMaxSim.setPosition(positionRadians);
+        // SparkMaxSim expects position in raw encoder units (motor rotations) since
+        // conversion factors are applied Java-side rather than firmware-side.
+        double motorRotations = positionRadians / computeMechanismRadiansPerMotorRotation(gearRatio);
+        sparkMaxSim.setPosition(motorRotations);
     }
 
     /**
@@ -164,7 +167,10 @@ public abstract class AbstractSimMotor extends AbstractMotor {
             initialPositionRad = MathUtil.clamp(0.0, reverseSoftLimitRad, forwardSoftLimitRad);
         }
 
-        sparkMaxSim.setPosition(initialPositionRad);
+        // SparkMaxSim expects raw encoder units (motor rotations and RPM) since
+        // conversion factors are applied Java-side rather than firmware-side.
+        double motorRotations = initialPositionRad / computeMechanismRadiansPerMotorRotation(gearRatio);
+        sparkMaxSim.setPosition(motorRotations);
         sparkMaxSim.setVelocity(0.0);
     }
 
@@ -185,7 +191,10 @@ public abstract class AbstractSimMotor extends AbstractMotor {
             motorSim.setState(VecBuilder.fill(motorSim.getAngularPositionRad(), mechanismVelocityRadPerSec));
         }
 
-        sparkMaxSim.iterate(mechanismVelocityRadPerSec, busVoltage, kDtSeconds);
+        // SparkMaxSim.iterate() expects velocity in raw encoder units (motor RPM) since
+        // conversion factors are applied Java-side rather than firmware-side.
+        double motorRpm = Units.radiansPerSecondToRotationsPerMinute(mechanismVelocityRadPerSec) * gearRatio;
+        sparkMaxSim.iterate(motorRpm, busVoltage, kDtSeconds);
 
         double loadedVoltage = BatterySim.calculateDefaultBatteryLoadedVoltage(motorSim.getCurrentDrawAmps());
         RoboRioSim.setVInVoltage(loadedVoltage);
@@ -205,8 +214,11 @@ public abstract class AbstractSimMotor extends AbstractMotor {
 
         rebuildMotorSim(maxAccelerationRadPerSecSq);
 
-        double positionRad       = sparkMaxSim.getPosition();
-        double velocityRadPerSec = sparkMaxSim.getVelocity();
+        // SparkMaxSim stores raw encoder units (motor rotations and RPM).
+        // Convert to mechanism radians and rad/s for the DCMotorSim state.
+        double mechanismRadiansPerMotorRotation = computeMechanismRadiansPerMotorRotation(gearRatio);
+        double positionRad                      = sparkMaxSim.getPosition() * mechanismRadiansPerMotorRotation;
+        double velocityRadPerSec                = sparkMaxSim.getVelocity() * mechanismRadiansPerMotorRotation / 60.0;
         motorSim.setState(VecBuilder.fill(positionRad, velocityRadPerSec));
     }
 

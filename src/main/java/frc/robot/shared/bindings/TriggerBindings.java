@@ -37,17 +37,17 @@ public class TriggerBindings {
     /**
      * Delay before system identification begins in seconds.
      */
-    private static final double                    SYSID_DELAY_SECONDS               = 20.0;
+    private static final double                    SYSID_DELAY_SECONDS               = 5.0;
 
     /**
      * Timeout for the quasistatic (slow ramp) portion of system identification in seconds.
      */
-    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 10.0;
+    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 7.0;
 
     /**
      * Timeout for the dynamic (step voltage) portion of system identification in seconds.
      */
-    private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 10.0;
+    private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 6.0;
 
     // Chooser option constants for subsystem test selection.
     private static final String                    TEST_SUBSYSTEM_SHOOTER            = "Shooter";

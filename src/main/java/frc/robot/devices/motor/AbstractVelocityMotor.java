@@ -89,14 +89,9 @@ public abstract class AbstractVelocityMotor<TConfig extends AbstractMotorConfig>
                 .idleMode(IdleMode.kCoast)
                 .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
 
-        double motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotation();
-        double positionFactor                     = computeMechanismRadiansPerMotorRotation(motorRotationsPerMechanismRotation);
-        double velocityFactor                     = positionFactor / 60.0;
-
-        // Apply encoder scaling so SparkMax position/velocity already report mechanism radians.
-        sparkConfig.encoder
-                .positionConversionFactor(positionFactor)
-                .velocityConversionFactor(velocityFactor);
+        // Encoder conversion factors are applied in Java (AbstractMotor.getPositionRadians /
+        // getVelocityRadiansPerSecond) rather than through SparkMax firmware for reliability
+        // across REVLib versions. The encoder reports raw motor rotations and RPM.
 
         return sparkConfig;
     }

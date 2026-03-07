@@ -34,6 +34,9 @@ public interface MotorIO {
         /** Measured motor shaft velocity in RPM (pre gear-reduction). */
         public double  velocityMotorRpm        = 0.0;
 
+        /** Raw value from SparkMax encoder getVelocity() before any Java-side conversion (diagnostic). */
+        public double  rawEncoderVelocity      = 0.0;
+
         /** Applied voltage from the motor controller output stage. */
         public Voltage appliedVolts            = Units.Volts.of(0.0);
 
