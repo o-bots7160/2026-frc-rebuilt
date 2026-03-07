@@ -811,13 +811,13 @@
             "type": "Radial Gauge",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/measuredRpm",
-              "period": 0.06,
+              "period": 0.033,
               "data_type": "double",
               "start_angle": -140.0,
               "end_angle": 140.0,
-              "min_value": -3000.0,
-              "max_value": 3000.0,
-              "number_of_labels": 4,
+              "min_value": -1500.0,
+              "max_value": 1500.0,
+              "number_of_labels": 8,
               "wrap_value": false,
               "show_pointer": true,
               "show_ticks": true
@@ -832,6 +832,20 @@
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/maximumAccelerationRpmPerSecond",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "idleVelocityRpm",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IntakeSubsystem/idleVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true

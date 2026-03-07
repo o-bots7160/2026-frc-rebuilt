@@ -237,6 +237,8 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         log.recordOutput("targetRpm", getTargetVelocityRpm());
         log.recordOutput("measuredRpm", getMeasuredVelocityRpm());
         log.recordOutput("setpointRpm", Units.radiansPerSecondToRotationsPerMinute(setpointVelocityRadPerSec));
+        log.recordOutput("rawMotorRpm", motorInputs.velocityMotorRpm);
+        log.recordOutput("measuredRadPerSec", measuredVelocityRadPerSec);
 
         // Track settle status.
         double  toleranceRadPerSec = config.getVelocityToleranceRadiansPerSecond();

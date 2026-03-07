@@ -69,7 +69,10 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
                 this.motor::getVoltage,
                 () -> this.motor.updateInputs(motorInputs),
                 () -> motorInputs.positionRadians,
-                () -> motorInputs.velocityRadPerSec);
+                () -> motorInputs.velocityRadPerSec,
+                () -> motorInputs.velocityMotorRpm,
+                config.getSysIdRampRateVoltsPerSecond(),
+                config.getSysIdStepVoltage());
     }
 
     /**

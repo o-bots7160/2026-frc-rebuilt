@@ -3,11 +3,11 @@
     {
       "x": -8,
       "y": -8,
-      "width": 1552,
-      "height": 832,
+      "width": 1536,
+      "height": 816,
       "state": {
         "sidebar": {
-          "width": 307,
+          "width": 160,
           "expanded": [
             "/SmartDashboard/swerve/advantagescope",
             "/AdvantageKit/RealOutputs/SwerveStates",
@@ -70,14 +70,14 @@
           ]
         },
         "tabs": {
-          "selected": 5,
+          "selected": 8,
           "tabs": [
             {
               "type": 0,
               "title": "",
               "controller": null,
               "controllerUUID": "h4gl1hvr7k8d7jhu04a5odapknmz6j40",
-              "renderer": "#/",
+              "renderer": "",
               "controlsHeight": 0
             },
             {
