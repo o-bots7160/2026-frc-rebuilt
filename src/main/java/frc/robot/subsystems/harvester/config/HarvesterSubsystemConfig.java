@@ -10,6 +10,10 @@ import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
  * (outside the perimeter to grab Fuel from the floor). Named position fields provide the default stowed and deployed angles so commands do not
  * hard-code magic numbers.
  * </p>
+ * <p>
+ * Because the arm fights gravity, this config adds a {@code kG} gain for use with {@link edu.wpi.first.math.controller.ArmFeedforward}. The
+ * {@code horizontalOffsetDegrees} field maps the encoder's zero position to the angle from horizontal so the gravity term is computed correctly.
+ * </p>
  */
 public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
 
@@ -21,6 +25,26 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
 
     /** Arm angle when deployed downward outside the robot perimeter to collect Fuel, in degrees. */
     public double               deployedPositionDegrees;
+
+    /**
+     * Gravity feedforward gain in volts.
+     * <p>
+     * This is the voltage needed to hold the arm stationary against gravity when the arm is horizontal. WPILib's
+     * {@link edu.wpi.first.math.controller.ArmFeedforward} multiplies kG by the cosine of the arm's angle from horizontal, so the compensation
+     * varies automatically as the arm moves.
+     * </p>
+     */
+    public double               kG;
+
+    /**
+     * Angle offset from the encoder's zero position to the arm's horizontal reference, in degrees.
+     * <p>
+     * WPILib's {@link edu.wpi.first.math.controller.ArmFeedforward} expects the arm angle measured from horizontal (0 degrees = parallel to the
+     * floor). If the encoder already reads zero when the arm is horizontal (deployed), the offset is 0 degrees. If the encoder reads zero when the
+     * arm is vertical (stowed upright), the offset would be 90 degrees.
+     * </p>
+     */
+    public double               horizontalOffsetDegrees;
 
     /**
      * Returns the stowed arm position, tuned via SmartDashboard.
@@ -38,5 +62,32 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
      */
     public double getDeployedPositionDegrees() {
         return readTunableDegrees("deployedPositionDegrees", deployedPositionDegrees);
+    }
+
+    /**
+     * Returns the gravity feedforward gain, tuned via SmartDashboard.
+     *
+     * @return kG in volts (voltage to hold the arm horizontal against gravity)
+     */
+    public double getkG() {
+        return readTunableNumber("kG", kG);
+    }
+
+    /**
+     * Returns the horizontal offset angle in degrees, tuned via SmartDashboard.
+     *
+     * @return offset in degrees added to the encoder position to obtain the angle from horizontal
+     */
+    public double getHorizontalOffsetDegrees() {
+        return readTunableDegrees("horizontalOffsetDegrees", horizontalOffsetDegrees);
+    }
+
+    /**
+     * Returns the horizontal offset angle in radians.
+     *
+     * @return offset in radians added to the encoder position to obtain the angle from horizontal
+     */
+    public double getHorizontalOffsetRadians() {
+        return readTunableDegreesAsRadians("horizontalOffsetDegrees", horizontalOffsetDegrees);
     }
 }

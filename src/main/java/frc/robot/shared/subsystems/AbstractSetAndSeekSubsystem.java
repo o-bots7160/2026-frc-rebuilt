@@ -144,9 +144,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         setpointState = controller.getSetpoint();
 
         // Feedforward estimates the volts needed to reach the next setpoint velocity.
-        // The two-velocity form uses discrete-time plant inversion so kA contributes
-        // the acceleration torque the profile demands.
-        double feedforwardVolts = feedforward.calculateWithVelocities(previousSetpointVelocity, setpointState.velocity);
+        // Subclasses can override calculateFeedforward to use a different model (e.g., ArmFeedforward).
+        double feedforwardVolts = calculateFeedforward(previousSetpointVelocity, setpointState);
         double voltageCommand   = controllerOutput + feedforwardVolts;
         double positionError    = goalState.position - measuredPosition;
 
@@ -264,6 +263,22 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
      */
     public double getMeasuredPositionDegrees() {
         return Units.radiansToDegrees(getMeasuredPosition());
+    }
+
+    /**
+     * Computes the feedforward voltage for the current profile step.
+     * <p>
+     * The default implementation uses the parent's {@link edu.wpi.first.math.controller.SimpleMotorFeedforward} with discrete-time plant inversion
+     * (the two-velocity form, so kA contributes the acceleration torque the profile demands). Subclasses that need a different feedforward model
+     * (e.g., {@link edu.wpi.first.math.controller.ArmFeedforward} for gravity compensation) should override this method.
+     * </p>
+     *
+     * @param previousSetpointVelocity velocity setpoint from the previous cycle in radians per second
+     * @param currentSetpoint          the setpoint state the profile wants us to follow this cycle
+     * @return feedforward voltage in volts
+     */
+    protected double calculateFeedforward(double previousSetpointVelocity, TrapezoidProfile.State currentSetpoint) {
+        return feedforward.calculateWithVelocities(previousSetpointVelocity, currentSetpoint.velocity);
     }
 
     /**
