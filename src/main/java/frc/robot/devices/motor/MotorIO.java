@@ -31,6 +31,9 @@ public interface MotorIO {
         /** Measured mechanism velocity in radians per second (post conversion). */
         public double  velocityRadPerSec       = 0.0;
 
+        /** Measured motor shaft velocity in RPM (pre gear-reduction). */
+        public double  velocityMotorRpm        = 0.0;
+
         /** Applied voltage from the motor controller output stage. */
         public Voltage appliedVolts            = Units.Volts.of(0.0);
 

@@ -108,6 +108,7 @@ public final class DisabledMotor implements Motor {
     public void updateInputs(MotorIOInputs inputs) {
         inputs.positionRadians         = 0.0;
         inputs.velocityRadPerSec       = 0.0;
+        inputs.velocityMotorRpm        = 0.0;
         inputs.appliedVolts            = Units.Volts.of(lastCommandedVolts);
         inputs.commandedVolts          = Units.Volts.of(lastCommandedVolts);
         inputs.supplyCurrentAmps       = 0.0;

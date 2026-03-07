@@ -296,6 +296,7 @@ public abstract class AbstractMotor implements Motor {
             // Report zeros/NaN so logs show the motor is inactive.
             inputs.positionRadians         = 0.0;
             inputs.velocityRadPerSec       = 0.0;
+            inputs.velocityMotorRpm        = 0.0;
             inputs.appliedVolts            = edu.wpi.first.units.Units.Volts.of(0.0);
             inputs.busVoltageVolts         = 0.0;
             inputs.commandedVolts          = edu.wpi.first.units.Units.Volts.of(0.0);
@@ -310,6 +311,9 @@ public abstract class AbstractMotor implements Motor {
         inputs.positionMotorRotations  = inputs.positionRadians / positionRadiansPerMotorRotation;
         inputs.positionDegrees         = Math.toDegrees(inputs.positionRadians);
         inputs.velocityRadPerSec       = getVelocityRadiansPerSecond();
+        inputs.velocityMotorRpm        = velocityRadPerSecPerMotorRpm != 0.0
+                ? inputs.velocityRadPerSec / velocityRadPerSecPerMotorRpm
+                : 0.0;
         inputs.appliedVolts            = getVoltage();
         inputs.busVoltageVolts         = motor.getBusVoltage();
         inputs.commandedVolts          = edu.wpi.first.units.Units.Volts.of(lastCommandedVolts);
