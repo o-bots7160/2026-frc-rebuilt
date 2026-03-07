@@ -12,10 +12,18 @@ import frc.robot.shared.logging.Logger;
 /**
  * Factory for building SysId routines with consistent logging and unit handling.
  * <p>
- * Subsystems can call
- * {@link #createSimpleRoutine(AbstractSubsystem, String, Consumer, Supplier, Runnable, DoubleSupplier, DoubleSupplier, double, double)}
- * to obtain a ready-to-run {@link SysIdRoutine} that drives a single motor and records voltage, position, and velocity
- * to AdvantageKit.
+ * Subsystems call {@code createSimpleRoutine} to obtain a ready-to-run {@link SysIdRoutine} that drives a single motor
+ * and records voltage, position, and velocity to AdvantageKit. Position and velocity suppliers must provide values in
+ * radians and radians per second respectively (mechanism-side, after gear ratio conversion).
+ * </p>
+ * <p>
+ * IMPORTANT: WPILib's {@code SysIdRoutineLog.MotorLog.angularVelocity()} internally converts the velocity to
+ * rotations per second (dividing by 2pi) before writing to the WPILog file. The SysId analysis tool then reads those
+ * values but interprets them as if they were still in radians per second. This means every velocity-dependent gain
+ * reported by SysId is inflated by a factor of 2pi. After running SysId and reading the gains from the tool, you must
+ * divide kV and kA by 2pi (approximately 6.2832) before entering them into the subsystem config. kS is not affected
+ * because it has no velocity dependency. See the SysId tuning guide at
+ * {@code src/main/java/frc/robot/shared/subsystems/SYSID_GUIDE.md} for the full workflow.
  * </p>
  */
 public final class SysIdHelper {
@@ -54,6 +62,10 @@ public final class SysIdHelper {
     /**
      * Creates a SysId routine that commands a motor with raw voltage, logs the measured state, and records diagnostic
      * telemetry including raw motor RPM.
+     * <p>
+     * The gains reported by the SysId analysis tool require a 2pi correction before use. Divide kV and kA by 2pi;
+     * leave kS unchanged. See the class-level Javadoc and {@code SYSID_GUIDE.md} for details.
+     * </p>
      *
      * @param subsystem                        subsystem that owns the motor; used for command requirements
      * @param motorLabel                       name to attach to the motor in the SysId log (e.g., "Turret/motor")

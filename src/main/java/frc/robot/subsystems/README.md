@@ -125,3 +125,16 @@ configuration reference, and code-structure table. Click through for details.
 7. Instantiate the subsystem in `RobotContainer` in the correct dependency order
    (see the [copilot instructions](../../../.github/copilot-instructions.md) for
    wiring rules).
+
+## Characterizing a motor with SysId
+
+Every motor-driven subsystem needs accurate feedforward gains (kS, kV, kA) for
+smooth control. The [SysId tuning guide](../shared/subsystems/SYSID_GUIDE.md)
+covers the full process from running the four test routines through entering
+corrected gains in `subsystems.json`.
+
+The most important thing to remember: **divide kV and kA by 2π after reading
+them from the SysId tool.** This corrects a unit conversion issue in WPILib's
+logging layer. kS does not need correction. The guide includes a worked example
+and a sanity-check formula so you can verify the gains are reasonable before
+deploying.

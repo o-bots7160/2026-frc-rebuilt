@@ -217,6 +217,13 @@ known voltages. It outputs [feedforward gains](#feedforward-gains) (kS, kV, kA)
 that describe the mechanism's real-world behavior, which you plug into your
 config so [feedforward](#feedforward) is accurate from the start.
 
+**Important:** The gains reported by the SysId tool for angular mechanisms
+require a correction — divide kV and kA by 2π (≈ 6.2832) before entering them in
+the config. kS does not need correction. This is caused by a unit conversion
+inside WPILib's logging layer. See the
+[SysId tuning guide](shared/subsystems/SYSID_GUIDE.md) for the full step-by-step
+process, including how to verify your corrected gains are correct.
+
 ## Theta
 
 The robot's heading angle around the vertical axis, measured in radians. Zero
