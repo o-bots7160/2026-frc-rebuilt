@@ -35,17 +35,16 @@ public class TriggerBindings {
     private static final int                       DEFAULT_OPERATOR_CONTROLLER_PORT  = 1;
 
     /**
-     * Delay between system identification phases in seconds. Gives the mechanism time to coast to a stop so each phase
-     * starts from rest.
+     * Delay between system identification phases in seconds. Gives the mechanism time to coast to a stop so each phase starts from rest.
      */
     private static final double                    SYSID_DELAY_SECONDS               = 5.0;
 
     /**
      * Timeout for the quasistatic (slow ramp) portion of system identification in seconds.
      * <p>
-     * This timeout must be long enough for the slowest configured ramp rate to reach near-full voltage. At 0.25 V/s
-     * (used for high-inertia belt-driven mechanisms) this allows the motor to reach 10 V. Mechanisms with the default
-     * 1 V/s ramp rate will simply reach 12 V sooner and saturate for the remainder, which does not harm the fit.
+     * This timeout must be long enough for the slowest configured ramp rate to reach near-full voltage. At 0.25 V/s (used for high-inertia
+     * belt-driven mechanisms) this allows the motor to reach 10 V. Mechanisms with the default 1 V/s ramp rate will simply reach 12 V sooner and
+     * saturate for the remainder, which does not harm the fit.
      * </p>
      */
     private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 8.0;
@@ -53,8 +52,8 @@ public class TriggerBindings {
     /**
      * Timeout for the dynamic (step voltage) portion of system identification in seconds.
      * <p>
-     * The dynamic test applies a 7 V step. Most mechanisms reach steady-state within 1–2 seconds, so 3 seconds
-     * captures the full transient without adding unnecessary flat data that can skew the kA fit.
+     * The dynamic test applies a 7 V step. Most mechanisms reach steady-state within 1–2 seconds, so 3 seconds captures the full transient without
+     * adding unnecessary flat data that can skew the kA fit.
      * </p>
      */
     private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 3.0;
@@ -452,13 +451,13 @@ public class TriggerBindings {
     // triggerBindingsConfig::getShooterTestSpeedRpm));
     // }
 
-    // private void configureTurretBindings() {
-    // // Hold A/B to spin the turret to the configured angles (for testing and alignment).
-    // // driverController.a().whileTrue(
-    // // turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_LEFT_DEGREES));
-    // // driverController.b().whileTrue(
-    // // turretCommandFactory.createMoveToAngleCommand(TURRET_TEST_ANGLE_RIGHT_DEGREES));
-    // }
+    private void configureTurretBindings() {
+        // Hold A/B to spin the turret to the configured angles (for testing and alignment).
+        driverController.a().whileTrue(
+                turretCommandFactory.createMoveToAngleCommand(-90.0));
+        driverController.b().whileTrue(
+                turretCommandFactory.createMoveToAngleCommand(90.0));
+    }
 
     // private void configureClimberBindings() {
     // // TODO: wire climber commands when motor hardware is selected

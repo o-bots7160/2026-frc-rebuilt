@@ -170,9 +170,9 @@ public class RobotContainer {
             // bindings can control each subsystem without interference.
             // Uncomment once subsystems are characterized and test bindings are removed.
             // shooterCommandFactory.setDefaultIdleCommand();
-            indexerCommandFactory.setDefaultIdleCommand();
-            feederCommandFactory.setDefaultIdleCommand();
-            intakeCommandFactory.setDefaultIdleCommand();
+            // indexerCommandFactory.setDefaultIdleCommand();
+            // feederCommandFactory.setDefaultIdleCommand();
+            // intakeCommandFactory.setDefaultIdleCommand();
             // harvesterCommandFactory.setDefaultStowCommand();
 
             // Zone-aware turret field tracking is disabled during shop testing.

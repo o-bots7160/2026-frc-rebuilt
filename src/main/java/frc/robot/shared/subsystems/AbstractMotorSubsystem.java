@@ -76,9 +76,11 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
     }
 
     /**
-     * Refreshes motor and feedforward configuration when not attached to the FMS.
+     * Refreshes motor and feedforward configuration when not attached to the FMS, and logs motor inputs every cycle.
      * <p>
-     * Override this if you need additional periodic behavior, but call {@code super.periodic()} to keep live tuning updates active.
+     * Motor inputs (encoder position, velocity, current, temperature, etc.) are captured each cycle so telemetry is always available, even when no
+     * command is actively driving the mechanism. Override this if you need additional periodic behavior, but call {@code super.periodic()} to keep
+     * live tuning updates and motor input logging active.
      * </p>
      */
     @Override
@@ -87,6 +89,8 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
             motor.refreshConfiguration();
             refreshFeedforward();
         }
+
+        updateAndLogMotorInputs();
     }
 
     /**
