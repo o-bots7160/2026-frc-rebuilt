@@ -48,7 +48,7 @@ public class TriggerBindings {
      * 1 V/s ramp rate will simply reach 12 V sooner and saturate for the remainder, which does not harm the fit.
      * </p>
      */
-    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 40.0;
+    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 8.0;
 
     /**
      * Timeout for the dynamic (step voltage) portion of system identification in seconds.
