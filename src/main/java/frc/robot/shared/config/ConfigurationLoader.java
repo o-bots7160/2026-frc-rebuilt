@@ -28,7 +28,7 @@ public class ConfigurationLoader {
      * Loads a configuration file from the deploy directory and maps it to a type.
      * <p>
      * After deserialization, every public primitive and String field is recorded as a read-only AdvantageKit output under
-     * {@code Config/<className>/...}. Nested config objects whose class name starts with {@code frc.robot} are recursed into automatically.
+     * {@code Config/<className>/...}. Nested {@link AbstractConfig} objects are recursed into automatically.
      * </p>
      *
      * @param <TConfig> Java type to bind the configuration to
@@ -84,7 +84,7 @@ public class ConfigurationLoader {
                 org.littletonrobotics.junction.Logger.recordOutput(key, (double) (Integer) value);
             } else if (value instanceof String) {
                 org.littletonrobotics.junction.Logger.recordOutput(key, (String) value);
-            } else if (value != null && value.getClass().getName().startsWith("frc.robot")) {
+            } else if (value instanceof AbstractConfig) {
                 logConfigSnapshot(value.getClass(), value, key);
             }
         }

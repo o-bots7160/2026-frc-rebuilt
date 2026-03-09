@@ -6,6 +6,13 @@
 				"github:brandonmartinez/drawio-mcp"
 			],
 			"type": "stdio"
+		},
+		"elastic-dashboard": {
+			"command": "npx",
+			"args": [
+				"-y",
+           		"@o-bots7160/elastic-dashboard-mcp"
+			]
 		}
 	},
 	"inputs": []

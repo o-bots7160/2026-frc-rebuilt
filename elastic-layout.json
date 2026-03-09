@@ -1,6 +1,6 @@
 {
-  "version": 1.0,
-  "grid_size": 128,
+  "version": 1,
+  "grid_size": 128.0,
   "tabs": [
     {
       "name": "Competition",
@@ -77,58 +77,80 @@
         "layouts": [],
         "containers": [
           {
-            "title": "leftStickYResponseExponent",
+            "title": "L-Stick Y Exp",
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickYResponseExponent",
+              "topic": "SmartDashboard/TriggerBindings/leftStickYResponseExponent",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "leftStickXResponseExponent",
+            "title": "L-Stick X Exp",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/leftStickXResponseExponent",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "R-Stick X Exp",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/rightStickXResponseExponent",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Stick Deadband",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/joystickDeadband",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Trigger Deadband",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TriggerBindings/triggerDeadband",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Normal Speed",
             "x": 0.0,
             "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/leftStickXResponseExponent",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "rightStickXResponseExponent",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TriggerBindings/rightStickXResponseExponent",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "normalSpeedScale",
-            "x": 384.0,
-            "y": 0.0,
             "width": 768.0,
             "height": 128.0,
             "type": "Number Slider",
             "properties": {
               "topic": "SmartDashboard/TriggerBindings/normalSpeedScale",
               "period": 0.06,
-              "data_type": "double",
               "min_value": 0.0,
               "max_value": 2.0,
               "divisions": 9,
@@ -136,16 +158,15 @@
             }
           },
           {
-            "title": "sprintSpeedScale",
-            "x": 384.0,
+            "title": "Sprint Speed",
+            "x": 768.0,
             "y": 128.0,
-            "width": 768.0,
+            "width": 640.0,
             "height": 128.0,
             "type": "Number Slider",
             "properties": {
               "topic": "SmartDashboard/TriggerBindings/sprintSpeedScale",
               "period": 0.06,
-              "data_type": "double",
               "min_value": 0.0,
               "max_value": 2.0,
               "divisions": 9,
@@ -153,8 +174,8 @@
             }
           },
           {
-            "title": "slowSpeedScale",
-            "x": 384.0,
+            "title": "Slow Speed",
+            "x": 0.0,
             "y": 256.0,
             "width": 768.0,
             "height": 128.0,
@@ -162,7 +183,6 @@
             "properties": {
               "topic": "SmartDashboard/TriggerBindings/slowSpeedScale",
               "period": 0.06,
-              "data_type": "double",
               "min_value": 0.0,
               "max_value": 2.0,
               "divisions": 9,
@@ -170,74 +190,32 @@
             }
           },
           {
-            "title": "joystickDeadband",
-            "x": 1152.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TriggerBindings/joystickDeadband",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "triggerDeadband",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TriggerBindings/triggerDeadband",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "shooterTestSpeedRpm",
-            "x": 384.0,
-            "y": 384.0,
-            "width": 768.0,
+            "title": "Test Shooter RPM",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 640.0,
             "height": 128.0,
             "type": "Number Slider",
             "properties": {
               "topic": "SmartDashboard/TriggerBindings/shooterTestSpeedRpm",
               "period": 0.06,
-              "data_type": "double",
               "min_value": 0.0,
-              "max_value": 3000.0,
-              "divisions": 6,
+              "max_value": 5000.0,
+              "divisions": 10,
               "update_continuously": true
             }
           },
           {
             "title": "Test Subsystem",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 384.0,
+            "x": 0.0,
+            "y": 384.0,
+            "width": 512.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
             "properties": {
               "topic": "/SmartDashboard/TriggerBindings/TestSubsystem",
               "period": 0.06,
               "sort_options": true
-            }
-          },
-          {
-            "title": "TestSubsystem",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/TriggerBindings/TestSubsystem",
-              "period": 0.06,
-              "sort_options": false
             }
           }
         ]
@@ -249,311 +227,314 @@
         "layouts": [],
         "containers": [
           {
-            "title": "headingKd",
+            "title": "Enabled",
             "x": 0.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Boolean Box",
             "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/headingKd",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "topic": "/AdvantageKit/RealOutputs/Config/driveBaseSubsystem/enabled",
+              "period": 0.06
             }
           },
           {
-            "title": "headingKi",
+            "title": "Max Lin ft/s",
             "x": 128.0,
             "y": 0.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/headingKi",
+              "topic": "SmartDashboard/DriveBaseSubsystem/maximumLinearSpeedFeetPerSecond",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "headingKp",
-            "x": 256.0,
+            "title": "Max Ang °/s",
+            "x": 384.0,
             "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/maximumAngularSpeedDegreesPerSecond",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Rot Tol °",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/rotationToleranceDegrees",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Sim Trans",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/simulationTranslationScale",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Sim Omega",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/simulationOmegaScale",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "H kP",
+            "x": 0.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/DriveBaseSubsystem/headingKp",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "maximumAngularAccelerationDegreesPerSecondSquared",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 384.0,
+            "title": "H kI",
+            "x": 128.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/maximumAngularAccelerationDegreesPerSecondSquared",
+              "topic": "SmartDashboard/DriveBaseSubsystem/headingKi",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "maximumAngularSpeedDegreesPerSecond",
+            "title": "H kD",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/headingKd",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "PT kP",
             "x": 512.0,
-            "y": 0.0,
-            "width": 384.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/maximumAngularSpeedDegreesPerSecond",
+              "topic": "SmartDashboard/DriveBaseSubsystem/pathTranslationKp",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "maximumLinearSpeedFeetPerSecond",
+            "title": "PT kI",
+            "x": 640.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/pathTranslationKi",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "PT kD",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/pathTranslationKd",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "PR kP",
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/pathRotationKp",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "PR kI",
+            "x": 1152.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/pathRotationKi",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "PR kD",
             "x": 1280.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/maximumLinearSpeedFeetPerSecond",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "rotationKd",
-            "x": 0.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/rotationKd",
+              "topic": "SmartDashboard/DriveBaseSubsystem/pathRotationKd",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "rotationKi",
-            "x": 128.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/rotationKi",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "rotationKp",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/rotationKp",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "rotationToleranceDegrees",
-            "x": 512.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/rotationToleranceDegrees",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "translationKd",
+            "title": "Swerve",
             "x": 0.0,
             "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
+            "width": 256.0,
+            "height": 256.0,
+            "type": "YAGSL Swerve Drive",
             "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/translationKd",
+              "topic": "/SmartDashboard/swerve",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_robot_rotation": true
             }
           },
           {
-            "title": "translationKi",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/translationKi",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "translationKp",
+            "title": "FL Raw",
             "x": 256.0,
             "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/translationKp",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "translationToleranceInches",
-            "x": 896.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/translationToleranceInches",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "RAW-FR",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/swerve/modules/frontright/Raw Absolute Encoder",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "RAW-BR",
-            "x": 640.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/swerve/modules/backright/Raw Absolute Encoder",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "RAW-BL",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/swerve/modules/backleft/Raw Absolute Encoder",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "RAW-FL",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/swerve/modules/frontleft/Raw Absolute Encoder",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "show_submit_button": false
             }
           },
           {
-            "title": "ADJ-FR",
+            "title": "FR Raw",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/swerve/modules/frontright/Raw Absolute Encoder",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "BL Raw",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/swerve/modules/backleft/Raw Absolute Encoder",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "BR Raw",
             "x": 1024.0,
             "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/swerve/modules/frontright/Adjusted Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/backright/Raw Absolute Encoder",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "show_submit_button": false
             }
           },
           {
-            "title": "ADJ-BR",
-            "x": 1024.0,
+            "title": "FL Adj",
+            "x": 256.0,
             "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/swerve/modules/backright/Adjusted Absolute Encoder",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "ADJ-BL",
-            "x": 896.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/swerve/modules/backleft/Adjusted Absolute Encoder",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "ADJ-FL",
-            "x": 896.0,
-            "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/swerve/modules/frontleft/Adjusted Absolute Encoder",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "FR Adj",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/swerve/modules/frontright/Adjusted Absolute Encoder",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "BL Adj",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/swerve/modules/backleft/Adjusted Absolute Encoder",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "BR Adj",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/swerve/modules/backright/Adjusted Absolute Encoder",
+              "period": 0.06,
+              "show_submit_button": false
             }
           }
         ]
@@ -565,8 +546,57 @@
         "layouts": [],
         "containers": [
           {
-            "title": "kP",
+            "title": "Enabled",
             "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Motor On",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Inverted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorInverted",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "CAN ID",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorCanId",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "kP",
+            "x": 512.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -574,13 +604,12 @@
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/kP",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kI",
-            "x": 128.0,
+            "x": 640.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -588,13 +617,12 @@
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/kI",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kD",
-            "x": 256.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -602,13 +630,12 @@
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/kD",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kS",
-            "x": 512.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -616,13 +643,12 @@
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/kS",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kV",
-            "x": 640.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -630,13 +656,12 @@
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/kV",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kA",
-            "x": 768.0,
+            "x": 1280.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -644,27 +669,46 @@
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/kA",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "maximumVelocityRpm",
+            "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Voltage View",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/maximumVelocityRpm",
+              "topic": "/AdvantageKit/IntakeSubsystem/motor/AppliedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "min_value": -1.0,
+              "max_value": 13.0,
+              "divisions": 3,
+              "inverted": false,
+              "orientation": "horizontal"
             }
           },
           {
-            "title": "forwardVelocityRpm",
+            "title": "Cmd V",
             "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/AdvantageKit/IntakeSubsystem/motor/CommandedVolts",
+              "period": 0.06,
+              "min_value": -1.0,
+              "max_value": 13.0,
+              "divisions": 3,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Fwd RPM",
+            "x": 512.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -672,13 +716,12 @@
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/forwardVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "reverseVelocityRpm",
-            "x": 512.0,
+            "title": "Rev RPM",
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -686,183 +729,104 @@
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/reverseVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "velocityToleranceRpm",
-            "x": 768.0,
+            "title": "Idle RPM",
+            "x": 1024.0,
             "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IntakeSubsystem/idleVelocityRpm",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Max RPM",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IntakeSubsystem/maximumVelocityRpm",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Max Accel",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IntakeSubsystem/maximumAccelerationRpmPerSecond",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Vel Tol",
+            "x": 512.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/velocityToleranceRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "settleTimeSeconds",
-            "x": 0.0,
-            "y": 384.0,
+            "title": "Settle (s)",
+            "x": 768.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/IntakeSubsystem/settleTimeSeconds",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "idleVelocityRpm",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/idleVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "AppliedVolts",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/IntakeSubsystem/motor/AppliedVolts",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "CommandedVolts",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/IntakeSubsystem/motor/CommandedVolts",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "SupplyCurrentAmps",
-            "x": 256.0,
+            "title": "RPM",
+            "x": 1152.0,
             "y": 256.0,
             "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/IntakeSubsystem/motor/SupplyCurrentAmps",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Target RPM",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/targetRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Velocity Error RPM",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/velocityErrorRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Measured RPM",
-            "x": 1024.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 384.0,
+            "height": 256.0,
             "type": "Radial Gauge",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/measuredRpm",
-              "period": 0.033,
-              "data_type": "double",
-              "start_angle": -140.0,
-              "end_angle": 140.0,
+              "period": 0.06,
               "min_value": -1500.0,
               "max_value": 1500.0,
               "number_of_labels": 8,
+              "start_angle": -140.0,
+              "end_angle": 140.0,
               "wrap_value": false,
               "show_pointer": true,
               "show_ticks": true
             }
           },
           {
-            "title": "maximumAccelerationRpmPerSecond",
-            "x": 512.0,
+            "title": "Ready",
+            "x": 0.0,
             "y": 384.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Boolean Box",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/maximumAccelerationRpmPerSecond",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "idleVelocityRpm",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/idleVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "idleVelocityRpm",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/idleVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/isReady",
+              "period": 0.06
             }
           }
         ]
@@ -874,38 +838,31 @@
         "layouts": [],
         "containers": [
           {
-            "title": "enabled",
+            "title": "Enabled",
             "x": 0.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/enabled",
+              "period": 0.06
             }
           },
           {
-            "title": "motorCanId",
+            "title": "Motor On",
             "x": 128.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/motorCanId",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/enabled",
+              "period": 0.06
             }
           },
           {
-            "title": "motorInverted",
+            "title": "Inverted",
             "x": 256.0,
             "y": 0.0,
             "width": 128.0,
@@ -913,33 +870,115 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/motorInverted",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "period": 0.06
             }
           },
           {
-            "title": "verbose",
+            "title": "CAN ID",
             "x": 384.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Boolean Box",
+            "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/verbose",
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/motorCanId",
               "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "show_submit_button": false
             }
           },
           {
-            "title": "AppliedVolts",
+            "title": "kP",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/kP",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kI",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/kI",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kD",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/kD",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kS",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/kS",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kV",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/kV",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kA",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/kA",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kG",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/kG",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
             "width": 256.0,
@@ -948,16 +987,15 @@
             "properties": {
               "topic": "/AdvantageKit/HarvesterSubsystem/motor/AppliedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
-            "title": "CommandedVolts",
+            "title": "Cmd V",
             "x": 256.0,
             "y": 128.0,
             "width": 256.0,
@@ -966,185 +1004,29 @@
             "properties": {
               "topic": "/AdvantageKit/HarvesterSubsystem/motor/CommandedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
-            "title": "SupplyCurrentAmps",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/HarvesterSubsystem/motor/SupplyCurrentAmps",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "kP",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kP",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kI",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kI",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kD",
-            "x": 896.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kD",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kS",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kS",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kV",
-            "x": 1280.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kV",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kA",
-            "x": 1408.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kA",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "maximumVelocityDegreesPerSecond",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/maximumVelocityDegreesPerSecond",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "maximumAccelerationDegreesPerSecondSquared",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/maximumAccelerationDegreesPerSecondSquared",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "positionToleranceDegrees",
-            "x": 640.0,
+            "title": "Stowed °",
+            "x": 512.0,
             "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/positionToleranceDegrees",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "velocityToleranceDegreesPerSecond",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/velocityToleranceDegreesPerSecond",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "stowedPositionDegrees",
-            "x": 1152.0,
-            "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/HarvesterSubsystem/stowedPositionDegrees",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "deployedPositionDegrees",
-            "x": 1152.0,
+            "title": "Deployed °",
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -1152,56 +1034,13 @@
             "properties": {
               "topic": "SmartDashboard/HarvesterSubsystem/deployedPositionDegrees",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "PositionDegrees",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/HarvesterSubsystem/motor/PositionDegrees",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "targetClampedPositionDegrees",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/HarvesterSubsystem/targetClampedPositionDegrees",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "targetClampedPositionRads",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/HarvesterSubsystem/targetClampedPositionRads",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "ResetEncoder",
-            "x": 640.0,
-            "y": 384.0,
+            "title": "Reset Enc",
+            "x": 1024.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
@@ -1210,6 +1049,130 @@
               "period": 0.06,
               "show_type": false,
               "maximize_button_space": true
+            }
+          },
+          {
+            "title": "Max Vel",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/maximumVelocityDegreesPerSecond",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Max Accel",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/maximumAccelerationDegreesPerSecondSquared",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Pos Tol",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/positionToleranceDegrees",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Vel Tol",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/velocityToleranceDegreesPerSecond",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Angle",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/HarvesterSubsystem/motor/PositionDegrees",
+              "period": 0.06,
+              "end_angle": 140.0,
+              "max_value": 135.0,
+              "min_value": 0.0,
+              "number_of_labels": 8,
+              "show_pointer": true,
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
+            }
+          },
+          {
+            "title": "Min SP",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/minimumSetpointDegrees",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Max SP",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/HarvesterSubsystem/maximumSetpointDegrees",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Position",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/HarvesterSubsystem/motor/PositionDegrees",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Target",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/HarvesterSubsystem/targetClampedPositionDegrees",
+              "period": 0.06,
+              "show_submit_button": false
             }
           }
         ]
@@ -1221,8 +1184,57 @@
         "layouts": [],
         "containers": [
           {
-            "title": "kP",
+            "title": "Enabled",
             "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Motor On",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Inverted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorInverted",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "CAN ID",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorCanId",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "kP",
+            "x": 512.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1230,13 +1242,12 @@
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/kP",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kI",
-            "x": 128.0,
+            "x": 640.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1244,13 +1255,12 @@
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/kI",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kD",
-            "x": 256.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1258,13 +1268,12 @@
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/kD",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kS",
-            "x": 512.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1272,13 +1281,12 @@
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/kS",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kV",
-            "x": 640.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1286,13 +1294,12 @@
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/kV",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kA",
-            "x": 768.0,
+            "x": 1280.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1300,27 +1307,46 @@
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/kA",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "maximumVelocityRpm",
+            "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Voltage View",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/maximumVelocityRpm",
+              "topic": "/AdvantageKit/FeederSubsystem/motor/AppliedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "divisions": 3,
+              "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
+              "orientation": "horizontal"
             }
           },
           {
-            "title": "forwardVelocityRpm",
+            "title": "Cmd V",
             "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/AdvantageKit/FeederSubsystem/motor/CommandedVolts",
+              "period": 0.06,
+              "divisions": 3,
+              "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Fwd RPM",
+            "x": 512.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -1328,13 +1354,12 @@
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/forwardVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "reverseVelocityRpm",
-            "x": 512.0,
+            "title": "Rev RPM",
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -1342,158 +1367,104 @@
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/reverseVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "velocityToleranceRpm",
-            "x": 768.0,
+            "title": "Idle RPM",
+            "x": 1024.0,
             "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/velocityToleranceRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "settleTimeSeconds",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/settleTimeSeconds",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "idleVelocityRpm",
-            "x": 0.0,
-            "y": 512.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/FeederSubsystem/idleVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "AppliedVolts",
+            "title": "Max RPM",
             "x": 0.0,
             "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/FeederSubsystem/motor/AppliedVolts",
+              "topic": "SmartDashboard/FeederSubsystem/maximumVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "CommandedVolts",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/FeederSubsystem/motor/CommandedVolts",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "SupplyCurrentAmps",
+            "title": "Max Accel",
             "x": 256.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/FeederSubsystem/motor/SupplyCurrentAmps",
+              "topic": "SmartDashboard/FeederSubsystem/maximumAccelerationRpmPerSecond",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Target RPM",
+            "title": "Vel Tol",
             "x": 512.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/targetRpm",
+              "topic": "SmartDashboard/FeederSubsystem/velocityToleranceRpm",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Velocity Error RPM",
-            "x": 256.0,
-            "y": 384.0,
+            "title": "Settle (s)",
+            "x": 768.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/velocityErrorRpm",
+              "topic": "SmartDashboard/FeederSubsystem/settleTimeSeconds",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Transporting",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/isReady",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Measured RPM",
-            "x": 896.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 384.0,
+            "title": "RPM",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
             "type": "Radial Gauge",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/measuredRpm",
               "period": 0.06,
-              "data_type": "double",
-              "start_angle": -140.0,
               "end_angle": 140.0,
-              "min_value": -3000.0,
-              "max_value": 3000.0,
-              "number_of_labels": 4,
-              "wrap_value": false,
+              "max_value": 1500.0,
+              "min_value": -1500.0,
+              "number_of_labels": 8,
               "show_pointer": true,
-              "show_ticks": true
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
+            }
+          },
+          {
+            "title": "Ready",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/isReady",
+              "period": 0.06
             }
           }
         ]
@@ -1505,8 +1476,57 @@
         "layouts": [],
         "containers": [
           {
-            "title": "kP",
+            "title": "Enabled",
             "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Motor On",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Inverted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorInverted",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "CAN ID",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorCanId",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "kP",
+            "x": 512.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1514,13 +1534,12 @@
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/kP",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kI",
-            "x": 128.0,
+            "x": 640.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1528,13 +1547,12 @@
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/kI",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kD",
-            "x": 256.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1542,13 +1560,12 @@
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/kD",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kS",
-            "x": 512.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1556,13 +1573,12 @@
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/kS",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kV",
-            "x": 640.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1570,13 +1586,12 @@
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/kV",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kA",
-            "x": 768.0,
+            "x": 1280.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1584,27 +1599,46 @@
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/kA",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "maximumVelocityRpm",
+            "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Voltage View",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/maximumVelocityRpm",
+              "topic": "/AdvantageKit/IndexerSubsystem/motor/AppliedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "divisions": 3,
+              "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
+              "orientation": "horizontal"
             }
           },
           {
-            "title": "feedVelocityRpm",
+            "title": "Cmd V",
             "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/AdvantageKit/IndexerSubsystem/motor/CommandedVolts",
+              "period": 0.06,
+              "divisions": 3,
+              "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Feed RPM",
+            "x": 512.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -1612,13 +1646,12 @@
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/feedVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "reverseVelocityRpm",
-            "x": 512.0,
+            "title": "Rev RPM",
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -1626,158 +1659,130 @@
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/reverseVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "velocityToleranceRpm",
-            "x": 768.0,
+            "title": "Idle RPM",
+            "x": 1024.0,
             "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/velocityToleranceRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "settleTimeSeconds",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/settleTimeSeconds",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "idleVelocityRpm",
-            "x": 0.0,
-            "y": 512.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/idleVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "AppliedVolts",
+            "title": "Max RPM",
             "x": 0.0,
             "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/IndexerSubsystem/motor/AppliedVolts",
+              "topic": "SmartDashboard/IndexerSubsystem/maximumVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "CommandedVolts",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/IndexerSubsystem/motor/CommandedVolts",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "SupplyCurrentAmps",
+            "title": "Max Accel",
             "x": 256.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/IndexerSubsystem/motor/SupplyCurrentAmps",
+              "topic": "SmartDashboard/IndexerSubsystem/maximumAccelerationRpmPerSecond",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Target RPM",
+            "title": "Vel Tol",
             "x": 512.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/targetRpm",
+              "topic": "SmartDashboard/IndexerSubsystem/velocityToleranceRpm",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Velocity Error RPM",
+            "title": "Settle (s)",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IndexerSubsystem/settleTimeSeconds",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "RPM",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/measuredRpm",
+              "period": 0.06,
+              "end_angle": 140.0,
+              "max_value": 1000.0,
+              "min_value": -1000.0,
+              "number_of_labels": 8,
+              "show_pointer": true,
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
+            }
+          },
+          {
+            "title": "Ready",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/isReady",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Unjam Fwd (s)",
             "x": 256.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/velocityErrorRpm",
+              "topic": "SmartDashboard/IndexerSubsystem/unjamForwardDurationSeconds",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Feeding",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 384.0,
+            "title": "Unjam Rev (s)",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
             "height": 128.0,
-            "type": "Boolean Box",
+            "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/isReady",
+              "topic": "SmartDashboard/IndexerSubsystem/unjamReverseDurationSeconds",
               "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Measured RPM",
-            "x": 896.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 384.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/measuredRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "start_angle": -140.0,
-              "end_angle": 140.0,
-              "min_value": -3000.0,
-              "max_value": 3000.0,
-              "number_of_labels": 4,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
+              "show_submit_button": true
             }
           }
         ]
@@ -1789,38 +1794,31 @@
         "layouts": [],
         "containers": [
           {
-            "title": "enabled",
+            "title": "Enabled",
             "x": 0.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/enabled",
+              "period": 0.06
             }
           },
           {
-            "title": "motorCanId",
+            "title": "Motor On",
             "x": 128.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/motorCanId",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/enabled",
+              "period": 0.06
             }
           },
           {
-            "title": "motorInverted",
+            "title": "Inverted",
             "x": 256.0,
             "y": 0.0,
             "width": 128.0,
@@ -1828,33 +1826,102 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/motorInverted",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "period": 0.06
             }
           },
           {
-            "title": "verbose",
+            "title": "CAN ID",
             "x": 384.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Boolean Box",
+            "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/verbose",
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/motorCanId",
               "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "show_submit_button": false
             }
           },
           {
-            "title": "AppliedVolts",
+            "title": "kP",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/kP",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kI",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/kI",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kD",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/kD",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kS",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/kS",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kV",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/kV",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kA",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/kA",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
             "width": 256.0,
@@ -1863,16 +1930,15 @@
             "properties": {
               "topic": "/AdvantageKit/TurretSubsystem/motor/AppliedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
-            "title": "CommandedVolts",
+            "title": "Cmd V",
             "x": 256.0,
             "y": 128.0,
             "width": 256.0,
@@ -1881,250 +1947,172 @@
             "properties": {
               "topic": "/AdvantageKit/TurretSubsystem/motor/CommandedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
-            "title": "SupplyCurrentAmps",
-            "x": 0.0,
-            "y": 256.0,
+            "title": "Zero Offset",
+            "x": 512.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/TurretSubsystem/motor/SupplyCurrentAmps",
+              "topic": "SmartDashboard/TurretSubsystem/turretZeroOffsetDegrees",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "kA",
-            "x": 1408.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kA",
-              "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "kD",
-            "x": 896.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kD",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kI",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kI",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kP",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kP",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kS",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kS",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "kV",
-            "x": 1280.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kV",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "positionToleranceDegrees",
-            "x": 640.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/positionToleranceDegrees",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "velocityToleranceDegreesPerSecond",
+            "title": "Lead Time (s)",
             "x": 768.0,
             "y": 128.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/velocityToleranceDegreesPerSecond",
+              "topic": "SmartDashboard/TurretSubsystem/rotationalLeadTimeSeconds",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "maximumVelocityDegreesPerSecond",
-            "x": 640.0,
-            "y": 0.0,
+            "title": "Reset Enc",
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/resetEncoder",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Max Vel",
+            "x": 0.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/TurretSubsystem/maximumVelocityDegreesPerSecond",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "maximumAccelerationDegreesPerSecondSquared",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/maximumAccelerationDegreesPerSecondSquared",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "PositionRadians",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/TurretSubsystem/motor/PositionRadians",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "PositionDegrees",
-            "x": 128.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/TurretSubsystem/motor/PositionDegrees",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "targetClampedPositionDegrees",
+            "title": "Max Accel",
             "x": 256.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/targetClampedPositionDegrees",
+              "topic": "SmartDashboard/TurretSubsystem/maximumAccelerationDegreesPerSecondSquared",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "targetClampedPositionRads",
+            "title": "Pos Tol",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/positionToleranceDegrees",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Settle (s)",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/TurretSubsystem/settleTimeSeconds",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Position °",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/currentPositionDegrees",
+              "period": 0.06,
+              "end_angle": 140.0,
+              "max_value": 90.0,
+              "min_value": -90.0,
+              "number_of_labels": 8,
+              "show_pointer": true,
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
+            }
+          },
+          {
+            "title": "Ready",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/isReady",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Min Pos",
             "x": 256.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/targetClampedPositionRads",
+              "topic": "SmartDashboard/TurretSubsystem/minimumSetpointDegrees",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "rotationalLeadTimeSeconds",
-            "x": 1280.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/SmartDashboard/TurretSubsystem/rotationalLeadTimeSeconds",
-              "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "ResetEncoder",
-            "x": 640.0,
+            "title": "Max Pos",
+            "x": 512.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Command",
+            "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/TurretSubsystem/ResetEncoder",
+              "topic": "SmartDashboard/TurretSubsystem/maximumSetpointDegrees",
               "period": 0.06,
-              "show_type": false,
-              "maximize_button_space": true
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Target",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/targetClampedPositionDegrees",
+              "period": 0.06,
+              "show_submit_button": false
             }
           }
         ]
@@ -2136,8 +2124,57 @@
         "layouts": [],
         "containers": [
           {
-            "title": "kP",
+            "title": "Enabled",
             "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Motor On",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/shooterMotorConfig/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Inverted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/shooterMotorConfig/motorInverted",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "CAN ID",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/shooterMotorConfig/motorCanId",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "kP",
+            "x": 512.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -2145,13 +2182,12 @@
             "properties": {
               "topic": "SmartDashboard/ShooterSubsystem/kP",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kI",
-            "x": 128.0,
+            "x": 640.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -2159,13 +2195,12 @@
             "properties": {
               "topic": "SmartDashboard/ShooterSubsystem/kI",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kD",
-            "x": 256.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -2173,13 +2208,12 @@
             "properties": {
               "topic": "SmartDashboard/ShooterSubsystem/kD",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kS",
-            "x": 512.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -2187,13 +2221,12 @@
             "properties": {
               "topic": "SmartDashboard/ShooterSubsystem/kS",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kV",
-            "x": 640.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -2201,13 +2234,12 @@
             "properties": {
               "topic": "SmartDashboard/ShooterSubsystem/kV",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kA",
-            "x": 768.0,
+            "x": 1280.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -2215,186 +2247,190 @@
             "properties": {
               "topic": "SmartDashboard/ShooterSubsystem/kA",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "maximumVelocityRpm",
+            "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Voltage View",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/maximumVelocityRpm",
+              "topic": "/AdvantageKit/ShooterSubsystem/motor/AppliedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "divisions": 3,
+              "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
+              "orientation": "horizontal"
             }
           },
           {
-            "title": "maximumAccelerationRpmPerSecond",
+            "title": "Cmd V",
             "x": 256.0,
             "y": 128.0,
-            "width": 384.0,
+            "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Voltage View",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/maximumAccelerationRpmPerSecond",
+              "topic": "/AdvantageKit/ShooterSubsystem/motor/CommandedVolts",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
+              "divisions": 3,
+              "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
+              "orientation": "horizontal"
             }
           },
           {
-            "title": "velocityToleranceRpm",
-            "x": 640.0,
+            "title": "Min Fire RPM",
+            "x": 512.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/velocityToleranceRpm",
+              "topic": "SmartDashboard/ShooterSubsystem/minimumShootingRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "settleTimeSeconds",
-            "x": 0.0,
-            "y": 384.0,
+            "title": "Max Fire RPM",
+            "x": 768.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/settleTimeSeconds",
+              "topic": "SmartDashboard/ShooterSubsystem/maximumShootingRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "idleVelocityRpm",
-            "x": 0.0,
-            "y": 512.0,
+            "title": "Idle RPM",
+            "x": 1024.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/ShooterSubsystem/idleVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "AppliedVolts",
+            "title": "Max RPM",
             "x": 0.0,
             "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/ShooterSubsystem/motor/AppliedVolts",
+              "topic": "SmartDashboard/ShooterSubsystem/maximumVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "CommandedVolts",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/ShooterSubsystem/motor/CommandedVolts",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "SupplyCurrentAmps",
+            "title": "Max Accel",
             "x": 256.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/ShooterSubsystem/motor/SupplyCurrentAmps",
+              "topic": "SmartDashboard/ShooterSubsystem/maximumAccelerationRpmPerSecond",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Target RPM",
+            "title": "Vel Tol",
             "x": 512.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/targetRpm",
+              "topic": "SmartDashboard/ShooterSubsystem/velocityToleranceRpm",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Velocity Error RPM",
+            "title": "Settle (s)",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/ShooterSubsystem/settleTimeSeconds",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "RPM",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/measuredRpm",
+              "period": 0.06,
+              "end_angle": 140.0,
+              "max_value": 5000.0,
+              "min_value": -5000.0,
+              "number_of_labels": 8,
+              "show_pointer": true,
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
+            }
+          },
+          {
+            "title": "Ready",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/isReady",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Rev RPM",
             "x": 256.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/velocityErrorRpm",
+              "topic": "SmartDashboard/ShooterSubsystem/reverseVelocityRpm",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
-            "title": "Ready to Fire",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 384.0,
+            "title": "Dist Mult",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
             "height": 128.0,
-            "type": "Boolean Box",
+            "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/readyToFire",
+              "topic": "SmartDashboard/ShooterSubsystem/distanceRpmMultiplier",
               "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Measured RPM",
-            "x": 896.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 384.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ShooterSubsystem/measuredRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "start_angle": -140.0,
-              "end_angle": 140.0,
-              "min_value": -3000.0,
-              "max_value": 3000.0,
-              "number_of_labels": 4,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
+              "show_submit_button": true
             }
           }
         ]
@@ -2406,57 +2442,53 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Front Camera?",
+            "title": "Front Cam?",
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/SmartDashboard/DriverCameraSubsystem/useUsbCameraStream",
-              "period": 0.06,
-              "data_type": "boolean"
+              "topic": "SmartDashboard/DriverCameraVisionSubsystem/useFrontCamera",
+              "period": 0.06
             }
           },
           {
-            "title": "USB2 TagIds",
-            "x": 128.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/Vision/Camera/Arducam_OV9281_USB2/TagIds",
-              "period": 0.06,
-              "data_type": "int[]",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "USB1 TagIds",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/Vision/Camera/Arducam_OV9281_USB1/TagIds",
-              "period": 0.06,
-              "data_type": "int[]",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "limelight",
+            "title": "USB1 Tags",
             "x": 256.0,
             "y": 0.0,
-            "width": 768.0,
-            "height": 640.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/usb1TagIds",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "USB2 Tags",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/usb2TagIds",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Limelight",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 896.0,
+            "height": 512.0,
             "type": "Camera Stream",
             "properties": {
-              "topic": "/CameraPublisher/limelight",
-              "period": 0.06,
-              "rotation_turns": 0
+              "topic": "CameraPublisher/limelight",
+              "period": 0.06
             }
           }
         ]
@@ -2468,298 +2500,361 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Left Sensor CAN ID",
+            "title": "Enabled",
             "x": 0.0,
             "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/ClimberSensorConfig/leftSensorCanId",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Right Sensor CAN ID",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/ClimberSensorConfig/rightSensorCanId",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Alignment Tolerance (mm)",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/ClimberSensorConfig/alignmentToleranceMillimeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Max Detection Dist (mm)",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/ClimberSensorConfig/maximumDetectionDistanceMillimeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Sample Time (ms)",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/ClimberSensorConfig/sampleTimeMilliseconds",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Left Distance (mm)",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/ClimberSubsystem/sensors/LeftDistanceMillimeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Right Distance (mm)",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/ClimberSubsystem/sensors/RightDistanceMillimeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Distance Difference (mm)",
-            "x": 512.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/distanceDifferenceMillimeters",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Tower Detected",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/towerDetected",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4278255360,
-              "false_color": 4294901760,
-              "true_icon": "None",
-              "false_icon": "None"
+              "topic": "/AdvantageKit/RealOutputs/Config/climberSubsystem/enabled",
+              "period": 0.06
             }
           },
           {
-            "title": "Aligned to Tower",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/alignedToTower",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4278255360,
-              "false_color": 4294901760,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Left Connected",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/ClimberSubsystem/sensors/LeftSensorConnected",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Right Connected",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/ClimberSubsystem/sensors/RightSensorConnected",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Motor enabled",
-            "x": 0.0,
-            "y": 384.0,
+            "title": "Motor On",
+            "x": 128.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/climberSubsystem/climberMotorConfig/enabled",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Inverted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/climberSubsystem/climberMotorConfig/motorInverted",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "CAN ID",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/climberSubsystem/climberMotorConfig/motorCanId",
               "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "show_submit_button": false
             }
           },
           {
             "title": "kP",
-            "x": 256.0,
-            "y": 384.0,
+            "x": 512.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/ClimberSubsystem/kP",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kI",
-            "x": 384.0,
-            "y": 384.0,
+            "x": 640.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/ClimberSubsystem/kI",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kD",
-            "x": 512.0,
-            "y": 384.0,
+            "x": 768.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/ClimberSubsystem/kD",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kS",
-            "x": 768.0,
-            "y": 384.0,
+            "x": 1024.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/ClimberSubsystem/kS",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kV",
-            "x": 896.0,
-            "y": 384.0,
+            "x": 1152.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/ClimberSubsystem/kV",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
             "title": "kA",
-            "x": 1024.0,
-            "y": 384.0,
+            "x": 1280.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/ClimberSubsystem/kA",
               "period": 0.06,
-              "data_type": "double",
               "show_submit_button": true
             }
           },
           {
-            "title": "ResetEncoder",
+            "title": "Applied V",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/AdvantageKit/ClimberSubsystem/motor/AppliedVolts",
+              "period": 0.06,
+              "divisions": 3,
+              "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Cmd V",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/AdvantageKit/ClimberSubsystem/motor/CommandedVolts",
+              "period": 0.06,
+              "divisions": 3,
+              "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Tower Found",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/towerFound",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Aligned",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/isAligned",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Reset Enc",
             "x": 1024.0,
-            "y": 256.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/SmartDashboard/ClimberSubsystem/ResetEncoder",
+              "topic": "SmartDashboard/ClimberSubsystem/resetEncoder",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Max Vel",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/ClimberSubsystem/maximumVelocityDegreesPerSecond",
               "period": 0.06,
-              "show_type": false,
-              "maximize_button_space": true
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Max Accel",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/ClimberSubsystem/maximumAccelerationDegreesPerSecondSquared",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Pos Tol",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/ClimberSubsystem/positionToleranceDegrees",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Settle (s)",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/ClimberSubsystem/settleTimeSeconds",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Position °",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/currentPositionDegrees",
+              "period": 0.06,
+              "end_angle": 140.0,
+              "max_value": 360.0,
+              "min_value": 0.0,
+              "number_of_labels": 8,
+              "show_pointer": true,
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
+            }
+          },
+          {
+            "title": "Left Dist",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/leftDistanceMillimeters",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Right Dist",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/rightDistanceMillimeters",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "L Conn",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/leftSensorConnected",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "R Conn",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ClimberSubsystem/rightSensorConnected",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Align Tol",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/ClimberSubsystem/alignmentToleranceMillimeters",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Max Det",
+            "x": 896.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/ClimberSubsystem/maximumDetectionDistanceMillimeters",
+              "period": 0.06,
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Sample ms",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/ClimberSubsystem/sampleTimeMilliseconds",
+              "period": 0.06,
+              "show_submit_button": true
             }
           }
         ]
