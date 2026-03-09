@@ -542,3 +542,94 @@ color, style, and routing lane so edges never stack on top of each other.
 - Always use `get_diagram_info` first to confirm current node positions and
   IDs before editing. Node positions may have shifted from manual edits in
   the draw.io VS Code extension.
+
+## Elastic Dashboard layout (`elastic-layout.json`)
+
+The root-level `elastic-layout.json` defines the Elastic Dashboard layout,
+managed via the `elastic-dashboard` MCP server (configured in
+`.vscode/mcp.json`). **Never edit `elastic-layout.json` by hand.** Always use
+the MCP tools listed below.
+
+### MCP server reference
+
+- The server is defined in `.vscode/mcp.json` as `elastic-dashboard`, using
+  `npx -y @o-bots7160/elastic-dashboard-mcp`.
+- Available tools: `create_layout`, `get_layout`, `get_tab`, `add_tab`,
+  `remove_tab`, `rename_tab`, `reorder_tabs`, `add_widget`,
+  `add_widgets_batch`, `remove_widget`, `move_widget`, `resize_widget`,
+  `update_widget_properties`, `auto_layout`, `list_widget_types`,
+  `suggest_widget`, `convert_color`, `get_config`, `set_config`,
+  `validate_layout`.
+
+### Workflow
+
+1. Use `get_layout` to read the current tab/widget structure before making any
+   changes.
+2. Use `add_tab` to create a new tab, then `add_widget` or
+   `add_widgets_batch` to populate it. Positions are auto-calculated when
+   omitted.
+3. After changes, run `validate_layout` to confirm the file is well-formed.
+4. Use `list_widget_types` (optionally filtered by `single-topic`,
+   `multi-topic`, or `layout`) to discover valid widget types and their
+   default sizes.
+5. Use `suggest_widget` with a NetworkTables data type to choose the best
+   widget for a topic.
+6. Colors in Elastic Dashboard are decimal ARGB integers. Use
+   `convert_color` to translate between hex (`#FF4CAF50`) and the integer
+   format stored in the JSON.
+
+### Conventions
+
+- Grid size is `128` px. Widget positions and sizes snap to the grid.
+- Widget topics use full SmartDashboard paths (e.g.,
+  `/SmartDashboard/GameplayStateSubsystem/CurrentState`).
+- Tab names should be concise and descriptive (e.g., `Competition`,
+  `State & Pose`, `DriveBase Tuning`).
+
+## AdvantageScope layout (`advantagescope-layout.json`)
+
+The root-level `advantagescope-layout.json` defines the AdvantageScope layout,
+managed via the `advantagescope` MCP server (configured in `.vscode/mcp.json`).
+**Never edit `advantagescope-layout.json` by hand.** Always use the MCP tools
+listed below.
+
+### MCP server reference
+
+- The server is defined in `.vscode/mcp.json` as `advantagescope`, using
+  `npx -y @o-bots7160/advantagescope-mcp`.
+- Available tools: `create_layout`, `get_layout`, `get_tab`,
+  `get_tab_type_schema`, `list_tab_types`, `add_hub`, `remove_hub`,
+  `add_tab`, `remove_tab`, `update_tab`, `move_tab`, `reorder_tabs`,
+  `add_source`, `update_source`, `remove_source`, `get_preferences`,
+  `update_preferences`, `list_assets`, `get_asset_config`,
+  `update_asset_config`, `delete_asset`, `validate_asset_config`,
+  `create_field2d_config`, `create_field3d_config`, `create_robot_config`,
+  `create_joystick_config`.
+
+### Workflow
+
+1. Use `get_layout` to read the current hub/tab structure before making any
+   changes.
+2. Use `get_tab_type_schema` with the tab type ID to discover valid source
+   types, options, and section names before adding sources.
+3. Use `add_tab` to create a new tab (type IDs: 0=Documentation,
+   1=LineGraph, 2=Field2d, 3=Field3d, 4=Table, 5=Console, 6=Statistics,
+   7=Video, 8=Joysticks, 9=Swerve, 10=Mechanism, 11=Points, 12=Metadata).
+4. Use `add_source` to populate the tab with data sources. For LineGraph
+   tabs, specify the `section` parameter (`leftSources`, `rightSources`, or
+   `discreteSources`).
+5. Use `get_tab` to verify the final tab configuration.
+6. Use `validate_asset_config` when creating or modifying custom assets.
+
+### Conventions
+
+- Source `log_key` paths follow the AdvantageKit convention:
+  `NT:/AdvantageKit/<ClassName>/<prefix>/<field>` for `processInputs` data and
+  `NT:/AdvantageKit/RealOutputs/<ClassName>/<key>` for `recordOutput` data.
+- SmartDashboard-published values use the path
+  `NT:/SmartDashboard/<SubsystemName>/<Key>`.
+- Colors in source options are hex strings (e.g., `#2b66a2`).
+- LineGraph sources use types `stepped` (discrete values), `smooth`
+  (continuous values), or `stripes` (boolean discrete bands).
+- Tab titles should match the Elastic Dashboard tab names when they show the
+  same data to keep navigation consistent across tools.

@@ -1,19 +1,19 @@
-package frc.robot.subsystems.robotstate.io;
+package frc.robot.subsystems.robotpose.io;
 
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
 /**
- * Defines the contract for robot state telemetry inputs that AdvantageKit will log.
+ * Defines the contract for robot pose telemetry inputs that AdvantageKit will log.
  */
-public interface RobotStateIO {
+public interface RobotPoseIO {
 
     /**
-     * Container of robot state telemetry fields that AdvantageKit will persist.
+     * Container of robot pose telemetry fields that AdvantageKit will persist.
      */
     @AutoLog
-    public static class RobotStateIOInputs {
+    public static class RobotPoseIOInputs {
         /**
          * Latest fused pose estimate in meters and radians.
          */
@@ -49,9 +49,9 @@ public interface RobotStateIO {
     }
 
     /**
-     * Refreshes the inputs structure with the latest robot state telemetry.
+     * Refreshes the inputs structure with the latest robot pose telemetry.
      *
      * @param inputs mutable inputs container to populate for logging
      */
-    void updateInputs(RobotStateIOInputs inputs);
+    void updateInputs(RobotPoseIOInputs inputs);
 }

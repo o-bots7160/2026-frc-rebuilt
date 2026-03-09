@@ -1980,6 +1980,94 @@
               "controllerUUID": "clmb_mtr_02_motor_tuning_uuid",
               "renderer": null,
               "controlsHeight": 391
+            },
+            {
+              "type": 1,
+              "title": "State & Pose",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GameplayStateSubsystem/GameplayState/CurrentStateOrdinal",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "bold"
+                    }
+                  },
+                  {
+                    "type": "smooth",
+                    "logKey": "NT:/SmartDashboard/GameplayStateSubsystem/MatchTimeSeconds",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "smooth",
+                    "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/EstimatedXMeters",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "smooth",
+                    "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/EstimatedYMeters",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "smooth",
+                    "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/EstimatedHeadingDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#9b59b6"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/SmartDashboard/GameplayStateSubsystem/EndgameSuggested",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/HasVisionMeasurement",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/EnableVisionFusion",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  }
+                ]
+              },
+              "controllerUUID": "eeldvd951mylljv1fegf9max5p6ku49j",
+              "renderer": null,
+              "controlsHeight": 0
             }
           ]
         }

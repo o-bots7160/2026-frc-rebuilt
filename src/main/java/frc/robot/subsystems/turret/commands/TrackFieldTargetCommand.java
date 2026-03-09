@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.shared.commands.AbstractSubsystemCommand;
-import frc.robot.subsystems.robotstate.RobotStateSubsystem;
+import frc.robot.subsystems.robotpose.RobotPoseSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
 /**
@@ -17,7 +17,7 @@ import frc.robot.subsystems.turret.TurretSubsystem;
  */
 public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubsystem> {
 
-    private final RobotStateSubsystem     robotStateSubsystem;
+    private final RobotPoseSubsystem      robotPoseSubsystem;
 
     private final Supplier<Translation2d> targetFieldPositionSupplier;
 
@@ -31,17 +31,17 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
      * </p>
      *
      * @param turretSubsystem                      turret subsystem to control
-     * @param robotStateSubsystem                  robot state subsystem providing the fused pose estimate
+     * @param robotPoseSubsystem                   robot pose subsystem providing the fused pose estimate
      * @param targetFieldPositionSupplier          supplier of the field-relative target position in meters
      * @param robotYawRateRadiansPerSecondSupplier supplier of the robot's yaw rate in radians per second (positive is counter-clockwise)
      */
     public TrackFieldTargetCommand(
             TurretSubsystem turretSubsystem,
-            RobotStateSubsystem robotStateSubsystem,
+            RobotPoseSubsystem robotPoseSubsystem,
             Supplier<Translation2d> targetFieldPositionSupplier,
             Supplier<Double> robotYawRateRadiansPerSecondSupplier) {
         super(turretSubsystem);
-        this.robotStateSubsystem                  = robotStateSubsystem;
+        this.robotPoseSubsystem                   = robotPoseSubsystem;
         this.targetFieldPositionSupplier          = targetFieldPositionSupplier;
         this.robotYawRateRadiansPerSecondSupplier = robotYawRateRadiansPerSecondSupplier;
     }
@@ -74,7 +74,7 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
     }
 
     private void updateTarget() {
-        Pose2d        robotPose           = robotStateSubsystem.getEstimatedPose();
+        Pose2d        robotPose           = robotPoseSubsystem.getEstimatedPose();
         Translation2d targetFieldPosition = targetFieldPositionSupplier.get();
         double        yawRateRadians      = robotYawRateRadiansPerSecondSupplier.get();
         double        targetDegrees       = subsystem.calculateFieldTargetDegrees(robotPose, targetFieldPosition, yawRateRadians);

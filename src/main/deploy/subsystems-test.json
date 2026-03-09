@@ -2,7 +2,7 @@
   "driveBaseSubsystem": {
     "enabled": true,
     "verbose": false,
-    "swerveConfigDirectory": "swerve-test",
+    "swerveConfigDirectory": "swerve-sim",
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
     "headingKp": 0.85,
@@ -140,7 +140,7 @@
     "kV": 0.0,
     "kA": 0.0
   },
-  "robotStateSubsystem": {
+  "robotPoseSubsystem": {
     "enabled": false,
     "verbose": false,
     "enableVisionFusion": true
@@ -295,6 +295,13 @@
     "kS": 0.0,
     "kV": 0.0,
     "kA": 0.0
+  },
+  "gameplayStateSubsystem": {
+    "enabled": true,
+    "verbose": false,
+    "endgameThresholdSeconds": 30.0,
+    "autoTransitionEnabled": false,
+    "endgameAutoTransitionEnabled": false
   },
   "triggerBindings": {
     "leftStickYResponseExponent": 2.0,

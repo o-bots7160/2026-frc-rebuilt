@@ -1,4 +1,4 @@
-package frc.robot.subsystems.robotstate;
+package frc.robot.subsystems.robotpose;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.shared.subsystems.VisionMeasurementConsumer;
-import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
-import frc.robot.subsystems.robotstate.io.RobotStateIO;
-import frc.robot.subsystems.robotstate.io.RobotStateIOInputsAutoLogged;
+import frc.robot.subsystems.robotpose.config.RobotPoseSubsystemConfig;
+import frc.robot.subsystems.robotpose.io.RobotPoseIO;
+import frc.robot.subsystems.robotpose.io.RobotPoseIOInputsAutoLogged;
 
 /**
  * Centralized pose tracking subsystem that serves as the single authority for robot field pose.
@@ -25,13 +25,13 @@ import frc.robot.subsystems.robotstate.io.RobotStateIOInputsAutoLogged;
  * pose for commands and other subsystems.
  * </p>
  */
-public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemConfig> {
+public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConfig> {
 
     private final Field2d                      fieldDisplay               = new Field2d();
 
-    private final RobotStateIO                 io;
+    private final RobotPoseIO                  io;
 
-    private final RobotStateIOInputsAutoLogged inputs                     = new RobotStateIOInputsAutoLogged();
+    private final RobotPoseIOInputsAutoLogged  inputs                     = new RobotPoseIOInputsAutoLogged();
 
     private final Supplier<Pose2d>             fusedPoseSupplier;
 
@@ -54,7 +54,7 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
     private boolean                            enableVisionFusion         = true;
 
     /**
-     * Creates the Robot State subsystem with all cross-subsystem dependencies.
+     * Creates the Robot Pose subsystem with all cross-subsystem dependencies.
      * <p>
      * This subsystem does not own hardware, but it still follows the command-based lifecycle for consistent updates and logging. Dependencies are
      * injected here so every required wiring is enforced at compile time.
@@ -66,8 +66,8 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
      * @param visionForwarder          consumer that forwards vision measurements to the drivebase's pose estimator
      * @param odometryResetConsumer    consumer that resets the drivebase odometry to a given pose in meters and radians
      */
-    public RobotStateSubsystem(
-            RobotStateSubsystemConfig config,
+    public RobotPoseSubsystem(
+            RobotPoseSubsystemConfig config,
             Supplier<Pose2d> fusedPoseSupplier,
             Supplier<Pose2d> odometryOnlyPoseSupplier,
             VisionMeasurementConsumer visionForwarder,
@@ -83,7 +83,7 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         this.io                       = this::updateInputs;
 
         refreshTunables();
-        SmartDashboard.putData("RobotStateSubsystem/Field", fieldDisplay);
+        SmartDashboard.putData("RobotPoseSubsystem/Field", fieldDisplay);
     }
 
     /**
@@ -106,8 +106,15 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         odometryOnlyPose = odometryOnlyPoseSupplier.get();
 
         io.updateInputs(inputs);
-        log.processInputs("RobotState", inputs);
+        log.processInputs("RobotPose", inputs);
         fieldDisplay.setRobotPose(estimatedPose);
+
+        // Publish pose values to SmartDashboard so the Elastic Dashboard can display them.
+        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedXMeters", estimatedPose.getX());
+        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedYMeters", estimatedPose.getY());
+        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedHeadingDegrees", estimatedPose.getRotation().getDegrees());
+        SmartDashboard.putBoolean("RobotPoseSubsystem/HasVisionMeasurement", hasVisionMeasurement);
+        SmartDashboard.putBoolean("RobotPoseSubsystem/EnableVisionFusion", enableVisionFusion);
     }
 
     /**
@@ -215,7 +222,7 @@ public class RobotStateSubsystem extends AbstractSubsystem<RobotStateSubsystemCo
         return estimatedPose.getTranslation().getDistance(targetFieldPositionMeters);
     }
 
-    private void updateInputs(RobotStateIO.RobotStateIOInputs inputs) {
+    private void updateInputs(RobotPoseIO.RobotPoseIOInputs inputs) {
         inputs.estimatedPose              = estimatedPose;
         inputs.odometryOnlyPose           = odometryOnlyPose;
         inputs.lastVisionPose             = lastVisionPose;

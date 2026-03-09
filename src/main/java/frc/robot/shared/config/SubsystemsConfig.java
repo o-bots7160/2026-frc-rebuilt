@@ -6,10 +6,11 @@ import frc.robot.subsystems.climber.config.ClimberSubsystemConfig;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
 import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
 import frc.robot.subsystems.feeder.config.FeederSubsystemConfig;
+import frc.robot.subsystems.gameplaystate.config.GameplayStateSubsystemConfig;
 import frc.robot.subsystems.harvester.config.HarvesterSubsystemConfig;
 import frc.robot.subsystems.indexer.config.IndexerSubsystemConfig;
 import frc.robot.subsystems.intake.config.IntakeSubsystemConfig;
-import frc.robot.subsystems.robotstate.config.RobotStateSubsystemConfig;
+import frc.robot.subsystems.robotpose.config.RobotPoseSubsystemConfig;
 import frc.robot.subsystems.shooter.config.ShooterSubsystemConfig;
 import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
 
@@ -50,9 +51,9 @@ public class SubsystemsConfig {
     public DriverCameraSubsystemConfig   driverCameraSubsystem   = new DriverCameraSubsystemConfig();
 
     /**
-     * Robot state configuration bundle.
+     * Robot pose configuration bundle.
      */
-    public RobotStateSubsystemConfig     robotStateSubsystem     = new RobotStateSubsystemConfig();
+    public RobotPoseSubsystemConfig      robotPoseSubsystem      = new RobotPoseSubsystemConfig();
 
     /**
      * Climber configuration bundle.
@@ -73,6 +74,11 @@ public class SubsystemsConfig {
      * Harvester configuration bundle.
      */
     public HarvesterSubsystemConfig      harvesterSubsystem      = new HarvesterSubsystemConfig();
+
+    /**
+     * Gameplay state configuration bundle for state management and auto-transitions.
+     */
+    public GameplayStateSubsystemConfig  gameplayStateSubsystem  = new GameplayStateSubsystemConfig();
 
     /**
      * Trigger bindings configuration bundle for driver controller sensitivity.

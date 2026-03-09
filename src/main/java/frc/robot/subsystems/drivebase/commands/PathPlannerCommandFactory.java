@@ -48,7 +48,7 @@ public class PathPlannerCommandFactory {
     /**
      * Supplier of the robot's current fused pose from odometry and vision.
      * <p>
-     * Typically wired to {@code RobotStateSubsystem::getEstimatedPose}.
+     * Typically wired to {@code RobotPoseSubsystem::getEstimatedPose}.
      * </p>
      */
     private final Supplier<Pose2d>             currentPoseSupplier;
@@ -69,7 +69,7 @@ public class PathPlannerCommandFactory {
      * Call this once during robot initialization in {@code RobotContainer} and reuse the instance every time an autonomous command is needed.
      * </p>
      *
-     * @param currentPoseSupplier supplier of the current fused robot pose, typically {@code robotStateSubsystem::getEstimatedPose}
+     * @param currentPoseSupplier supplier of the current fused robot pose, typically {@code robotPoseSubsystem::getEstimatedPose}
      */
     public PathPlannerCommandFactory(Supplier<Pose2d> currentPoseSupplier) {
         this.currentPoseSupplier = currentPoseSupplier;

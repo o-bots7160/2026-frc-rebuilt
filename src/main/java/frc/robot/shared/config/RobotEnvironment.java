@@ -16,7 +16,17 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class RobotEnvironment {
 
-    private static boolean fmsAttachedCached = false;
+    private static boolean fmsAttachedCached  = false;
+
+    private static boolean autonomousCached   = false;
+
+    private static boolean teleopCached       = false;
+
+    private static boolean disabledCached     = true;
+
+    private static boolean enabledCached      = false;
+
+    private static double  matchTimeCached    = -1.0;
 
     /**
      * Refreshes cached environment state once per robot loop.
@@ -27,6 +37,11 @@ public final class RobotEnvironment {
      */
     public static void refreshCycle() {
         fmsAttachedCached = DriverStation.isFMSAttached();
+        autonomousCached  = DriverStation.isAutonomous();
+        teleopCached      = DriverStation.isTeleop();
+        disabledCached    = DriverStation.isDisabled();
+        enabledCached     = DriverStation.isEnabled();
+        matchTimeCached   = DriverStation.getMatchTime();
     }
 
     /**
@@ -81,6 +96,67 @@ public final class RobotEnvironment {
      */
     public static OptionalInt getLocation() {
         return DriverStation.getLocation();
+    }
+
+    /**
+     * Reports whether the robot is currently in autonomous mode.
+     * <p>
+     * Returns the per-cycle cached value set by {@link #refreshCycle()}.
+     * </p>
+     *
+     * @return true when the robot is running an autonomous period
+     */
+    public static boolean isAutonomous() {
+        return autonomousCached;
+    }
+
+    /**
+     * Reports whether the robot is currently in teleop mode.
+     * <p>
+     * Returns the per-cycle cached value set by {@link #refreshCycle()}.
+     * </p>
+     *
+     * @return true when the robot is in operator-controlled teleop
+     */
+    public static boolean isTeleop() {
+        return teleopCached;
+    }
+
+    /**
+     * Reports whether the robot is currently disabled.
+     * <p>
+     * Returns the per-cycle cached value set by {@link #refreshCycle()}.
+     * </p>
+     *
+     * @return true when the robot is disabled
+     */
+    public static boolean isDisabled() {
+        return disabledCached;
+    }
+
+    /**
+     * Reports whether the robot is currently enabled (autonomous or teleop).
+     * <p>
+     * Returns the per-cycle cached value set by {@link #refreshCycle()}.
+     * </p>
+     *
+     * @return true when the robot is enabled
+     */
+    public static boolean isEnabled() {
+        return enabledCached;
+    }
+
+    /**
+     * Returns the approximate match time remaining in the current period in seconds.
+     * <p>
+     * Returns the per-cycle cached value set by {@link #refreshCycle()}. The value is -1.0 when no match time is available (e.g., during practice or
+     * when the FMS is not connected). During a real match, this counts down from the period length toward zero.
+     * </p>
+     *
+     * @return match time remaining in seconds, or -1.0 when unavailable
+     */
+    public static double getMatchTimeSeconds() {
+        return matchTimeCached;
     }
 
     /**

@@ -29,13 +29,16 @@ import frc.robot.subsystems.drivercameravision.DriverCameraSubsystem;
 import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
+import frc.robot.subsystems.gameplaystate.GameplayState;
+import frc.robot.subsystems.gameplaystate.GameplayStateSubsystem;
+import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
 import frc.robot.subsystems.harvester.HarvesterSubsystem;
 import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.commands.IntakeSubsystemCommandFactory;
-import frc.robot.subsystems.robotstate.RobotStateSubsystem;
+import frc.robot.subsystems.robotpose.RobotPoseSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -62,7 +65,7 @@ public class RobotContainer {
 
     private final IndexerSubsystem                    indexerSubsystem;
 
-    private final RobotStateSubsystem                 robotStateSubsystem;
+    private final RobotPoseSubsystem                  robotPoseSubsystem;
 
     @SuppressWarnings("unused")
     private final AprilTagVisionSubsystem             aprilTagVisionSubsystem;
@@ -77,6 +80,8 @@ public class RobotContainer {
     private final IntakeSubsystem                     intakeSubsystem;
 
     private final HarvesterSubsystem                  harvesterSubsystem;
+
+    private final GameplayStateSubsystem               gameplayStateSubsystem;
 
     // Command factories
 
@@ -102,6 +107,8 @@ public class RobotContainer {
 
     private final HarvesterSubsystemCommandFactory    harvesterCommandFactory;
 
+    private final GameplayStateCommandFactory          gameplayStateCommandFactory;
+
     // Cross-subsystem utilities
     private final FieldTargetSelector                 fieldTargetSelector;
 
@@ -120,8 +127,8 @@ public class RobotContainer {
 
             // Subsystems (order matters: drivebase is constructed first so robot state can reference it)
             driveBaseSubsystem          = new DriveBaseSubsystem(subsystemsConfig.driveBaseSubsystem);
-            robotStateSubsystem         = new RobotStateSubsystem(
-                    subsystemsConfig.robotStateSubsystem,
+            robotPoseSubsystem          = new RobotPoseSubsystem(
+                    subsystemsConfig.robotPoseSubsystem,
                     driveBaseSubsystem::getOdometryPose,
                     driveBaseSubsystem::getOdometryOnlyPose,
                     driveBaseSubsystem::addVisionMeasurement,
@@ -132,7 +139,7 @@ public class RobotContainer {
             aprilTagVisionSubsystem     = new AprilTagVisionSubsystem(
                     subsystemsConfig.aprilTagVisionSubsystem,
                     aprilTagFieldLayoutSupplier.get(),
-                    robotStateSubsystem::addVisionMeasurement,
+                    robotPoseSubsystem::addVisionMeasurement,
                     // This is only for simulation purposes, in real life the vision subsystem will feed directly into the robot state subsystem and
                     // not reset odometry
                     driveBaseSubsystem::getOdometryPose);
@@ -141,11 +148,12 @@ public class RobotContainer {
             feederSubsystem             = new FeederSubsystem(subsystemsConfig.feederSubsystem);
             intakeSubsystem             = new IntakeSubsystem(subsystemsConfig.intakeSubsystem);
             harvesterSubsystem          = new HarvesterSubsystem(subsystemsConfig.harvesterSubsystem);
+            gameplayStateSubsystem      = new GameplayStateSubsystem(subsystemsConfig.gameplayStateSubsystem);
 
             // Cross-subsystem utilities
             fieldTargetSelector         = new FieldTargetSelector(
                     subsystemsConfig.turretSubsystem.fieldTargets,
-                    robotStateSubsystem::getEstimatedPose,
+                    robotPoseSubsystem::getEstimatedPose,
                     RobotEnvironment::getAlliance);
 
             // Command factories
@@ -158,13 +166,33 @@ public class RobotContainer {
             feederCommandFactory        = new FeederSubsystemCommandFactory(feederSubsystem);
             intakeCommandFactory        = new IntakeSubsystemCommandFactory(intakeSubsystem);
             harvesterCommandFactory     = new HarvesterSubsystemCommandFactory(harvesterSubsystem);
+            gameplayStateCommandFactory = new GameplayStateCommandFactory(
+                    gameplayStateSubsystem,
+                    shooterCommandFactory,
+                    indexerCommandFactory,
+                    feederCommandFactory,
+                    intakeCommandFactory,
+                    turretCommandFactory,
+                    harvesterCommandFactory,
+                    climberCommandFactory,
+                    robotPoseSubsystem,
+                    fieldTargetSelector::getActiveTargetPosition,
+                    driveBaseSubsystem::getYawRateRadiansPerSecond);
 
             // Register named commands for PathPlanner autos before pre-loading
             NamedCommands.registerCommand("MoveHarvesterToPositionCommand", harvesterCommandFactory.createDeployCommand());
             NamedCommands.registerCommand("SpinUpShooterCommand",
                     shooterCommandFactory.createSpinUpCommand(subsystemsConfig.shooterSubsystem::getMaximumShootingRpm));
+            NamedCommands.registerCommand("SetStateIdle",
+                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.IDLE, "auto"));
+            NamedCommands.registerCommand("SetStateHarvestReady",
+                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.HARVEST_READY, "auto"));
+            NamedCommands.registerCommand("SetStateFireReady",
+                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.FIRE_READY, "auto"));
+            NamedCommands.registerCommand("SetStateAutoCycle",
+                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.AUTO_CYCLE, "auto"));
 
-            pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotStateSubsystem::getEstimatedPose);
+            pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotPoseSubsystem::getEstimatedPose);
 
             // Default commands are disabled during shop testing so the A/B test
             // bindings can control each subsystem without interference.
@@ -178,7 +206,7 @@ public class RobotContainer {
             // Zone-aware turret field tracking is disabled during shop testing.
             // Uncomment once vision and robot state are validated.
             // turretCommandFactory.setDefaultTrackFieldTargetCommand(
-            // robotStateSubsystem,
+            // robotPoseSubsystem,
             // fieldTargetSelector::getActiveTargetPosition,
             // driveBaseSubsystem::getYawRateRadiansPerSecond);
 
@@ -186,7 +214,7 @@ public class RobotContainer {
             // Uncomment once the interpolation table is tuned.
             // shooterSubsystem.setDefaultCommand(
             // shooterCommandFactory.createDistanceBasedSpinCommand(
-            // () -> robotStateSubsystem.getDistanceToPointMeters(
+            // () -> robotPoseSubsystem.getDistanceToPointMeters(
             // fieldTargetSelector.getActiveTargetPosition())));
 
             // Dashboard commands (clickable buttons in Elastic Dashboard)
@@ -209,7 +237,8 @@ public class RobotContainer {
                     climberCommandFactory,
                     feederCommandFactory,
                     intakeCommandFactory,
-                    harvesterCommandFactory);
+                    harvesterCommandFactory,
+                    gameplayStateCommandFactory);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
             RobotEnvironment.reportError(message, e.getStackTrace());
@@ -226,7 +255,7 @@ public class RobotContainer {
      * @param pose desired starting pose in meters and radians
      */
     public void resetPose(edu.wpi.first.math.geometry.Pose2d pose) {
-        robotStateSubsystem.resetPose(pose);
+        robotPoseSubsystem.resetPose(pose);
     }
 
     /**
@@ -237,7 +266,7 @@ public class RobotContainer {
      * </p>
      */
     public void resetPoseFromVision() {
-        robotStateSubsystem.resetPoseFromVision();
+        robotPoseSubsystem.resetPoseFromVision();
     }
 
     /**

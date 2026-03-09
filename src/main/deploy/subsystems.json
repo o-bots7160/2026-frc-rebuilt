@@ -140,7 +140,7 @@
     "kV": 0.0829,
     "kA": 0.00411
   },
-  "robotStateSubsystem": {
+  "robotPoseSubsystem": {
     "enabled": true,
     "verbose": false,
     "enableVisionFusion": true
@@ -307,6 +307,13 @@
     "kS": 0.25,
     "kV": 3.5,
     "kA": 0.05
+  },
+  "gameplayStateSubsystem": {
+    "enabled": true,
+    "verbose": false,
+    "endgameThresholdSeconds": 30.0,
+    "autoTransitionEnabled": true,
+    "endgameAutoTransitionEnabled": false
   },
   "triggerBindings": {
     "leftStickYResponseExponent": 2.0,

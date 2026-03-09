@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
+import frc.robot.subsystems.gameplaystate.GameplayState;
+import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
 import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.commands.IntakeSubsystemCommandFactory;
@@ -80,7 +82,6 @@ public class TriggerBindings {
     /**
      * Operator gamepad used for mechanism control (turret, shooter, etc.).
      */
-    @SuppressWarnings("unused")
     private final CommandXboxController            operatorController;
 
     /**
@@ -130,6 +131,11 @@ public class TriggerBindings {
     private final HarvesterSubsystemCommandFactory harvesterCommandFactory;
 
     /**
+     * Factory that composes gameplay state transition commands for operator bindings.
+     */
+    private final GameplayStateCommandFactory      gameplayStateCommandFactory;
+
+    /**
      * Dashboard chooser that selects which subsystem the A/B/X test buttons control.
      */
     private final SendableChooser<String>          testSubsystemChooser;
@@ -146,6 +152,7 @@ public class TriggerBindings {
      * @param feederCommandFactory    factory for creating feeder commands
      * @param intakeCommandFactory    factory for creating intake commands
      * @param harvesterCommandFactory factory for creating harvester commands
+     * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
@@ -156,7 +163,8 @@ public class TriggerBindings {
             ClimberSubsystemCommandFactory climberCommandFactory,
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
-            HarvesterSubsystemCommandFactory harvesterCommandFactory) {
+            HarvesterSubsystemCommandFactory harvesterCommandFactory,
+            GameplayStateCommandFactory gameplayStateCommandFactory) {
         this(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
@@ -167,6 +175,7 @@ public class TriggerBindings {
                 feederCommandFactory,
                 intakeCommandFactory,
                 harvesterCommandFactory,
+                gameplayStateCommandFactory,
                 DEFAULT_DRIVE_CONTROLLER_PORT,
                 DEFAULT_OPERATOR_CONTROLLER_PORT);
     }
@@ -183,6 +192,7 @@ public class TriggerBindings {
      * @param feederCommandFactory    factory for creating feeder commands
      * @param intakeCommandFactory    factory for creating intake commands
      * @param harvesterCommandFactory factory for creating harvester commands
+     * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
      * @param driverControllerPort    USB port for the driver controller
      * @param operatorControllerPort  USB port for the operator controller
      */
@@ -196,6 +206,7 @@ public class TriggerBindings {
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
+            GameplayStateCommandFactory gameplayStateCommandFactory,
             int driverControllerPort,
             int operatorControllerPort) {
         this.driveBaseCommandFactory = driveBaseCommandFactory;
@@ -207,6 +218,7 @@ public class TriggerBindings {
         this.feederCommandFactory    = feederCommandFactory;
         this.intakeCommandFactory    = intakeCommandFactory;
         this.harvesterCommandFactory = harvesterCommandFactory;
+        this.gameplayStateCommandFactory = gameplayStateCommandFactory;
         this.driverController        = new CommandXboxController(driverControllerPort);
         this.operatorController      = new CommandXboxController(operatorControllerPort);
 
@@ -222,6 +234,7 @@ public class TriggerBindings {
 
         configureDriveControllerBindings();
         configureSubsystemTestBindings();
+        configureOperatorBindings();
 
         // Production bindings are temporarily disabled for shop testing.
         // Uncomment these once subsystems are characterized and test bindings are no longer needed.
@@ -439,6 +452,38 @@ public class TriggerBindings {
         }
 
         return normalScale;
+    }
+
+    // ── Operator controller bindings ─────────────────────────────────────────────
+
+    /**
+     * Wires operator controller buttons to gameplay state transition commands.
+     * <p>
+     * Right trigger enters FIRE_READY, left trigger enters HARVEST_READY, start button enters CLIMB_READY,
+     * B button enters EJECT, and Y button returns to IDLE. Triggers use {@code onTrue} so the state
+     * change persists after release.
+     * </p>
+     */
+    private void configureOperatorBindings() {
+        // Right trigger: fire fuel.
+        operatorController.rightTrigger().onTrue(
+                gameplayStateCommandFactory.createTransitionCommand(GameplayState.FIRE_READY, "operator"));
+
+        // Left trigger: harvest fuel.
+        operatorController.leftTrigger().onTrue(
+                gameplayStateCommandFactory.createTransitionCommand(GameplayState.HARVEST_READY, "operator"));
+
+        // Start button: prepare for climb.
+        operatorController.start().onTrue(
+                gameplayStateCommandFactory.createTransitionCommand(GameplayState.CLIMB_READY, "operator"));
+
+        // B button: eject all Fuel.
+        operatorController.b().whileTrue(
+                gameplayStateCommandFactory.createTransitionCommand(GameplayState.EJECT, "operator"));
+
+        // Y button: return to idle.
+        operatorController.y().onTrue(
+                gameplayStateCommandFactory.createTransitionCommand(GameplayState.IDLE, "operator"));
     }
 
     // ── Production bindings (disabled during shop testing) ──────────────────────

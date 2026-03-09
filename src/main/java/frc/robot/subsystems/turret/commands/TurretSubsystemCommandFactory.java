@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.shared.commands.AbstractSetAndSeekCommandFactory;
-import frc.robot.subsystems.robotstate.RobotStateSubsystem;
+import frc.robot.subsystems.robotpose.RobotPoseSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
 /**
@@ -45,31 +45,31 @@ public class TurretSubsystemCommandFactory extends AbstractSetAndSeekCommandFact
     /**
      * Builds a command that continuously tracks a field-relative target using the fused robot pose and compensates for robot rotation.
      *
-     * @param robotStateSubsystem                     robot state subsystem providing the fused pose estimate
+     * @param robotPoseSubsystem                      robot pose subsystem providing the fused pose estimate
      * @param targetFieldPositionSupplier              supplier of the target position in field coordinates (meters)
      * @param robotYawRateRadiansPerSecondSupplier     supplier of the robot's yaw rate in radians per second (positive is counter-clockwise)
      * @return command that aims the turret at the supplied field target position
      */
     public TrackFieldTargetCommand createTrackFieldTargetCommand(
-            RobotStateSubsystem robotStateSubsystem,
+            RobotPoseSubsystem robotPoseSubsystem,
             Supplier<Translation2d> targetFieldPositionSupplier,
             Supplier<Double> robotYawRateRadiansPerSecondSupplier) {
-        return new TrackFieldTargetCommand(subsystem, robotStateSubsystem, targetFieldPositionSupplier, robotYawRateRadiansPerSecondSupplier);
+        return new TrackFieldTargetCommand(subsystem, robotPoseSubsystem, targetFieldPositionSupplier, robotYawRateRadiansPerSecondSupplier);
     }
 
     /**
      * Builds and sets the default turret tracking command using a field-relative target supplier with rotation compensation.
      *
-     * @param robotStateSubsystem                     robot state subsystem providing the fused pose estimate
+     * @param robotPoseSubsystem                      robot pose subsystem providing the fused pose estimate
      * @param targetFieldPositionSupplier              supplier of the target position in field coordinates (meters)
      * @param robotYawRateRadiansPerSecondSupplier     supplier of the robot's yaw rate in radians per second (positive is counter-clockwise)
      * @return command that is also set as the turret default
      */
     public Command setDefaultTrackFieldTargetCommand(
-            RobotStateSubsystem robotStateSubsystem,
+            RobotPoseSubsystem robotPoseSubsystem,
             Supplier<Translation2d> targetFieldPositionSupplier,
             Supplier<Double> robotYawRateRadiansPerSecondSupplier) {
-        Command command = createTrackFieldTargetCommand(robotStateSubsystem, targetFieldPositionSupplier, robotYawRateRadiansPerSecondSupplier);
+        Command command = createTrackFieldTargetCommand(robotPoseSubsystem, targetFieldPositionSupplier, robotYawRateRadiansPerSecondSupplier);
         subsystem.setDefaultCommand(command);
         return command;
     }
