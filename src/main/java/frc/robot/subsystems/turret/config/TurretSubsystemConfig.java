@@ -19,8 +19,11 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
 
     /**
      * Zero offset between the turret's mechanical zero and robot-forward in degrees.
+     * <p>
+     * A value of 180 means the turret faces the rear of the robot when at its mechanical zero position.
+     * </p>
      */
-    public double turretZeroOffsetDegrees = 0.0;
+    public double turretZeroOffsetDegrees = 180.0;
 
     /**
      * Look-ahead time for rotational velocity compensation in seconds.

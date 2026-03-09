@@ -205,10 +205,10 @@ public class RobotContainer {
 
             // Zone-aware turret field tracking is disabled during shop testing.
             // Uncomment once vision and robot state are validated.
-            turretCommandFactory.setDefaultTrackFieldTargetCommand(
-                    robotPoseSubsystem,
-                    fieldTargetSelector::getActiveTargetPosition,
-                    driveBaseSubsystem::getYawRateRadiansPerSecond);
+            //turretCommandFactory.setDefaultTrackFieldTargetCommand(
+            //        robotPoseSubsystem,
+            //        fieldTargetSelector::getActiveTargetPosition,
+            //        driveBaseSubsystem::getYawRateRadiansPerSecond);
 
             // Distance-based shooter RPM is disabled during shop testing.
             // Uncomment once the interpolation table is tuned.

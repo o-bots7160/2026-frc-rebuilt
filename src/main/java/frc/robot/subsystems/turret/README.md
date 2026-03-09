@@ -71,6 +71,12 @@ cruise speed — the trapezoid becomes a triangle.
 We use degrees in the public API because it is easier for humans to read and
 think about. WPILib math uses radians, so we convert once when a target is set.
 
+The turret faces the **rear** of the robot. The `turretZeroOffsetDegrees` config
+field is set to `180` to account for this — when the turret is at its mechanical
+zero, it points backward. The field-target tracking math adds this offset so
+that "aim at a field position" automatically compensates for the rear-facing
+mount.
+
 - Commands call `setTarget(double)` with a target in degrees.
 - `AbstractSetAndSeekSubsystem` clamps the target between the configured minimum
   and maximum and then converts to radians for the controller.

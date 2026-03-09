@@ -47,10 +47,11 @@
     "kV": 6.3425,
     "kA": 0.59712,
     "componentPoseConfig": {
-      "componentPivotX": 0.205,
+      "componentPivotX": -0.205,
       "componentPivotY": 0.0,
       "componentPivotZ": 0.375
     },
+    "turretZeroOffsetDegrees": 180.0,
     "fieldTargets": {
       "fieldLengthMeters": 16.54,
       "fieldWidthMeters": 8.21,

@@ -49,7 +49,7 @@ public class TriggerBindings {
      * saturate for the remainder, which does not harm the fit.
      * </p>
      */
-    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 8.0;
+    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 20.0;
 
     /**
      * Timeout for the dynamic (step voltage) portion of system identification in seconds.

@@ -64,9 +64,10 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
     /**
      * Computes the turret target angle needed to face a field-relative target while compensating for robot rotation.
      * <p>
-     * The result is expressed in turret degrees, where 0 degrees aligns with robot-forward plus the configured zero offset. When the robot is
-     * spinning, the turret leads its aim by predicting how far the heading will change over the configured lead time so it stays on target instead of
-     * lagging behind. The returned angle is clamped to the configured turret limits and will pick the closest equivalent angle within that range.
+     * The result is expressed in turret degrees, where 0 degrees aligns with the turret's mechanical zero plus the configured zero offset. Because
+     * the turret faces the rear of the robot, a 180-degree offset is applied so that 0 turret-degrees points backward. When the robot is spinning,
+     * the turret leads its aim by predicting how far the heading will change over the configured lead time so it stays on target instead of lagging
+     * behind. The returned angle is clamped to the configured turret limits and will pick the closest equivalent angle within that range.
      * </p>
      *
      * @param robotPose                   current robot pose in meters and radians
