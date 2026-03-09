@@ -11,20 +11,30 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * Utility for loading subsystem configuration JSON from the deploy directory and mirroring fields to SmartDashboard for live tuning.
+ * Utility for loading subsystem configuration JSON from the deploy directory and recording a read-only snapshot of every field to AdvantageKit.
+ * <p>
+ * Tunable values are managed separately by {@link AbstractConfig} through {@code LoggedNetworkNumber/Boolean/String}. This loader only produces a
+ * one-time, read-only snapshot under {@code /AdvantageKit/RealOutputs/Config/...} so operators can inspect the loaded configuration without
+ * confusing it with editable tunable entries.
+ * </p>
  */
 public class ConfigurationLoader {
 
+    private static final String CONFIG_OUTPUT_PREFIX = "Config";
+
     /**
      * Loads a configuration file from the deploy directory and maps it to a type.
+     * <p>
+     * After deserialization, every public primitive and String field is recorded as a read-only AdvantageKit output under
+     * {@code Config/<className>/...}. Nested config objects whose class name starts with {@code frc.robot} are recursed into automatically.
+     * </p>
      *
      * @param <TConfig> Java type to bind the configuration to
      * @param fileName  JSON filename relative to {@code src/main/deploy}
      * @param classOfT  class token for the configuration type
-     * @return loaded configuration instance with dashboard entries seeded
+     * @return loaded configuration instance with AK snapshot recorded
      * @throws ConfigurationException when the file cannot be read or parsed
      */
     public static <TConfig> TConfig load(String fileName, Class<TConfig> classOfT) throws ConfigurationException {
@@ -45,9 +55,8 @@ public class ConfigurationLoader {
             // Map the config to the class type and return
             TConfig config          = om.readValue(configFile, type);
 
-            // Use reflection to iterate over each public field of TConfig
-            String  simpleName      = classOfT.getSimpleName();
-            iterateFields(classOfT, config, simpleName);
+            // Record a read-only AK snapshot of every config field
+            logConfigSnapshot(classOfT, config, CONFIG_OUTPUT_PREFIX);
 
             return config;
         } catch (Exception e) {
@@ -57,22 +66,26 @@ public class ConfigurationLoader {
         }
     }
 
-    private static <TConfig> void iterateFields(Class<?> classOfT, TConfig config, String parentFieldName) throws IllegalAccessException {
+    /**
+     * Recursively records every public field value as a read-only AdvantageKit output.
+     */
+    private static <TConfig> void logConfigSnapshot(Class<?> classOfT, TConfig config, String parentKey)
+            throws IllegalAccessException {
         for (var field : classOfT.getFields()) {
             field.setAccessible(true);
-            String fieldName  = parentFieldName + "/" + field.getName();
-            Object fieldValue = field.get(config);
+            String key   = parentKey + "/" + field.getName();
+            Object value = field.get(config);
 
-            if (fieldValue instanceof Double) {
-                SmartDashboard.putNumber(fieldName, (Double) fieldValue);
-            } else if (fieldValue instanceof Boolean) {
-                SmartDashboard.putBoolean(fieldName, (Boolean) fieldValue);
-            } else if (fieldValue instanceof Integer) {
-                SmartDashboard.putNumber(fieldName, (Integer) fieldValue);
-            } else if (fieldValue instanceof String) {
-                SmartDashboard.putString(fieldName, (String) fieldValue);
-            } else if (fieldValue != null && fieldValue.getClass().getName().startsWith("frc.robot.subsystems")) {
-                iterateFields(fieldValue.getClass(), fieldValue, fieldName);
+            if (value instanceof Double) {
+                org.littletonrobotics.junction.Logger.recordOutput(key, (Double) value);
+            } else if (value instanceof Boolean) {
+                org.littletonrobotics.junction.Logger.recordOutput(key, (Boolean) value);
+            } else if (value instanceof Integer) {
+                org.littletonrobotics.junction.Logger.recordOutput(key, (double) (Integer) value);
+            } else if (value instanceof String) {
+                org.littletonrobotics.junction.Logger.recordOutput(key, (String) value);
+            } else if (value != null && value.getClass().getName().startsWith("frc.robot")) {
+                logConfigSnapshot(value.getClass(), value, key);
             }
         }
     }

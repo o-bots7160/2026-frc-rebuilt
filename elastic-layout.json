@@ -177,7 +177,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/TriggerBindings/joystickDeadband",
+              "topic": "SmartDashboard/TriggerBindings/joystickDeadband",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -191,7 +191,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/TriggerBindings/triggerDeadband",
+              "topic": "SmartDashboard/TriggerBindings/triggerDeadband",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -881,7 +881,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/harvesterSubsystem/harvesterMotorConfig/enabled",
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -898,7 +898,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/harvesterSubsystem/harvesterMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/motorCanId",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -912,7 +912,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/harvesterSubsystem/harvesterMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -929,7 +929,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/harvesterSubsystem/harvesterMotorConfig/verbose",
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/verbose",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1495,34 +1495,6 @@
               "show_pointer": true,
               "show_ticks": true
             }
-          },
-          {
-            "title": "idleVelocityRpm",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/feederSubsystem/idleVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "maximumVelocityRpm",
-            "x": 640.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/feederSubsystem/maximumVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
           }
         ]
       }
@@ -1807,34 +1779,6 @@
               "show_pointer": true,
               "show_ticks": true
             }
-          },
-          {
-            "title": "idleVelocityRpm",
-            "x": 640.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/indexerSubsystem/idleVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "maximumVelocityRpm",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/indexerSubsystem/maximumVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
           }
         ]
       }
@@ -1852,7 +1796,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/enabled",
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1869,7 +1813,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/motorCanId",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -1883,7 +1827,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1900,7 +1844,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig/verbose",
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/verbose",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -2711,7 +2655,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/SubsystemsConfig/climberSubsystem/climberMotorConfig/enabled",
+              "topic": "/AdvantageKit/RealOutputs/Config/climberSubsystem/climberMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
