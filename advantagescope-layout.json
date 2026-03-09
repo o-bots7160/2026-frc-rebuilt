@@ -52,9 +52,9 @@
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted/0",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPosesAccepted/0/translation",
             "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RobotPoses/0",
-            "/AdvantageKit/RealOutputs/RobotStateSubsystem",
-            "/AdvantageKit/RealOutputs/RobotStateSubsystem/Pose",
-            "/AdvantageKit/RobotStateSubsystem/RobotState",
+            "/AdvantageKit/RealOutputs/RobotPoseSubsystem",
+            "/AdvantageKit/RealOutputs/RobotPoseSubsystem/Pose",
+            "/AdvantageKit/RobotPoseSubsystem/RobotPose",
             "/SmartDashboard/Field/OdometryPose",
             "/SmartDashboard/SubsystemsConfig/aprilTagVisionSubsystem",
             "/AdvantageKit/RealOutputs/DriveBaseSubsystem/Swerve",
@@ -161,7 +161,7 @@
                   },
                   {
                     "type": "robot",
-                    "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/EstimatedPose",
+                    "logKey": "NT:/AdvantageKit/RobotPoseSubsystem/RobotPose/EstimatedPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -186,7 +186,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/LastVisionPose",
+                    "logKey": "NT:/AdvantageKit/RobotPoseSubsystem/RobotPose/LastVisionPose",
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
@@ -196,7 +196,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/OdometryOnlyPose",
+                    "logKey": "NT:/AdvantageKit/RobotPoseSubsystem/RobotPose/OdometryOnlyPose",
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
@@ -231,7 +231,7 @@
                 "sources": [
                   {
                     "type": "robot",
-                    "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/EstimatedPose",
+                    "logKey": "NT:/AdvantageKit/RobotPoseSubsystem/RobotPose/EstimatedPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -240,7 +240,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RobotStateSubsystem/RobotState/OdometryPose",
+                    "logKey": "NT:/AdvantageKit/RobotPoseSubsystem/RobotPose/OdometryPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {

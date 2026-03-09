@@ -54,9 +54,10 @@
     "fieldTargets": {
       "fieldLengthMeters": 16.54,
       "fieldWidthMeters": 8.21,
-      "allianceZoneBoundaryXMeters": 5.5,
-      "hubPositionXMeters": 3.0,
-      "hubPositionYMeters": 4.1,
+      "allianceZoneBoundaryXMeters": 4.574,
+      "fieldCenterDividerYMeters": 4.021,
+      "hubPositionXMeters": 4.612,
+      "hubPositionYMeters": 4.021,
       "leftZonePositionXMeters": 2.0,
       "leftZonePositionYMeters": 6.5,
       "rightZonePositionXMeters": 2.0,
