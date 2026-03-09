@@ -1,10 +1,12 @@
 package frc.robot.shared.config;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * Base configuration bundle for a single motor controller and its mechanism limits.
  * <p>
- * Use subclasses to provide tunable motor settings without coupling device wrappers to a full subsystem config. All values are surfaced through
- * AdvantageKit-backed tunables, so changes can be made live without redeploying.
+ * Values are deserialized from JSON and exposed through plain getters. Motor configuration is applied once during initialization; changes require a
+ * redeploy.
  * </p>
  */
 public abstract class AbstractMotorConfig extends AbstractConfig {
@@ -31,12 +33,12 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
     public double  forwardSoftLimitDegrees;
 
     /**
-     * Returns the CAN ID (not typically tuned, but exposed for consistency/logging).
+     * Returns the CAN ID of the motor controller.
      *
      * @return motor controller CAN ID
      */
     public int getMotorCanId() {
-        return (int) readTunableNumber("motorCanId", motorCanId);
+        return motorCanId;
     }
 
     /**
@@ -45,7 +47,7 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      * @return true when the motor output is inverted
      */
     public boolean getMotorInverted() {
-        return readTunableBoolean("motorInverted", motorInverted);
+        return motorInverted;
     }
 
     /**
@@ -54,7 +56,7 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      * @return current limit in amps
      */
     public int getSmartCurrentLimitAmps() {
-        return (int) readTunableNumber("smartCurrentLimitAmps", smartCurrentLimitAmps);
+        return smartCurrentLimitAmps;
     }
 
     /**
@@ -63,7 +65,7 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      * @return motor rotations per one mechanism rotation
      */
     public double getMotorRotationsPerMechanismRotation() {
-        return readTunableNumber("motorRotationsPerMechanismRotation", motorRotationsPerMechanismRotation);
+        return motorRotationsPerMechanismRotation;
     }
 
     /**
@@ -72,7 +74,7 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      * @return true when setpoint limits are enforced
      */
     public boolean getUseSetpointLimits() {
-        return readTunableBoolean("useSetpointLimits", useSetpointLimits);
+        return useSetpointLimits;
     }
 
     /**
@@ -81,7 +83,7 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      * @return reverse soft limit in degrees
      */
     public double getReverseSoftLimitDegrees() {
-        return readTunableDegrees("reverseSoftLimitDegrees", reverseSoftLimitDegrees);
+        return reverseSoftLimitDegrees;
     }
 
     /**
@@ -90,7 +92,7 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      * @return reverse soft limit in radians
      */
     public double getReverseSoftLimitRadians() {
-        return readTunableDegreesAsRadians("reverseSoftLimitDegrees", reverseSoftLimitDegrees);
+        return Units.degreesToRadians(reverseSoftLimitDegrees);
     }
 
     /**
@@ -99,7 +101,7 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      * @return forward soft limit in degrees
      */
     public double getForwardSoftLimitDegrees() {
-        return readTunableDegrees("forwardSoftLimitDegrees", forwardSoftLimitDegrees);
+        return forwardSoftLimitDegrees;
     }
 
     /**
@@ -108,6 +110,6 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      * @return forward soft limit in radians
      */
     public double getForwardSoftLimitRadians() {
-        return readTunableDegreesAsRadians("forwardSoftLimitDegrees", forwardSoftLimitDegrees);
+        return Units.degreesToRadians(forwardSoftLimitDegrees);
     }
 }

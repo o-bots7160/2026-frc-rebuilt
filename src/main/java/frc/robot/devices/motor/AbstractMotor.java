@@ -160,28 +160,6 @@ public abstract class AbstractMotor implements Motor {
     }
 
     /**
-     * Reapplies configuration to the controller using the latest config-backed values.
-     * <p>
-     * Call this after tuning values in Elastic/NetworkTables that affect controller settings (inversion, current limits, encoder scaling, etc.). This
-     * does not recreate the SparkMax; it simply reconfigures the existing hardware instance.
-     * </p>
-     */
-    public final void reconfigure() {
-        if (!initialized) {
-            init();
-            return;
-        }
-
-        log.verbose("Reconfiguring SparkMax motor " + name + " after config change");
-
-        applyHardwareSoftLimits();
-        applyConversionFactors();
-        // Rebuild the config from scratch so tunable values are pulled fresh.
-        SparkMaxConfig sparkMaxConfig = configureMotor(baseConfig);
-        motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    }
-
-    /**
      * Reports whether the motor has been initialized with hardware configuration.
      *
      * @return true when {@link #init()} has completed successfully
@@ -339,28 +317,6 @@ public abstract class AbstractMotor implements Motor {
         inputs.temperatureCelsius      = motor.getMotorTemperature();
         inputs.targetPositionRads      = lastCommandedPositionRads;
         inputs.targetVelocityRadPerSec = lastCommandedVelocityRadPerSec;
-    }
-
-    /**
-     * Updates the motion bounds and conversion factors used for unit conversions and clamping.
-     * <p>
-     * Use this when tunable configuration updates change limits or gear ratios so internal conversions stay aligned with the hardware.
-     * </p>
-     *
-     * @param reverseSoftLimitRadians          reverse soft limit position in radians
-     * @param forwardSoftLimitRadians          forward soft limit position in radians
-     * @param mechanismRadiansPerMotorRotation mechanism radians per motor rotation (gear ratio applied)
-     */
-    protected final void updateMotionConstraints(
-            double reverseSoftLimitRadians,
-            double forwardSoftLimitRadians,
-            double mechanismRadiansPerMotorRotation) {
-        // Update motion bounds and conversion factors together to avoid mismatch.
-        this.reverseSoftLimitRadians         = reverseSoftLimitRadians;
-        this.forwardSoftLimitRadians         = forwardSoftLimitRadians;
-        this.positionRadiansPerMotorRotation = mechanismRadiansPerMotorRotation;
-        this.velocityRadPerSecPerMotorRpm    = mechanismRadiansPerMotorRotation / 60.0;
-        applyHardwareSoftLimits();
     }
 
     /**

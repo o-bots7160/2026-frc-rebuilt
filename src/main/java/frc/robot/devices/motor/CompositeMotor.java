@@ -138,20 +138,6 @@ public final class CompositeMotor implements Motor {
     }
 
     /**
-     * Refreshes configuration on the primary motor and all followers.
-     * <p>
-     * Each motor reads its own config independently, so per-motor tunable values (inversion, current limits) take effect on the correct controller.
-     * </p>
-     */
-    @Override
-    public void refreshConfiguration() {
-        primary.refreshConfiguration();
-        for (Motor follower : followers) {
-            follower.refreshConfiguration();
-        }
-    }
-
-    /**
      * Returns the primary motor's underlying SparkMax for advanced tuning.
      *
      * @return primary motor's SparkMax instance

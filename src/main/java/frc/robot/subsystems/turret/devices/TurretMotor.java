@@ -3,7 +3,6 @@ package frc.robot.subsystems.turret.devices;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.util.Units;
 import frc.robot.devices.motor.AbstractMotor;
 import frc.robot.subsystems.turret.config.TurretMotorConfig;
 
@@ -15,8 +14,6 @@ import frc.robot.subsystems.turret.config.TurretMotorConfig;
  * </p>
  */
 public class TurretMotor extends AbstractMotor {
-
-    private static final double CONFIG_EPSILON = 1e-6;
 
     /**
      * Creates a turret motor wrapper using values from the turret motor config.
@@ -35,18 +32,6 @@ public class TurretMotor extends AbstractMotor {
 
     private final TurretMotorConfig config;
 
-    private int                     lastMotorCanId;
-
-    private boolean                 lastMotorInverted;
-
-    private int                     lastSmartCurrentLimitAmps;
-
-    private double                  lastReverseSoftLimitDegrees;
-
-    private double                  lastForwardSoftLimitDegrees;
-
-    private double                  lastMotorRotationsPerMechanismRotation;
-
     /**
      * Builds a turret motor wrapper using values from the turret motor config.
      *
@@ -55,50 +40,6 @@ public class TurretMotor extends AbstractMotor {
     private TurretMotor(TurretMotorConfig config) {
         super("TurretMotor", config);
         this.config = config;
-        cacheConfigSnapshot();
-    }
-
-    /**
-     * Reapplies SparkMax configuration when tunable values change in Elastic.
-     * <p>
-    * Call this periodically (for example, from the subsystem {@link frc.robot.subsystems.turret.TurretSubsystem#periodic()} hook) so updates to inversion, current limit, gear ratio, or
-     * setpoint bounds take effect without restarting the robot. Changes to the CAN ID are logged but require a reboot to take effect.
-     * </p>
-     */
-    public void refreshConfiguration() {
-        if (!isInitialized()) {
-            return;
-        }
-
-        int     motorCanId                         = config.getMotorCanId();
-        boolean motorInverted                      = config.getMotorInverted();
-        int     smartCurrentLimit                  = config.getSmartCurrentLimitAmps();
-        double  reverseSoftLimitDegrees            = config.getReverseSoftLimitDegrees();
-        double  forwardSoftLimitDegrees            = config.getForwardSoftLimitDegrees();
-        double  motorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotation();
-
-        boolean configChanged                      = motorCanId != lastMotorCanId
-                || motorInverted != lastMotorInverted
-                || smartCurrentLimit != lastSmartCurrentLimitAmps
-                || hasChanged(reverseSoftLimitDegrees, lastReverseSoftLimitDegrees)
-                || hasChanged(forwardSoftLimitDegrees, lastForwardSoftLimitDegrees)
-                || hasChanged(motorRotationsPerMechanismRotation, lastMotorRotationsPerMechanismRotation);
-
-        if (!configChanged) {
-            return;
-        }
-
-        if (motorCanId != lastMotorCanId) {
-            log.warning("TurretMotor CAN ID changed from " + lastMotorCanId + " to " + motorCanId
-                    + "; restart required to recreate the controller.");
-        }
-
-        updateMotionConstraints(
-            Units.degreesToRadians(reverseSoftLimitDegrees),
-            Units.degreesToRadians(forwardSoftLimitDegrees),
-                computeMechanismRadiansPerMotorRotation(motorRotationsPerMechanismRotation));
-        reconfigure();
-        cacheConfigSnapshot();
     }
 
     @Override
@@ -116,16 +57,4 @@ public class TurretMotor extends AbstractMotor {
         return sparkConfig;
     }
 
-    private void cacheConfigSnapshot() {
-        lastMotorCanId                         = config.getMotorCanId();
-        lastMotorInverted                      = config.getMotorInverted();
-        lastSmartCurrentLimitAmps              = config.getSmartCurrentLimitAmps();
-        lastReverseSoftLimitDegrees            = config.getReverseSoftLimitDegrees();
-        lastForwardSoftLimitDegrees            = config.getForwardSoftLimitDegrees();
-        lastMotorRotationsPerMechanismRotation = config.getMotorRotationsPerMechanismRotation();
-    }
-
-    private boolean hasChanged(double currentValue, double lastValue) {
-        return Math.abs(currentValue - lastValue) > CONFIG_EPSILON;
-    }
 }
