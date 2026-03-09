@@ -1,19 +1,18 @@
 {
-	"servers": {
-		"drawio-diagrams": {
-			"command": "npx",
-			"args": [
-				"github:brandonmartinez/drawio-mcp"
-			],
-			"type": "stdio"
-		},
-		"elastic-dashboard": {
-			"command": "npx",
-			"args": [
-				"-y",
-           		"@o-bots7160/elastic-dashboard-mcp"
-			]
-		}
-	},
-	"inputs": []
+  "servers": {
+    "drawio-diagrams": {
+      "command": "npx",
+      "args": ["github:brandonmartinez/drawio-mcp"],
+      "type": "stdio"
+    },
+    "elastic-dashboard": {
+      "command": "npx",
+      "args": ["-y", "@o-bots7160/elastic-dashboard-mcp"]
+    },
+    "advantagescope": {
+      "command": "npx",
+      "args": ["-y", "@o-bots7160/advantagescope-mcp"]
+    }
+  },
+  "inputs": []
 }
