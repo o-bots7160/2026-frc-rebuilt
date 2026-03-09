@@ -81,7 +81,7 @@ public class RobotContainer {
 
     private final HarvesterSubsystem                  harvesterSubsystem;
 
-    private final GameplayStateSubsystem               gameplayStateSubsystem;
+    private final GameplayStateSubsystem              gameplayStateSubsystem;
 
     // Command factories
 
@@ -107,7 +107,7 @@ public class RobotContainer {
 
     private final HarvesterSubsystemCommandFactory    harvesterCommandFactory;
 
-    private final GameplayStateCommandFactory          gameplayStateCommandFactory;
+    private final GameplayStateCommandFactory         gameplayStateCommandFactory;
 
     // Cross-subsystem utilities
     private final FieldTargetSelector                 fieldTargetSelector;
@@ -192,7 +192,7 @@ public class RobotContainer {
             NamedCommands.registerCommand("SetStateAutoCycle",
                     gameplayStateCommandFactory.createTransitionCommand(GameplayState.AUTO_CYCLE, "auto"));
 
-            pathPlannerCommandFactory   = new PathPlannerCommandFactory(robotPoseSubsystem::getEstimatedPose);
+            pathPlannerCommandFactory = new PathPlannerCommandFactory(robotPoseSubsystem::getEstimatedPose);
 
             // Default commands are disabled during shop testing so the A/B test
             // bindings can control each subsystem without interference.
@@ -205,10 +205,10 @@ public class RobotContainer {
 
             // Zone-aware turret field tracking is disabled during shop testing.
             // Uncomment once vision and robot state are validated.
-            // turretCommandFactory.setDefaultTrackFieldTargetCommand(
-            // robotPoseSubsystem,
-            // fieldTargetSelector::getActiveTargetPosition,
-            // driveBaseSubsystem::getYawRateRadiansPerSecond);
+            turretCommandFactory.setDefaultTrackFieldTargetCommand(
+                    robotPoseSubsystem,
+                    fieldTargetSelector::getActiveTargetPosition,
+                    driveBaseSubsystem::getYawRateRadiansPerSecond);
 
             // Distance-based shooter RPM is disabled during shop testing.
             // Uncomment once the interpolation table is tuned.

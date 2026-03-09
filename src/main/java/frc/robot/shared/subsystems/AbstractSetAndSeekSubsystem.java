@@ -76,6 +76,10 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         // Reset the controller to the current state and then give it the initial goal.
         controller.reset(initialPosition, initialVelocity);
         controller.setGoal(goalState);
+
+        // Sync the motor encoder with the configured starting position so the
+        // measured position matches the profile seed on power-up.
+        this.motor.setEncoderPosition(initialPosition);
     }
 
     /**
@@ -181,10 +185,10 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     }
 
     /**
-     * Resets the motor encoder to zero and reinitializes the profile state so the mechanism treats its current physical position as the origin.
+     * Resets the motor encoder to the configured initial position and reinitializes the profile state.
      * <p>
-     * Call this from a dashboard button or utility command after manually repositioning a mechanism (e.g., centering a turret by hand). The motor is
-     * stopped before the reset to avoid applying stale voltage at the new position.
+     * Call this from a dashboard button or utility command after manually repositioning a mechanism back to its starting position (e.g., stowing a
+     * harvester arm or centering a turret by hand). The motor is stopped before the reset to avoid applying stale voltage at the new position.
      * </p>
      */
     public void resetEncoderPosition() {
@@ -193,14 +197,16 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
             return;
         }
 
-        // Stop motion before resetting so no stale voltage is applied at the new origin.
-        motor.stop();
-        motor.setEncoderPosition(0.0);
+        double initialPosition = config.getInitialPositionRadians();
 
-        // Reinitialize all profile state so the controller starts fresh from zero.
-        goalState     = new TrapezoidProfile.State(0.0, 0.0);
-        setpointState = new TrapezoidProfile.State(0.0, 0.0);
-        controller.reset(0.0, 0.0);
+        // Stop motion before resetting so no stale voltage is applied.
+        motor.stop();
+        motor.setEncoderPosition(initialPosition);
+
+        // Reinitialize all profile state so the controller starts fresh from the initial position.
+        goalState     = new TrapezoidProfile.State(initialPosition, 0.0);
+        setpointState = new TrapezoidProfile.State(initialPosition, 0.0);
+        controller.reset(initialPosition, 0.0);
         controller.setGoal(goalState);
 
         log.recordOutput("encoderReset", true);

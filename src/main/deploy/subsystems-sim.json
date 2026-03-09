@@ -29,13 +29,13 @@
       "motorInverted": false,
       "smartCurrentLimitAmps": 40,
       "motorRotationsPerMechanismRotation": 47.5,
-      "reverseSoftLimitDegrees": -180,
-      "forwardSoftLimitDegrees": 180
+      "reverseSoftLimitDegrees": -100,
+      "forwardSoftLimitDegrees": 100
     },
     "maximumVelocityDegreesPerSecond": 100,
     "maximumAccelerationDegreesPerSecondSquared": 45,
-    "minimumSetpointDegrees": -180,
-    "maximumSetpointDegrees": 180,
+    "minimumSetpointDegrees": -90,
+    "maximumSetpointDegrees": 90,
     "positionToleranceDegrees": 5,
     "velocityToleranceDegreesPerSecond": 10,
     "initialPositionDegrees": 0,
@@ -284,9 +284,9 @@
     "maximumSetpointDegrees": 90,
     "positionToleranceDegrees": 2,
     "velocityToleranceDegreesPerSecond": 5,
-    "initialPositionDegrees": 90,
+    "initialPositionDegrees": 135,
     "initialVelocityDegreesPerSecond": 0,
-    "stowedPositionDegrees": 90,
+    "stowedPositionDegrees": 135,
     "deployedPositionDegrees": 0,
     "kG": 0,
     "horizontalOffsetDegrees": 0,
@@ -299,7 +299,7 @@
   },
   "gameplayStateSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "endgameThresholdSeconds": 30.0,
     "autoTransitionEnabled": true,
     "endgameAutoTransitionEnabled": false

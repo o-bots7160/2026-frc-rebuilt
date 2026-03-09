@@ -24,12 +24,13 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
     }
 
     /**
-     * Creates an instant command that zeros the motor encoder and resets all profile state.
+     * Creates an instant command that resets the motor encoder to the configured initial position and clears all profile state.
      * <p>
-     * Use this to publish a dashboard-triggerable button so operators can recalibrate a mechanism after manually repositioning it.
+     * Use this to publish a dashboard-triggerable button so operators can recalibrate a mechanism after manually repositioning it to its starting
+     * position (e.g., stowing a harvester arm or centering a turret).
      * </p>
      *
-     * @return command that resets the encoder position to zero
+     * @return command that resets the encoder position to the configured initial position
      */
     public Command createResetEncoderCommand() {
         return Commands.runOnce(subsystem::resetEncoderPosition, subsystem)
