@@ -21,67 +21,67 @@ import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
 public class SubsystemsConfig {
 
     /**
+     * Trigger bindings configuration bundle for driver controller sensitivity and tuning mode.
+     */
+    public TriggerBindingsConfig         triggerBindings          = new TriggerBindingsConfig();
+
+    /**
      * Drive base configuration bundle.
      */
-    public DriveBaseSubsystemConfig      driveBaseSubsystem      = new DriveBaseSubsystemConfig();
-
-    /**
-     * Turret configuration bundle.
-     */
-    public TurretSubsystemConfig         turretSubsystem         = new TurretSubsystemConfig();
-
-    /**
-     * Shooter configuration bundle.
-     */
-    public ShooterSubsystemConfig        shooterSubsystem        = new ShooterSubsystemConfig();
-
-    /**
-     * Indexer configuration bundle.
-     */
-    public IndexerSubsystemConfig        indexerSubsystem        = new IndexerSubsystemConfig();
-
-    /**
-     * AprilTag vision configuration bundle.
-     */
-    public AprilTagVisionSubsystemConfig aprilTagVisionSubsystem = new AprilTagVisionSubsystemConfig();
-
-    /**
-     * Driver camera configuration bundle.
-     */
-    public DriverCameraSubsystemConfig   driverCameraSubsystem   = new DriverCameraSubsystemConfig();
-
-    /**
-     * Robot pose configuration bundle.
-     */
-    public RobotPoseSubsystemConfig      robotPoseSubsystem      = new RobotPoseSubsystemConfig();
-
-    /**
-     * Climber configuration bundle.
-     */
-    public ClimberSubsystemConfig        climberSubsystem        = new ClimberSubsystemConfig();
-
-    /**
-     * Feeder configuration bundle.
-     */
-    public FeederSubsystemConfig         feederSubsystem         = new FeederSubsystemConfig();
+    public DriveBaseSubsystemConfig      driveBaseSubsystem       = new DriveBaseSubsystemConfig();
 
     /**
      * Intake configuration bundle.
      */
-    public IntakeSubsystemConfig         intakeSubsystem         = new IntakeSubsystemConfig();
+    public IntakeSubsystemConfig         intakeSubsystem          = new IntakeSubsystemConfig();
 
     /**
      * Harvester configuration bundle.
      */
-    public HarvesterSubsystemConfig      harvesterSubsystem      = new HarvesterSubsystemConfig();
+    public HarvesterSubsystemConfig      harvesterSubsystem       = new HarvesterSubsystemConfig();
+
+    /**
+     * Feeder configuration bundle.
+     */
+    public FeederSubsystemConfig         feederSubsystem          = new FeederSubsystemConfig();
+
+    /**
+     * Indexer configuration bundle.
+     */
+    public IndexerSubsystemConfig        indexerSubsystem         = new IndexerSubsystemConfig();
+
+    /**
+     * Turret configuration bundle.
+     */
+    public TurretSubsystemConfig         turretSubsystem          = new TurretSubsystemConfig();
+
+    /**
+     * Shooter configuration bundle.
+     */
+    public ShooterSubsystemConfig        shooterSubsystem         = new ShooterSubsystemConfig();
+
+    /**
+     * AprilTag vision configuration bundle.
+     */
+    public AprilTagVisionSubsystemConfig aprilTagVisionSubsystem  = new AprilTagVisionSubsystemConfig();
+
+    /**
+     * Driver camera configuration bundle.
+     */
+    public DriverCameraSubsystemConfig   driverCameraSubsystem    = new DriverCameraSubsystemConfig();
+
+    /**
+     * Robot pose configuration bundle.
+     */
+    public RobotPoseSubsystemConfig      robotPoseSubsystem       = new RobotPoseSubsystemConfig();
+
+    /**
+     * Climber configuration bundle.
+     */
+    public ClimberSubsystemConfig        climberSubsystem         = new ClimberSubsystemConfig();
 
     /**
      * Gameplay state configuration bundle for state management and auto-transitions.
      */
-    public GameplayStateSubsystemConfig  gameplayStateSubsystem  = new GameplayStateSubsystemConfig();
-
-    /**
-     * Trigger bindings configuration bundle for driver controller sensitivity.
-     */
-    public TriggerBindingsConfig         triggerBindings         = new TriggerBindingsConfig();
+    public GameplayStateSubsystemConfig  gameplayStateSubsystem   = new GameplayStateSubsystemConfig();
 }

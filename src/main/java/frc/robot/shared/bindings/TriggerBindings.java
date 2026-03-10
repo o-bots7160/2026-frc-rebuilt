@@ -78,7 +78,6 @@ public class TriggerBindings {
      */
     private final CommandXboxController            driverController;
 
-    // TODO: Wire operator bindings once more subsystems and commands are available.
     /**
      * Operator gamepad used for mechanism control (turret, shooter, etc.).
      */
@@ -136,22 +135,22 @@ public class TriggerBindings {
     private final GameplayStateCommandFactory      gameplayStateCommandFactory;
 
     /**
-     * Dashboard chooser that selects which subsystem the A/B/X test buttons control.
+     * Dashboard chooser that selects which subsystem the A/B/X test buttons control. Only initialized when tuning mode is enabled.
      */
-    private final SendableChooser<String>          testSubsystemChooser;
+    private SendableChooser<String>                testSubsystemChooser;
 
     /**
      * Creates trigger bindings with the default driver controller port.
      *
-     * @param driveBaseCommandFactory factory for creating drive base commands
-     * @param triggerBindingsConfig   configuration for per-axis response curves and speed tiers
-     * @param turretCommandFactory    factory for creating turret commands
-     * @param shooterCommandFactory   factory for creating shooter commands
-     * @param indexerCommandFactory   factory for creating indexer commands
-     * @param climberCommandFactory   factory for creating climber commands
-     * @param feederCommandFactory    factory for creating feeder commands
-     * @param intakeCommandFactory    factory for creating intake commands
-     * @param harvesterCommandFactory factory for creating harvester commands
+     * @param driveBaseCommandFactory     factory for creating drive base commands
+     * @param triggerBindingsConfig       configuration for per-axis response curves and speed tiers
+     * @param turretCommandFactory        factory for creating turret commands
+     * @param shooterCommandFactory       factory for creating shooter commands
+     * @param indexerCommandFactory       factory for creating indexer commands
+     * @param climberCommandFactory       factory for creating climber commands
+     * @param feederCommandFactory        factory for creating feeder commands
+     * @param intakeCommandFactory        factory for creating intake commands
+     * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
      */
     public TriggerBindings(
@@ -183,18 +182,18 @@ public class TriggerBindings {
     /**
      * Creates trigger bindings using explicit controller ports.
      *
-     * @param driveBaseCommandFactory factory for creating drive base commands
-     * @param triggerBindingsConfig   configuration for per-axis response curves and speed tiers
-     * @param turretCommandFactory    factory for creating turret commands
-     * @param shooterCommandFactory   factory for creating shooter commands
-     * @param indexerCommandFactory   factory for creating indexer commands
-     * @param climberCommandFactory   factory for creating climber commands
-     * @param feederCommandFactory    factory for creating feeder commands
-     * @param intakeCommandFactory    factory for creating intake commands
-     * @param harvesterCommandFactory factory for creating harvester commands
+     * @param driveBaseCommandFactory     factory for creating drive base commands
+     * @param triggerBindingsConfig       configuration for per-axis response curves and speed tiers
+     * @param turretCommandFactory        factory for creating turret commands
+     * @param shooterCommandFactory       factory for creating shooter commands
+     * @param indexerCommandFactory       factory for creating indexer commands
+     * @param climberCommandFactory       factory for creating climber commands
+     * @param feederCommandFactory        factory for creating feeder commands
+     * @param intakeCommandFactory        factory for creating intake commands
+     * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
-     * @param driverControllerPort    USB port for the driver controller
-     * @param operatorControllerPort  USB port for the operator controller
+     * @param driverControllerPort        USB port for the driver controller
+     * @param operatorControllerPort      USB port for the operator controller
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
@@ -209,39 +208,25 @@ public class TriggerBindings {
             GameplayStateCommandFactory gameplayStateCommandFactory,
             int driverControllerPort,
             int operatorControllerPort) {
-        this.driveBaseCommandFactory = driveBaseCommandFactory;
-        this.triggerBindingsConfig   = triggerBindingsConfig;
-        this.turretCommandFactory    = turretCommandFactory;
-        this.shooterCommandFactory   = shooterCommandFactory;
-        this.indexerCommandFactory   = indexerCommandFactory;
-        this.climberCommandFactory   = climberCommandFactory;
-        this.feederCommandFactory    = feederCommandFactory;
-        this.intakeCommandFactory    = intakeCommandFactory;
-        this.harvesterCommandFactory = harvesterCommandFactory;
+        this.driveBaseCommandFactory     = driveBaseCommandFactory;
+        this.triggerBindingsConfig       = triggerBindingsConfig;
+        this.turretCommandFactory        = turretCommandFactory;
+        this.shooterCommandFactory       = shooterCommandFactory;
+        this.indexerCommandFactory       = indexerCommandFactory;
+        this.climberCommandFactory       = climberCommandFactory;
+        this.feederCommandFactory        = feederCommandFactory;
+        this.intakeCommandFactory        = intakeCommandFactory;
+        this.harvesterCommandFactory     = harvesterCommandFactory;
         this.gameplayStateCommandFactory = gameplayStateCommandFactory;
-        this.driverController        = new CommandXboxController(driverControllerPort);
-        this.operatorController      = new CommandXboxController(operatorControllerPort);
+        this.driverController            = new CommandXboxController(driverControllerPort);
+        this.operatorController          = new CommandXboxController(operatorControllerPort);
 
-        // Build the subsystem test chooser and publish it to SmartDashboard.
-        testSubsystemChooser         = new SendableChooser<>();
-        testSubsystemChooser.setDefaultOption(TEST_SUBSYSTEM_SHOOTER, TEST_SUBSYSTEM_SHOOTER);
-        testSubsystemChooser.addOption(TEST_SUBSYSTEM_INDEXER, TEST_SUBSYSTEM_INDEXER);
-        testSubsystemChooser.addOption(TEST_SUBSYSTEM_FEEDER, TEST_SUBSYSTEM_FEEDER);
-        testSubsystemChooser.addOption(TEST_SUBSYSTEM_INTAKE, TEST_SUBSYSTEM_INTAKE);
-        testSubsystemChooser.addOption(TEST_SUBSYSTEM_TURRET, TEST_SUBSYSTEM_TURRET);
-        testSubsystemChooser.addOption(TEST_SUBSYSTEM_HARVESTER, TEST_SUBSYSTEM_HARVESTER);
-        SmartDashboard.putData("TriggerBindings/TestSubsystem", testSubsystemChooser);
-
-        configureDriveControllerBindings();
-        configureSubsystemTestBindings();
-        configureOperatorBindings();
-
-        // Production bindings are temporarily disabled for shop testing.
-        // Uncomment these once subsystems are characterized and test bindings are no longer needed.
-        // configureTurretBindings();
-        // configureShooterBindings();
-        // configureIndexerBindings();
-        // configureClimberBindings();
+        if (triggerBindingsConfig.getTuningEnabled()) {
+            configureSubsystemTestBindings();
+        } else {
+            configureDriveControllerBindings();
+            configureOperatorBindings();
+        }
     }
 
     private void configureDriveControllerBindings() {
@@ -273,6 +258,16 @@ public class TriggerBindings {
      * </p>
      */
     private void configureSubsystemTestBindings() {
+        // Build the subsystem test chooser and publish it to SmartDashboard.
+        testSubsystemChooser = new SendableChooser<>();
+        testSubsystemChooser.setDefaultOption(TEST_SUBSYSTEM_SHOOTER, TEST_SUBSYSTEM_SHOOTER);
+        testSubsystemChooser.addOption(TEST_SUBSYSTEM_INDEXER, TEST_SUBSYSTEM_INDEXER);
+        testSubsystemChooser.addOption(TEST_SUBSYSTEM_FEEDER, TEST_SUBSYSTEM_FEEDER);
+        testSubsystemChooser.addOption(TEST_SUBSYSTEM_INTAKE, TEST_SUBSYSTEM_INTAKE);
+        testSubsystemChooser.addOption(TEST_SUBSYSTEM_TURRET, TEST_SUBSYSTEM_TURRET);
+        testSubsystemChooser.addOption(TEST_SUBSYSTEM_HARVESTER, TEST_SUBSYSTEM_HARVESTER);
+        SmartDashboard.putData("TriggerBindings/TestSubsystem", testSubsystemChooser);
+
         // A button: reverse (velocity) or move to minimum setpoint (set-and-seek).
         driverController.a().whileTrue(
                 Commands.deferredProxy(this::createSelectedReverseCommand));
@@ -454,14 +449,11 @@ public class TriggerBindings {
         return normalScale;
     }
 
-    // ── Operator controller bindings ─────────────────────────────────────────────
-
     /**
      * Wires operator controller buttons to gameplay state transition commands.
      * <p>
-     * Right trigger enters FIRE_READY, left trigger enters HARVEST_READY, start button enters CLIMB_READY,
-     * B button enters EJECT, and Y button returns to IDLE. Triggers use {@code onTrue} so the state
-     * change persists after release.
+     * Right trigger enters FIRE_READY, left trigger enters HARVEST_READY, start button enters CLIMB_READY, B button enters EJECT, and Y button
+     * returns to IDLE. Triggers use {@code onTrue} so the state change persists after release.
      * </p>
      */
     private void configureOperatorBindings() {
@@ -485,36 +477,5 @@ public class TriggerBindings {
         operatorController.y().onTrue(
                 gameplayStateCommandFactory.createTransitionCommand(GameplayState.IDLE, "operator"));
     }
-
-    // ── Production bindings (disabled during shop testing) ──────────────────────
-    // Uncomment the configure*Bindings() calls in the constructor and restore these
-    // methods once subsystems are characterized and test bindings are no longer needed.
-
-    // private void configureShooterBindings() {
-    // driverController.rightBumper().whileTrue(
-    // shooterCommandFactory.createContinuousSpinCommand(
-    // triggerBindingsConfig::getShooterTestSpeedRpm));
-    // }
-
-    private void configureTurretBindings() {
-        // Hold A/B to spin the turret to the configured angles (for testing and alignment).
-        driverController.a().whileTrue(
-                turretCommandFactory.createMoveToAngleCommand(-90.0));
-        driverController.b().whileTrue(
-                turretCommandFactory.createMoveToAngleCommand(90.0));
-    }
-
-    // private void configureClimberBindings() {
-    // // TODO: wire climber commands when motor hardware is selected
-    // }
-
-    // private void configureIndexerBindings() {
-    // driverController.leftBumper().whileTrue(
-    // indexerCommandFactory.createFeedAndHoldCommand());
-    // driverController.povDown().whileTrue(
-    // indexerCommandFactory.createUnjamCommand());
-    // driverController.povLeft().whileTrue(
-    // indexerCommandFactory.createReverseCommand());
-    // }
 
 }

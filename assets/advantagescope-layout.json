@@ -1,13 +1,13 @@
 {
   "hubs": [
     {
-      "x": -8,
-      "y": -8,
-      "width": 1536,
-      "height": 816,
+      "x": 0,
+      "y": 33,
+      "width": 1470,
+      "height": 923,
       "state": {
         "sidebar": {
-          "width": 160,
+          "width": 236,
           "expanded": [
             "/SmartDashboard/swerve/advantagescope",
             "/AdvantageKit/RealOutputs/SwerveStates",
@@ -66,11 +66,12 @@
             "/AdvantageKit/ClimberSubsystem/sensors",
             "/AdvantageKit/RealOutputs/ClimberSubsystem",
             "/SmartDashboard/SubsystemsConfig/climberSubsystem",
-            "/SmartDashboard/SubsystemsConfig/climberSubsystem/climberSensorConfig"
+            "/SmartDashboard/SubsystemsConfig/climberSubsystem/climberSensorConfig",
+            "/AdvantageKit/RealOutputs/TrackFieldTargetCommand"
           ]
         },
         "tabs": {
-          "selected": 7,
+          "selected": 3,
           "tabs": [
             {
               "type": 0,
@@ -185,6 +186,16 @@
                     "options": {}
                   },
                   {
+                    "type": "vision",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/TrackFieldTargetCommand/TargetPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
                     "type": "ghost",
                     "logKey": "NT:/AdvantageKit/RobotPoseSubsystem/RobotPose/LastVisionPose",
                     "logType": "Pose2d",
@@ -212,9 +223,9 @@
                 "cameraIndex": -2,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  1.3449929262263796,
-                  1.1766098222818442,
-                  0.19478115642207616
+                  -1.4819843789488516,
+                  0.9707759005547563,
+                  -0.03061337011909661
                 ],
                 "cameraTarget": [
                   0,
@@ -436,7 +447,19 @@
                       "color": "#7c5cff"
                     }
                   }
-                ]
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
               },
               "controllerUUID": "kiusomqp1f0s7me9z3c7j06ieht9guwe",
               "renderer": null,
@@ -2063,7 +2086,19 @@
                       "color": "#2b66a2"
                     }
                   }
-                ]
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
               },
               "controllerUUID": "eeldvd951mylljv1fegf9max5p6ku49j",
               "renderer": null,

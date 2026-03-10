@@ -194,28 +194,23 @@ public class RobotContainer {
 
             pathPlannerCommandFactory = new PathPlannerCommandFactory(robotPoseSubsystem::getEstimatedPose);
 
-            // Default commands are disabled during shop testing so the A/B test
-            // bindings can control each subsystem without interference.
-            // Uncomment once subsystems are characterized and test bindings are removed.
-            shooterCommandFactory.setDefaultIdleCommand();
-            indexerCommandFactory.setDefaultIdleCommand();
-            feederCommandFactory.setDefaultIdleCommand();
-            intakeCommandFactory.setDefaultIdleCommand();
-            // harvesterCommandFactory.setDefaultStowCommand();
-
-            // Zone-aware turret field tracking is disabled during shop testing.
-            // Uncomment once vision and robot state are validated.
-            //turretCommandFactory.setDefaultTrackFieldTargetCommand(
-            //        robotPoseSubsystem,
-            //        fieldTargetSelector::getActiveTargetPosition,
-            //        driveBaseSubsystem::getYawRateRadiansPerSecond);
-
-            // Distance-based shooter RPM is disabled during shop testing.
-            // Uncomment once the interpolation table is tuned.
-            // shooterSubsystem.setDefaultCommand(
-            // shooterCommandFactory.createDistanceBasedSpinCommand(
-            // () -> robotPoseSubsystem.getDistanceToPointMeters(
-            // fieldTargetSelector.getActiveTargetPosition())));
+            // Default commands are only registered in gameplay mode. In tuning mode,
+            // subsystems have no default command so mechanisms stay put after test commands end.
+            if (!subsystemsConfig.triggerBindings.tuningEnabled) {
+                shooterCommandFactory.setDefaultIdleCommand();
+                indexerCommandFactory.setDefaultIdleCommand();
+                feederCommandFactory.setDefaultIdleCommand();
+                intakeCommandFactory.setDefaultIdleCommand();
+                harvesterCommandFactory.setDefaultStowCommand();
+                turretCommandFactory.setDefaultTrackFieldTargetCommand(
+                        robotPoseSubsystem,
+                        fieldTargetSelector::getActiveTargetPosition,
+                        driveBaseSubsystem::getYawRateRadiansPerSecond);
+                shooterSubsystem.setDefaultCommand(
+                        shooterCommandFactory.createDistanceBasedSpinCommand(
+                                () -> robotPoseSubsystem.getDistanceToPointMeters(
+                                        fieldTargetSelector.getActiveTargetPosition())));
+            }
 
             // Dashboard commands (clickable buttons in Elastic Dashboard)
             SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());

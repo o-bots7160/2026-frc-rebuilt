@@ -184,12 +184,27 @@ public abstract class AbstractSimMotor extends AbstractMotor {
         motorSim.setInputVoltage(appliedVolts);
         motorSim.update(kDtSeconds);
 
+        double mechanismPositionRad       = motorSim.getAngularPositionRad();
         double mechanismVelocityRadPerSec = motorSim.getAngularVelocityRadPerSec();
-        double maxVelocityRadPerSec       = maximumVelocityRadiansPerSecondSupplier.getAsDouble();
+
+        // Clamp velocity to the configured maximum.
+        double maxVelocityRadPerSec = maximumVelocityRadiansPerSecondSupplier.getAsDouble();
         if (Double.isFinite(maxVelocityRadPerSec) && Math.abs(mechanismVelocityRadPerSec) > maxVelocityRadPerSec) {
             mechanismVelocityRadPerSec = Math.copySign(maxVelocityRadPerSec, mechanismVelocityRadPerSec);
-            motorSim.setState(VecBuilder.fill(motorSim.getAngularPositionRad(), mechanismVelocityRadPerSec));
         }
+
+        // Enforce soft limits so the simulated mechanism stops at its travel bounds.
+        if (Boolean.TRUE.equals(useSetpointLimitsSupplier.get())) {
+            double reverseLimitRad = config.getReverseSoftLimitRadians();
+            double forwardLimitRad = config.getForwardSoftLimitRadians();
+            double clampedPositionRad = MathUtil.clamp(mechanismPositionRad, reverseLimitRad, forwardLimitRad);
+            if (clampedPositionRad != mechanismPositionRad) {
+                mechanismPositionRad       = clampedPositionRad;
+                mechanismVelocityRadPerSec = 0.0;
+            }
+        }
+
+        motorSim.setState(VecBuilder.fill(mechanismPositionRad, mechanismVelocityRadPerSec));
 
         // SparkMaxSim.iterate() expects velocity in raw encoder units (motor RPM) since
         // conversion factors are applied Java-side rather than firmware-side.

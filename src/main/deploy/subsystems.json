@@ -1,4 +1,15 @@
 {
+  "triggerBindings": {
+    "leftStickYResponseExponent": 2.0,
+    "leftStickXResponseExponent": 2.0,
+    "rightStickXResponseExponent": 2.0,
+    "normalSpeedScale": 0.8,
+    "sprintSpeedScale": 1.0,
+    "slowSpeedScale": 0.4,
+    "triggerDeadband": 0.1,
+    "joystickDeadband": 0.08,
+    "tuningEnabled": false
+  },
   "driveBaseSubsystem": {
     "enabled": true,
     "verbose": false,
@@ -17,235 +28,6 @@
     "simulationTranslationScale": 0.4,
     "simulationOmegaScale": 0.5,
     "rotationToleranceDegrees": 2.0
-  },
-  "turretSubsystem": {
-    "enabled": false,
-    "verbose": false,
-    "turretMotorConfig": {
-      "enabled": false,
-      "verbose": false,
-      "useSetpointLimits": true,
-      "motorCanId": 56,
-      "motorInverted": false,
-      "smartCurrentLimitAmps": 40,
-      "motorRotationsPerMechanismRotation": 10,
-      "reverseSoftLimitDegrees": -100.0,
-      "forwardSoftLimitDegrees": 100.0
-    },
-    "maximumVelocityDegreesPerSecond": 110.0,
-    "maximumAccelerationDegreesPerSecondSquared": 50.0,
-    "minimumSetpointDegrees": -90.0,
-    "maximumSetpointDegrees": 90.0,
-    "positionToleranceDegrees": 5.0,
-    "velocityToleranceDegreesPerSecond": 10.0,
-    "initialPositionDegrees": 0.0,
-    "initialVelocityDegreesPerSecond": 0.0,
-    "kP": 8.0,
-    "kI": 0.0,
-    "kD": 0.05,
-    "kS": 0.25,
-    "kV": 1.30,
-    "kA": 0.10,
-    "componentPoseConfig": {
-      "componentPivotX": -0.205,
-      "componentPivotY": 0.0,
-      "componentPivotZ": 0.375
-    },
-    "turretZeroOffsetDegrees": 180.0,
-    "fieldTargets": {
-      "fieldLengthMeters": 16.54,
-      "fieldWidthMeters": 8.21,
-      "allianceZoneBoundaryXMeters": 4.574,
-      "fieldCenterDividerYMeters": 4.021,
-      "hubPositionXMeters": 4.612,
-      "hubPositionYMeters": 4.021,
-      "leftZonePositionXMeters": 2.0,
-      "leftZonePositionYMeters": 6.5,
-      "rightZonePositionXMeters": 2.0,
-      "rightZonePositionYMeters": 1.7
-    }
-  },
-  "shooterSubsystem": {
-    "enabled": false,
-    "verbose": false,
-    "shooterMotorConfig": {
-      "enabled": false,
-      "verbose": false,
-      "useSetpointLimits": false,
-      "motorCanId": 54,
-      "motorInverted": true,
-      "smartCurrentLimitAmps": 40,
-      "motorRotationsPerMechanismRotation": 1.0,
-      "reverseSoftLimitDegrees": 0.0,
-      "forwardSoftLimitDegrees": 0.0
-    },
-    "shooterFollowerMotorConfig": {
-      "enabled": false,
-      "verbose": false,
-      "useSetpointLimits": false,
-      "motorCanId": 55,
-      "motorInverted": false,
-      "smartCurrentLimitAmps": 40,
-      "motorRotationsPerMechanismRotation": 1.0,
-      "reverseSoftLimitDegrees": 0.0,
-      "forwardSoftLimitDegrees": 0.0
-    },
-    "maximumVelocityRpm": 5000.0,
-    "maximumAccelerationRpmPerSecond": 2500.0,
-    "velocityToleranceRpm": 50.0,
-    "settleTimeSeconds": 0.25,
-    "idleVelocityRpm": 1000.0,
-    "reverseVelocityRpm": 1000.0,
-    "distanceRpmPoints": [
-      { "distanceMeters": 1.0, "rpm": 2000.0 },
-      { "distanceMeters": 3.0, "rpm": 3000.0 },
-      { "distanceMeters": 5.0, "rpm": 3800.0 },
-      { "distanceMeters": 8.0, "rpm": 4500.0 }
-    ],
-    "minimumShootingRpm": 1500.0,
-    "maximumShootingRpm": 5000.0,
-    "distanceRpmMultiplier": 1.0,
-    "kP": 0.041242,
-    "kI": 0.0,
-    "kD": 0.01,
-    "kS": 0.01,
-    "kV": 0.02241,
-    "kA": 0.008244
-  },
-  "indexerSubsystem": {
-    "enabled": false,
-    "verbose": false,
-    "indexerMotorConfig": {
-      "enabled": false,
-      "verbose": false,
-      "useSetpointLimits": false,
-      "motorCanId": 53,
-      "motorInverted": true,
-      "smartCurrentLimitAmps": 30,
-      "motorRotationsPerMechanismRotation": 4.0,
-      "reverseSoftLimitDegrees": 0.0,
-      "forwardSoftLimitDegrees": 0.0
-    },
-    "maximumVelocityRpm": 1000.0,
-    "maximumAccelerationRpmPerSecond": 0.0,
-    "velocityToleranceRpm": 50.0,
-    "settleTimeSeconds": 0.1,
-    "idleVelocityRpm": 100.0,
-    "feedVelocityRpm": 400.0,
-    "reverseVelocityRpm": 400.0,
-    "unjamForwardDurationSeconds": 0.3,
-    "unjamReverseDurationSeconds": 0.3,
-    "kP": 0.0084,
-    "kI": 0.0,
-    "kD": 0.01,
-    "kS": 0.28804,
-    "kV": 0.0829,
-    "kA": 0.00411
-  },
-  "robotPoseSubsystem": {
-    "enabled": true,
-    "verbose": false,
-    "enableVisionFusion": true
-  },
-  "aprilTagVisionSubsystem": {
-    "enabled": true,
-    "verbose": false,
-    "linearStandardDeviationBaseline": 0.08,
-    "angularStandardDeviationBaseline": 1.0,
-    "maximumAmbiguity": 0.3,
-    "cameras": {
-      "Obots7160OV9281": {
-        "x": -0.0510,
-        "y": 0.230,
-        "z": 0.50,
-        "roll": 0.0,
-        "pitch": 0.0,
-        "yaw": 3.14159265
-      },
-      "Obots7160cam20260219a": {
-        "x": -0.0890,
-        "y": -0.240,
-        "z": 0.490,
-        "roll": 0.0,
-        "pitch": 0.0,
-        "yaw": 3.14159265
-      }
-    }
-  },
-  "driverCameraSubsystem": {
-    "enabled": false,
-    "verbose": false,
-    "cameraName": "limelight",
-    "pipelineIndex": 0,
-    "defaultStream": 2
-  },
-  "climberSubsystem": {
-    "enabled": false,
-    "verbose": false,
-    "climberMotorConfig": {
-      "enabled": false,
-      "verbose": false,
-      "useSetpointLimits": true,
-      "motorCanId": 62,
-      "motorInverted": false,
-      "smartCurrentLimitAmps": 40,
-      "motorRotationsPerMechanismRotation": 1.0,
-      "reverseSoftLimitDegrees": 0.0,
-      "forwardSoftLimitDegrees": 360.0
-    },
-    "climberSensorConfig": {
-      "enabled": false,
-      "verbose": false,
-      "leftSensorCanId": 60,
-      "rightSensorCanId": 61,
-      "alignmentToleranceMillimeters": 25.0,
-      "maximumDetectionDistanceMillimeters": 300.0,
-      "sampleTimeMilliseconds": 24.0
-    },
-    "maximumVelocityDegreesPerSecond": 0.0,
-    "maximumAccelerationDegreesPerSecondSquared": 0.0,
-    "minimumSetpointDegrees": 0.0,
-    "maximumSetpointDegrees": 360.0,
-    "positionToleranceDegrees": 5.0,
-    "velocityToleranceDegreesPerSecond": 10.0,
-    "initialPositionDegrees": 0.0,
-    "initialVelocityDegreesPerSecond": 0.0,
-    "kP": 0.1,
-    "kI": 0.0,
-    "kD": 0.01,
-    "kS": 0.0,
-    "kV": 0.0,
-    "kA": 0.0
-  },
-  "feederSubsystem": {
-    "enabled": false,
-    "verbose": false,
-    "feederMotorConfig": {
-      "enabled": false,
-      "verbose": false,
-      "useSetpointLimits": false,
-      "motorCanId": 52,
-      "motorInverted": true,
-      "smartCurrentLimitAmps": 30,
-      "motorRotationsPerMechanismRotation": 4.0,
-      "reverseSoftLimitDegrees": 0.0,
-      "forwardSoftLimitDegrees": 0.0
-    },
-    "maximumVelocityRpm": 1000.0,
-    "maximumAccelerationRpmPerSecond": 0.0,
-    "velocityToleranceRpm": 50.0,
-    "settleTimeSeconds": 0.15,
-    "idleVelocityRpm": 100.0,
-    "forwardVelocityRpm": 1500.0,
-    "reverseVelocityRpm": 1000.0,
-    "kP": 0.011098,
-    "kI": 0.0,
-    "kD": 0.0,
-    "kS": 0.45712,
-    "kV": 0.079797,
-    "kA": 0.006846,
-    "sysIdRampRateVoltsPerSecond": 0.25,
-    "sysIdStepVoltage": 7.0
   },
   "intakeSubsystem": {
     "enabled": true,
@@ -310,21 +92,253 @@
     "kV": 3.5,
     "kA": 0.05
   },
+  "feederSubsystem": {
+    "enabled": false,
+    "verbose": false,
+    "feederMotorConfig": {
+      "enabled": false,
+      "verbose": false,
+      "useSetpointLimits": false,
+      "motorCanId": 52,
+      "motorInverted": true,
+      "smartCurrentLimitAmps": 30,
+      "motorRotationsPerMechanismRotation": 4.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 0.0
+    },
+    "maximumVelocityRpm": 1000.0,
+    "maximumAccelerationRpmPerSecond": 0.0,
+    "velocityToleranceRpm": 50.0,
+    "settleTimeSeconds": 0.15,
+    "idleVelocityRpm": 100.0,
+    "forwardVelocityRpm": 1500.0,
+    "reverseVelocityRpm": 1000.0,
+    "kP": 0.011098,
+    "kI": 0.0,
+    "kD": 0.0,
+    "kS": 0.45712,
+    "kV": 0.079797,
+    "kA": 0.006846,
+    "sysIdRampRateVoltsPerSecond": 0.25,
+    "sysIdStepVoltage": 7.0
+  },
+  "indexerSubsystem": {
+    "enabled": false,
+    "verbose": false,
+    "indexerMotorConfig": {
+      "enabled": false,
+      "verbose": false,
+      "useSetpointLimits": false,
+      "motorCanId": 53,
+      "motorInverted": true,
+      "smartCurrentLimitAmps": 30,
+      "motorRotationsPerMechanismRotation": 4.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 0.0
+    },
+    "maximumVelocityRpm": 1000.0,
+    "maximumAccelerationRpmPerSecond": 0.0,
+    "velocityToleranceRpm": 50.0,
+    "settleTimeSeconds": 0.1,
+    "idleVelocityRpm": 100.0,
+    "feedVelocityRpm": 400.0,
+    "reverseVelocityRpm": 400.0,
+    "unjamForwardDurationSeconds": 0.3,
+    "unjamReverseDurationSeconds": 0.3,
+    "kP": 0.0084,
+    "kI": 0.0,
+    "kD": 0.01,
+    "kS": 0.28804,
+    "kV": 0.0829,
+    "kA": 0.00411
+  },
+  "turretSubsystem": {
+    "enabled": true,
+    "verbose": false,
+    "turretMotorConfig": {
+      "enabled": true,
+      "verbose": false,
+      "useSetpointLimits": true,
+      "motorCanId": 56,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 10,
+      "reverseSoftLimitDegrees": -100.0,
+      "forwardSoftLimitDegrees": 100.0
+    },
+    "maximumVelocityDegreesPerSecond": 110.0,
+    "maximumAccelerationDegreesPerSecondSquared": 50.0,
+    "minimumSetpointDegrees": -90.0,
+    "maximumSetpointDegrees": 90.0,
+    "positionToleranceDegrees": 5.0,
+    "velocityToleranceDegreesPerSecond": 10.0,
+    "initialPositionDegrees": 0.0,
+    "initialVelocityDegreesPerSecond": 0.0,
+    "kP": 8.0,
+    "kI": 0.0,
+    "kD": 0.05,
+    "kS": 0.25,
+    "kV": 1.3,
+    "kA": 0.1,
+    "componentPoseConfig": {
+      "componentPivotX": -0.205,
+      "componentPivotY": 0.0,
+      "componentPivotZ": 0.375
+    },
+    "turretZeroOffsetDegrees": 180.0,
+    "rearFacingTurret": true,
+    "fieldTargets": {
+      "fieldLengthMeters": 16.54,
+      "fieldWidthMeters": 8.21,
+      "allianceZoneBoundaryXMeters": 4.574,
+      "fieldCenterDividerYMeters": 4.021,
+      "hubPositionXMeters": 4.612,
+      "hubPositionYMeters": 4.021,
+      "leftZonePositionXMeters": 2.0,
+      "leftZonePositionYMeters": 6.5,
+      "rightZonePositionXMeters": 2.0,
+      "rightZonePositionYMeters": 1.7
+    }
+  },
+  "shooterSubsystem": {
+    "enabled": false,
+    "verbose": false,
+    "shooterMotorConfig": {
+      "enabled": false,
+      "verbose": false,
+      "useSetpointLimits": false,
+      "motorCanId": 54,
+      "motorInverted": true,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 1.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 0.0
+    },
+    "shooterFollowerMotorConfig": {
+      "enabled": false,
+      "verbose": false,
+      "useSetpointLimits": false,
+      "motorCanId": 55,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 1.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 0.0
+    },
+    "maximumVelocityRpm": 5000.0,
+    "maximumAccelerationRpmPerSecond": 2500.0,
+    "velocityToleranceRpm": 50.0,
+    "settleTimeSeconds": 0.25,
+    "idleVelocityRpm": 1000.0,
+    "reverseVelocityRpm": 1000.0,
+    "distanceRpmPoints": [
+      {
+        "distanceMeters": 1.0,
+        "rpm": 2000.0
+      },
+      {
+        "distanceMeters": 3.0,
+        "rpm": 3000.0
+      },
+      {
+        "distanceMeters": 5.0,
+        "rpm": 3800.0
+      },
+      {
+        "distanceMeters": 8.0,
+        "rpm": 4500.0
+      }
+    ],
+    "minimumShootingRpm": 1500.0,
+    "maximumShootingRpm": 5000.0,
+    "distanceRpmMultiplier": 1.0,
+    "kP": 0.041242,
+    "kI": 0.0,
+    "kD": 0.01,
+    "kS": 0.01,
+    "kV": 0.02241,
+    "kA": 0.008244
+  },
+  "aprilTagVisionSubsystem": {
+    "enabled": true,
+    "verbose": false,
+    "linearStandardDeviationBaseline": 0.08,
+    "angularStandardDeviationBaseline": 1.0,
+    "maximumAmbiguity": 0.3,
+    "cameras": {
+      "Obots7160OV9281": {
+        "x": -0.051,
+        "y": 0.23,
+        "z": 0.5,
+        "roll": 0.0,
+        "pitch": 0.0,
+        "yaw": 3.14159265
+      },
+      "Obots7160cam20260219a": {
+        "x": -0.089,
+        "y": -0.24,
+        "z": 0.49,
+        "roll": 0.0,
+        "pitch": 0.0,
+        "yaw": 3.14159265
+      }
+    }
+  },
+  "driverCameraSubsystem": {
+    "enabled": false,
+    "verbose": false,
+    "cameraName": "limelight",
+    "pipelineIndex": 0,
+    "defaultStream": 2
+  },
+  "robotPoseSubsystem": {
+    "enabled": true,
+    "verbose": false,
+    "enableVisionFusion": true
+  },
+  "climberSubsystem": {
+    "enabled": false,
+    "verbose": false,
+    "climberMotorConfig": {
+      "enabled": false,
+      "verbose": false,
+      "useSetpointLimits": true,
+      "motorCanId": 62,
+      "motorInverted": false,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 1.0,
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 360.0
+    },
+    "climberSensorConfig": {
+      "enabled": false,
+      "verbose": false,
+      "leftSensorCanId": 60,
+      "rightSensorCanId": 61,
+      "alignmentToleranceMillimeters": 25.0,
+      "maximumDetectionDistanceMillimeters": 300.0,
+      "sampleTimeMilliseconds": 24.0
+    },
+    "maximumVelocityDegreesPerSecond": 0.0,
+    "maximumAccelerationDegreesPerSecondSquared": 0.0,
+    "minimumSetpointDegrees": 0.0,
+    "maximumSetpointDegrees": 360.0,
+    "positionToleranceDegrees": 5.0,
+    "velocityToleranceDegreesPerSecond": 10.0,
+    "initialPositionDegrees": 0.0,
+    "initialVelocityDegreesPerSecond": 0.0,
+    "kP": 0.1,
+    "kI": 0.0,
+    "kD": 0.01,
+    "kS": 0.0,
+    "kV": 0.0,
+    "kA": 0.0
+  },
   "gameplayStateSubsystem": {
     "enabled": false,
     "verbose": false,
     "endgameThresholdSeconds": 30.0,
     "autoTransitionEnabled": true,
     "endgameAutoTransitionEnabled": false
-  },
-  "triggerBindings": {
-    "leftStickYResponseExponent": 2.0,
-    "leftStickXResponseExponent": 2.0,
-    "rightStickXResponseExponent": 2.0,
-    "normalSpeedScale": 0.8,
-    "sprintSpeedScale": 1.0,
-    "slowSpeedScale": 0.4,
-    "triggerDeadband": 0.1,
-    "joystickDeadband": 0.08
   }
 }

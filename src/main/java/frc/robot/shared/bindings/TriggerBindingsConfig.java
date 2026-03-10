@@ -93,6 +93,19 @@ public class TriggerBindingsConfig extends AbstractConfig {
     public double shooterTestSpeedRpm         = 1700.0;
 
     /**
+     * Enables tuning mode for trigger bindings.
+     * <p>
+     * When {@code true}, the driver controller A/B/X buttons are mapped to subsystem test commands (min/max setpoints and SysId sweeps) via a
+     * dashboard-selectable subsystem chooser, and default commands are not registered so mechanisms stay where test commands leave them. When
+     * {@code false} (the default), production gameplay bindings and operator state-transition buttons are active instead.
+     * </p>
+     * <p>
+     * Because WPILib trigger bindings are wired once at construction, a code restart is required after changing this value.
+     * </p>
+     */
+    public boolean tuningEnabled              = false;
+
+    /**
      * Reads the tunable response curve exponent for the left stick Y axis.
      *
      * @return current left stick Y response exponent (1.0 = linear, 2.0 = quadratic)
@@ -171,5 +184,18 @@ public class TriggerBindingsConfig extends AbstractConfig {
      */
     public double getShooterTestSpeedRpm() {
         return readTunableNumber("shooterTestSpeedRpm", shooterTestSpeedRpm);
+    }
+
+    /**
+     * Reads whether tuning mode is enabled for trigger bindings.
+     * <p>
+     * Because bindings are wired at construction, this value is only meaningful at startup. The SmartDashboard entry is still published so operators
+     * can see which mode is active.
+     * </p>
+     *
+     * @return {@code true} if tuning mode is active, {@code false} for gameplay mode
+     */
+    public boolean getTuningEnabled() {
+        return readTunableBoolean("tuningEnabled", tuningEnabled);
     }
 }

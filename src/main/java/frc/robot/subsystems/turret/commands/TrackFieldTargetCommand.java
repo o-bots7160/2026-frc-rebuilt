@@ -3,6 +3,7 @@ package frc.robot.subsystems.turret.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.shared.commands.AbstractSubsystemCommand;
 import frc.robot.subsystems.robotpose.RobotPoseSubsystem;
@@ -78,6 +79,9 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
         Translation2d targetFieldPosition = targetFieldPositionSupplier.get();
         double        yawRateRadians      = robotYawRateRadiansPerSecondSupplier.get();
         double        targetDegrees       = subsystem.calculateFieldTargetDegrees(robotPose, targetFieldPosition, yawRateRadians);
+
+        log.recordOutput("TargetPose", new Pose2d(targetFieldPosition, new Rotation2d()));
+
         if (subsystem.isVerbose()) {
             // Log inputs and the computed target so we can verify field-relative math in AdvantageScope.
             log.recordOutput("RobotPose", robotPose);

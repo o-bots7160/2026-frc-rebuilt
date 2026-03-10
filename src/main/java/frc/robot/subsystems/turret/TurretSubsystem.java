@@ -64,10 +64,11 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
     /**
      * Computes the turret target angle needed to face a field-relative target while compensating for robot rotation.
      * <p>
-     * The result is expressed in turret degrees, where 0 degrees aligns with the turret's mechanical zero plus the configured zero offset. Because
-     * the turret faces the rear of the robot, a 180-degree offset is applied so that 0 turret-degrees points backward. When the robot is spinning,
-     * the turret leads its aim by predicting how far the heading will change over the configured lead time so it stays on target instead of lagging
-     * behind. The returned angle is clamped to the configured turret limits and will pick the closest equivalent angle within that range.
+     * When the turret faces the rear of the robot ({@code rearFacingTurret} is true), the robot-relative direction to the target is negated before the
+     * zero offset is applied. Negation is necessary because a backward-facing turret mirrors left and right relative to robot-forward: what is to the
+     * robot's left appears on the turret's right when looking along the barrel. When the turret faces forward the standard formula is used instead. The
+     * rotational lead-time compensation predicts how far the heading will change and pre-rotates the turret so it stays on target instead of lagging
+     * behind. The returned angle is clamped to the configured turret limits.
      * </p>
      *
      * @param robotPose                   current robot pose in meters and radians
@@ -85,7 +86,12 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         double fieldAngleRadians   = Math.atan2(deltaY, deltaX);
         double robotHeadingRadians = robotPose.getRotation().getRadians();
         double zeroOffsetRadians   = Units.degreesToRadians(config.getTurretZeroOffsetDegrees());
-        double rawTargetRadians    = fieldAngleRadians - robotHeadingRadians + zeroOffsetRadians;
+
+        double robotRelativeRadians = fieldAngleRadians - robotHeadingRadians;
+        if (config.isRearFacingTurret()) {
+            robotRelativeRadians = -robotRelativeRadians;
+        }
+        double rawTargetRadians = robotRelativeRadians + zeroOffsetRadians;
 
         // Compensate for robot rotation by predicting where the heading will be after the configured lead time.
         double leadTimeSeconds             = config.getRotationalLeadTimeSeconds();
