@@ -12,6 +12,11 @@ Competition "REBUILT" season codebase.
   - [Build and test](#build-and-test)
   - [Simulation](#simulation)
   - [Persisting tuned values](#persisting-tuned-values)
+    - [One-time setup](#one-time-setup)
+    - [Usage](#usage)
+    - [Valid subsystem keys](#valid-subsystem-keys)
+    - [How it works](#how-it-works)
+    - [Known limitations](#known-limitations)
   - [Deployment](#deployment)
   - [Documentation](#documentation)
     - [For other teams](#for-other-teams)
@@ -235,11 +240,11 @@ The key folders under `src/main` you will touch most often are:
 - Resetting pose flows through robot state so the drivebase and estimator stay
   aligned.
 
-![System overview diagram for the 2026 robot](./7160-frc-rebuilt.png)
+![System overview diagram for the 2026 robot](./assets/7160-frc-rebuilt.png)
 
-This architecture diagram lives in `7160-frc-rebuilt.drawio.svg`; open and edit
-it with [draw.io](https://www.drawio.com/download) to keep the visuals current
-as the robot evolves.
+This architecture diagram lives in `assets/7160-frc-rebuilt.drawio.svg`; open
+and edit it with [draw.io](https://www.drawio.com/download) to keep the visuals
+current as the robot evolves.
 
 ### Dependencies
 
