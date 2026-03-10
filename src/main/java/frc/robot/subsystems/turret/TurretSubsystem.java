@@ -18,6 +18,12 @@ import frc.robot.subsystems.turret.devices.TurretSimMotor;
  * motion profiling, limits, and logging.
  */
 public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystemConfig> {
+    /**
+     * Selects the correct motor implementation (real or sim) based on the runtime environment.
+     *
+     * @param config turret configuration bundle used to construct the motor
+     * @return configured motor instance, or {@code null} when the subsystem is disabled
+     */
     private static Motor buildMotor(TurretSubsystemConfig config) {
         if (!config.enabled) {
             return null;
@@ -40,6 +46,12 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         this(config, buildMotor(config));
     }
 
+    /**
+     * Creates the turret subsystem with an explicit motor instance.
+     *
+     * @param config turret configuration bundle
+     * @param motor  motor to drive, or {@code null} when the subsystem is disabled
+     */
     private TurretSubsystem(TurretSubsystemConfig config, Motor motor) {
         super(config, motor);
     }

@@ -29,16 +29,22 @@ import frc.robot.shared.config.RobotEnvironment;
  */
 public class Robot extends LoggedRobot {
 
+    /** Length of the official FRC competition field in meters. */
     private static final double  FIELD_LENGTH_METERS   = 16.54;
 
+    /** Width of the official FRC competition field in meters. */
     private static final double  FIELD_WIDTH_METERS    = 8.21;
 
+    /** Distance in meters from the alliance wall to the default simulation start x-coordinate. */
     private static final double  START_X_OFFSET_METERS = 1.5;
 
+    /** Distance in meters from the field edge to the nearest station start y-coordinate. */
     private static final double  EDGE_Y_OFFSET_METERS  = 1.1;
 
+    /** The autonomous command selected for the current match period, or {@code null} if none. */
     private Command              m_autonomousCommand;
 
+    /** The central wiring hub that owns all subsystems, command factories, and bindings. */
     private final RobotContainer m_robotContainer;
 
     /**
@@ -58,6 +64,7 @@ public class Robot extends LoggedRobot {
                 default -> "Unknown";
                 });
 
+        // Configure logging data receivers based on robot mode (real hardware, replay, or live simulation).
         if (isReal()) {
             Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
@@ -96,6 +103,13 @@ public class Robot extends LoggedRobot {
         }
     }
 
+    /**
+     * Runs once every scheduler cycle regardless of robot mode.
+     * <p>
+     * Refreshes the cached environment state so all code this cycle uses the same snapshot,
+     * then advances the command scheduler.
+     * </p>
+     */
     @Override
     public void robotPeriodic() {
         // Refresh the cached environment state so all code this cycle uses the same snapshot.
@@ -103,6 +117,7 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
     }
 
+    /** Runs once when the robot enters the disabled state; no-op by default. */
     @Override
     public void disabledInit() {
     }
@@ -112,10 +127,18 @@ public class Robot extends LoggedRobot {
     public void disabledPeriodic() {
     }
 
+    /** Runs once when the robot exits the disabled state; no-op by default. */
     @Override
     public void disabledExit() {
     }
 
+    /**
+     * Runs once when the simulator first starts.
+     * <p>
+     * Seeds the drivebase with a computed start pose so the simulated robot appears at a
+     * realistic field location rather than the origin.
+     * </p>
+     */
     @Override
     public void simulationInit() {
         Pose2d startPose = getSimulationStartPose();
@@ -150,6 +173,7 @@ public class Robot extends LoggedRobot {
     public void autonomousPeriodic() {
     }
 
+    /** Runs once when the robot exits autonomous mode; no-op by default. */
     @Override
     public void autonomousExit() {
     }
@@ -161,7 +185,6 @@ public class Robot extends LoggedRobot {
      * simulation a computed start pose is used instead.
      * </p>
      */
-
     @Override
     public void teleopInit() {
         if (isSimulation()) {
@@ -181,21 +204,23 @@ public class Robot extends LoggedRobot {
     public void teleopPeriodic() {
     }
 
+    /** Runs once when the robot exits teleop mode; no-op by default. */
     @Override
     public void teleopExit() {
     }
 
     /** Cancels all active commands when test mode begins. */
-
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
     }
 
+    /** Runs each loop during test mode; no-op by default. */
     @Override
     public void testPeriodic() {
     }
 
+    /** Runs once when the robot exits test mode; no-op by default. */
     @Override
     public void testExit() {
     }

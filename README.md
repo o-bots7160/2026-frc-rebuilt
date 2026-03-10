@@ -127,7 +127,7 @@ node scripts/persist-tuned-values.mjs --team 7160 --subsystem turretSubsystem
 Use the top-level keys from `subsystems.json`:
 
 `driveBaseSubsystem`, `turretSubsystem`, `shooterSubsystem`, `indexerSubsystem`,
-`robotStateSubsystem`, `aprilTagVisionSubsystem`, `driverCameraSubsystem`,
+`robotPoseSubsystem`, `aprilTagVisionSubsystem`, `driverCameraSubsystem`,
 `climberSubsystem`, `feederSubsystem`, `intakeSubsystem`, `harvesterSubsystem`,
 `triggerBindings`
 
@@ -227,18 +227,19 @@ The key folders under `src/main` you will touch most often are:
   - `config/` for shared config types/loaders.
   - `logging/` for AdvantageKit and telemetry helpers.
   - `subsystems/` for abstract subsystem bases.
+  - `field/` for field-target selection helpers.
 - `java/frc/robot/subsystems/<mechanism>/` – concrete mechanism code, each with
   its own `commands/` (including command factories), `config/`, and `io/`
   folders.
 
 ### Pose ownership
 
-- `RobotStateSubsystem` is the authoritative field pose source for commands and
+- `RobotPoseSubsystem` is the authoritative field pose source for commands and
   other subsystems.
-- `DriveBaseSubsystem` provides odometry only and streams updates into robot
-  state.
-- Resetting pose flows through robot state so the drivebase and estimator stay
-  aligned.
+- `DriveBaseSubsystem` provides odometry only and streams updates into the pose
+  subsystem.
+- Resetting pose flows through the pose subsystem so the drivebase and estimator
+  stay aligned.
 
 ![System overview diagram for the 2026 robot](./assets/7160-frc-rebuilt.png)
 

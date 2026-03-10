@@ -17,6 +17,7 @@ For a glossary of robotics and programming terms referenced below, see the
 | `config/`     | Abstract config classes, JSON loading, `SubsystemsConfig`, and `RobotEnvironment`                       |
 | `logging/`    | AdvantageKit logger wrapper scoped to each subsystem                                                    |
 | `bindings/`   | Trigger and input-binding helpers for controller buttons                                                |
+| `field/`      | Field target data model and runtime target selection for turret tracking                                |
 
 ## The motor subsystem hierarchy
 
@@ -125,6 +126,7 @@ radians per second.
 | `AbstractSetAndSeekSubsystem` | `AbstractMotorSubsystem` | Adds a [trapezoidal motion profile](../GLOSSARY.md#trapezoidal-motion-profile), a [profiled PID](../GLOSSARY.md#profiled-pid) controller, and position tracking. Exposes `setTarget()`, `seekTarget()`, `isProfileSettled()`, `retargetFromCurrent()`. Refreshes gains from tunables when not FMS-attached so you can tune live in the pits.                                 |
 | `AbstractVelocitySubsystem`   | `AbstractMotorSubsystem` | Adds a PID velocity controller with optional trapezoidal acceleration limiting. Exposes `setTargetVelocityRpm()`, `seekVelocity()`, `isAtTargetVelocity()`. Public API uses RPM (mechanism speed, not motor shaft speed); internal math uses radians per second. Timer-based settle detection ensures the target is held for a configurable duration before reporting ready. |
 | `SysIdHelper`                 | —                        | Static factory that builds a WPILib `SysIdRoutine` for characterizing a single motor. Used by command factories to expose [SysId](../GLOSSARY.md#sysid) commands. **Read the [SysId tuning guide](subsystems/SYSID_GUIDE.md) before running SysId** — the raw gains require a ÷2π correction.                                                                                |
+| `VisionMeasurementConsumer`   | —                        | Functional interface for accepting a vision-based pose measurement with timestamp and uncertainty. Decouples vision producers from the pose fusion consumer so new pose sources can be added with a single wiring change.                                                                                                                                                    |
 
 ### Command base classes (`commands/`)
 
@@ -156,6 +158,8 @@ radians per second.
 | `ConfigurationLoader`               | —                              | Reads JSON config files from the `deploy/` folder and deserializes them into config objects.                                                                                                                                                                                                                                                                                         |
 | `SubsystemsConfig`                  | —                              | Top-level config class that holds one config object per subsystem. Loaded from `subsystems.json` (or `subsystems-sim.json` / `subsystems-test.json`).                                                                                                                                                                                                                                |
 | `FieldLayoutConfig`                 | —                              | Supplies the AprilTag field layout used by vision and robot state.                                                                                                                                                                                                                                                                                                                   |
+| `Pose2dDeserializer`                | —                              | Jackson deserializer that reads a JSON `{x, y, rotation}` object (meters and degrees) into a WPILib `Pose2d`. Registered by `ConfigurationLoader` so any config containing `Pose2d` fields deserializes correctly.                                                                                                                                                                   |
+| `RobotEnvironment`                  | —                              | Cached per-cycle state from DriverStation (alliance, mode, FMS attachment). All code outside `Robot.java` should query this instead of `DriverStation` or `RobotBase` directly to avoid redundant native calls.                                                                                                                                                                      |
 
 ### Disabled-subsystem lifecycle
 

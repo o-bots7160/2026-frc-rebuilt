@@ -36,10 +36,13 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
  */
 public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConfig> {
 
+    /** Default center-of-rotation offset in meters; (0, 0) rotates around the robot center. */
     private final Translation2d               centerOfRotationMeters = new Translation2d();
 
+    /** IO layer that reads odometry, module states, and chassis speeds from the hardware or sim. */
     private final DriveBaseIO                 io;
 
+    /** Auto-logged input container populated each cycle with sensor data. */
     private final DriveBaseIOInputsAutoLogged inputs                 = new DriveBaseIOInputsAutoLogged();
 
     /**
@@ -58,8 +61,10 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     private SwerveController                  swerveController;
 
+    /** Cached chassis speeds from the most recent drive request, used for telemetry logging. */
     private ChassisSpeeds                     lastRequestedSpeeds    = new ChassisSpeeds();
 
+    /** Cached module states from the most recent drive request, used for telemetry logging. */
     private SwerveModuleState[]               lastRequestedStates    = new SwerveModuleState[0];
 
     /**
@@ -161,7 +166,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Returns the current odometry pose of the robot.
      * <p>
-     * Use {@link frc.robot.subsystems.robotstate.RobotStateSubsystem} for the fused field pose.
+     * Use {@link frc.robot.subsystems.robotpose.RobotPoseSubsystem} for the fused field pose.
      * </p>
      *
      * @return current odometry pose in meters and radians
@@ -204,7 +209,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Resets odometry and gyro heading to the supplied pose.
      *
-     * @param pose Desired pose for the robot to assume immediately.
+     * @param pose desired pose in meters and radians for the robot to assume immediately
      */
     public void resetPose(Pose2d pose) {
         if (isSubsystemDisabled() || swerveDrive == null) {

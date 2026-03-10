@@ -40,14 +40,29 @@ public class FieldLayoutConfig extends AbstractConfig {
             this.fieldResource  = fieldResource;
         }
 
+        /**
+         * Returns the human-readable name of this field layout.
+         *
+         * @return layout name
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Returns true when this layout comes from the official WPILib field resource.
+         *
+         * @return true for official layouts, false for custom ones
+         */
         public boolean isOfficial() {
             return source == Source.OFFICIAL;
         }
 
+        /**
+         * Returns the WPILib resource path for loading the official AprilTag field layout JSON.
+         *
+         * @return resource path string, or {@code null} for custom layouts
+         */
         public String getFieldResource() {
             return fieldResource;
         }

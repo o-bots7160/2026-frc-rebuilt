@@ -47,6 +47,9 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
         this.robotYawRateRadiansPerSecondSupplier = robotYawRateRadiansPerSecondSupplier;
     }
 
+    /**
+     * Recomputes the turret target and drives the profile toward it each cycle.
+     */
     @Override
     public void execute() {
         updateTarget();
@@ -59,21 +62,36 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
         }
     }
 
+    /**
+     * Notifies the turret that tracking was interrupted so it can reset its profile state.
+     *
+     * @param interrupted true when the command was interrupted rather than finishing normally
+     */
     @Override
     public void end(boolean interrupted) {
         subsystem.handleSeekInterrupted();
     }
 
+    /**
+     * Returns false so the command tracks continuously until interrupted.
+     *
+     * @return always {@code false}
+     */
     @Override
     public boolean isFinished() {
         return false;
     }
 
+    /** Seeds the turret target with the current field-relative angle on first run. */
     @Override
     protected void onInitialize() {
         updateTarget();
     }
 
+    /**
+     * Reads the current robot pose and target position, computes the turret angle, logs telemetry,
+     * and pushes the new setpoint to the turret subsystem.
+     */
     private void updateTarget() {
         Pose2d        robotPose           = robotPoseSubsystem.getEstimatedPose();
         Translation2d targetFieldPosition = targetFieldPositionSupplier.get();

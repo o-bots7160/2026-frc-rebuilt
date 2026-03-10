@@ -25,7 +25,11 @@ public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsyst
      */
     public enum StreamMode {
         /* there is a 0 mode that is side-by-side but we're not supporting it */
+
+        /** Streams the Limelight's onboard camera feed. */
         LIMELIGHT_ONBOARD(1),
+
+        /** Streams the external USB camera feed connected to the Limelight. */
         USB_CAMERA(2);
 
         /**
@@ -45,14 +49,29 @@ public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsyst
 
         private final int networkTableValue;
 
+        /**
+         * Creates a stream mode with its corresponding NetworkTables integer value.
+         *
+         * @param networkTableValue integer value written to the Limelight stream topic
+         */
         StreamMode(int networkTableValue) {
             this.networkTableValue = networkTableValue;
         }
 
+        /**
+         * Returns the integer value used in the Limelight NetworkTables stream topic.
+         *
+         * @return NetworkTables integer representing this stream mode
+         */
         public int getNetworkTableValue() {
             return networkTableValue;
         }
 
+        /**
+         * Returns the opposite stream mode for quick toggling between camera feeds.
+         *
+         * @return {@link #USB_CAMERA} when currently onboard, or {@link #LIMELIGHT_ONBOARD} when currently USB
+         */
         public StreamMode toggle() {
             return this == LIMELIGHT_ONBOARD ? USB_CAMERA : LIMELIGHT_ONBOARD;
         }
@@ -109,6 +128,9 @@ public class DriverCameraSubsystem extends AbstractSubsystem<DriverCameraSubsyst
         log.info("DriverCameraSubsystem initialized for camera: " + cameraName);
     }
 
+    /**
+     * Checks the dashboard toggle and updates the active stream mode when changed by the operator.
+     */
     @Override
     public void periodic() {
         if (isSubsystemDisabled()) {

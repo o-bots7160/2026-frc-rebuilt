@@ -37,13 +37,22 @@ public interface AprilTagVisionIO {
     }
 
     /**
-     * Represents the angle to a target.
+     * Represents the yaw and pitch angles to a detected target.
+     *
+     * @param tx horizontal (yaw) angle from the camera center to the target
+     * @param ty vertical (pitch) angle from the camera center to the target
      */
     public static record TargetObservation(Rotation2d tx, Rotation2d ty) {
     }
 
     /**
      * Represents a robot pose sample used for pose estimation.
+     *
+     * @param timestamp          FPGA timestamp in seconds when the observation was captured
+     * @param pose               estimated 3D robot pose derived from the observed tags
+     * @param ambiguity          pose ambiguity ratio from the solver (0 = unambiguous, 1 = fully ambiguous)
+     * @param tagCount           number of AprilTags used to compute this pose estimate
+     * @param averageTagDistance average distance in meters from the camera to the observed tags
      */
     public static record PoseObservation(
             double timestamp,

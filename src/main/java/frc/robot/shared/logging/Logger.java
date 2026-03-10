@@ -2,11 +2,9 @@ package frc.robot.shared.logging;
 
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.config.RobotEnvironment;
 
 /**
@@ -200,6 +198,16 @@ public class Logger {
     }
 
     /**
+     * Records a string value to AdvantageKit using the class name as a prefix.
+     *
+     * @param key   telemetry key suffix
+     * @param value string value to record
+     */
+    public void recordOutput(String key, String value) {
+        org.littletonrobotics.junction.Logger.recordOutput(className + '/' + key, value);
+    }
+
+    /**
      * Records a struct-serializable value to AdvantageKit using the class name as a prefix.
      * <p>
      * Use this for WPILib types that implement {@link StructSerializable} (poses, rotations, chassis speeds, module states, etc.).
@@ -325,60 +333,4 @@ public class Logger {
         }
     }
 
-    /**
-     * Logs a message to the SmartDashboard with a specified key and value.
-     *
-     * @param key   The key under which the value will be stored. The key will be prefixed with the class name followed by a '/'.
-     * @param value The double value to be logged to the SmartDashboard.
-     */
-    public void dashboard(String key, boolean value) {
-        SmartDashboard.putBoolean(className + '/' + key, value);
-        debug(key + ": " + value);
-    }
-
-    /**
-     * Logs a message to the SmartDashboard with a specified key and value.
-     *
-     * @param key   The key under which the value will be stored. The key will be prefixed with the class name followed by a '/'.
-     * @param value The double value to be logged to the SmartDashboard.
-     */
-    public void dashboard(String key, double value) {
-        SmartDashboard.putNumber(className + '/' + key, value);
-        debug(key + ": " + value);
-    }
-
-    /**
-     * Logs a message to the SmartDashboard with a specified key and value.
-     *
-     * @param key   The key under which the value will be stored. The key will be prefixed with the class name followed by a '/'.
-     * @param value The Sendable value to be logged to the SmartDashboard.
-     */
-    public void dashboard(String key, Sendable value) {
-        SmartDashboard.putData(className + '/' + key, value);
-        debug(key + ": sendable logged to dashboard");
-    }
-
-    /**
-     * Logs a message to the SmartDashboard with a specified key and value.
-     *
-     * @param key   The key under which the value will be stored. The key will be prefixed with the class name followed by a '/'.
-     * @param value The string value to be logged to the SmartDashboard.
-     */
-    public void dashboard(String key, String value) {
-        SmartDashboard.putString(className + '/' + key, value);
-        debug(key + ": " + value);
-    }
-
-    /**
-     * Logs a message to the SmartDashboard with a specified key and value. This method will only log the message if verbose output is enabled.
-     *
-     * @param key   The key under which the value will be stored. The key will be prefixed with the class name followed by a '/'.
-     * @param value The Sendable value to be logged to the SmartDashboard.
-     */
-    public void dashboardVerbose(String key, Sendable value) {
-        if (verbose) {
-            SmartDashboard.putData(className + '/' + key, value);
-            debug(key + ": sendable logged to dashboard (verbose)");
-        }
-    }
 }

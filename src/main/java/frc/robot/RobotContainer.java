@@ -49,70 +49,93 @@ import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
  */
 public class RobotContainer {
 
-    // Configuration
+    /** Deserialized subsystem configuration loaded from the environment-specific JSON file. */
     private final SubsystemsConfig                    subsystemsConfig;
 
+    /** Field layout configuration that supplies the current AprilTag positions. */
     private final FieldLayoutConfig                   fieldLayoutConfig;
 
+    /** Lazily supplies the loaded {@link AprilTagFieldLayout} for vision and navigation. */
     private final Supplier<AprilTagFieldLayout>       aprilTagFieldLayoutSupplier;
 
+    /** Swerve drive subsystem responsible for chassis motion and odometry. */
     // Subsystems
     private final DriveBaseSubsystem                  driveBaseSubsystem;
 
+    /** Turret subsystem that rotates the shooter to face field targets. */
     private final TurretSubsystem                     turretSubsystem;
 
+    /** Shooter subsystem that spins flywheels to launch game pieces. */
     private final ShooterSubsystem                    shooterSubsystem;
 
+    /** Indexer subsystem that stages game pieces between the feeder and shooter. */
     private final IndexerSubsystem                    indexerSubsystem;
 
+    /** Robot pose subsystem that fuses odometry and vision into a field-relative estimate. */
     private final RobotPoseSubsystem                  robotPoseSubsystem;
 
+    /** AprilTag vision subsystem that sends pose observations to the robot pose estimator. */
     @SuppressWarnings("unused")
     private final AprilTagVisionSubsystem             aprilTagVisionSubsystem;
 
+    /** Driver camera subsystem that manages camera stream modes for the operator. */
     @SuppressWarnings("unused")
     private final DriverCameraSubsystem               driverCameraSubsystem;
 
+    /** Climber subsystem for end-game climbing. */
     private final ClimberSubsystem                    climberSubsystem;
 
+    /** Feeder subsystem that transports game pieces into the indexer. */
     private final FeederSubsystem                     feederSubsystem;
 
+    /** Intake subsystem that collects game pieces from the ground. */
     private final IntakeSubsystem                     intakeSubsystem;
 
+    /** Harvester subsystem that deploys and stows the intake arm. */
     private final HarvesterSubsystem                  harvesterSubsystem;
 
+    /** Gameplay state machine that orchestrates multi-subsystem transitions. */
     private final GameplayStateSubsystem              gameplayStateSubsystem;
 
-    // Command factories
-
+    /** Factory that builds PathPlanner autonomous commands from pre-loaded auto files. */
     private final PathPlannerCommandFactory           pathPlannerCommandFactory;
 
+    /** Factory that builds drive base teleop and utility commands. */
     private final DriveBaseSubsystemCommandFactory    driveBaseCommandFactory;
 
+    /** Factory that builds turret aiming and tracking commands. */
     private final TurretSubsystemCommandFactory       turretCommandFactory;
 
+    /** Factory that builds shooter spin-up and idle commands. */
     private final ShooterSubsystemCommandFactory      shooterCommandFactory;
 
+    /** Factory that builds indexer hold, unjam, and feed commands. */
     private final IndexerSubsystemCommandFactory      indexerCommandFactory;
 
+    /** Factory that builds driver camera stream-toggle commands. */
     @SuppressWarnings("unused")
     private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
 
+    /** Factory that builds climber positioning commands. */
     @SuppressWarnings("unused")
     private final ClimberSubsystemCommandFactory      climberCommandFactory;
 
+    /** Factory that builds feeder transport commands. */
     private final FeederSubsystemCommandFactory       feederCommandFactory;
 
+    /** Factory that builds intake collect and eject commands. */
     private final IntakeSubsystemCommandFactory       intakeCommandFactory;
 
+    /** Factory that builds harvester deploy and stow commands. */
     private final HarvesterSubsystemCommandFactory    harvesterCommandFactory;
 
+    /** Factory that builds gameplay state transition commands. */
     private final GameplayStateCommandFactory         gameplayStateCommandFactory;
 
-    // Cross-subsystem utilities
+    /** Selects the nearest field target for turret tracking based on alliance and pose. */
     private final FieldTargetSelector                 fieldTargetSelector;
 
-    // Input bindings
+    /** Binds controller buttons and triggers to commands for both driver and operator. */
     @SuppressWarnings("unused")
     private final TriggerBindings                     triggerBindings;
 
@@ -180,6 +203,8 @@ public class RobotContainer {
                     driveBaseSubsystem::getYawRateRadiansPerSecond);
 
             // Register named commands for PathPlanner autos before pre-loading
+            // Register named commands that PathPlanner autos reference by string key.
+            // These must be registered before pre-loading autos so PathPlanner can resolve them.
             NamedCommands.registerCommand("MoveHarvesterToPositionCommand", harvesterCommandFactory.createDeployCommand());
             NamedCommands.registerCommand("SpinUpShooterCommand",
                     shooterCommandFactory.createSpinUpCommand(subsystemsConfig.shooterSubsystem::getMaximumShootingRpm));
@@ -296,6 +321,15 @@ public class RobotContainer {
         return autoCommand;
     }
 
+    /**
+     * Resolves the subsystem configuration JSON file name based on the current robot environment.
+     * <p>
+     * Returns {@code "subsystems-sim.json"} in simulation, {@code "subsystems-test.json"} on the
+     * test robot, or {@code "subsystems.json"} for the competition robot.
+     * </p>
+     *
+     * @return file name (without path) of the subsystems config to load from the deploy directory
+     */
     private String resolveSubsystemsConfigFileName() {
         if (RobotEnvironment.isSimulation()) {
             return "subsystems-sim.json";
@@ -308,6 +342,11 @@ public class RobotContainer {
         return "subsystems.json";
     }
 
+    /**
+     * Checks whether the robot is the team's test chassis rather than the competition robot.
+     *
+     * @return {@code true} if this is the test robot; {@code false} otherwise
+     */
     private boolean isTestRobot() {
         // TODO: hardware check to see if we're using the test robot
         return false;

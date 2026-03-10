@@ -33,6 +33,10 @@ public class UnjamCommand extends AbstractSubsystemCommand<IndexerSubsystem> {
         this.config = config;
     }
 
+    /**
+     * Drives the motor toward the current target velocity and switches direction when the current
+     * pulse duration elapses.
+     */
     @Override
     public void execute() {
         subsystem.seekVelocity();
@@ -53,18 +57,29 @@ public class UnjamCommand extends AbstractSubsystemCommand<IndexerSubsystem> {
         }
     }
 
+    /**
+     * Stops the cycle timer and the indexer motor when the command ends.
+     *
+     * @param interrupted true when the command was interrupted rather than finishing normally
+     */
     @Override
     public void end(boolean interrupted) {
         cycleTimer.stop();
         subsystem.stop();
     }
 
+    /**
+     * Returns false so the command runs until the operator releases the unjam button.
+     *
+     * @return always {@code false}
+     */
     @Override
     public boolean isFinished() {
         // Runs until interrupted by the operator.
         return false;
     }
 
+    /** Starts the first forward pulse and resets the cycle timer. */
     @Override
     protected void onInitialize() {
         isForwardPhase = true;

@@ -111,7 +111,7 @@ public abstract class AbstractSimMotor extends AbstractMotor {
         rebuildMotorSim(maximumAccelerationRadiansPerSecondSquaredSupplier.getAsDouble());
 
         init();
-        log.dashboard("simMotorModel", motorModel.getClass().getSimpleName());
+        log.recordOutput("simMotorModel", motorModel.getClass().getSimpleName());
         log.recordOutput("gearRatio", gearRatio);
     }
 

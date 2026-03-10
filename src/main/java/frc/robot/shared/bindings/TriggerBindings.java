@@ -229,6 +229,14 @@ public class TriggerBindings {
         }
     }
 
+    /**
+     * Wires the driver controller sticks and triggers to field-relative driving commands.
+     * <p>
+     * Left stick controls translation (Y = forward/back, X = strafe), right stick X controls
+     * rotation rate. Triggers select a speed tier (slow, normal, sprint). Response curve
+     * exponents and speed scales are read from tunable config each cycle.
+     * </p>
+     */
     private void configureDriveControllerBindings() {
         // Map sticks to field-relative driving using the drive base command factory.
         // Left stick: translation (forward/back on Y, left/right on X).

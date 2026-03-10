@@ -22,22 +22,34 @@ public class HoldCommand extends AbstractSubsystemCommand<IndexerSubsystem> {
         super(subsystem);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void execute() {
         subsystem.seekVelocity();
     }
 
+    /**
+     * Stops the indexer motor when this command is interrupted by a higher-priority command.
+     *
+     * @param interrupted true when the command was interrupted rather than finishing normally
+     */
     @Override
     public void end(boolean interrupted) {
         subsystem.stop();
     }
 
+    /**
+     * Returns false so the command runs until interrupted.
+     *
+     * @return always {@code false}
+     */
     @Override
     public boolean isFinished() {
         // Runs until interrupted by another command.
         return false;
     }
 
+    /** Sets the indexer target to 0 RPM so the roller stays still. */
     @Override
     protected void onInitialize() {
         subsystem.setTargetVelocityRpm(0.0);

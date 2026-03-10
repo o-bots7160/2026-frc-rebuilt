@@ -29,6 +29,14 @@ import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIOPhotonVisionSim;
  */
 public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSubsystemConfig> {
 
+    /**
+     * Groups the resources for a single vision camera so they can be iterated together.
+     *
+     * @param name              human-readable camera name matching the config key
+     * @param io                hardware or sim IO implementation for this camera
+     * @param inputs            auto-logged input container populated each cycle
+     * @param disconnectedAlert driver station alert raised when the camera stops reporting
+     */
     private record CameraInstance(
             String name,
             AprilTagVisionIO io,
@@ -36,14 +44,19 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             Alert disconnectedAlert) {
     }
 
+    /** Immutable map of camera name to its runtime resources, built at construction time. */
     private final Map<String, CameraInstance> cameras;
 
+    /** Consumer that forwards accepted pose measurements to the robot state estimator. */
     private final VisionMeasurementConsumer    consumer;
 
+    /** AprilTag field layout used to resolve tag IDs into 3D poses for logging. */
     private final AprilTagFieldLayout         fieldLayout;
 
+    /** Filters and weights raw pose observations before forwarding them to the consumer. */
     private final AprilTagPoseEstimator       poseEstimator;
 
+    /** Guards the disabled-periodic log message so it prints only once per disable cycle. */
     private boolean                           disabledPeriodicLogged;
 
     /**
@@ -55,8 +68,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
      * @param config       configuration for vision processing and tunable thresholds
      * @param fieldLayout  AprilTag field layout in meters
      * @param consumer     consumer that receives accepted pose measurements with standard deviations
-    * @param poseSupplier supplier for the current robot pose in meters and radians (used for simulation). Use raw odometry or ground-truth poses,
-    *                     not the fused robot state pose, to avoid feedback loops in sim.
+     * @param poseSupplier supplier for the current robot pose in meters and radians (used for simulation). Use raw odometry or ground-truth poses,
+     *                     not the fused robot state pose, to avoid feedback loops in sim.
      */
     public AprilTagVisionSubsystem(
             AprilTagVisionSubsystemConfig config,
@@ -80,6 +93,10 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         log.info("Initialized with " + cameras.size() + " camera(s)");
     }
 
+    /**
+     * Pulls the latest frames from each camera, filters pose observations, and forwards accepted
+     * measurements to the robot state estimator.
+     */
     @Override
     public void periodic() {
         if (isSubsystemDisabled()) {
@@ -120,6 +137,14 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         logSummary(allTagPoses, allRobotPoses, allAcceptedPoses, allRejectedPoses);
     }
 
+    /**
+     * Builds and returns an immutable map of camera instances from the subsystem config.
+     *
+     * @param config       vision config containing camera names and transforms
+     * @param fieldLayout  AprilTag field layout for sim camera setup
+     * @param poseSupplier robot pose supplier used by sim cameras
+     * @return unmodifiable map of camera name to {@link CameraInstance}
+     */
     private Map<String, CameraInstance> createCameras(
             AprilTagVisionSubsystemConfig config,
             AprilTagFieldLayout fieldLayout,
@@ -169,6 +194,20 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         return Collections.unmodifiableMap(cameraMap);
     }
 
+    /**
+     * Evaluates pose observations from a single camera and forwards accepted measurements.
+     * <p>
+     * Each observation is passed through the {@link AprilTagPoseEstimator}. Accepted poses are
+     * forwarded to the consumer; rejected poses are collected for diagnostic logging.
+     * </p>
+     *
+     * @param cameraName       human-readable camera name for per-camera logging
+     * @param cameraInputs     latest logged inputs from this camera
+     * @param allTagPoses      accumulator for observed tag field poses across all cameras
+     * @param allRobotPoses    accumulator for raw robot pose estimates across all cameras
+     * @param allAcceptedPoses accumulator for accepted robot pose estimates across all cameras
+     * @param allRejectedPoses accumulator for rejected robot pose estimates across all cameras
+     */
     private void processCameraObservations(
             String cameraName,
             AprilTagVisionIOInputsAutoLogged cameraInputs,
@@ -215,6 +254,12 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         allRejectedPoses.addAll(rejectedPoses);
     }
 
+    /**
+     * Resolves observed tag IDs into field poses and appends them to the provided list.
+     *
+     * @param tagIds   array of observed AprilTag IDs
+     * @param tagPoses mutable list to append resolved 3D tag poses into
+     */
     private void collectTagPoses(int[] tagIds, List<Pose3d> tagPoses) {
         // Look up each tag ID in the field layout and add its 3D pose if it exists.
         for (int tagId : tagIds) {
@@ -222,6 +267,15 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         }
     }
 
+    /**
+     * Records per-camera pose data under a prefixed log key for side-by-side comparison.
+     *
+     * @param cameraName    camera name used as the log key prefix
+     * @param tagPoses      observed tag field poses
+     * @param robotPoses    raw robot pose estimates from all observations
+     * @param acceptedPoses robot poses that passed filtering
+     * @param rejectedPoses robot poses that failed filtering
+     */
     private void logCameraData(
             String cameraName,
             List<Pose3d> tagPoses,
@@ -236,6 +290,14 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         log.recordVerboseOutput(prefix + "/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
     }
 
+    /**
+     * Records an aggregated summary of all camera observations for system-wide diagnostics.
+     *
+     * @param tagPoses      combined observed tag field poses from all cameras
+     * @param robotPoses    combined raw robot pose estimates from all cameras
+     * @param acceptedPoses combined accepted robot pose estimates
+     * @param rejectedPoses combined rejected robot pose estimates
+     */
     private void logSummary(
             List<Pose3d> tagPoses,
             List<Pose3d> robotPoses,

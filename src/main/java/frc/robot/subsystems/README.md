@@ -67,8 +67,11 @@ behavior in one place and lets each mechanism focus on what makes it unique.
 ```
 WPILib SubsystemBase
  └─ AbstractSubsystem<TConfig>           shared/subsystems/
-     └─ AbstractSetAndSeekSubsystem      shared/subsystems/
-         └─ TurretSubsystem, etc.        subsystems/<mechanism>/
+     ├─ AbstractSetAndSeekSubsystem      shared/subsystems/
+     │   └─ TurretSubsystem, etc.        subsystems/<mechanism>/
+     └─ AbstractMotorSubsystem           shared/subsystems/
+         └─ AbstractVelocitySubsystem    shared/subsystems/
+             └─ ShooterSubsystem, etc.   subsystems/<mechanism>/
 
 WPILib Command
  └─ AbstractSubsystemCommand             shared/commands/
@@ -101,9 +104,11 @@ configuration reference, and code-structure table. Click through for details.
 | [Drivebase](drivebase/README.md)                     | Swerve drivetrain for field movement and autonomous paths    | Implemented |
 | [Driver Camera Vision](drivercameravision/README.md) | Provides a driver-facing camera feed for operator visibility | Implemented |
 | [Feeder](feeder/README.md)                           | Transports FUEL from the intake into the indexer lane        | Planned     |
+| [Gameplay State](gameplaystate/README.md)            | Tracks the current game phase and scoring mode               | Implemented |
+| [Harvester](harvester/README.md)                     | Collects game pieces from the field using rollers            | Planned     |
 | [Indexer](indexer/README.md)                         | Gates FUEL release into the shooter for timed shots          | Planned     |
 | [Intake](intake/README.md)                           | Collects FUEL from the field and passes it to the feeder     | Planned     |
-| [Robot State](robotstate/README.md)                  | Single authoritative source of robot pose on the field       | Implemented |
+| [Robot Pose](robotpose/README.md)                    | Single authoritative source of robot pose on the field       | Implemented |
 | [Shooter](shooter/README.md)                         | Spins flywheels to launch FUEL at scoring targets            | Planned     |
 | [Turret](turret/README.md)                           | Single-axis rotating mount for aiming the shooter            | Implemented |
 
