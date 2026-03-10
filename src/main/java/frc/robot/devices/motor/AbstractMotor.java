@@ -8,7 +8,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.shared.config.AbstractMotorConfig;
@@ -180,23 +179,6 @@ public abstract class AbstractMotor implements Motor {
     }
 
     /**
-     * Applies an open-loop duty cycle (-1 to 1).
-     *
-     * @param speed duty cycle request, where 1.0 equals full forward
-     */
-    @Override
-    public void setSpeed(double speed) {
-        if (!ensureInitialized("setSpeed")) {
-            return;
-        }
-        // Clamp the duty cycle because SparkMax expects -1 to 1.
-        double clampedPercent = MathUtil.clamp(speed, -1.0, 1.0);
-        // Convert the duty cycle into a rough voltage for logging.
-        lastCommandedVolts = clampedPercent * DEFAULT_VOLTAGE_COMPENSATION;
-        motor.set(clampedPercent);
-    }
-
-    /**
      * Stops motor output immediately.
      */
     @Override
@@ -211,8 +193,8 @@ public abstract class AbstractMotor implements Motor {
     /**
      * Reports the current measured position in radians.
      * <p>
-     * The raw encoder value is in motor rotations. This method multiplies by the stored conversion factor to return mechanism radians. The
-     * conversion is done in Java rather than relying on SparkMax firmware conversion factors for reliability across REVLib versions.
+     * The raw encoder value is in motor rotations. This method multiplies by the stored conversion factor to return mechanism radians. The conversion
+     * is done in Java rather than relying on SparkMax firmware conversion factors for reliability across REVLib versions.
      * </p>
      *
      * @return mechanism position (radians)
@@ -271,19 +253,6 @@ public abstract class AbstractMotor implements Motor {
         return edu.wpi.first.units.Units.Volts.of(motor.getBusVoltage() * motor.getAppliedOutput());
     }
 
-    /**
-     * Supplies the underlying SparkMax for advanced configuration or testing.
-     *
-     * @return backing SparkMax instance
-     */
-    @Override
-    public SparkMax getMotor() {
-        if (!ensureInitialized("getMotor")) {
-            return motor;
-        }
-        return motor;
-    }
-
     @Override
     public void updateInputs(MotorIOInputs inputs) {
         if (!ensureInitialized("updateInputs")) {
@@ -302,8 +271,8 @@ public abstract class AbstractMotor implements Motor {
             return;
         }
         // Pull fresh sensor data for logging and telemetry dashboards.
-        double rawEncoderVelocity      = motor.getEncoder().getVelocity();
-        double rawEncoderPosition      = motor.getEncoder().getPosition();
+        double rawEncoderVelocity = motor.getEncoder().getVelocity();
+        double rawEncoderPosition = motor.getEncoder().getPosition();
         inputs.rawEncoderVelocity      = rawEncoderVelocity;
         inputs.positionRadians         = rawEncoderPosition * positionRadiansPerMotorRotation;
         inputs.positionMotorRotations  = rawEncoderPosition;

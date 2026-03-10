@@ -19,32 +19,32 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
     /**
      * Nominal loop period in seconds for controller updates.
      */
-    protected static double kDt = 0.02;
+    protected static double   kDt                   = 0.02;
 
     /**
      * Subsystem configuration bundle loaded from JSON.
      */
-    protected TConfig       config;
+    protected TConfig         config;
 
     /**
      * Cached class name used for logging prefixes.
      */
-    protected String        className;
+    protected String          className;
 
     /**
      * True when verbose logging is enabled for this subsystem.
      */
-    protected boolean       verbose;
+    protected boolean         verbose;
 
     /**
      * Logger instance scoped to the subsystem.
      */
-    protected Logger        log;
+    protected Logger          log;
 
     /**
      * True when the subsystem is allowed to run hardware actions.
      */
-    protected boolean       enabled;
+    protected boolean         enabled;
 
     /**
      * Tracks method names that have already been logged as disabled so each message prints only once.
@@ -71,15 +71,6 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
      */
     public TConfig getConfig() {
         return config;
-    }
-
-    /**
-     * States whether this subsystem is marked as enabled in configuration.
-     *
-     * @return True when the subsystem should execute its normal behavior.
-     */
-    public boolean isEnabled() {
-        return enabled;
     }
 
     /**
@@ -113,15 +104,6 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
     }
 
     /**
-     * Reports whether the code is running on real robot hardware.
-     *
-     * @return True when running on a real robot.
-     */
-    protected boolean isReal() {
-        return RobotEnvironment.isReal();
-    }
-
-    /**
      * Reports whether the robot is attached to the FMS at call time.
      * <p>
      * Uses the per-cycle cached value from {@link RobotEnvironment#refreshCycle()}.
@@ -134,25 +116,12 @@ public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends 
     }
 
     /**
-     * Reports a fatal or high-severity error to the Driver Station console.
-     * <p>
-     * Use this for constructor failures, missing hardware, or anything that should be immediately visible to operators.
-     * </p>
-     *
-     * @param message    error description
-     * @param stackTrace stack trace elements to include, or {@code null} to omit
-     */
-    protected void reportError(String message, StackTraceElement[] stackTrace) {
-        RobotEnvironment.reportError(message, stackTrace);
-    }
-
-    /**
      * Reports a recoverable warning to the Driver Station console.
      * <p>
      * Use this for situations like a missing starting pose or a non-critical fallback.
      * </p>
      *
-     * @param message        warning description
+     * @param message         warning description
      * @param printStackTrace true to include a stack trace in the output
      */
     protected void reportWarning(String message, boolean printStackTrace) {

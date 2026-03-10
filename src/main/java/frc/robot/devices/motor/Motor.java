@@ -1,7 +1,5 @@
 package frc.robot.devices.motor;
 
-import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.units.measure.Voltage;
 
 /**
@@ -23,16 +21,6 @@ public interface Motor extends MotorIO {
      * @param voltage desired output voltage, in volts
      */
     void setVoltage(Voltage voltage);
-
-    /**
-     * Commands an open-loop duty cycle.
-     * <p>
-     * This is intended for manual control or characterization when no closed-loop control is needed.
-     * </p>
-     *
-     * @param speed duty cycle from -1 (full reverse) to 1 (full forward), unitless
-     */
-    void setSpeed(double speed);
 
     /**
      * Reports the current mechanism position.
@@ -82,14 +70,4 @@ public interface Motor extends MotorIO {
      * </p>
      */
     void stop();
-
-    /**
-     * Exposes the underlying motor controller for advanced tuning.
-     * <p>
-     * Use this sparingly to access vendor-specific configuration that is not covered by this interface.
-     * </p>
-     *
-     * @return wrapped {@link SparkMax} instance
-     */
-    SparkMax getMotor();
 }

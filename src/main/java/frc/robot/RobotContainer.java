@@ -290,18 +290,6 @@ public class RobotContainer {
     }
 
     /**
-     * Returns the active AprilTag field layout for navigation and vision targeting.
-     * <p>
-     * Use this to look up tag poses for autonomous destinations or pose correction.
-     * </p>
-     *
-     * @return loaded AprilTag field layout with the configured origin applied
-     */
-    public AprilTagFieldLayout getAprilTagFieldLayout() {
-        return aprilTagFieldLayoutSupplier.get();
-    }
-
-    /**
      * Returns the command to run during autonomous mode.
      * <p>
      * Update this method to swap between auto routines.
@@ -324,8 +312,8 @@ public class RobotContainer {
     /**
      * Resolves the subsystem configuration JSON file name based on the current robot environment.
      * <p>
-     * Returns {@code "subsystems-sim.json"} in simulation, {@code "subsystems-test.json"} on the
-     * test robot, or {@code "subsystems.json"} for the competition robot.
+     * Returns {@code "subsystems-sim.json"} in simulation, {@code "subsystems-test.json"} on the test robot, or {@code "subsystems.json"} for the
+     * competition robot.
      * </p>
      *
      * @return file name (without path) of the subsystems config to load from the deploy directory

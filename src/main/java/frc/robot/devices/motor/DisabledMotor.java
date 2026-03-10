@@ -1,7 +1,5 @@
 package frc.robot.devices.motor;
 
-import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -29,16 +27,6 @@ public final class DisabledMotor implements Motor {
     @Override
     public void setVoltage(Voltage voltage) {
         lastCommandedVolts = voltage.in(Units.Volts);
-    }
-
-    /**
-     * Ignores duty-cycle requests and records the equivalent voltage.
-     *
-     * @param speed duty cycle from -1 (full reverse) to 1 (full forward)
-     */
-    @Override
-    public void setSpeed(double speed) {
-        setVoltage(Units.Volts.of(speed * 12.0));
     }
 
     /**
@@ -87,16 +75,6 @@ public final class DisabledMotor implements Motor {
     @Override
     public void setEncoderPosition(double positionRadians) {
         // No-op: no encoder to reset.
-    }
-
-    /**
-     * Returns {@code null} because no controller exists when disabled.
-     *
-     * @return null SparkMax instance
-     */
-    @Override
-    public SparkMax getMotor() {
-        return null;
     }
 
     /**

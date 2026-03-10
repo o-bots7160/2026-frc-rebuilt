@@ -16,17 +16,15 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class RobotEnvironment {
 
-    private static boolean fmsAttachedCached  = false;
+    private static boolean fmsAttachedCached = false;
 
-    private static boolean autonomousCached   = false;
+    private static boolean autonomousCached  = false;
 
-    private static boolean teleopCached       = false;
+    private static boolean teleopCached      = false;
 
-    private static boolean disabledCached     = true;
+    private static boolean disabledCached    = true;
 
-    private static boolean enabledCached      = false;
-
-    private static double  matchTimeCached    = -1.0;
+    private static double  matchTimeCached   = -1.0;
 
     /**
      * Refreshes cached environment state once per robot loop.
@@ -40,7 +38,6 @@ public final class RobotEnvironment {
         autonomousCached  = DriverStation.isAutonomous();
         teleopCached      = DriverStation.isTeleop();
         disabledCached    = DriverStation.isDisabled();
-        enabledCached     = DriverStation.isEnabled();
         matchTimeCached   = DriverStation.getMatchTime();
     }
 
@@ -132,18 +129,6 @@ public final class RobotEnvironment {
      */
     public static boolean isDisabled() {
         return disabledCached;
-    }
-
-    /**
-     * Reports whether the robot is currently enabled (autonomous or teleop).
-     * <p>
-     * Returns the per-cycle cached value set by {@link #refreshCycle()}.
-     * </p>
-     *
-     * @return true when the robot is enabled
-     */
-    public static boolean isEnabled() {
-        return enabledCached;
     }
 
     /**

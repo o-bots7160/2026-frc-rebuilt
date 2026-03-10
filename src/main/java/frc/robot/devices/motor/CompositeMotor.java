@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.units.measure.Voltage;
 
 /**
@@ -71,19 +69,6 @@ public final class CompositeMotor implements Motor {
     }
 
     /**
-     * Sends a duty-cycle command to the primary motor and all followers.
-     *
-     * @param speed duty cycle from -1 (full reverse) to 1 (full forward)
-     */
-    @Override
-    public void setSpeed(double speed) {
-        primary.setSpeed(speed);
-        for (Motor follower : followers) {
-            follower.setSpeed(speed);
-        }
-    }
-
-    /**
      * Returns the primary motor's measured position in radians.
      *
      * @return mechanism position from the primary encoder
@@ -135,16 +120,6 @@ public final class CompositeMotor implements Motor {
         for (Motor follower : followers) {
             follower.stop();
         }
-    }
-
-    /**
-     * Returns the primary motor's underlying SparkMax for advanced tuning.
-     *
-     * @return primary motor's SparkMax instance
-     */
-    @Override
-    public SparkMax getMotor() {
-        return primary.getMotor();
     }
 
     /**
