@@ -45,88 +45,84 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
     }
 
     /**
-     * Publishes the turret's 3D component pose each cycle so AdvantageScope can animate the turret model.
+     * Publishes the simulated turret's 3D pose for AdvantageScope animation.
      * <p>
-     * The component pose combines the configured pivot offset with a Z-axis (yaw) rotation matching the measured turret angle.
+     * The pose combines the configured pivot offset with a Z-axis (yaw) rotation matching the measured turret angle, adjusted by the turret zero
+     * offset so 0° points backward in simulation. This ensures the simulated model matches the real robot's orientation when the turret is
+     * rear-facing.
      * </p>
      */
     @Override
-    public void periodic() {
-        super.periodic();
-
+    public void simulationPeriodic() {
+        super.simulationPeriodic();
+        double poseDegrees         = getMeasuredPositionDegrees();
         Pose3d turretComponentPose = new Pose3d(
                 config.componentPoseConfig.toTranslation3d(),
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(getMeasuredPositionDegrees())));
-
+                new Rotation3d(0.0, 0.0, Units.degreesToRadians(poseDegrees)));
         log.recordOutput("componentPoses", new Pose3d[] { turretComponentPose });
     }
 
     /**
      * Computes the turret target angle needed to face a field-relative target while compensating for robot rotation.
      * <p>
-     * When the turret faces the rear of the robot ({@code rearFacingTurret} is true), the robot-relative direction to the target is negated before the
-     * zero offset is applied. Negation is necessary because a backward-facing turret mirrors left and right relative to robot-forward: what is to the
-     * robot's left appears on the turret's right when looking along the barrel. When the turret faces forward the standard formula is used instead. The
-     * rotational lead-time compensation predicts how far the heading will change and pre-rotates the turret so it stays on target instead of lagging
-     * behind. The returned angle is clamped to the configured turret limits.
+     * The returned angle is relative to the turret's own zero direction, which is defined by {@code turretZeroOffsetDegrees}. For a rear-facing
+     * turret (offset = 180°), turret 0° points straight backward, positive angles rotate counter-clockwise when viewed from above, and the configured
+     * setpoint limits bound how far the turret can swing from its zero. The formula is:
+     * </p>
+     * <p>
+     * {@code turretAngle = fieldAngleToTarget − robotHeading − turretZeroOffset}
+     * </p>
+     * <p>
+     * Rotational lead-time compensation predicts where the robot heading will be after a short look-ahead period and subtracts that predicted change
+     * so the turret pre-rotates instead of lagging behind. The returned angle is clamped to the configured turret limits.
      * </p>
      *
-     * @param robotPose                   current robot pose in meters and radians
-     * @param targetFieldPositionMeters   target position on the field in meters
+     * @param robotPose                    current robot pose in meters and radians
+     * @param targetFieldPositionMeters    target position on the field in meters
      * @param robotYawRateRadiansPerSecond current robot rotational velocity in radians per second (positive is counter-clockwise)
-     * @return turret target angle in degrees
+     * @return turret target angle in degrees, relative to turret zero
      */
     public double calculateFieldTargetDegrees(
             Pose2d robotPose,
             Translation2d targetFieldPositionMeters,
             double robotYawRateRadiansPerSecond) {
-        double deltaX              = targetFieldPositionMeters.getX() - robotPose.getX();
-        double deltaY              = targetFieldPositionMeters.getY() - robotPose.getY();
+        double deltaX                        = targetFieldPositionMeters.getX() - robotPose.getX();
+        double deltaY                        = targetFieldPositionMeters.getY() - robotPose.getY();
 
-        double fieldAngleRadians   = Math.atan2(deltaY, deltaX);
-        double robotHeadingRadians = robotPose.getRotation().getRadians();
-        double zeroOffsetRadians   = Units.degreesToRadians(config.getTurretZeroOffsetDegrees());
+        double fieldAngleRadians             = Math.atan2(deltaY, deltaX);
+        double robotHeadingRadians           = robotPose.getRotation().getRadians();
+        double zeroOffsetRadians             = Units.degreesToRadians(config.getTurretZeroOffsetDegrees());
 
-        double robotRelativeRadians = fieldAngleRadians - robotHeadingRadians;
-        if (config.isRearFacingTurret()) {
-            robotRelativeRadians = -robotRelativeRadians;
-        }
-        double rawTargetRadians = robotRelativeRadians + zeroOffsetRadians;
+        // Turret angle = direction-to-target in field frame, minus robot heading, minus turret zero offset.
+        // This gives the angle relative to the turret's own zero direction.
+        double rawTargetRadians              = fieldAngleRadians - robotHeadingRadians - zeroOffsetRadians;
 
-        // Compensate for robot rotation by predicting where the heading will be after the configured lead time.
-        double leadTimeSeconds             = config.getRotationalLeadTimeSeconds();
+        // Compensate for robot rotation by predicting where the heading will be after the configured lead
+        // time. A positive yaw rate (CCW) increases the heading, which decreases the turret-relative angle,
+        // so we subtract the predicted heading change.
+        double leadTimeSeconds               = config.getRotationalLeadTimeSeconds();
         double rotationalCompensationRadians = robotYawRateRadiansPerSecond * leadTimeSeconds;
-        double compensatedTargetRadians    = rawTargetRadians + rotationalCompensationRadians;
+        double compensatedTargetRadians      = rawTargetRadians - rotationalCompensationRadians;
 
         return Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
     }
 
     /**
-     * Clamps a turret target angle to the configured setpoint limits.
+     * Normalizes and clamps a turret target angle to the configured setpoint limits.
      * <p>
-     * Uses {@link MathUtil#inputModulus(double, double, double)} to wrap the target into the turret's travel range, then snaps to the nearest limit
-     * if the range is smaller than a full rotation and the wrapped result is still outside the allowed band.
+     * The angle is first wrapped into the [-pi, pi] range with {@link MathUtil#angleModulus(double)}, then clamped to the configured min/max setpoint
+     * radians. When the target is outside the turret's reachable range (e.g., a target in front of a rear-facing turret), the turret moves to the
+     * nearest limit, which keeps the barrel as close to the target direction as possible.
      * </p>
      *
-     * @param targetRadians requested turret angle in radians
-     * @return closest equivalent angle within the turret limits in radians
+     * @param targetRadians requested turret angle in radians, relative to turret zero
+     * @return closest reachable angle within the turret limits in radians
      */
     private double clampToTurretLimitsRadians(double targetRadians) {
         double minRadians = config.getMinimumSetpointRadians();
         double maxRadians = config.getMaximumSetpointRadians();
-
-        if (minRadians > maxRadians) {
-            double swap = minRadians;
-            minRadians = maxRadians;
-            maxRadians = swap;
-        }
-
-        if (maxRadians - minRadians <= 0.0) {
-            return minRadians;
-        }
-
-        double wrapped = MathUtil.inputModulus(targetRadians, minRadians, maxRadians);
-        return MathUtil.clamp(wrapped, minRadians, maxRadians);
+        double normalized = MathUtil.angleModulus(targetRadians);
+        return MathUtil.clamp(normalized, minRadians, maxRadians);
     }
 
 }

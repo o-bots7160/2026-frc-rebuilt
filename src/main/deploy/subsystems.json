@@ -186,7 +186,6 @@
       "componentPivotZ": 0.375
     },
     "turretZeroOffsetDegrees": 180.0,
-    "rearFacingTurret": true,
     "fieldTargets": {
       "fieldLengthMeters": 16.54,
       "fieldWidthMeters": 8.21,

@@ -26,15 +26,6 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
     public double turretZeroOffsetDegrees = 180.0;
 
     /**
-     * True when the turret barrel faces the rear of the robot.
-     * <p>
-     * A rear-facing turret mirrors left and right relative to robot-forward, so the robot-relative target
-     * angle must be negated before the zero offset is applied. Set to false when the turret faces forward.
-     * </p>
-     */
-    public boolean rearFacingTurret = true;
-
-    /**
      * Look-ahead time for rotational velocity compensation in seconds.
      * <p>
      * When the robot is spinning, the turret can lead its aim by this many seconds of predicted heading
@@ -46,28 +37,14 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
     /**
      * Returns the turret zero offset in degrees.
      * <p>
-     * This offset is added to the robot-relative target angle (which may be negated when
-     * {@link #isRearFacingTurret()} is true). A value of 180 means turret mechanical zero points to the
-     * rear of the robot.
+     * This offset is subtracted from the robot-relative target angle to convert into turret-relative
+     * coordinates. A value of 180 means turret mechanical zero points to the rear of the robot.
      * </p>
      *
      * @return turret zero offset in degrees
      */
     public double getTurretZeroOffsetDegrees() {
         return readTunableDegrees("turretZeroOffsetDegrees", turretZeroOffsetDegrees);
-    }
-
-    /**
-     * Returns whether the turret barrel faces the rear of the robot.
-     * <p>
-     * When true, the robot-relative target angle is negated in the tracking calculation to correct the
-     * mirrored left-right axis. When false, the standard forward-facing formula is used.
-     * </p>
-     *
-     * @return true when the turret faces backward
-     */
-    public boolean isRearFacingTurret() {
-        return readTunableBoolean("rearFacingTurret", rearFacingTurret);
     }
 
     /**
