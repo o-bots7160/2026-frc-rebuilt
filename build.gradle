@@ -265,6 +265,15 @@ tasks.register("renderMarkdown") {
             def indexPath = "${rootPrefix}index.html"
             def pageTitle = toDisplayName(relativePath)
 
+            // Rewrite relative image paths that reference the project-level
+            // assets/ folder so they resolve correctly inside the Javadoc
+            // output tree, where the HTML sits at a different depth.
+            def renderedHtml = markedOutput.toString("UTF-8")
+                .replaceAll(
+                    /src="([.\/]*?)assets\//,
+                    "src=\"${rootPrefix}assets/"
+                )
+
             outputFile.text = """
 <!DOCTYPE HTML>
 <html lang=\"en\">
@@ -327,7 +336,7 @@ tasks.register("renderMarkdown") {
 <a href=\"${rootPrefix}README.html\">Project README</a>
 <a href=\"${rootPrefix}frc/robot/GLOSSARY.html\">Glossary</a>
 </nav>
-${markedOutput.toString("UTF-8")}
+${renderedHtml}
 </div>
 </div>
 </main>
@@ -389,6 +398,14 @@ tasks.named("javadoc") {
         copy {
             from(markdownOutputDir)
             into(destinationDir)
+        }
+        // Copy image assets referenced by rendered Markdown pages.
+        copy {
+            from("assets") {
+                include "*.svg"
+                include "*.png"
+            }
+            into(new File(destinationDir as File, "assets"))
         }
     }
 }
