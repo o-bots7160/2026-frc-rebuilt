@@ -196,45 +196,90 @@ tasks.register("renderMarkdown") {
         }
 
         def toDisplayName = { mdPath ->
-            // Root-level files: README.md -> "Project README", GLOSSARY.md -> "Project Glossary"
+            // Prettify a raw file/folder name: replace underscores with spaces,
+            // title-case each word, and apply known acronym fixes.
+            def prettify = { String raw ->
+                def words = raw.replaceAll("_", " ").split("\\s+")
+                return words.collect { word ->
+                    // Known acronym / special-case mappings
+                    def lower = word.toLowerCase()
+                    if (lower == "sysid") return "SysID"
+                    if (lower == "readme") return "Readme"
+                    return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase()
+                }.join(" ")
+            }
+
+            // Root-level files: README.md -> "Project Readme", GLOSSARY.md -> "Project Glossary"
             if (!mdPath.contains("/")) {
                 def baseName = mdPath.replaceAll(/\.md$/, "")
-                def pretty = baseName.substring(0, 1).toUpperCase() + baseName.substring(1).toLowerCase()
-                return "Project ${pretty}"
+                return "Project ${prettify(baseName)}"
             }
             // Subsystem files: frc/robot/subsystems/<name>/<file>.md
             def subsystemMatch = (mdPath =~ /frc\/robot\/subsystems\/([^\\/]+)\/([^\\/]+)\.md/)
             if (subsystemMatch.matches()) {
                 def subsystemName = subsystemMatch[0][1]
                 def fileName = subsystemMatch[0][2]
-                def prettySubsystem = subsystemName.substring(0, 1).toUpperCase() + subsystemName.substring(1)
-                def prettyFile = fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase()
+                def prettySubsystem = prettify(subsystemName)
+                def prettyFile = prettify(fileName)
                 return "${prettySubsystem} Subsystem ${prettyFile}"
             }
             // Subsystems index: frc/robot/subsystems/<file>.md
             def subsystemsIndexMatch = (mdPath =~ /frc\/robot\/subsystems\/([^\\/]+)\.md/)
             if (subsystemsIndexMatch.matches()) {
                 def fileName = subsystemsIndexMatch[0][1]
-                def prettyFile = fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase()
-                return "Subsystems ${prettyFile}"
+                return "Subsystems ${prettify(fileName)}"
             }
-            // Shared files: frc/robot/shared/**/<file>.md
-            def sharedMatch = (mdPath =~ /frc\/robot\/shared\/.*?([^\\/]+)\.md/)
-            if (sharedMatch.matches()) {
-                def fileName = sharedMatch[0][1]
-                def prettyFile = fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase()
-                return "Shared ${prettyFile}"
+            // Shared sub-package files: frc/robot/shared/<subpackage>/<file>.md
+            def sharedSubMatch = (mdPath =~ /frc\/robot\/shared\/([^\\/]+)\/([^\\/]+)\.md/)
+            if (sharedSubMatch.matches()) {
+                def subpackage = sharedSubMatch[0][1]
+                def fileName = sharedSubMatch[0][2]
+                def prettySubpackage = prettify(subpackage)
+                def prettyFile = prettify(fileName)
+                if (prettyFile.equalsIgnoreCase("Readme")) {
+                    return "Shared ${prettySubpackage}"
+                }
+                return "Shared ${prettySubpackage} ${prettyFile}"
+            }
+            // Shared root file: frc/robot/shared/<file>.md
+            def sharedRootMatch = (mdPath =~ /frc\/robot\/shared\/([^\\/]+)\.md/)
+            if (sharedRootMatch.matches()) {
+                def fileName = sharedRootMatch[0][1]
+                if (fileName.equalsIgnoreCase("README")) {
+                    return "Shared Overview"
+                }
+                return "Shared ${prettify(fileName)}"
+            }
+            // Device sub-package files: frc/robot/devices/<subpackage>/<file>.md
+            def deviceSubMatch = (mdPath =~ /frc\/robot\/devices\/([^\\/]+)\/([^\\/]+)\.md/)
+            if (deviceSubMatch.matches()) {
+                def subpackage = deviceSubMatch[0][1]
+                def fileName = deviceSubMatch[0][2]
+                def prettySubpackage = prettify(subpackage)
+                def prettyFile = prettify(fileName)
+                if (prettyFile.equalsIgnoreCase("Readme")) {
+                    return "Devices ${prettySubpackage}"
+                }
+                return "Devices ${prettySubpackage} ${prettyFile}"
+            }
+            // Device root file: frc/robot/devices/<file>.md
+            def deviceRootMatch = (mdPath =~ /frc\/robot\/devices\/([^\\/]+)\.md/)
+            if (deviceRootMatch.matches()) {
+                def fileName = deviceRootMatch[0][1]
+                if (fileName.equalsIgnoreCase("README")) {
+                    return "Devices Overview"
+                }
+                return "Devices ${prettify(fileName)}"
             }
             // Other files under frc/robot: frc/robot/<file>.md
             def robotMatch = (mdPath =~ /frc\/robot\/([^\\/]+)\.md/)
             if (robotMatch.matches()) {
                 def fileName = robotMatch[0][1]
-                def prettyFile = fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase()
-                return "Project ${prettyFile}"
+                return "Project ${prettify(fileName)}"
             }
-            // Fallback: strip .md, replace path separators, title-case
-            def cleaned = mdPath.replaceAll(/\.md$/, "").replaceAll("/", " ")
-            return cleaned.replaceAll("\\s+", " ").trim()
+            // Fallback: strip .md, prettify each path segment
+            def segments = mdPath.replaceAll(/\.md$/, "").tokenize("/")
+            return segments.collect { prettify(it) }.join(" ")
         }
 
         markdownOutputDir.mkdirs()
@@ -357,11 +402,25 @@ ${renderedHtml}
             def displayName = toDisplayName(relativePath)
             return [path: htmlPath, name: displayName]
         }.sort { a, b ->
-            // Project README first, then Project-level docs, then alphabetical
-            if (a.path == "README.html") return -1
-            if (b.path == "README.html") return 1
-            if (a.name.startsWith("Project") && !b.name.startsWith("Project")) return -1
-            if (!a.name.startsWith("Project") && b.name.startsWith("Project")) return 1
+            // Assign a group rank so the overview list follows a logical order:
+            // 1=Project Readme, 2=Project, 3=Devices, 4=Shared, 5=Subsystem-level, 6=Individual subsystems, 7=other
+            def groupRank = { String name ->
+                if (name == "Project Readme") return 1
+                if (name.startsWith("Project")) return 2
+                if (name.startsWith("Devices")) return 3
+                if (name.startsWith("Shared")) return 4
+                if (name.startsWith("Subsystems")) return 5
+                if (name.contains("Subsystem")) return 6
+                return 7
+            }
+            def rankA = groupRank(a.name)
+            def rankB = groupRank(b.name)
+            if (rankA != rankB) return rankA <=> rankB
+            // Within a group, push "Overview" entries to the top
+            def isOverviewA = a.name.endsWith("Overview")
+            def isOverviewB = b.name.endsWith("Overview")
+            if (isOverviewA && !isOverviewB) return -1
+            if (!isOverviewA && isOverviewB) return 1
             return a.name <=> b.name
         }
 
