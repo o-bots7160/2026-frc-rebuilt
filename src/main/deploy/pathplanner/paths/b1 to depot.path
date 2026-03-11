@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 7.5
+        "y": 7.25
       },
       "prevControl": null,
       "nextControl": {
         "x": 3.146446609406726,
-        "y": 7.146446609406727
+        "y": 6.896446609406723
       },
       "isLocked": false,
       "linkedName": "b1to start"
@@ -69,7 +69,7 @@
   "folder": "b1",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": 108.0
   },
   "useDefaultConstraints": true
 }
