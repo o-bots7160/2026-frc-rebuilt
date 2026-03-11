@@ -29,25 +29,25 @@ public class TriggerBindings {
     /**
      * Default USB port for the driver controller.
      */
-    private static final int                       DEFAULT_DRIVE_CONTROLLER_PORT     = 0;
+    private static final int                       DEFAULT_DRIVE_CONTROLLER_PORT    = 0;
 
     /**
      * Default USB port for the operator controller.
      */
-    private static final int                       DEFAULT_OPERATOR_CONTROLLER_PORT  = 1;
+    private static final int                       DEFAULT_OPERATOR_CONTROLLER_PORT = 1;
 
     // Chooser option constants for subsystem test selection.
-    private static final String                    TEST_SUBSYSTEM_SHOOTER            = "Shooter";
+    private static final String                    TEST_SUBSYSTEM_SHOOTER           = "Shooter";
 
-    private static final String                    TEST_SUBSYSTEM_INDEXER            = "Indexer";
+    private static final String                    TEST_SUBSYSTEM_INDEXER           = "Indexer";
 
-    private static final String                    TEST_SUBSYSTEM_FEEDER             = "Feeder";
+    private static final String                    TEST_SUBSYSTEM_FEEDER            = "Feeder";
 
-    private static final String                    TEST_SUBSYSTEM_INTAKE             = "Intake";
+    private static final String                    TEST_SUBSYSTEM_INTAKE            = "Intake";
 
-    private static final String                    TEST_SUBSYSTEM_TURRET             = "Turret";
+    private static final String                    TEST_SUBSYSTEM_TURRET            = "Turret";
 
-    private static final String                    TEST_SUBSYSTEM_HARVESTER          = "Harvester";
+    private static final String                    TEST_SUBSYSTEM_HARVESTER         = "Harvester";
 
     /**
      * Driver gamepad used for manual driving.
@@ -208,9 +208,8 @@ public class TriggerBindings {
     /**
      * Wires the driver controller sticks and triggers to field-relative driving commands.
      * <p>
-     * Left stick controls translation (Y = forward/back, X = strafe), right stick X controls
-     * rotation rate. Triggers select a speed tier (slow, normal, sprint). Response curve
-     * exponents and speed scales are read from tunable config each cycle.
+     * Left stick controls translation (Y = forward/back, X = strafe), right stick X controls rotation rate. Triggers select a speed tier (slow,
+     * normal, sprint). Response curve exponents and speed scales are read from tunable config each cycle.
      * </p>
      */
     private void configureDriveControllerBindings() {

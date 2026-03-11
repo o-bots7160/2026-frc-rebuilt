@@ -97,9 +97,10 @@ WPILog file.
 3. Select the correct motor label (it matches the `motorLabel` parameter in
    `SysIdHelper`).
 4. Choose "Simple" mechanism type.
-5. The tool reports **kS**, **kV**, and **kA**.
+5. The Feedforward Analysis section reports **kS**, **kV**, and **kA**.
+6. The Feedback Analysis section reports **kP** — record this value too.
 
-Write down all three values before proceeding to the next step.
+Write down all four values before proceeding to the next step.
 
 ## Step 5: Correct the gains (critical!)
 
@@ -119,16 +120,23 @@ Apply this correction to the gains reported by the SysId tool:
 | kS   | Use as-is       | Use as-is         | No velocity dependency               |
 | kV   | Divide by 2π    | `kV_raw / 6.2832` | Proportional to velocity             |
 | kA   | Divide by 2π    | `kA_raw / 6.2832` | Proportional to acceleration (dv/dt) |
+| kP   | Divide by 2π    | `kP_raw / 6.2832` | Computed against inflated velocity   |
 
-### Worked example (intake)
+### Worked example (feeder)
 
-The SysId tool reported for the intake:
+The SysId tool reported for the feeder:
 
-| Gain | SysId reported | ÷ 2π     | Entered in config |
-| ---- | -------------- | -------- | ----------------- |
-| kS   | 0.30559        | —        | 0.30559           |
-| kV   | 0.52129        | 0.08296  | 0.08296           |
-| kA   | 0.056569       | 0.009004 | 0.009004          |
+| Gain | SysId reported | ÷ 2π    | Entered in config |
+| ---- | -------------- | ------- | ----------------- |
+| kS   | 0.66654        | —       | 0.66654           |
+| kV   | 0.51183        | 0.08148 | 0.08148           |
+| kA   | 0.058155       | 0.00926 | 0.00926           |
+| kP   | 0.025503       | 0.00406 | 0.025503          |
+
+> **Note on kP:** The ÷2π correction applies mathematically, but the SysId
+> feedback kP is only a rough starting point — not a precise calibration like
+> the feedforward gains. Using the raw SysId kP directly is acceptable as a
+> starting value; it will be tuned on the robot in Step 8 regardless.
 
 ### How to verify the correction is right
 
@@ -150,16 +158,17 @@ the theoretical max, something is wrong.
 Update the mechanism's section in `subsystems.json`:
 
 ```json
-"kS": 0.30559,
-"kV": 0.08296,
-"kA": 0.009004,
-"kP": 0.01,
+"kS": 0.66654,
+"kV": 0.08148,
+"kA": 0.00926,
+"kP": 0.025503,
 "kI": 0.0,
 "kD": 0.0
 ```
 
-Start kP at `0.01` as a conservative value. You will tune it on the robot later
-(see Step 8).
+Use the kP value reported by the SysId Feedback Analysis section as your
+starting point. You will fine-tune it on the robot later (see Step 8). If SysId
+did not report a kP, start with `0.01` as a conservative default.
 
 Also update the velocity limits now that you know the real max speed:
 
@@ -189,7 +198,8 @@ verify the motor direction.
 
 Once feedforward is correct, tune kP to tighten the response:
 
-1. Start with kP = `0.01`.
+1. Start with the kP value from SysId's Feedback Analysis section. If SysId did
+   not report one, use `0.01` as a conservative default.
 2. Command the mechanism to a target RPM and watch the error in AdvantageScope.
 3. If the steady-state error is too large, double kP.
 4. If the mechanism oscillates around the target, halve kP.
@@ -247,9 +257,9 @@ motor config and the SysId conversion chain.
 ```
 1. Set sysIdRampRateVoltsPerSecond and sysIdStepVoltage in subsystems.json.
 2. Deploy. Run all four SysId tests.
-3. Open the SysId tool and read kS, kV, kA.
+3. Open the SysId tool and read kS, kV, kA, and kP (Feedback Analysis).
 4. CORRECT: kV = kV_raw / (2 * pi),  kA = kA_raw / (2 * pi),  kS = kS_raw.
-5. Enter corrected gains + conservative kP in subsystems.json.
+5. Enter corrected gains + SysId kP (or 0.01 if unavailable) in subsystems.json.
 6. Deploy. Verify target tracking in AdvantageScope.
 7. Tune kP until error is within tolerance.
 ```

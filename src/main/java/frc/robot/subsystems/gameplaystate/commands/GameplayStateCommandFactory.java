@@ -131,11 +131,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     public Command createHarvestReadyCommand() {
         return Commands.parallel(
                 harvesterCommandFactory.createDeployCommand(),
-                intakeCommandFactory.createIntakeAndHoldCommand()// ,
-        // feederCommandFactory.createForwardAndHoldCommand(),
-        // indexerCommandFactory.createIdleCommand(),
-        // shooterCommandFactory.createIdleCommand()
-        )
+                intakeCommandFactory.createIntakeAndHoldCommand())
                 .withName("GameplayState-HarvestReady");
     }
 
@@ -159,10 +155,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 indexerCommandFactory.createFireWhenReadyCommand(
                         shooterCommandFactory.getSubsystem()::isAtTargetVelocity,
                         turretCommandFactory.getSubsystem()::isProfileSettled),
-                feederCommandFactory.createIdleCommand()
-        // intakeCommandFactory.createIdleCommand(),
-        // harvesterCommandFactory.createStowCommand()
-        )
+                feederCommandFactory.createForwardAndHoldCommand())
                 .withName("GameplayState-FireReady");
     }
 
