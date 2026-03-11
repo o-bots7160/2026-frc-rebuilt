@@ -7,7 +7,7 @@
   "drive": {
     "type": "sparkflex_vortex",
     "id": 32,
-    "p": 5.3618E-05,
+    "p": 5.3618e-5,
     "i": 0,
     "d": 0.0,
     "f": 0,
