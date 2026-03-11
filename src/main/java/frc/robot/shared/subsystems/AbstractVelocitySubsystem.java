@@ -59,11 +59,11 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      * are selected using the provided factory functions.
      * </p>
      *
-     * @param <TMotorConfig>  concrete motor config type
-     * @param config          velocity subsystem config supplying max velocity and acceleration for sim motor suppliers
-     * @param motorConfig     motor-specific configuration bundle (CAN ID, gear ratio, inversion, etc.)
-     * @param realFactory     factory function that creates the real motor from a motor config
-     * @param simFactory      factory function that creates the sim motor from a motor config and velocity/acceleration suppliers
+     * @param <TMotorConfig> concrete motor config type
+     * @param config         velocity subsystem config supplying max velocity and acceleration for sim motor suppliers
+     * @param motorConfig    motor-specific configuration bundle (CAN ID, gear ratio, inversion, etc.)
+     * @param realFactory    factory function that creates the real motor from a motor config
+     * @param simFactory     factory function that creates the sim motor from a motor config and velocity/acceleration suppliers
      * @return configured motor, or null when the subsystem is disabled
      */
     protected static <TMotorConfig extends AbstractMotorConfig> Motor buildVelocityMotor(
@@ -128,9 +128,9 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         super(config, motor);
 
         controller                = new PIDController(
-                config.getkP(),
-                config.getkI(),
-                config.getkD(),
+                config.pid.getkP(),
+                config.pid.getkI(),
+                config.pid.getkD(),
                 kDt);
 
         targetVelocityRadPerSec   = 0.0;
@@ -183,7 +183,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         log.recordVerboseOutput("targetClampedRpm", clampedRpm);
         log.recordVerboseOutput("targetWasClamped", wasClamped);
 
-        double newTargetRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(clampedRpm);
+        double newTargetRadPerSec    = Units.rotationsPerMinuteToRadiansPerSecond(clampedRpm);
 
         // Only reset the profile and settle tracking when the target actually changes.
         // Repeated calls with the same target (e.g., from createContinuousVelocityCommand)
@@ -346,7 +346,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      */
     private String getCallerInfo() {
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder       sb    = new StringBuilder();
         // Skip getStackTrace, getCallerInfo, stop — show the next 5 frames.
         for (int i = 3; i < Math.min(stack.length, 8); i++) {
             if (sb.length() > 0) {
@@ -385,9 +385,9 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      */
     private void refreshVelocityController() {
         controller.setPID(
-                config.getkP(),
-                config.getkI(),
-                config.getkD());
+                config.pid.getkP(),
+                config.pid.getkI(),
+                config.pid.getkD());
         rebuildVelocityProfile();
     }
 }

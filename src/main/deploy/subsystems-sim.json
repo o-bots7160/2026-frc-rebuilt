@@ -43,19 +43,25 @@
       "reverseSoftLimitDegrees": 0,
       "forwardSoftLimitDegrees": 0
     },
-    "maximumVelocityRpm": 3000,
-    "maximumAccelerationRpmPerSecond": 0,
-    "velocityToleranceRpm": 50,
-    "settleTimeSeconds": 0.15,
-    "idleVelocityRpm": 500,
+    "pid": {
+      "kP": 0.18,
+      "kI": 0,
+      "kD": 0
+    },
+    "feedforward": {
+      "kS": 0,
+      "kV": 0.025,
+      "kA": 0.33909
+    },
+    "motionProfile": {
+      "maximumVelocityRpm": 3000,
+      "maximumAccelerationRpmPerSecond": 0,
+      "velocityToleranceRpm": 50,
+      "settleTimeSeconds": 0.15,
+      "idleVelocityRpm": 500
+    },
     "forwardVelocityRpm": 1500,
-    "reverseVelocityRpm": 1000,
-    "kP": 0.18,
-    "kI": 0,
-    "kD": 0,
-    "kS": 0,
-    "kV": 0.025,
-    "kA": 0.33909
+    "reverseVelocityRpm": 1000
   },
   "harvesterSubsystem": {
     "enabled": true,
@@ -71,24 +77,30 @@
       "reverseSoftLimitDegrees": 0,
       "forwardSoftLimitDegrees": 90
     },
-    "maximumVelocityDegreesPerSecond": 100,
-    "maximumAccelerationDegreesPerSecondSquared": 45,
+    "pid": {
+      "kP": 14,
+      "kI": 0,
+      "kD": 0.1
+    },
+    "feedforward": {
+      "kS": 0,
+      "kV": 0.959,
+      "kA": 45.87,
+      "kG": 0
+    },
+    "motionProfile": {
+      "maximumVelocityDegreesPerSecond": 100,
+      "maximumAccelerationDegreesPerSecondSquared": 45,
+      "positionToleranceDegrees": 2,
+      "velocityToleranceDegreesPerSecond": 5,
+      "initialPositionDegrees": 135,
+      "initialVelocityDegreesPerSecond": 0
+    },
     "minimumSetpointDegrees": 0,
     "maximumSetpointDegrees": 90,
-    "positionToleranceDegrees": 2,
-    "velocityToleranceDegreesPerSecond": 5,
-    "initialPositionDegrees": 135,
-    "initialVelocityDegreesPerSecond": 0,
     "stowedPositionDegrees": 135,
     "deployedPositionDegrees": 0,
-    "kG": 0,
-    "horizontalOffsetDegrees": 0,
-    "kP": 14,
-    "kI": 0,
-    "kD": 0.1,
-    "kS": 0,
-    "kV": 0.959,
-    "kA": 45.87
+    "horizontalOffsetDegrees": 0
   },
   "feederSubsystem": {
     "enabled": true,
@@ -104,19 +116,25 @@
       "reverseSoftLimitDegrees": 0,
       "forwardSoftLimitDegrees": 0
     },
-    "maximumVelocityRpm": 3000,
-    "maximumAccelerationRpmPerSecond": 0,
-    "velocityToleranceRpm": 50,
-    "settleTimeSeconds": 0.15,
-    "idleVelocityRpm": 500,
+    "pid": {
+      "kP": 0.18,
+      "kI": 0,
+      "kD": 0
+    },
+    "feedforward": {
+      "kS": 0,
+      "kV": 0.025,
+      "kA": 0.33909
+    },
+    "motionProfile": {
+      "maximumVelocityRpm": 3000,
+      "maximumAccelerationRpmPerSecond": 0,
+      "velocityToleranceRpm": 50,
+      "settleTimeSeconds": 0.15,
+      "idleVelocityRpm": 500
+    },
     "forwardVelocityRpm": 1500,
-    "reverseVelocityRpm": 1000,
-    "kP": 0.18,
-    "kI": 0,
-    "kD": 0,
-    "kS": 0,
-    "kV": 0.025,
-    "kA": 0.33909
+    "reverseVelocityRpm": 1000
   },
   "indexerSubsystem": {
     "enabled": true,
@@ -132,21 +150,27 @@
       "reverseSoftLimitDegrees": 0,
       "forwardSoftLimitDegrees": 0
     },
-    "maximumVelocityRpm": 3000,
-    "maximumAccelerationRpmPerSecond": 100,
-    "velocityToleranceRpm": 50,
-    "settleTimeSeconds": 0.1,
-    "idleVelocityRpm": 500,
+    "pid": {
+      "kP": 0.18,
+      "kI": 0,
+      "kD": 0
+    },
+    "feedforward": {
+      "kS": 0,
+      "kV": 0.025,
+      "kA": 0.33909
+    },
+    "motionProfile": {
+      "maximumVelocityRpm": 3000,
+      "maximumAccelerationRpmPerSecond": 100,
+      "velocityToleranceRpm": 50,
+      "settleTimeSeconds": 0.1,
+      "idleVelocityRpm": 500
+    },
     "feedVelocityRpm": 2000,
     "reverseVelocityRpm": 1000,
     "unjamForwardDurationSeconds": 0.3,
-    "unjamReverseDurationSeconds": 0.3,
-    "kP": 0.18,
-    "kI": 0,
-    "kD": 0,
-    "kS": 0,
-    "kV": 0.025,
-    "kA": 0.33909
+    "unjamReverseDurationSeconds": 0.3
   },
   "turretSubsystem": {
     "enabled": true,
@@ -162,20 +186,26 @@
       "reverseSoftLimitDegrees": -100.0,
       "forwardSoftLimitDegrees": 100.0
     },
-    "maximumVelocityDegreesPerSecond": 360.0,
-    "maximumAccelerationDegreesPerSecondSquared": 720.0,
+    "pid": {
+      "kP": 3.0,
+      "kI": 0.0,
+      "kD": 2.0
+    },
+    "feedforward": {
+      "kS": 0.0,
+      "kV": 0.1,
+      "kA": 0.0
+    },
+    "motionProfile": {
+      "maximumVelocityDegreesPerSecond": 360.0,
+      "maximumAccelerationDegreesPerSecondSquared": 720.0,
+      "positionToleranceDegrees": 5.0,
+      "velocityToleranceDegreesPerSecond": 10.0,
+      "initialPositionDegrees": 0.0,
+      "initialVelocityDegreesPerSecond": 0.0
+    },
     "minimumSetpointDegrees": -90.0,
     "maximumSetpointDegrees": 90.0,
-    "positionToleranceDegrees": 5.0,
-    "velocityToleranceDegreesPerSecond": 10.0,
-    "initialPositionDegrees": 0.0,
-    "initialVelocityDegreesPerSecond": 0.0,
-    "kP": 3.0,
-    "kI": 0.0,
-    "kD": 2.0,
-    "kS": 0.0,
-    "kV": 0.1,
-    "kA": 0.0,
     "componentPoseConfig": {
       "componentPivotX": -0.205,
       "componentPivotY": 0.0,
@@ -198,6 +228,7 @@
   "shooterSubsystem": {
     "enabled": true,
     "verbose": false,
+    "followerEnabled": true,
     "shooterMotorConfig": {
       "enabled": true,
       "verbose": false,
@@ -220,11 +251,23 @@
       "reverseSoftLimitDegrees": 0,
       "forwardSoftLimitDegrees": 0
     },
-    "maximumVelocityRpm": 3000,
-    "maximumAccelerationRpmPerSecond": 2500,
-    "velocityToleranceRpm": 50,
-    "settleTimeSeconds": 0.25,
-    "idleVelocityRpm": 500,
+    "pid": {
+      "kP": 0.18,
+      "kI": 0,
+      "kD": 0
+    },
+    "feedforward": {
+      "kS": 0,
+      "kV": 0.025,
+      "kA": 0.33909
+    },
+    "motionProfile": {
+      "maximumVelocityRpm": 3000,
+      "maximumAccelerationRpmPerSecond": 2500,
+      "velocityToleranceRpm": 50,
+      "settleTimeSeconds": 0.25,
+      "idleVelocityRpm": 500
+    },
     "reverseVelocityRpm": 1000,
     "distanceRpmPoints": [
       {
@@ -246,13 +289,7 @@
     ],
     "minimumShootingRpm": 1500.0,
     "maximumShootingRpm": 5000.0,
-    "distanceRpmMultiplier": 1.0,
-    "kP": 0.18,
-    "kI": 0,
-    "kD": 0,
-    "kS": 0,
-    "kV": 0.025,
-    "kA": 0.33909
+    "distanceRpmMultiplier": 1.0
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,
@@ -314,20 +351,26 @@
       "maximumDetectionDistanceMillimeters": 300,
       "sampleTimeMilliseconds": 24
     },
-    "maximumVelocityDegreesPerSecond": 0,
-    "maximumAccelerationDegreesPerSecondSquared": 0,
+    "pid": {
+      "kP": 0,
+      "kI": 0,
+      "kD": 0
+    },
+    "feedforward": {
+      "kS": 0,
+      "kV": 0,
+      "kA": 0
+    },
+    "motionProfile": {
+      "maximumVelocityDegreesPerSecond": 0,
+      "maximumAccelerationDegreesPerSecondSquared": 0,
+      "positionToleranceDegrees": 5,
+      "velocityToleranceDegreesPerSecond": 10,
+      "initialPositionDegrees": 0,
+      "initialVelocityDegreesPerSecond": 0
+    },
     "minimumSetpointDegrees": 0,
-    "maximumSetpointDegrees": 360,
-    "positionToleranceDegrees": 5,
-    "velocityToleranceDegreesPerSecond": 10,
-    "initialPositionDegrees": 0,
-    "initialVelocityDegreesPerSecond": 0,
-    "kP": 0,
-    "kI": 0,
-    "kD": 0,
-    "kS": 0,
-    "kV": 0,
-    "kA": 0
+    "maximumSetpointDegrees": 360
   },
   "gameplayStateSubsystem": {
     "enabled": true,

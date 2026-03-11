@@ -1,6 +1,6 @@
 package frc.robot.subsystems.robotpose.config;
 
-import frc.robot.shared.config.AbstractConfig;
+import frc.robot.shared.config.AbstractSubsystemConfig;
 
 /**
  * Configuration bundle for the Robot Pose subsystem.
@@ -9,7 +9,7 @@ import frc.robot.shared.config.AbstractConfig;
  * {@code enableVisionFusion} toggle lets operators disable all vision input for debugging without a redeploy.
  * </p>
  */
-public class RobotPoseSubsystemConfig extends AbstractConfig {
+public class RobotPoseSubsystemConfig extends AbstractSubsystemConfig {
 
     /**
      * Enables or disables vision fusion in the Robot Pose subsystem.

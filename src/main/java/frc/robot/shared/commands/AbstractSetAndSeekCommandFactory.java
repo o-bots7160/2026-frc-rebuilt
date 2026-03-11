@@ -110,9 +110,9 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
      */
     public Command createSysIdFullSweepCommand() {
         return createSysIdFullSweepCommand(
-                subsystem.getConfig().getSysIdDelaySeconds(),
-                subsystem.getConfig().getSysIdQuasistaticTimeoutSeconds(),
-                subsystem.getConfig().getSysIdDynamicTimeoutSeconds());
+                subsystem.getConfig().sysId.getDelaySeconds(),
+                subsystem.getConfig().sysId.getQuasistaticTimeoutSeconds(),
+                subsystem.getConfig().sysId.getDynamicTimeoutSeconds());
     }
 
     /**

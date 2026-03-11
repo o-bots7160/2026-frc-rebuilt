@@ -100,9 +100,9 @@ public abstract class AbstractVelocityCommandFactory<TSubsystem extends Abstract
      */
     public Command createSysIdFullSweepCommand() {
         return createSysIdFullSweepCommand(
-                subsystem.getConfig().getSysIdDelaySeconds(),
-                subsystem.getConfig().getSysIdQuasistaticTimeoutSeconds(),
-                subsystem.getConfig().getSysIdDynamicTimeoutSeconds());
+                subsystem.getConfig().sysId.getDelaySeconds(),
+                subsystem.getConfig().sysId.getQuasistaticTimeoutSeconds(),
+                subsystem.getConfig().sysId.getDynamicTimeoutSeconds());
     }
 
     /**

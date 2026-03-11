@@ -1,6 +1,6 @@
 package frc.robot.subsystems.gameplaystate.config;
 
-import frc.robot.shared.config.AbstractConfig;
+import frc.robot.shared.config.AbstractSubsystemConfig;
 
 /**
  * Configuration bundle for the Gameplay State subsystem.
@@ -9,7 +9,7 @@ import frc.robot.shared.config.AbstractConfig;
  * through AdvantageKit-backed SmartDashboard entries when not attached to the FMS.
  * </p>
  */
-public class GameplayStateSubsystemConfig extends AbstractConfig {
+public class GameplayStateSubsystemConfig extends AbstractSubsystemConfig {
 
     /**
      * Match time threshold in seconds below which the subsystem suggests transitioning to {@code CLIMB_READY}.

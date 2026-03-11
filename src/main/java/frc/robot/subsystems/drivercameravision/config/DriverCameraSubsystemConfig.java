@@ -2,12 +2,12 @@ package frc.robot.subsystems.drivercameravision.config;
 
 import java.util.function.Supplier;
 
-import frc.robot.shared.config.AbstractConfig;
+import frc.robot.shared.config.AbstractSubsystemConfig;
 
 /**
  * Configuration for the driver camera subsystem.
  */
-public class DriverCameraSubsystemConfig extends AbstractConfig {
+public class DriverCameraSubsystemConfig extends AbstractSubsystemConfig {
 
     /**
      * The network name of the camera (e.g., "limelight").

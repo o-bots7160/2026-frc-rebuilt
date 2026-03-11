@@ -5,13 +5,13 @@ import java.util.Map;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import frc.robot.shared.config.AbstractConfig;
+import frc.robot.shared.config.AbstractSubsystemConfig;
 
 /**
  * Configuration bundle for the AprilTag vision subsystem. Values are mirrored to SmartDashboard so they can be tuned live without redeploying
  * firmware.
  */
-public class AprilTagVisionSubsystemConfig extends AbstractConfig {
+public class AprilTagVisionSubsystemConfig extends AbstractSubsystemConfig {
 
     /**
      * Nested class for JSON deserialization of camera transforms.

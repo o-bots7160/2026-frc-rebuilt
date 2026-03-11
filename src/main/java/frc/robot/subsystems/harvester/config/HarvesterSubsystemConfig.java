@@ -27,16 +27,6 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
     public double               deployedPositionDegrees;
 
     /**
-     * Gravity feedforward gain in volts.
-     * <p>
-     * This is the voltage needed to hold the arm stationary against gravity when the arm is horizontal. WPILib's
-     * {@link edu.wpi.first.math.controller.ArmFeedforward} multiplies kG by the cosine of the arm's angle from horizontal, so the compensation
-     * varies automatically as the arm moves.
-     * </p>
-     */
-    public double               kG;
-
-    /**
      * Angle offset from the encoder's zero position to the arm's horizontal reference, in degrees.
      * <p>
      * WPILib's {@link edu.wpi.first.math.controller.ArmFeedforward} expects the arm angle measured from horizontal (0 degrees = parallel to the
@@ -65,12 +55,14 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
     }
 
     /**
-     * Returns the gravity feedforward gain, tuned via SmartDashboard.
+     * Returns the gravity feedforward gain by delegating to the nested {@link frc.robot.shared.config.FeedforwardConfig}.
      *
      * @return kG in volts (voltage to hold the arm horizontal against gravity)
+     * @deprecated Use {@code feedforward.getkG()} instead.
      */
+    @Deprecated
     public double getkG() {
-        return readTunableNumber("kG", kG);
+        return feedforward.getkG();
     }
 
     /**

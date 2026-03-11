@@ -18,9 +18,9 @@ import frc.robot.subsystems.harvester.devices.HarvesterSimMotor;
  * movements instead of abrupt starts and stops.
  * </p>
  * <p>
- * Because the arm swings against gravity, this subsystem replaces the parent's simple feedforward with an
- * {@link ArmFeedforward}. The arm feedforward adds a gravity term (kG) that is multiplied by the cosine of the
- * arm's angle from horizontal, automatically varying the compensation voltage as the arm moves.
+ * Because the arm swings against gravity, this subsystem replaces the parent's simple feedforward with an {@link ArmFeedforward}. The arm feedforward
+ * adds a gravity term (kG) that is multiplied by the cosine of the arm's angle from horizontal, automatically varying the compensation voltage as the
+ * arm moves.
  * </p>
  */
 public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSubsystemConfig> {
@@ -40,8 +40,8 @@ public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSub
                 ? HarvesterMotor.create(config.harvesterMotorConfig)
                 : HarvesterSimMotor.create(
                         config.harvesterMotorConfig,
-                        config::getMaximumVelocityDegreesPerSecond,
-                        config::getMaximumAccelerationDegreesPerSecondSquared);
+                        config.motionProfile::getMaximumVelocityDegreesPerSecond,
+                        config.motionProfile::getMaximumAccelerationDegreesPerSecondSquared);
     }
 
     /**
@@ -63,10 +63,10 @@ public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSub
 
         // Build the arm feedforward with gravity compensation.
         armFeedforward = new ArmFeedforward(
-                config.getkS(),
-                config.getkG(),
-                config.getkV(),
-                config.getkA());
+                config.feedforward.getkS(),
+                config.feedforward.getkG(),
+                config.feedforward.getkV(),
+                config.feedforward.getkA());
     }
 
     /**
@@ -102,8 +102,8 @@ public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSub
     /**
      * Computes the arm feedforward voltage including gravity compensation for the current profile step.
      * <p>
-     * The arm angle from horizontal is computed by adding the configured horizontal offset to the current setpoint position. The gravity term
-     * (kG × cos(angle)) varies automatically as the arm moves, producing more voltage when the arm is near horizontal and less when it is vertical.
+     * The arm angle from horizontal is computed by adding the configured horizontal offset to the current setpoint position. The gravity term (kG ×
+     * cos(angle)) varies automatically as the arm moves, producing more voltage when the arm is near horizontal and less when it is vertical.
      * </p>
      *
      * @param previousSetpointVelocity velocity setpoint from the previous cycle in radians per second
@@ -131,9 +131,9 @@ public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSub
     protected void refreshFeedforward() {
         super.refreshFeedforward();
         armFeedforward = new ArmFeedforward(
-                config.getkS(),
-                config.getkG(),
-                config.getkV(),
-                config.getkA());
+                config.feedforward.getkS(),
+                config.feedforward.getkG(),
+                config.feedforward.getkV(),
+                config.feedforward.getkA());
     }
 }

@@ -53,23 +53,7 @@ public abstract class AbstractConfig {
         return classPrefix + "/";
     }
 
-    private final String                            defaultDashboardPrefix;
-
-    /**
-     * Enables or disables the subsystem that owns this config.
-     * <p>
-     * Set this in JSON to fully skip hardware actions when a mechanism is not ready.
-     * </p>
-     */
-    public boolean                                  enabled         = true;
-
-    /**
-     * Enables verbose logging for the subsystem that owns this config.
-     * <p>
-     * Use this during tuning to print extra debug information.
-     * </p>
-     */
-    public boolean                                  verbose         = false;
+    private String                                  dashboardPrefix;
 
     private final Map<String, LoggedNetworkBoolean> tunableBooleans = new HashMap<>();
 
@@ -84,7 +68,52 @@ public abstract class AbstractConfig {
      * </p>
      */
     protected AbstractConfig() {
-        this.defaultDashboardPrefix = computeDefaultDashboardPrefix(getClass());
+        this.dashboardPrefix = computeDefaultDashboardPrefix(getClass());
+    }
+
+    /**
+     * Overrides the SmartDashboard prefix used for tunable key resolution.
+     * <p>
+     * Call this after Jackson deserialization to propagate a parent config's prefix into nested config objects so their tunable keys appear under the
+     * parent's namespace (e.g., {@code FeederSubsystem/pid/kP} instead of {@code Pid/kP}).
+     * </p>
+     *
+     * @param prefix the new dashboard prefix including a trailing slash (e.g., {@code "FeederSubsystem/pid/"})
+     */
+    public void setDashboardPrefix(String prefix) {
+        this.dashboardPrefix = prefix;
+    }
+
+    /**
+     * Recursively sets the SmartDashboard prefix on nested {@link AbstractConfig} fields so their tunable keys appear under the parent's namespace.
+     * <p>
+     * Call this after Jackson deserialization. For each public field of type {@link AbstractConfig} (that is not an
+     * {@link AbstractSubsystemConfig}), the method sets the field's prefix to {@code parentPrefix + fieldName + "/"} and then recurses into that
+     * field. Subsystem configs are skipped because they own their own prefix based on their class name.
+     * </p>
+     */
+    public void initializeNestedDashboardPrefixes() {
+        String parentPrefix = getDashboardPrefix();
+        for (var field : getClass().getFields()) {
+            try {
+                Object value = field.get(this);
+                if (value instanceof AbstractConfig nested && !(value instanceof AbstractSubsystemConfig)) {
+                    nested.setDashboardPrefix(parentPrefix + field.getName() + "/");
+                    nested.initializeNestedDashboardPrefixes();
+                }
+            } catch (IllegalAccessException e) {
+                // Skip inaccessible fields
+            }
+        }
+    }
+
+    /**
+     * Returns the current SmartDashboard prefix used for tunable key resolution.
+     *
+     * @return the dashboard prefix (includes trailing slash)
+     */
+    protected String getDashboardPrefix() {
+        return dashboardPrefix;
     }
 
     /**
@@ -176,6 +205,6 @@ public abstract class AbstractConfig {
      * Computes the dashboard key for the given suffix.
      */
     private String dashboardKey(String key) {
-        return SMART_DASHBOARD_PREFIX + defaultDashboardPrefix + key;
+        return SMART_DASHBOARD_PREFIX + dashboardPrefix + key;
     }
 }

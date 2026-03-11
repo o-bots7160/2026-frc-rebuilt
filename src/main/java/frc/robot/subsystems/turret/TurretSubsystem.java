@@ -33,8 +33,8 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
                 ? TurretMotor.create(config.turretMotorConfig)
                 : TurretSimMotor.create(
                         config.turretMotorConfig,
-                        config::getMaximumVelocityDegreesPerSecond,
-                        config::getMaximumAccelerationDegreesPerSecondSquared);
+                        config.motionProfile::getMaximumVelocityDegreesPerSecond,
+                        config.motionProfile::getMaximumAccelerationDegreesPerSecondSquared);
     }
 
     /**

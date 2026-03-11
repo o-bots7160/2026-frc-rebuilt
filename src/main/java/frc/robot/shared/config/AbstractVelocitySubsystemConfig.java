@@ -5,9 +5,9 @@ import edu.wpi.first.math.util.Units;
 /**
  * Configuration values for subsystems that maintain a target velocity using feedforward and PID control.
  * <p>
- * All RPM values represent mechanism (flywheel) speed after gear reduction, not motor shaft speed. The gear ratio is applied at the motor encoder
- * conversion layer in {@link AbstractMotorConfig}, so subsystem code never deals with motor-side rotations. PID and feedforward gains are inherited
- * from {@link AbstractMotorSubsystemConfig}.
+ * Velocity motion profile parameters (max velocity, acceleration, tolerances, settle time, idle velocity) are organized into a nested
+ * {@link VelocityMotionConfig} bundle. All RPM values represent mechanism (flywheel) speed after gear reduction, not motor shaft speed. PID and
+ * feedforward gains are inherited from {@link AbstractMotorSubsystemConfig}.
  * </p>
  */
 public abstract class AbstractVelocitySubsystemConfig extends AbstractMotorSubsystemConfig {
@@ -17,120 +17,124 @@ public abstract class AbstractVelocitySubsystemConfig extends AbstractMotorSubsy
      *
      * @param rpm value in rotations per minute
      * @return equivalent value in radians per second
+     * @deprecated Use {@link VelocityMotionConfig#rpmToRadiansPerSecond(double)} instead.
      */
+    @Deprecated
     public static double rpmToRadiansPerSecond(double rpm) {
         return Units.rotationsPerMinuteToRadiansPerSecond(rpm);
     }
 
     /**
      * Converts an RPM value to degrees per second.
-     * <p>
-     * Subsystems use this when building simulation motors that expect degrees-per-second suppliers.
-     * </p>
      *
      * @param rpm value in rotations per minute
      * @return equivalent value in degrees per second
+     * @deprecated Use {@link VelocityMotionConfig#rpmToDegreesPerSecond(double)} instead.
      */
+    @Deprecated
     public static double rpmToDegreesPerSecond(double rpm) {
         return Units.radiansToDegrees(Units.rotationsPerMinuteToRadiansPerSecond(rpm));
     }
 
-    /** Maximum allowed mechanism velocity in RPM. Targets above this value are clamped. */
-    public double maximumVelocityRpm;
-
-    /** Maximum acceleration in RPM per second for the velocity ramp. Set to 0 to disable the trapezoidal ramp and use direct PID control. */
-    public double maximumAccelerationRpmPerSecond;
-
-    /** Acceptable velocity error when deciding if the mechanism is at its target, in RPM. */
-    public double velocityToleranceRpm;
-
-    /** How long the velocity must stay within tolerance before reporting ready, in seconds. */
-    public double settleTimeSeconds;
-
-    /** Default idle velocity in RPM. Set to 0 to stop the motor when idle. */
-    public double idleVelocityRpm;
+    /** Velocity motion profile parameters for this velocity subsystem. */
+    public VelocityMotionConfig motionProfile = new VelocityMotionConfig();
 
     /**
-     * Returns the maximum mechanism velocity, tuned via SmartDashboard.
+     * Returns the maximum mechanism velocity by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return max velocity in RPM
+     * @deprecated Use {@code motionProfile.getMaximumVelocityRpm()} instead.
      */
+    @Deprecated
     public double getMaximumVelocityRpm() {
-        return readTunableNumber("maximumVelocityRpm", maximumVelocityRpm);
+        return motionProfile.getMaximumVelocityRpm();
     }
 
     /**
-     * Returns the maximum mechanism velocity in radians per second.
+     * Returns the maximum mechanism velocity in radians per second by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return max velocity in radians per second
+     * @deprecated Use {@code motionProfile.getMaximumVelocityRadiansPerSecond()} instead.
      */
+    @Deprecated
     public double getMaximumVelocityRadiansPerSecond() {
-        return rpmToRadiansPerSecond(getMaximumVelocityRpm());
+        return motionProfile.getMaximumVelocityRadiansPerSecond();
     }
 
     /**
-     * Returns the maximum acceleration for the velocity ramp, tuned via SmartDashboard.
-     * <p>
-     * When this returns 0, the subsystem uses direct PID control without a trapezoidal velocity ramp.
-     * </p>
+     * Returns the maximum acceleration for the velocity ramp by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return max acceleration in RPM per second
+     * @deprecated Use {@code motionProfile.getMaximumAccelerationRpmPerSecond()} instead.
      */
+    @Deprecated
     public double getMaximumAccelerationRpmPerSecond() {
-        return readTunableNumber("maximumAccelerationRpmPerSecond", maximumAccelerationRpmPerSecond);
+        return motionProfile.getMaximumAccelerationRpmPerSecond();
     }
 
     /**
-     * Returns the maximum acceleration in radians per second squared.
+     * Returns the maximum acceleration in radians per second squared by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return max acceleration in radians per second squared
+     * @deprecated Use {@code motionProfile.getMaximumAccelerationRadiansPerSecondSquared()} instead.
      */
+    @Deprecated
     public double getMaximumAccelerationRadiansPerSecondSquared() {
-        return rpmToRadiansPerSecond(getMaximumAccelerationRpmPerSecond());
+        return motionProfile.getMaximumAccelerationRadiansPerSecondSquared();
     }
 
     /**
-     * Returns the acceptable velocity error for the at-target check.
+     * Returns the acceptable velocity error for the at-target check by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return velocity tolerance in RPM
+     * @deprecated Use {@code motionProfile.getVelocityToleranceRpm()} instead.
      */
+    @Deprecated
     public double getVelocityToleranceRpm() {
-        return readTunableNumber("velocityToleranceRpm", velocityToleranceRpm);
+        return motionProfile.getVelocityToleranceRpm();
     }
 
     /**
-     * Returns the acceptable velocity error in radians per second.
+     * Returns the acceptable velocity error in radians per second by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return velocity tolerance in radians per second
+     * @deprecated Use {@code motionProfile.getVelocityToleranceRadiansPerSecond()} instead.
      */
+    @Deprecated
     public double getVelocityToleranceRadiansPerSecond() {
-        return rpmToRadiansPerSecond(getVelocityToleranceRpm());
+        return motionProfile.getVelocityToleranceRadiansPerSecond();
     }
 
     /**
-     * Returns how long the velocity must remain within tolerance before reporting ready.
+     * Returns how long the velocity must remain within tolerance before reporting ready by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return settle time in seconds
+     * @deprecated Use {@code motionProfile.getSettleTimeSeconds()} instead.
      */
+    @Deprecated
     public double getSettleTimeSeconds() {
-        return readTunableNumber("settleTimeSeconds", settleTimeSeconds);
+        return motionProfile.getSettleTimeSeconds();
     }
 
     /**
-     * Returns the default idle velocity, tuned via SmartDashboard.
+     * Returns the default idle velocity by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return idle velocity in RPM
+     * @deprecated Use {@code motionProfile.getIdleVelocityRpm()} instead.
      */
+    @Deprecated
     public double getIdleVelocityRpm() {
-        return readTunableNumber("idleVelocityRpm", idleVelocityRpm);
+        return motionProfile.getIdleVelocityRpm();
     }
 
     /**
-     * Returns the default idle velocity in radians per second.
+     * Returns the default idle velocity in radians per second by delegating to the nested {@link VelocityMotionConfig}.
      *
      * @return idle velocity in radians per second
+     * @deprecated Use {@code motionProfile.getIdleVelocityRadiansPerSecond()} instead.
      */
+    @Deprecated
     public double getIdleVelocityRadiansPerSecond() {
-        return rpmToRadiansPerSecond(getIdleVelocityRpm());
+        return motionProfile.getIdleVelocityRadiansPerSecond();
     }
 }

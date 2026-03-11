@@ -15,7 +15,7 @@ import frc.robot.subsystems.shooter.devices.ShooterSimMotor;
  * <p>
  * The competition robot uses two mechanically coupled motors: a primary and a follower. The follower can be independently inverted and
  * current-limited via its own config block. On robots with only one shooter motor (e.g., the test robot), set
- * {@code shooterFollowerMotorConfig.enabled = false} and the subsystem operates with a single motor transparently.
+ * {@code followerEnabled = false} and the subsystem operates with a single motor transparently.
  * </p>
  * <p>
  * All RPM values in the public API represent flywheel (mechanism) speed after gear reduction, not motor shaft speed. The gear ratio is applied at the
@@ -47,8 +47,8 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
                 ShooterMotor::create,
                 ShooterSimMotor::create);
 
-        // When the follower config is disabled, operate with the primary motor only.
-        if (!config.shooterFollowerMotorConfig.enabled) {
+        // When the follower is disabled, operate with the primary motor only.
+        if (!config.followerEnabled) {
             return primary;
         }
 

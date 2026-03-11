@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.shared.config.AbstractConfig;
+import frc.robot.shared.config.AbstractSubsystemConfig;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.logging.Logger;
 
@@ -15,7 +15,7 @@ import frc.robot.shared.logging.Logger;
  * run on real hardware. The {@code enabled} flag should gate any device actions in concrete subclasses.
  * </p>
  */
-public abstract class AbstractSubsystem<TConfig extends AbstractConfig> extends SubsystemBase {
+public abstract class AbstractSubsystem<TConfig extends AbstractSubsystemConfig> extends SubsystemBase {
     /**
      * Nominal loop period in seconds for controller updates.
      */

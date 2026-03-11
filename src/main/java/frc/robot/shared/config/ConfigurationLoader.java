@@ -4,6 +4,7 @@ import java.io.File;
 
 import javax.naming.ConfigurationException;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -42,6 +43,7 @@ public class ConfigurationLoader {
             // Generic and mapping setup
             JavaType     type   = TypeFactory.defaultInstance().constructType(classOfT);
             ObjectMapper om     = new ObjectMapper();
+            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
             // Custom deserializer setup
             SimpleModule module = new SimpleModule();
@@ -54,6 +56,24 @@ public class ConfigurationLoader {
 
             // Map the config to the class type and return
             TConfig config          = om.readValue(configFile, type);
+
+            // Propagate dashboard prefixes into nested config objects
+            if (config instanceof AbstractConfig abstractConfig) {
+                abstractConfig.initializeNestedDashboardPrefixes();
+            } else {
+                // Container types like SubsystemsConfig are not AbstractConfig,
+                // so iterate their fields and initialize any AbstractConfig children
+                for (var field : classOfT.getFields()) {
+                    try {
+                        Object value = field.get(config);
+                        if (value instanceof AbstractConfig nestedConfig) {
+                            nestedConfig.initializeNestedDashboardPrefixes();
+                        }
+                    } catch (IllegalAccessException e) {
+                        // Skip inaccessible fields
+                    }
+                }
+            }
 
             // Record a read-only AK snapshot of every config field
             logConfigSnapshot(classOfT, config, CONFIG_OUTPUT_PREFIX);

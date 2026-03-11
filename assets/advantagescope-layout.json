@@ -556,7 +556,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kP",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/pid/kP",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -565,7 +565,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kI",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/pid/kI",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -574,7 +574,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kD",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/pid/kD",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -583,7 +583,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kS",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/feedforward/kS",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -592,7 +592,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kV",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/feedforward/kV",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -601,7 +601,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IntakeSubsystem/kA",
+                    "logKey": "NT:SmartDashboard/IntakeSubsystem/feedforward/kA",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -776,7 +776,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kP",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/pid/kP",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -785,7 +785,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kI",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/pid/kI",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -794,7 +794,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kD",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/pid/kD",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -803,7 +803,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kS",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/feedforward/kS",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -812,7 +812,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kV",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/feedforward/kV",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -821,7 +821,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/kA",
+                    "logKey": "NT:SmartDashboard/HarvesterSubsystem/feedforward/kA",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -966,7 +966,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/FeederSubsystem/kP",
+                    "logKey": "NT:SmartDashboard/FeederSubsystem/pid/kP",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -975,7 +975,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/FeederSubsystem/kI",
+                    "logKey": "NT:SmartDashboard/FeederSubsystem/pid/kI",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -984,7 +984,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/FeederSubsystem/kD",
+                    "logKey": "NT:SmartDashboard/FeederSubsystem/pid/kD",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -993,7 +993,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/FeederSubsystem/kS",
+                    "logKey": "NT:SmartDashboard/FeederSubsystem/feedforward/kS",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1002,7 +1002,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/FeederSubsystem/kV",
+                    "logKey": "NT:SmartDashboard/FeederSubsystem/feedforward/kV",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1011,7 +1011,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/FeederSubsystem/kA",
+                    "logKey": "NT:SmartDashboard/FeederSubsystem/feedforward/kA",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1165,7 +1165,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IndexerSubsystem/kP",
+                    "logKey": "NT:SmartDashboard/IndexerSubsystem/pid/kP",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1174,7 +1174,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IndexerSubsystem/kI",
+                    "logKey": "NT:SmartDashboard/IndexerSubsystem/pid/kI",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1183,7 +1183,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IndexerSubsystem/kD",
+                    "logKey": "NT:SmartDashboard/IndexerSubsystem/pid/kD",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1192,7 +1192,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IndexerSubsystem/kS",
+                    "logKey": "NT:SmartDashboard/IndexerSubsystem/feedforward/kS",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1201,7 +1201,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IndexerSubsystem/kV",
+                    "logKey": "NT:SmartDashboard/IndexerSubsystem/feedforward/kV",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1210,7 +1210,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/IndexerSubsystem/kA",
+                    "logKey": "NT:SmartDashboard/IndexerSubsystem/feedforward/kA",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1394,7 +1394,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kP",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/pid/kP",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1403,7 +1403,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kI",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/pid/kI",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1412,7 +1412,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kD",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/pid/kD",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1421,7 +1421,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kS",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/feedforward/kS",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1430,7 +1430,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kV",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/feedforward/kV",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1439,7 +1439,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/TurretSubsystem/kA",
+                    "logKey": "NT:SmartDashboard/TurretSubsystem/feedforward/kA",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1584,7 +1584,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kP",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/pid/kP",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1593,7 +1593,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kI",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/pid/kI",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1602,7 +1602,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kD",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/pid/kD",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1611,7 +1611,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kS",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/feedforward/kS",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1620,7 +1620,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kV",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/feedforward/kV",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1629,7 +1629,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ShooterSubsystem/kA",
+                    "logKey": "NT:SmartDashboard/ShooterSubsystem/feedforward/kA",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1905,7 +1905,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ClimberSubsystem/kP",
+                    "logKey": "NT:SmartDashboard/ClimberSubsystem/pid/kP",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1914,7 +1914,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ClimberSubsystem/kI",
+                    "logKey": "NT:SmartDashboard/ClimberSubsystem/pid/kI",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1923,7 +1923,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ClimberSubsystem/kD",
+                    "logKey": "NT:SmartDashboard/ClimberSubsystem/pid/kD",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -1932,7 +1932,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ClimberSubsystem/kS",
+                    "logKey": "NT:SmartDashboard/ClimberSubsystem/feedforward/kS",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1941,7 +1941,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ClimberSubsystem/kV",
+                    "logKey": "NT:SmartDashboard/ClimberSubsystem/feedforward/kV",
                     "logType": "Number",
                     "visible": false,
                     "options": {
@@ -1950,7 +1950,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:SmartDashboard/ClimberSubsystem/kA",
+                    "logKey": "NT:SmartDashboard/ClimberSubsystem/feedforward/kA",
                     "logType": "Number",
                     "visible": false,
                     "options": {

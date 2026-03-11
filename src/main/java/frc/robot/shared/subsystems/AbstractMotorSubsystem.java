@@ -57,9 +57,9 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
 
         // Feedforward estimates the voltage needed to maintain a desired velocity/acceleration.
         feedforward  = new SimpleMotorFeedforward(
-                config.getkS(),
-                config.getkV(),
-                config.getkA());
+                config.feedforward.getkS(),
+                config.feedforward.getkV(),
+                config.feedforward.getkA());
 
         // SysId routine is used by characterization commands to identify feedforward gains.
         sysIdRoutine = SysIdHelper.createSimpleRoutine(
@@ -71,8 +71,8 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
                 () -> motorInputs.positionRadians,
                 () -> motorInputs.velocityRadPerSec,
                 () -> motorInputs.velocityMotorRpm,
-                config.getSysIdRampRateVoltsPerSecond(),
-                config.getSysIdStepVoltage());
+                config.sysId.getRampRateVoltsPerSecond(),
+                config.sysId.getStepVoltage());
     }
 
     /**
@@ -186,8 +186,8 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
      */
     protected void refreshFeedforward() {
         feedforward = new SimpleMotorFeedforward(
-                config.getkS(),
-                config.getkV(),
-                config.getkA());
+                config.feedforward.getkS(),
+                config.feedforward.getkV(),
+                config.feedforward.getkA());
     }
 }

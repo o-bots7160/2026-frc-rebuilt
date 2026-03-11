@@ -350,8 +350,12 @@ function deriveSystem2Prefix(jsonFieldName) {
  * corresponding NT value. Returns an array of detected changes.
  *
  * For each scalar field the function builds two candidate NT keys:
- *   System 2: /AdvantageKit/NetworkInputs/SmartDashboard/<ClassPrefix>/<fieldName>    (Elastic-editable)
+ *   System 2: /AdvantageKit/NetworkInputs/SmartDashboard/<ClassPrefix>[/<nestedKey>...]/<fieldName>    (Elastic-editable)
  *   System 1: /SmartDashboard/SubsystemsConfig/<json/path> (startup seed)
+ *
+ * Nested config objects (pid, feedforward, motionProfile, etc.) extend the
+ * System 2 prefix with the JSON key name, matching Java's
+ * initializeNestedDashboardPrefixes behavior.
  *
  * System 2 is preferred when both keys exist.
  *
@@ -389,7 +393,8 @@ function detectChanges(json, ntValues, subsystem, debug = false) {
 
 /**
  * Recursively walks a config object. For every scalar leaf, checks NT for a
- * changed value. For nested objects, recurses with a fresh System 2 prefix.
+ * changed value. For nested objects, recurses with the parent System 2 prefix
+ * extended by the JSON key name (matching Java's initializeNestedDashboardPrefixes).
  */
 function walkObject(obj, jsonPathPrefix, sys2Prefix, sys1Path, ntValues, changes, debug = false) {
   for (const [key, value] of Object.entries(obj)) {
@@ -397,8 +402,8 @@ function walkObject(obj, jsonPathPrefix, sys2Prefix, sys1Path, ntValues, changes
     const sys1Key = `/SmartDashboard/${sys1Path}/${key}`;
 
     if (value != null && typeof value === "object" && !Array.isArray(value)) {
-      // Nested config — derive a new System 2 prefix for this level
-      const nestedPrefix = deriveSystem2Prefix(key);
+      // Nested config — extend the parent System 2 prefix with the JSON key
+      const nestedPrefix = `${sys2Prefix}/${key}`;
       if (debug) {
         console.log(`  [debug]   Nesting into "${key}" → sys2 prefix: ${nestedPrefix}`);
       }

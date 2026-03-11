@@ -17,11 +17,19 @@ public class ShooterSubsystemConfig extends AbstractVelocitySubsystemConfig {
     /**
      * Motor configuration bundle for the follower shooter flywheel motor.
      * <p>
-     * Set {@code enabled = false} in the JSON config when the robot has only one shooter motor (e.g., the test robot). The follower can have
-     * independent inversion, current limits, and CAN ID.
+     * The follower can have independent inversion, current limits, and CAN ID. Enable or disable the follower via the {@link #followerEnabled} flag.
      * </p>
      */
     public ShooterMotorConfig shooterFollowerMotorConfig = new ShooterMotorConfig();
+
+    /**
+     * Enables or disables the follower motor.
+     * <p>
+     * Set to {@code false} in JSON when the robot has only one shooter motor (e.g., the test robot). The subsystem operates with a single motor
+     * transparently.
+     * </p>
+     */
+    public boolean            followerEnabled            = true;
 
     /** Reverse velocity used for clearing stuck pieces, in RPM. Set to 0 to disable reverse mode. */
     public double             reverseVelocityRpm;

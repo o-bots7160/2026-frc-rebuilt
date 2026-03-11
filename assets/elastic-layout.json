@@ -668,7 +668,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/kP",
+              "topic": "SmartDashboard/IntakeSubsystem/pid/kP",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -682,7 +682,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/kI",
+              "topic": "SmartDashboard/IntakeSubsystem/pid/kI",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -696,7 +696,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/kD",
+              "topic": "SmartDashboard/IntakeSubsystem/pid/kD",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -710,7 +710,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/kS",
+              "topic": "SmartDashboard/IntakeSubsystem/feedforward/kS",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -724,7 +724,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/kV",
+              "topic": "SmartDashboard/IntakeSubsystem/feedforward/kV",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -738,7 +738,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/kA",
+              "topic": "SmartDashboard/IntakeSubsystem/feedforward/kA",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -815,7 +815,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/idleVelocityRpm",
+              "topic": "SmartDashboard/IntakeSubsystem/motionProfile/idleVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -829,7 +829,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/maximumVelocityRpm",
+              "topic": "SmartDashboard/IntakeSubsystem/motionProfile/maximumVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -843,7 +843,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/maximumAccelerationRpmPerSecond",
+              "topic": "SmartDashboard/IntakeSubsystem/motionProfile/maximumAccelerationRpmPerSecond",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -857,7 +857,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/velocityToleranceRpm",
+              "topic": "SmartDashboard/IntakeSubsystem/motionProfile/velocityToleranceRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -871,7 +871,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/settleTimeSeconds",
+              "topic": "SmartDashboard/IntakeSubsystem/motionProfile/settleTimeSeconds",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -996,7 +996,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kP",
+              "topic": "SmartDashboard/HarvesterSubsystem/pid/kP",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1010,7 +1010,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kI",
+              "topic": "SmartDashboard/HarvesterSubsystem/pid/kI",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1024,7 +1024,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kD",
+              "topic": "SmartDashboard/HarvesterSubsystem/pid/kD",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1038,7 +1038,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kS",
+              "topic": "SmartDashboard/HarvesterSubsystem/feedforward/kS",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1052,7 +1052,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kV",
+              "topic": "SmartDashboard/HarvesterSubsystem/feedforward/kV",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1066,7 +1066,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kA",
+              "topic": "SmartDashboard/HarvesterSubsystem/feedforward/kA",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1080,7 +1080,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/kG",
+              "topic": "SmartDashboard/HarvesterSubsystem/feedforward/kG",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1171,7 +1171,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/maximumVelocityDegreesPerSecond",
+              "topic": "SmartDashboard/HarvesterSubsystem/motionProfile/maximumVelocityDegreesPerSecond",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1185,7 +1185,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/maximumAccelerationDegreesPerSecondSquared",
+              "topic": "SmartDashboard/HarvesterSubsystem/motionProfile/maximumAccelerationDegreesPerSecondSquared",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1199,7 +1199,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/positionToleranceDegrees",
+              "topic": "SmartDashboard/HarvesterSubsystem/motionProfile/positionToleranceDegrees",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1213,7 +1213,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/HarvesterSubsystem/velocityToleranceDegreesPerSecond",
+              "topic": "SmartDashboard/HarvesterSubsystem/motionProfile/velocityToleranceDegreesPerSecond",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1377,7 +1377,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/kP",
+              "topic": "SmartDashboard/FeederSubsystem/pid/kP",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1391,7 +1391,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/kI",
+              "topic": "SmartDashboard/FeederSubsystem/pid/kI",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1405,7 +1405,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/kD",
+              "topic": "SmartDashboard/FeederSubsystem/pid/kD",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1419,7 +1419,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/kS",
+              "topic": "SmartDashboard/FeederSubsystem/feedforward/kS",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1433,7 +1433,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/kV",
+              "topic": "SmartDashboard/FeederSubsystem/feedforward/kV",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1447,7 +1447,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/kA",
+              "topic": "SmartDashboard/FeederSubsystem/feedforward/kA",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1524,7 +1524,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/idleVelocityRpm",
+              "topic": "SmartDashboard/FeederSubsystem/motionProfile/idleVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1538,7 +1538,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/maximumVelocityRpm",
+              "topic": "SmartDashboard/FeederSubsystem/motionProfile/maximumVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1552,7 +1552,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/maximumAccelerationRpmPerSecond",
+              "topic": "SmartDashboard/FeederSubsystem/motionProfile/maximumAccelerationRpmPerSecond",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1566,7 +1566,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/velocityToleranceRpm",
+              "topic": "SmartDashboard/FeederSubsystem/motionProfile/velocityToleranceRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1580,7 +1580,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/settleTimeSeconds",
+              "topic": "SmartDashboard/FeederSubsystem/motionProfile/settleTimeSeconds",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1705,7 +1705,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/kP",
+              "topic": "SmartDashboard/IndexerSubsystem/pid/kP",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1719,7 +1719,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/kI",
+              "topic": "SmartDashboard/IndexerSubsystem/pid/kI",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1733,7 +1733,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/kD",
+              "topic": "SmartDashboard/IndexerSubsystem/pid/kD",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1747,7 +1747,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/kS",
+              "topic": "SmartDashboard/IndexerSubsystem/feedforward/kS",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1761,7 +1761,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/kV",
+              "topic": "SmartDashboard/IndexerSubsystem/feedforward/kV",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1775,7 +1775,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/kA",
+              "topic": "SmartDashboard/IndexerSubsystem/feedforward/kA",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1853,7 +1853,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/idleVelocityRpm",
+              "topic": "SmartDashboard/IndexerSubsystem/motionProfile/idleVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1867,7 +1867,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/maximumVelocityRpm",
+              "topic": "SmartDashboard/IndexerSubsystem/motionProfile/maximumVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1881,7 +1881,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/maximumAccelerationRpmPerSecond",
+              "topic": "SmartDashboard/IndexerSubsystem/motionProfile/maximumAccelerationRpmPerSecond",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1895,7 +1895,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/velocityToleranceRpm",
+              "topic": "SmartDashboard/IndexerSubsystem/motionProfile/velocityToleranceRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -1909,7 +1909,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/settleTimeSeconds",
+              "topic": "SmartDashboard/IndexerSubsystem/motionProfile/settleTimeSeconds",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2060,7 +2060,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kP",
+              "topic": "SmartDashboard/TurretSubsystem/pid/kP",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2074,7 +2074,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kI",
+              "topic": "SmartDashboard/TurretSubsystem/pid/kI",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2088,7 +2088,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kD",
+              "topic": "SmartDashboard/TurretSubsystem/pid/kD",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2102,7 +2102,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kS",
+              "topic": "SmartDashboard/TurretSubsystem/feedforward/kS",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2116,7 +2116,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kV",
+              "topic": "SmartDashboard/TurretSubsystem/feedforward/kV",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2130,7 +2130,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/kA",
+              "topic": "SmartDashboard/TurretSubsystem/feedforward/kA",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2220,7 +2220,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/maximumVelocityDegreesPerSecond",
+              "topic": "SmartDashboard/TurretSubsystem/motionProfile/maximumVelocityDegreesPerSecond",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2234,7 +2234,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/maximumAccelerationDegreesPerSecondSquared",
+              "topic": "SmartDashboard/TurretSubsystem/motionProfile/maximumAccelerationDegreesPerSecondSquared",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2248,7 +2248,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/positionToleranceDegrees",
+              "topic": "SmartDashboard/TurretSubsystem/motionProfile/positionToleranceDegrees",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2423,7 +2423,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/kP",
+              "topic": "SmartDashboard/ShooterSubsystem/pid/kP",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2437,7 +2437,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/kI",
+              "topic": "SmartDashboard/ShooterSubsystem/pid/kI",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2451,7 +2451,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/kD",
+              "topic": "SmartDashboard/ShooterSubsystem/pid/kD",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2465,7 +2465,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/kS",
+              "topic": "SmartDashboard/ShooterSubsystem/feedforward/kS",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2479,7 +2479,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/kV",
+              "topic": "SmartDashboard/ShooterSubsystem/feedforward/kV",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2493,7 +2493,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/kA",
+              "topic": "SmartDashboard/ShooterSubsystem/feedforward/kA",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2569,7 +2569,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/idleVelocityRpm",
+              "topic": "SmartDashboard/ShooterSubsystem/motionProfile/idleVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2583,7 +2583,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/maximumVelocityRpm",
+              "topic": "SmartDashboard/ShooterSubsystem/motionProfile/maximumVelocityRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2597,7 +2597,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/maximumAccelerationRpmPerSecond",
+              "topic": "SmartDashboard/ShooterSubsystem/motionProfile/maximumAccelerationRpmPerSecond",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2611,7 +2611,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/velocityToleranceRpm",
+              "topic": "SmartDashboard/ShooterSubsystem/motionProfile/velocityToleranceRpm",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2625,7 +2625,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ShooterSubsystem/settleTimeSeconds",
+              "topic": "SmartDashboard/ShooterSubsystem/motionProfile/settleTimeSeconds",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2835,7 +2835,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/kP",
+              "topic": "SmartDashboard/ClimberSubsystem/pid/kP",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2849,7 +2849,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/kI",
+              "topic": "SmartDashboard/ClimberSubsystem/pid/kI",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2863,7 +2863,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/kD",
+              "topic": "SmartDashboard/ClimberSubsystem/pid/kD",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2877,7 +2877,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/kS",
+              "topic": "SmartDashboard/ClimberSubsystem/feedforward/kS",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2891,7 +2891,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/kV",
+              "topic": "SmartDashboard/ClimberSubsystem/feedforward/kV",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -2905,7 +2905,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/kA",
+              "topic": "SmartDashboard/ClimberSubsystem/feedforward/kA",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -3001,7 +3001,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/maximumVelocityDegreesPerSecond",
+              "topic": "SmartDashboard/ClimberSubsystem/motionProfile/maximumVelocityDegreesPerSecond",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -3015,7 +3015,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/maximumAccelerationDegreesPerSecondSquared",
+              "topic": "SmartDashboard/ClimberSubsystem/motionProfile/maximumAccelerationDegreesPerSecondSquared",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
@@ -3029,7 +3029,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/positionToleranceDegrees",
+              "topic": "SmartDashboard/ClimberSubsystem/motionProfile/positionToleranceDegrees",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true

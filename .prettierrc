@@ -4,5 +4,13 @@
   "tabWidth": 2,
   "useTabs": false,
   "singleQuote": false,
-  "trailingComma": "es5"
+  "trailingComma": "es5",
+  "overrides": [
+    {
+      "files": "*.json",
+      "options": {
+        "printWidth": 1
+      }
+    }
+  ]
 }
