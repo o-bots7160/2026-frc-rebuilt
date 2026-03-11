@@ -222,19 +222,19 @@ public class RobotContainer {
             // Default commands are only registered in gameplay mode. In tuning mode,
             // subsystems have no default command so mechanisms stay put after test commands end.
             if (!subsystemsConfig.triggerBindings.tuningEnabled) {
-                shooterCommandFactory.setDefaultIdleCommand();
-                indexerCommandFactory.setDefaultIdleCommand();
-                feederCommandFactory.setDefaultIdleCommand();
-                intakeCommandFactory.setDefaultIdleCommand();
-                harvesterCommandFactory.setDefaultStowCommand();
-                turretCommandFactory.setDefaultTrackFieldTargetCommand(
-                        robotPoseSubsystem,
-                        fieldTargetSelector::getActiveTargetPosition,
-                        driveBaseSubsystem::getYawRateRadiansPerSecond);
-                shooterSubsystem.setDefaultCommand(
-                        shooterCommandFactory.createDistanceBasedSpinCommand(
-                                () -> robotPoseSubsystem.getDistanceToPointMeters(
-                                        fieldTargetSelector.getActiveTargetPosition())));
+                // shooterCommandFactory.setDefaultIdleCommand();
+                // indexerCommandFactory.setDefaultIdleCommand();
+                // feederCommandFactory.setDefaultIdleCommand();
+                // intakeCommandFactory.setDefaultIdleCommand();
+                // harvesterCommandFactory.setDefaultStowCommand();
+                // turretCommandFactory.setDefaultTrackFieldTargetCommand(
+                //         robotPoseSubsystem,
+                //         fieldTargetSelector::getActiveTargetPosition,
+                //         driveBaseSubsystem::getYawRateRadiansPerSecond);
+                // shooterSubsystem.setDefaultCommand(
+                //         shooterCommandFactory.createDistanceBasedSpinCommand(
+                //                 () -> robotPoseSubsystem.getDistanceToPointMeters(
+                //                         fieldTargetSelector.getActiveTargetPosition())));
             }
 
             // Dashboard commands (clickable buttons in Elastic Dashboard)

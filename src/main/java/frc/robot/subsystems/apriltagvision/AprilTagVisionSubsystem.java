@@ -56,6 +56,18 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /** Filters and weights raw pose observations before forwarding them to the consumer. */
     private final AprilTagPoseEstimator       poseEstimator;
 
+    /** Reusable per-cycle list to avoid allocating new lists every loop. */
+    private final List<Pose3d> allTagPoses      = new ArrayList<>();
+
+    /** Reusable per-cycle list to avoid allocating new lists every loop. */
+    private final List<Pose3d> allRobotPoses    = new ArrayList<>();
+
+    /** Reusable per-cycle list to avoid allocating new lists every loop. */
+    private final List<Pose3d> allAcceptedPoses = new ArrayList<>();
+
+    /** Reusable per-cycle list to avoid allocating new lists every loop. */
+    private final List<Pose3d> allRejectedPoses = new ArrayList<>();
+
     /** Guards the disabled-periodic log message so it prints only once per disable cycle. */
     private boolean                           disabledPeriodicLogged;
 
@@ -109,11 +121,11 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
 
         disabledPeriodicLogged = false;
 
-        // Create per-cycle buckets so we can log everything together at the end of this loop.
-        List<Pose3d> allTagPoses      = new ArrayList<>();
-        List<Pose3d> allRobotPoses    = new ArrayList<>();
-        List<Pose3d> allAcceptedPoses = new ArrayList<>();
-        List<Pose3d> allRejectedPoses = new ArrayList<>();
+        // Clear reusable per-cycle buckets so we can log everything together at the end of this loop.
+        allTagPoses.clear();
+        allRobotPoses.clear();
+        allAcceptedPoses.clear();
+        allRejectedPoses.clear();
 
         for (var camera : cameras.values()) {
             // Pull the newest data from this camera and send raw inputs to the logger.

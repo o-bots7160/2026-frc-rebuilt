@@ -100,6 +100,22 @@ public class AbstractSetAndSeekCommandFactory<TSubsystem extends AbstractSetAndS
     }
 
     /**
+     * Creates a full SysId sweep using timing values from the subsystem config.
+     * <p>
+     * Reads {@code sysIdDelaySeconds}, {@code sysIdQuasistaticTimeoutSeconds}, and {@code sysIdDynamicTimeoutSeconds} from the subsystem's
+     * configuration so each mechanism can define its own timing without changing bindings code.
+     * </p>
+     *
+     * @return command that executes the four standard SysId tests in sequence
+     */
+    public Command createSysIdFullSweepCommand() {
+        return createSysIdFullSweepCommand(
+                subsystem.getConfig().getSysIdDelaySeconds(),
+                subsystem.getConfig().getSysIdQuasistaticTimeoutSeconds(),
+                subsystem.getConfig().getSysIdDynamicTimeoutSeconds());
+    }
+
+    /**
      * Creates a full SysId sweep (quasistatic forward/reverse, dynamic forward/reverse) with optional delays between phases.
      *
      * @param delaySeconds           pause inserted between each phase to let the mechanism settle

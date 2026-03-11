@@ -64,7 +64,7 @@ public class ShooterSubsystemCommandFactory extends AbstractVelocityCommandFacto
      * @return command that spins up and then holds velocity until interrupted
      */
     public Command createSpinUpAndHoldCommand(Supplier<Double> targetRpmSupplier) {
-        return createSpinUpCommand(targetRpmSupplier)
+        return Commands.runOnce(() -> subsystem.setTargetVelocityRpm(targetRpmSupplier.get()), subsystem)
                 .andThen(Commands.run(subsystem::seekVelocity, subsystem));
     }
 

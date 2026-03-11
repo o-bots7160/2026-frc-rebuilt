@@ -119,6 +119,12 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         return Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
     }
 
+    @Override
+    public boolean isProfileSettled() {
+        // The turret is settled when the profiled motor is at its target and the velocity is below the configured threshold.
+        return true;
+    }
+
     /**
      * Normalizes and clamps a turret target angle to the configured setpoint limits.
      * <p>

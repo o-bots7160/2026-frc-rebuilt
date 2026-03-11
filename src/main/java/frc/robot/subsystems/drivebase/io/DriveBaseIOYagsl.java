@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drivebase.io;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
@@ -40,9 +41,16 @@ public class DriveBaseIOYagsl implements DriveBaseIO {
 
     @Override
     public void updateInputs(DriveBaseIOInputs inputs) {
+        // Read module states once since getStates() queries CAN bus for all modules.
+        // getFieldVelocity() also calls getStates() internally, so we compute chassis speeds
+        // from our already-captured states to avoid a second CAN round-trip.
+        SwerveModuleState[] currentStates = swerveDrive.getStates();
+
         inputs.pose                     = swerveDrive.getPose();
-        inputs.chassisSpeeds            = swerveDrive.getFieldVelocity();
-        inputs.moduleStates             = cloneStates(swerveDrive.getStates());
+        inputs.chassisSpeeds            = ChassisSpeeds.fromRobotRelativeSpeeds(
+                swerveDrive.kinematics.toChassisSpeeds(currentStates),
+                swerveDrive.getOdometryHeading());
+        inputs.moduleStates             = currentStates;
         inputs.moduleTargets            = new SwerveModuleState[0];
         inputs.gyroYaw                  = swerveDrive.getYaw();
         inputs.odometryTimestampSeconds = Timer.getFPGATimestamp();
@@ -65,16 +73,5 @@ public class DriveBaseIOYagsl implements DriveBaseIO {
                 swerveDrive.getYaw(),
                 swerveDrive.getModulePositions(),
                 pose);
-    }
-
-    private SwerveModuleState[] cloneStates(SwerveModuleState[] states) {
-        if (states == null) {
-            return new SwerveModuleState[0];
-        }
-        SwerveModuleState[] copy = new SwerveModuleState[states.length];
-        for (int i = 0; i < states.length; i++) {
-            copy[i] = states[i];
-        }
-        return copy;
     }
 }

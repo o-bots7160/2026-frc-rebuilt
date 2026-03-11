@@ -36,30 +36,6 @@ public class TriggerBindings {
      */
     private static final int                       DEFAULT_OPERATOR_CONTROLLER_PORT  = 1;
 
-    /**
-     * Delay between system identification phases in seconds. Gives the mechanism time to coast to a stop so each phase starts from rest.
-     */
-    private static final double                    SYSID_DELAY_SECONDS               = 5.0;
-
-    /**
-     * Timeout for the quasistatic (slow ramp) portion of system identification in seconds.
-     * <p>
-     * This timeout must be long enough for the slowest configured ramp rate to reach near-full voltage. At 0.25 V/s (used for high-inertia
-     * belt-driven mechanisms) this allows the motor to reach 10 V. Mechanisms with the default 1 V/s ramp rate will simply reach 12 V sooner and
-     * saturate for the remainder, which does not harm the fit.
-     * </p>
-     */
-    private static final double                    SYSID_QUASISTATIC_TIMEOUT_SECONDS = 20.0;
-
-    /**
-     * Timeout for the dynamic (step voltage) portion of system identification in seconds.
-     * <p>
-     * The dynamic test applies a 7 V step. Most mechanisms reach steady-state within 1–2 seconds, so 3 seconds captures the full transient without
-     * adding unnecessary flat data that can skew the kA fit.
-     * </p>
-     */
-    private static final double                    SYSID_DYNAMIC_TIMEOUT_SECONDS     = 3.0;
-
     // Chooser option constants for subsystem test selection.
     private static final String                    TEST_SUBSYSTEM_SHOOTER            = "Shooter";
 
@@ -371,8 +347,8 @@ public class TriggerBindings {
     /**
      * Creates a full SysId characterization sweep for the currently selected test subsystem.
      * <p>
-     * The sweep runs all four phases (quasistatic forward, quasistatic reverse, dynamic forward, dynamic reverse) with configurable delays and
-     * timeouts, totaling approximately 60 seconds.
+     * The sweep runs all four phases (quasistatic forward, quasistatic reverse, dynamic forward, dynamic reverse) with delays and timeouts read from
+     * each subsystem's config so each mechanism can define its own timing.
      * </p>
      *
      * @return SysId sweep command for the selected subsystem, or {@link Commands#none()} if nothing is selected
@@ -385,23 +361,17 @@ public class TriggerBindings {
 
         switch (selected) {
         case TEST_SUBSYSTEM_SHOOTER:
-            return shooterCommandFactory.createSysIdFullSweepCommand(
-                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+            return shooterCommandFactory.createSysIdFullSweepCommand();
         case TEST_SUBSYSTEM_INDEXER:
-            return indexerCommandFactory.createSysIdFullSweepCommand(
-                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+            return indexerCommandFactory.createSysIdFullSweepCommand();
         case TEST_SUBSYSTEM_FEEDER:
-            return feederCommandFactory.createSysIdFullSweepCommand(
-                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+            return feederCommandFactory.createSysIdFullSweepCommand();
         case TEST_SUBSYSTEM_INTAKE:
-            return intakeCommandFactory.createSysIdFullSweepCommand(
-                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+            return intakeCommandFactory.createSysIdFullSweepCommand();
         case TEST_SUBSYSTEM_TURRET:
-            return turretCommandFactory.createSysIdFullSweepCommand(
-                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+            return turretCommandFactory.createSysIdFullSweepCommand();
         case TEST_SUBSYSTEM_HARVESTER:
-            return harvesterCommandFactory.createSysIdFullSweepCommand(
-                    SYSID_DELAY_SECONDS, SYSID_QUASISTATIC_TIMEOUT_SECONDS, SYSID_DYNAMIC_TIMEOUT_SECONDS);
+            return harvesterCommandFactory.createSysIdFullSweepCommand();
         default:
             return Commands.none();
         }
@@ -466,7 +436,7 @@ public class TriggerBindings {
      */
     private void configureOperatorBindings() {
         // Right trigger: fire fuel.
-        operatorController.rightTrigger().onTrue(
+        operatorController.rightTrigger().whileTrue(
                 gameplayStateCommandFactory.createTransitionCommand(GameplayState.FIRE_READY, "operator"));
 
         // Left trigger: harvest fuel.

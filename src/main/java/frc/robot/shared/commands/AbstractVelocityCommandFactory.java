@@ -90,6 +90,22 @@ public abstract class AbstractVelocityCommandFactory<TSubsystem extends Abstract
     }
 
     /**
+     * Creates a full SysId sweep using timing values from the subsystem config.
+     * <p>
+     * Reads {@code sysIdDelaySeconds}, {@code sysIdQuasistaticTimeoutSeconds}, and {@code sysIdDynamicTimeoutSeconds} from the subsystem's
+     * configuration so each mechanism can define its own timing without changing bindings code.
+     * </p>
+     *
+     * @return command that executes the four standard SysId tests in sequence
+     */
+    public Command createSysIdFullSweepCommand() {
+        return createSysIdFullSweepCommand(
+                subsystem.getConfig().getSysIdDelaySeconds(),
+                subsystem.getConfig().getSysIdQuasistaticTimeoutSeconds(),
+                subsystem.getConfig().getSysIdDynamicTimeoutSeconds());
+    }
+
+    /**
      * Creates a full SysId sweep (quasistatic forward/reverse, dynamic forward/reverse) with optional delays between phases.
      *
      * @param delaySeconds           pause inserted between each phase to let the mechanism settle
@@ -148,10 +164,27 @@ public abstract class AbstractVelocityCommandFactory<TSubsystem extends Abstract
      * @return command that continuously tracks the supplied RPM until interrupted, then stops cleanly
      */
     public Command createContinuousVelocityCommand(Supplier<Double> targetRpmSupplier) {
+        // Track the last-applied target so setTargetVelocityRpm is only called when the
+        // supplier returns a new value. Calling it every cycle resets the trapezoidal
+        // velocity profile, which prevents the setpoint from ramping to the goal.
+        double[] lastTarget = { Double.NaN };
+
         return Commands.run(() -> {
-            subsystem.setTargetVelocityRpm(targetRpmSupplier.get());
+            double currentTarget = targetRpmSupplier.get();
+            if (currentTarget != lastTarget[0]) {
+                subsystem.setTargetVelocityRpm(currentTarget);
+                lastTarget[0] = currentTarget;
+            }
             subsystem.seekVelocity();
-        }, subsystem).finallyDo(subsystem::stop);
+        }, subsystem).finallyDo((interrupted) -> {
+            // Temporary diagnostic: log why the continuous velocity command ended.
+            edu.wpi.first.wpilibj.DriverStation.reportWarning(
+                    "ContinuousVelocityCommand ended on " + subsystem.getName()
+                            + " interrupted=" + interrupted + " lastTarget=" + lastTarget[0],
+                    true);
+            lastTarget[0] = Double.NaN;
+            subsystem.stop();
+        });
     }
 
     /**

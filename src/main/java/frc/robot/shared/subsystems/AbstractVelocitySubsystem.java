@@ -183,7 +183,18 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         log.recordVerboseOutput("targetClampedRpm", clampedRpm);
         log.recordVerboseOutput("targetWasClamped", wasClamped);
 
-        targetVelocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(clampedRpm);
+        double newTargetRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(clampedRpm);
+
+        // Only reset the profile and settle tracking when the target actually changes.
+        // Repeated calls with the same target (e.g., from createContinuousVelocityCommand)
+        // must not restart the ramp or the profile will never fully converge.
+        // Use a small epsilon because tunable reads may introduce floating-point noise.
+        double targetChangeRadPerSec = Math.abs(newTargetRadPerSec - targetVelocityRadPerSec);
+        if (targetChangeRadPerSec < 1e-6) {
+            return;
+        }
+
+        targetVelocityRadPerSec = newTargetRadPerSec;
 
         // Reset profile state so the ramp starts from the actual measured velocity.
         if (velocityProfile != null) {
@@ -316,6 +327,9 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      */
     @Override
     public void stop() {
+        // Temporary diagnostic: log who called stop() so we can trace unexpected shutdowns.
+        log.warning("stop() called — stack: " + getCallerInfo());
+
         targetVelocityRadPerSec   = 0.0;
         setpointVelocityRadPerSec = 0.0;
         withinTolerance           = false;
@@ -323,6 +337,28 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
             profileState = new TrapezoidProfile.State(0.0, 0.0);
         }
         super.stop();
+    }
+
+    /**
+     * Returns a short caller trace for diagnostic logging.
+     *
+     * @return caller class and method from the stack trace
+     */
+    private String getCallerInfo() {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        StringBuilder sb = new StringBuilder();
+        // Skip getStackTrace, getCallerInfo, stop — show the next 5 frames.
+        for (int i = 3; i < Math.min(stack.length, 8); i++) {
+            if (sb.length() > 0) {
+                sb.append(" <- ");
+            }
+            sb.append(stack[i].getClassName().substring(stack[i].getClassName().lastIndexOf('.') + 1))
+                    .append(".")
+                    .append(stack[i].getMethodName())
+                    .append(":")
+                    .append(stack[i].getLineNumber());
+        }
+        return sb.toString();
     }
 
     /**

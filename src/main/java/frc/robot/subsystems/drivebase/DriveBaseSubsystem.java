@@ -472,8 +472,10 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             File configDirectory = new File(Filesystem.getDeployDirectory(), config.getSwerveConfigDirectory());
 
             // Load the swerve JSONs from the deploy folder so the robot and sim use the same hardware model.
-            // Reduce YAGSL telemetry during real matches to save loop time.
-            SwerveDriveTelemetry.verbosity = isFMSAttached() ? TelemetryVerbosity.LOW : TelemetryVerbosity.HIGH;
+            // Use MACHINE verbosity so YAGSL skips its own SmartDashboard/NT publishes.
+            // All drive telemetry is already logged through AdvantageKit, so YAGSL's
+            // built-in NT publishing is redundant and wastes significant loop time.
+            SwerveDriveTelemetry.verbosity = TelemetryVerbosity.MACHINE;
 
             // Build the swerve drive using the maximum speed limit from config.
             swerveDrive                    = new SwerveParser(configDirectory)

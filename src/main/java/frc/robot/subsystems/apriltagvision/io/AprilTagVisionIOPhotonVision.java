@@ -25,6 +25,18 @@ import edu.wpi.first.math.geometry.Transform3d;
 public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
 
     /**
+     * Maximum number of pipeline results to process per robot loop cycle.
+     * <p>
+     * PhotonVision cameras can produce frames faster than the 50 Hz robot loop. When the robot
+     * falls behind (e.g., during a GC pause or heavy logging cycle), {@code getAllUnreadResults()}
+     * returns the entire backlog. Processing every frame in one cycle causes massive loop overruns.
+     * Limiting to the two most recent results keeps the loop within budget while still capturing
+     * multi-tag and single-tag observations from the latest frames.
+     * </p>
+     */
+    private static final int MAX_RESULTS_PER_CYCLE = 2;
+
+    /**
      * PhotonVision camera instance used to pull pipeline results.
      */
     protected final PhotonCamera        camera;
@@ -59,15 +71,22 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
     public void updateInputs(AprilTagVisionIOInputs inputs) {
         inputs.connected = camera.isConnected();
 
-        // neither of these are logged; they're collections built up based on
-        // PhotonVision pipeline results and processed to log info
+        // Neither of these are logged; they're collections built up based on
+        // PhotonVision pipeline results and processed to log info.
         Set<Integer>          observedTagIds = new HashSet<>();
         List<PoseObservation> observations   = new ArrayList<>();
 
-        for (var result : camera.getAllUnreadResults()) {
+        List<PhotonPipelineResult> allResults = camera.getAllUnreadResults();
+
+        // Only process the most recent results to avoid loop overruns when
+        // a backlog of frames has accumulated since the last cycle.
+        int startIndex = Math.max(0, allResults.size() - MAX_RESULTS_PER_CYCLE);
+
+        for (int i = startIndex; i < allResults.size(); i++) {
+            PhotonPipelineResult result = allResults.get(i);
 
             // extractTargetObservation called even for older results because
-            // maybe newest don't have targets
+            // maybe newest don't have targets.
             inputs.latestTargetObservation = extractTargetObservation(result);
 
             Optional<PoseObservation> observation = extractPoseObservation(result, observedTagIds);

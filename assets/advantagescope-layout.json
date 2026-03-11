@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 0,
-      "y": 33,
-      "width": 1470,
-      "height": 923,
+      "x": 1527,
+      "y": -9,
+      "width": 1938,
+      "height": 1050,
       "state": {
         "sidebar": {
           "width": 236,
@@ -71,7 +71,7 @@
           ]
         },
         "tabs": {
-          "selected": 3,
+          "selected": 12,
           "tabs": [
             {
               "type": 0,
@@ -98,27 +98,7 @@
                 "sources": [
                   {
                     "type": "states",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/CurrentStates",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff0000",
-                      "arrangement": "0,1,2,3"
-                    }
-                  },
-                  {
-                    "type": "states",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/DesiredStates",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#0000ff",
-                      "arrangement": "0,1,2,3"
-                    }
-                  },
-                  {
-                    "type": "states",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/DriveBaseSubsystem/SwerveStates/Measured",
                     "logType": "SwerveModuleState[]",
                     "visible": true,
                     "options": {
@@ -128,11 +108,11 @@
                   },
                   {
                     "type": "states",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Target",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/DriveBaseSubsystem/SwerveStates/Target",
                     "logType": "SwerveModuleState[]",
                     "visible": true,
                     "options": {
-                      "color": "#ff8c00",
+                      "color": "#0000ff",
                       "arrangement": "0,1,2,3"
                     }
                   }
@@ -225,7 +205,7 @@
                 "cameraPosition": [
                   -1.4819843789488516,
                   0.9707759005547563,
-                  -0.03061337011909661
+                  -0.030613370119097306
                 ],
                 "cameraTarget": [
                   0,
@@ -251,7 +231,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RobotPoseSubsystem/RobotPose/OdometryPose",
+                    "logKey": "NT:/AdvantageKit/RobotPoseSubsystem/RobotPose/OdometryOnlyPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
