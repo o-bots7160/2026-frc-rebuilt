@@ -155,7 +155,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 indexerCommandFactory.createFireWhenReadyCommand(
                         shooterCommandFactory.getSubsystem()::isAtTargetVelocity,
                         turretCommandFactory.getSubsystem()::isProfileSettled),
-                feederCommandFactory.createForwardAndHoldCommand())
+                feederCommandFactory.createReversePulseThenForwardCommand())
                 .withName("GameplayState-FireReady");
     }
 
@@ -172,7 +172,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         return Commands.parallel(
                 harvesterCommandFactory.createDeployCommand(),
                 intakeCommandFactory.createIntakeAndHoldCommand(),
-                feederCommandFactory.createForwardAndHoldCommand(),
+                feederCommandFactory.createReversePulseThenForwardCommand(),
                 shooterCommandFactory.createSpinUpAndHoldCommand(
                         shooterCommandFactory.getSubsystem().getConfig()::getMaximumShootingRpm),
                 turretCommandFactory.createTrackFieldTargetCommand(

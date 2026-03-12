@@ -70,6 +70,24 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
     }
 
     /**
+     * Builds a command that briefly reverses the belt to unstick Fuel, then switches to forward transport and holds.
+     * <p>
+     * A short reverse pulse at the configured clearing RPM dislodges Fuel that may be jammed in the feeder. After the pulse duration elapses, the
+     * belt switches to the configured forward velocity and holds indefinitely. The pulse duration is tunable via
+     * {@link frc.robot.subsystems.feeder.config.FeederSubsystemConfig#getReversePulseDurationSeconds()}.
+     * </p>
+     *
+     * @return command that pulses reverse, then transports Fuel forward until interrupted
+     */
+    public Command createReversePulseThenForwardCommand() {
+        return Commands.runOnce(subsystem::setReverseVelocity, subsystem)
+                .andThen(Commands.run(subsystem::seekVelocity, subsystem)
+                        .withTimeout(subsystem.getConfig().getReversePulseDurationSeconds()))
+                .andThen(createForwardAndHoldCommand())
+                .withName("FeederReversePulseThenForward");
+    }
+
+    /**
      * Builds a command that spins the belt in reverse at the configured clearing velocity and holds that speed indefinitely.
      * <p>
      * Use this with {@code whileTrue} so the belt clears Fuel while a button is held and returns to idle when released.

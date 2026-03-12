@@ -20,6 +20,9 @@ public class FeederSubsystemConfig extends AbstractVelocitySubsystemConfig {
     /** Reverse velocity used for clearing Fuel back toward the intake, in RPM. Stored as a positive value; the subsystem negates it. */
     public double            reverseVelocityRpm;
 
+    /** Duration of the reverse pulse used to unstick Fuel before running the belt forward, in seconds. */
+    public double            reversePulseDurationSeconds = 0.1;
+
     /**
      * Returns the default forward transport velocity, tuned via SmartDashboard.
      *
@@ -36,5 +39,14 @@ public class FeederSubsystemConfig extends AbstractVelocitySubsystemConfig {
      */
     public double getReverseVelocityRpm() {
         return readTunableNumber("reverseVelocityRpm", reverseVelocityRpm);
+    }
+
+    /**
+     * Returns the duration of the reverse pulse used to unstick Fuel before running forward, tuned via SmartDashboard.
+     *
+     * @return reverse pulse duration in seconds
+     */
+    public double getReversePulseDurationSeconds() {
+        return readTunableNumber("reversePulseDurationSeconds", reversePulseDurationSeconds);
     }
 }

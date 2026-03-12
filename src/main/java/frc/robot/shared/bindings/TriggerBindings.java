@@ -234,10 +234,11 @@ public class TriggerBindings {
     }
 
     /**
-     * Wires A, B, and X buttons on the driver controller to test the dashboard-selected subsystem.
+     * Wires driver controller buttons to test the dashboard-selected subsystem and run drive base characterization.
      * <p>
-     * A = reverse/min, B = forward/max, X = full SysId sweep. The subsystem under test is chosen via the {@code TriggerBindings/TestSubsystem}
-     * SendableChooser on the dashboard. Commands are resolved at button-press time using deferred proxy so the chooser selection is always current.
+     * A = reverse/min, B = forward/max, X = full SysId sweep for the chooser-selected subsystem, Y = drive base angle then drive SysId in sequence.
+     * The subsystem under test is chosen via the {@code TriggerBindings/TestSubsystem} SendableChooser on the dashboard. Commands are resolved at
+     * button-press time using deferred proxy so the chooser selection is always current.
      * </p>
      */
     private void configureSubsystemTestBindings() {
@@ -259,10 +260,16 @@ public class TriggerBindings {
         driverController.b().whileTrue(
                 Commands.deferredProxy(this::createSelectedForwardCommand));
 
-        // X button: run full SysId characterization sweep for the selected subsystem.
-        // Press X to start (~60 s total); press X again to cancel early.
+        // X button: run full SysId sweep for the dashboard-selected subsystem.
+        // Press X to start; press X again to cancel early.
         driverController.x().whileTrue(
                 Commands.deferredProxy(this::createSelectedSysIdCommand));
+
+        // Y button: run drive base angle and drive SysId characterization in sequence.
+        // Press Y to start; press Y again to cancel early.
+        driverController.y().whileTrue(
+                driveBaseCommandFactory.createAngleSysIdCommand()
+                        .andThen(driveBaseCommandFactory.createDriveSysIdCommand()));
     }
 
     /**

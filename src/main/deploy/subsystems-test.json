@@ -33,8 +33,6 @@
     "enabled": false,
     "verbose": true,
     "intakeMotorConfig": {
-      "enabled": false,
-      "verbose": true,
       "useSetpointLimits": false,
       "motorCanId": 50,
       "motorInverted": false,
@@ -67,8 +65,6 @@
     "enabled": false,
     "verbose": true,
     "harvesterMotorConfig": {
-      "enabled": false,
-      "verbose": true,
       "useSetpointLimits": true,
       "motorCanId": 51,
       "motorInverted": false,
@@ -106,8 +102,6 @@
     "enabled": false,
     "verbose": true,
     "feederMotorConfig": {
-      "enabled": false,
-      "verbose": true,
       "useSetpointLimits": false,
       "motorCanId": 52,
       "motorInverted": false,
@@ -134,14 +128,13 @@
       "idleVelocityRpm": 500.0
     },
     "forwardVelocityRpm": 1500.0,
-    "reverseVelocityRpm": 1000.0
+    "reverseVelocityRpm": 1000.0,
+    "reversePulseDurationSeconds": 0.1
   },
   "indexerSubsystem": {
     "enabled": false,
     "verbose": true,
     "indexerMotorConfig": {
-      "enabled": false,
-      "verbose": true,
       "useSetpointLimits": false,
       "motorCanId": 53,
       "motorInverted": false,
@@ -176,8 +169,6 @@
     "enabled": false,
     "verbose": true,
     "turretMotorConfig": {
-      "enabled": false,
-      "verbose": true,
       "useSetpointLimits": true,
       "motorCanId": 56,
       "motorInverted": false,
@@ -230,8 +221,6 @@
     "verbose": true,
     "followerEnabled": false,
     "shooterMotorConfig": {
-      "enabled": false,
-      "verbose": true,
       "useSetpointLimits": false,
       "motorCanId": 54,
       "motorInverted": true,
@@ -241,8 +230,6 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "shooterFollowerMotorConfig": {
-      "enabled": false,
-      "verbose": true,
       "useSetpointLimits": false,
       "motorCanId": 55,
       "motorInverted": false,
@@ -324,8 +311,6 @@
     "enabled": false,
     "verbose": true,
     "climberMotorConfig": {
-      "enabled": false,
-      "verbose": true,
       "useSetpointLimits": true,
       "motorCanId": 62,
       "motorInverted": false,
@@ -335,8 +320,6 @@
       "forwardSoftLimitDegrees": 360.0
     },
     "climberSensorConfig": {
-      "enabled": false,
-      "verbose": true,
       "leftSensorCanId": 60,
       "rightSensorCanId": 61,
       "alignmentToleranceMillimeters": 25.0,
