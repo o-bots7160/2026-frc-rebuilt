@@ -2,7 +2,7 @@
   "servers": {
     "drawio-diagrams": {
       "command": "npx",
-      "args": ["github:brandonmartinez/drawio-mcp"],
+      "args": ["-y", "@drawio/mcp"],
       "type": "stdio"
     },
     "elastic-dashboard": {

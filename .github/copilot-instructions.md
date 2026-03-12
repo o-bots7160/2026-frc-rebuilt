@@ -436,22 +436,24 @@ Follow this pattern when adding a new subsystem that can be toggled off:
 ## Architecture diagram (`7160-frc-rebuilt.drawio.svg`)
 
 The root-level `7160-frc-rebuilt.drawio.svg` is the single source-of-truth
-architecture diagram, managed via the `drawio-mcp` MCP server (configured in
-`.vscode/mcp.json`). Always read the diagram with `get_diagram_info` before
-making changes so you understand current node/edge IDs and positions.
+architecture diagram. It is managed as a native draw.io XML file and can be
+edited directly in the draw.io VS Code extension. The `drawio-diagrams` MCP
+server (configured in `.vscode/mcp.json`) can open diagram content in the
+draw.io editor for visualization.
 
 ### MCP server reference
 
-- The diagram MCP server is defined in `.vscode/mcp.json` as
-  `drawio-diagrams`, using `npx github:brandonmartinez/drawio-mcp`.
-- Because it pulls from a GitHub repo (not an npm registry package), clearing
-  the npx cache requires deleting the matching directories under
-  `~/.npm/_npx/` and then restarting the MCP server from VS Code.
-- Available tools: `new_diagram`, `add_nodes`, `edit_nodes`, `link_nodes`,
-  `remove_nodes`, `get_diagram_info`.
-- `link_nodes` supports `edgeStyle` (`orthogonal`, `segment`, `elbow`,
-  `entity-relation`, `straight`) and `waypoints` (array of `{x, y}` objects)
-  for multi-point routing.
+- The diagram MCP server is defined in `.vscode/mcp.json` as `drawio-diagrams`,
+  using `npx -y @drawio/mcp` (the official draw.io MCP package from jgraph).
+- Available tools: `open_drawio_xml`, `open_drawio_csv`, `open_drawio_mermaid`.
+  - `open_drawio_xml` — opens the draw.io editor with native XML content.
+  - `open_drawio_csv` — converts CSV data into a draw.io diagram.
+  - `open_drawio_mermaid` — renders Mermaid.js syntax as a draw.io diagram.
+- All three tools support optional `lightbox` (boolean, read-only view) and
+  `dark` (`"auto"`, `"true"`, or `"false"`) parameters.
+- These tools are for **viewing and creating** diagrams in the draw.io editor.
+  To programmatically edit the existing `.drawio.svg` file, modify the XML
+  directly or use the draw.io VS Code extension.
 
 ### Diagram layout structure
 
@@ -463,8 +465,7 @@ The diagram is arranged in horizontal bands, top to bottom:
 4. **Subsystem row** (y = 200) — all subsystem nodes in a horizontal line,
    grouped by function:
    - DRIVE & POSITIONING (x = 0–880): DriveBase, Turret, Climber.
-   - SENSING & VISION (x = 920–1800): RobotState, AprilTagVision,
-     DriverCamera.
+   - SENSING & VISION (x = 920–1800): RobotState, AprilTagVision, DriverCamera.
    - BALL PATH (x = 1820–2360): Shooter, Indexer, Feeder.
 5. **Command factory row** (y = 440–660) — purple factory nodes below their
    respective subsystems.
@@ -476,14 +477,14 @@ The diagram is arranged in horizontal bands, top to bottom:
 
 - Each node type has a consistent color and style. Do not invent new colors:
 
-  | Category         | Fill        | Stroke      | Font style |
-  | ---------------- | ----------- | ----------- | ---------- |
-  | Subsystem        | `#d5e8d4`   | `#82b366`   | bold       |
-  | Command Factory  | `#e1d5e7`   | `#9673a6`   | bold       |
-  | Command          | `#f8cecc`   | `#b85450`   | bold       |
-  | Config / Binding | `#fff2cc`   | `#d6b656`   | bold       |
-  | Infrastructure   | `#dae8fc`   | `#6c8ebf`   | bold       |
-  | Data Flow legend | `#dae8fc`   | `#0066cc`   | bold+italic|
+  | Category         | Fill      | Stroke    | Font style  |
+  | ---------------- | --------- | --------- | ----------- |
+  | Subsystem        | `#d5e8d4` | `#82b366` | bold        |
+  | Command Factory  | `#e1d5e7` | `#9673a6` | bold        |
+  | Command          | `#f8cecc` | `#b85450` | bold        |
+  | Config / Binding | `#fff2cc` | `#d6b656` | bold        |
+  | Infrastructure   | `#dae8fc` | `#6c8ebf` | bold        |
+  | Data Flow legend | `#dae8fc` | `#0066cc` | bold+italic |
 
 - Node IDs use kebab-case with a short descriptive slug: `db-sub`,
   `turret-factory`, `cmd-shooter-idle`, `trigger`.
@@ -494,54 +495,49 @@ The diagram is arranged in horizontal bands, top to bottom:
 
 ### Edge conventions and lane routing
 
-Each edge belongs to one of four semantic categories. Assign the correct
-color, style, and routing lane so edges never stack on top of each other.
+Each edge belongs to one of four semantic categories. Assign the correct color,
+style, and routing lane so edges never stack on top of each other.
 
-| Category       | Color       | Style    | Label    | Routing lane   |
-| -------------- | ----------- | -------- | -------- | -------------- |
-| Data flow      | `#0066CC`   | solid 2px| varies   | Above subsystem row (y = 140–165) using waypoints |
-| Owns ref       | `#9673a6`   | solid 1px| "owns ref" | **Left lane** — waypoints ~15–20px outside the left edge of the column |
-| Creates        | `#b85450`   | dashed 1px| "creates" | **Center** — direct orthogonal, or right-side waypoints when bypassing intermediate nodes |
-| Requires       | `#82b366`   | solid 1px| "requires" | **Right lane** — waypoints ~5–20px outside the right edge of the column |
-| Trigger → factory | `#d6b656` | solid 1px| "uses" | Horizontal bus along y = 1020–1040 with waypoints, then vertical to target |
+| Category          | Color     | Style      | Label      | Routing lane                                                                              |
+| ----------------- | --------- | ---------- | ---------- | ----------------------------------------------------------------------------------------- |
+| Data flow         | `#0066CC` | solid 2px  | varies     | Above subsystem row (y = 140–165) using waypoints                                         |
+| Owns ref          | `#9673a6` | solid 1px  | "owns ref" | **Left lane** — waypoints ~15–20px outside the left edge of the column                    |
+| Creates           | `#b85450` | dashed 1px | "creates"  | **Center** — direct orthogonal, or right-side waypoints when bypassing intermediate nodes |
+| Requires          | `#82b366` | solid 1px  | "requires" | **Right lane** — waypoints ~5–20px outside the right edge of the column                   |
+| Trigger → factory | `#d6b656` | solid 1px  | "uses"     | Horizontal bus along y = 1020–1040 with waypoints, then vertical to target                |
 
 - **Lane separation is critical.** When a subsystem column has all three
-  vertical edge types (owns ref, creates, requires), they must run in
-  separate vertical lanes so labels do not overlap. Use `segment` edge style
-  with explicit waypoints for left/right lanes; use `orthogonal` for center
-  connections that go straight down.
+  vertical edge types (owns ref, creates, requires), they must run in separate
+  vertical lanes so labels do not overlap.
 - When multiple edges share the same lane (e.g., two "requires" edges to the
   same subsystem), offset their waypoint x-coordinates by 5px each to prevent
   overlap.
 - Edge IDs follow the pattern `source-2-target` (e.g.,
   `turret-factory-2-turret-sub`, `cmd-track-2-turret-sub`).
 - Font size on all edge labels is `10`.
-- Data flow edges (blue) are `strokeWidth=2`; all other edges are default
-  width.
-- Data flow edges between non-adjacent subsystems use waypoints routed above
-  the subsystem row (y = 140–165) to avoid crossing through subsystem nodes.
-  Each horizontal data flow line uses a distinct y-value so parallel blue
-  lines do not overlap.
+- Data flow edges (blue) are `strokeWidth=2`; all other edges are default width.
+- Data flow edges between non-adjacent subsystems use waypoints routed above the
+  subsystem row (y = 140–165) to avoid crossing through subsystem nodes. Each
+  horizontal data flow line uses a distinct y-value so parallel blue lines do
+  not overlap.
 
 ### Keeping the diagram in sync
 
-- When adding a new subsystem, add a subsystem node (green), a command
-  factory node (purple), and any command nodes (red) in the correct x-region.
-  Wire all three edge types (owns ref, creates, requires) using the lane
-  conventions above.
-- When adding a new command to an existing subsystem, add the command node
-  below the existing commands, create a dashed "creates" edge from the
-  factory, and a solid "requires" edge back to the subsystem using the right
-  lane.
+- When adding a new subsystem, add a subsystem node (green), a command factory
+  node (purple), and any command nodes (red) in the correct x-region. Wire all
+  three edge types (owns ref, creates, requires) using the lane conventions
+  above.
+- When adding a new command to an existing subsystem, add the command node below
+  the existing commands, create a dashed "creates" edge from the factory, and a
+  solid "requires" edge back to the subsystem using the right lane.
 - When adding cross-subsystem data flow, use blue edges with waypoints routed
   above the subsystem row.
 - When adding a new trigger binding, add a "uses" edge from `trigger` to the
   relevant factory using waypoints along the horizontal bus (y = 1020–1040).
-- Update the driver/operator controller node labels when button mappings
-  change.
-- Always use `get_diagram_info` first to confirm current node positions and
-  IDs before editing. Node positions may have shifted from manual edits in
-  the draw.io VS Code extension.
+- Update the driver/operator controller node labels when button mappings change.
+- Edit the `.drawio.svg` file directly (via the draw.io VS Code extension or by
+  modifying XML) when diagram changes are needed. Use `open_drawio_xml` to
+  preview XML content in the draw.io editor for verification.
 
 ## Elastic Dashboard layout (`elastic-layout.json`)
 
@@ -555,28 +551,26 @@ the MCP tools listed below.
 - The server is defined in `.vscode/mcp.json` as `elastic-dashboard`, using
   `npx -y @o-bots7160/elastic-dashboard-mcp`.
 - Available tools: `create_layout`, `get_layout`, `get_tab`, `add_tab`,
-  `remove_tab`, `rename_tab`, `reorder_tabs`, `add_widget`,
-  `add_widgets_batch`, `remove_widget`, `move_widget`, `resize_widget`,
-  `update_widget_properties`, `auto_layout`, `list_widget_types`,
-  `suggest_widget`, `convert_color`, `get_config`, `set_config`,
-  `validate_layout`.
+  `remove_tab`, `rename_tab`, `reorder_tabs`, `add_widget`, `add_widgets_batch`,
+  `remove_widget`, `move_widget`, `resize_widget`, `update_widget_properties`,
+  `auto_layout`, `list_widget_types`, `suggest_widget`, `convert_color`,
+  `get_config`, `set_config`, `validate_layout`.
 
 ### Workflow
 
 1. Use `get_layout` to read the current tab/widget structure before making any
    changes.
-2. Use `add_tab` to create a new tab, then `add_widget` or
-   `add_widgets_batch` to populate it. Positions are auto-calculated when
-   omitted.
+2. Use `add_tab` to create a new tab, then `add_widget` or `add_widgets_batch`
+   to populate it. Positions are auto-calculated when omitted.
 3. After changes, run `validate_layout` to confirm the file is well-formed.
 4. Use `list_widget_types` (optionally filtered by `single-topic`,
-   `multi-topic`, or `layout`) to discover valid widget types and their
-   default sizes.
-5. Use `suggest_widget` with a NetworkTables data type to choose the best
-   widget for a topic.
-6. Colors in Elastic Dashboard are decimal ARGB integers. Use
-   `convert_color` to translate between hex (`#FF4CAF50`) and the integer
-   format stored in the JSON.
+   `multi-topic`, or `layout`) to discover valid widget types and their default
+   sizes.
+5. Use `suggest_widget` with a NetworkTables data type to choose the best widget
+   for a topic.
+6. Colors in Elastic Dashboard are decimal ARGB integers. Use `convert_color` to
+   translate between hex (`#FF4CAF50`) and the integer format stored in the
+   JSON.
 
 ### Conventions
 
@@ -598,13 +592,12 @@ listed below.
 - The server is defined in `.vscode/mcp.json` as `advantagescope`, using
   `npx -y @o-bots7160/advantagescope-mcp`.
 - Available tools: `create_layout`, `get_layout`, `get_tab`,
-  `get_tab_type_schema`, `list_tab_types`, `add_hub`, `remove_hub`,
-  `add_tab`, `remove_tab`, `update_tab`, `move_tab`, `reorder_tabs`,
-  `add_source`, `update_source`, `remove_source`, `get_preferences`,
-  `update_preferences`, `list_assets`, `get_asset_config`,
-  `update_asset_config`, `delete_asset`, `validate_asset_config`,
-  `create_field2d_config`, `create_field3d_config`, `create_robot_config`,
-  `create_joystick_config`.
+  `get_tab_type_schema`, `list_tab_types`, `add_hub`, `remove_hub`, `add_tab`,
+  `remove_tab`, `update_tab`, `move_tab`, `reorder_tabs`, `add_source`,
+  `update_source`, `remove_source`, `get_preferences`, `update_preferences`,
+  `list_assets`, `get_asset_config`, `update_asset_config`, `delete_asset`,
+  `validate_asset_config`, `create_field2d_config`, `create_field3d_config`,
+  `create_robot_config`, `create_joystick_config`.
 
 ### Workflow
 
@@ -612,11 +605,11 @@ listed below.
    changes.
 2. Use `get_tab_type_schema` with the tab type ID to discover valid source
    types, options, and section names before adding sources.
-3. Use `add_tab` to create a new tab (type IDs: 0=Documentation,
-   1=LineGraph, 2=Field2d, 3=Field3d, 4=Table, 5=Console, 6=Statistics,
-   7=Video, 8=Joysticks, 9=Swerve, 10=Mechanism, 11=Points, 12=Metadata).
-4. Use `add_source` to populate the tab with data sources. For LineGraph
-   tabs, specify the `section` parameter (`leftSources`, `rightSources`, or
+3. Use `add_tab` to create a new tab (type IDs: 0=Documentation, 1=LineGraph,
+   2=Field2d, 3=Field3d, 4=Table, 5=Console, 6=Statistics, 7=Video, 8=Joysticks,
+   9=Swerve, 10=Mechanism, 11=Points, 12=Metadata).
+4. Use `add_source` to populate the tab with data sources. For LineGraph tabs,
+   specify the `section` parameter (`leftSources`, `rightSources`, or
    `discreteSources`).
 5. Use `get_tab` to verify the final tab configuration.
 6. Use `validate_asset_config` when creating or modifying custom assets.
@@ -629,7 +622,7 @@ listed below.
 - SmartDashboard-published values use the path
   `NT:/SmartDashboard/<SubsystemName>/<Key>`.
 - Colors in source options are hex strings (e.g., `#2b66a2`).
-- LineGraph sources use types `stepped` (discrete values), `smooth`
-  (continuous values), or `stripes` (boolean discrete bands).
+- LineGraph sources use types `stepped` (discrete values), `smooth` (continuous
+  values), or `stripes` (boolean discrete bands).
 - Tab titles should match the Elastic Dashboard tab names when they show the
   same data to keep navigation consistent across tools.
