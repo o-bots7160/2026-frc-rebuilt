@@ -20,7 +20,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * movements give fine control, while full deflection still reaches max speed.
      * </p>
      */
-    public double leftStickYResponseExponent  = 2.0;
+    public double  leftStickYResponseExponent  = 2.0;
 
     /**
      * Response curve exponent for the left stick X axis (left/right translation).
@@ -28,7 +28,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * Applied before the speed scale so it sets the baseline feel. Typically matches the Y axis exponent for consistent translation response.
      * </p>
      */
-    public double leftStickXResponseExponent  = 2.0;
+    public double  leftStickXResponseExponent  = 2.0;
 
     /**
      * Response curve exponent for the right stick X axis (rotation/omega).
@@ -37,7 +37,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * without reducing max turn rate.
      * </p>
      */
-    public double rightStickXResponseExponent = 2.0;
+    public double  rightStickXResponseExponent = 2.0;
 
     /**
      * Fraction of maximum linear speed used during normal driving (no trigger held).
@@ -46,7 +46,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * lives in most of the time.
      * </p>
      */
-    public double normalSpeedScale            = 0.8;
+    public double  normalSpeedScale            = 0.8;
 
     /**
      * Fraction of maximum linear speed used when the right trigger (sprint) is held.
@@ -55,7 +55,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * video game.
      * </p>
      */
-    public double sprintSpeedScale            = 1.0;
+    public double  sprintSpeedScale            = 1.0;
 
     /**
      * Fraction of maximum linear speed used when the left trigger (precision/slow) is held.
@@ -64,7 +64,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * slow-speed maneuvering.
      * </p>
      */
-    public double slowSpeedScale              = 0.4;
+    public double  slowSpeedScale              = 0.4;
 
     /**
      * Minimum trigger axis value required to consider a trigger "pressed."
@@ -72,7 +72,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * Values below this threshold are ignored to prevent accidental activation from controller noise or resting position drift.
      * </p>
      */
-    public double triggerDeadband             = 0.1;
+    public double  triggerDeadband             = 0.1;
 
     /**
      * Joystick deadband for driver stick inputs.
@@ -81,16 +81,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * deflection). Applied before the response curve so that stick noise is eliminated before the power function can amplify it.
      * </p>
      */
-    public double joystickDeadband            = 0.08;
-
-    /**
-     * Test RPM target used when the driver holds the shooter spin-up button.
-     * <p>
-     * This value is tunable so operators can adjust the shooter speed from NetworkTables without redeploying code. Typical competition values range
-     * from 1000 to 4000 RPM depending on shot distance.
-     * </p>
-     */
-    public double shooterTestSpeedRpm         = 1700.0;
+    public double  joystickDeadband            = 0.08;
 
     /**
      * Enables tuning mode for trigger bindings.
@@ -103,7 +94,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * Because WPILib trigger bindings are wired once at construction, a code restart is required after changing this value.
      * </p>
      */
-    public boolean tuningEnabled              = false;
+    public boolean tuningEnabled               = false;
 
     /**
      * Reads the tunable response curve exponent for the left stick Y axis.
@@ -175,15 +166,6 @@ public class TriggerBindingsConfig extends AbstractConfig {
      */
     public double getJoystickDeadband() {
         return readTunableNumber("joystickDeadband", joystickDeadband);
-    }
-
-    /**
-     * Reads the tunable shooter test speed used for the spin-up button binding.
-     *
-     * @return shooter target speed in RPM (e.g., 1700.0)
-     */
-    public double getShooterTestSpeedRpm() {
-        return readTunableNumber("shooterTestSpeedRpm", shooterTestSpeedRpm);
     }
 
     /**

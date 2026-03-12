@@ -1,9 +1,8 @@
 # SysId tuning guide
 
 This guide walks you through characterizing a motor-driven mechanism using
-WPILib's SysId tool and our `SysIdHelper` infrastructure. Follow every step —
-especially the gain correction in Step 5 — to get feedforward gains that
-actually work on the robot.
+WPILib's SysId tool and our `SysIdHelper` infrastructure. Follow every step to
+get feedforward and PID gains that work on the robot.
 
 For background on feedforward, PID, and related terms, see the
 [project glossary](../../GLOSSARY.md).
@@ -102,58 +101,12 @@ WPILog file.
 
 Write down all four values before proceeding to the next step.
 
-## Step 5: Correct the gains (critical!)
+## Step 5: Enter gains in config (no correction needed)
 
-> **⚠️ This step is mandatory. Skipping it will cause your feedforward to
-> overshoot by 6.28x and your mechanism will not track its target.**
-
-WPILib's `SysIdRoutineLog.angularVelocity()` internally converts the velocity
-from radians per second to **rotations per second** (dividing by 2π) before
-writing it to the log file. The SysId analysis tool reads those rotations/s
-values but treats them as if they were radians/s. This inflates every
-velocity-dependent gain by a factor of 2π ≈ 6.2832.
-
-Apply this correction to the gains reported by the SysId tool:
-
-| Gain | Raw SysId value | Corrected value   | Why                                  |
-| ---- | --------------- | ----------------- | ------------------------------------ |
-| kS   | Use as-is       | Use as-is         | No velocity dependency               |
-| kV   | Divide by 2π    | `kV_raw / 6.2832` | Proportional to velocity             |
-| kA   | Divide by 2π    | `kA_raw / 6.2832` | Proportional to acceleration (dv/dt) |
-| kP   | Divide by 2π    | `kP_raw / 6.2832` | Computed against inflated velocity   |
-
-### Worked example (feeder)
-
-The SysId tool reported for the feeder:
-
-| Gain | SysId reported | ÷ 2π    | Entered in config |
-| ---- | -------------- | ------- | ----------------- |
-| kS   | 0.66654        | —       | 0.66654           |
-| kV   | 0.51183        | 0.08148 | 0.08148           |
-| kA   | 0.058155       | 0.00926 | 0.00926           |
-| kP   | 0.025503       | 0.00406 | 0.025503          |
-
-> **Note on kP:** The ÷2π correction applies mathematically, but the SysId
-> feedback kP is only a rough starting point — not a precise calibration like
-> the feedforward gains. Using the raw SysId kP directly is acceptable as a
-> starting value; it will be tuned on the robot in Step 8 regardless.
-
-### How to verify the correction is right
-
-Use this quick sanity check after correcting kV:
-
-```
-Max achievable RPM ≈ (12V − kS) / kV / (2π / 60)
-```
-
-For the intake: `(12 − 0.306) / 0.083 / 0.1047 ≈ 1345 RPM`
-
-If the motor is a NEO Vortex (6784 RPM free speed) with a 4:1 gear ratio, the
-theoretical max mechanism speed is `6784 / 4 = 1696 RPM`. Getting ~1345 RPM
-under load is realistic. If your corrected kV gives a max speed much higher than
-the theoretical max, something is wrong.
-
-## Step 6: Enter gains in config
+Our `SysIdHelper` pre-multiplies position and velocity by 2π before logging.
+This cancels WPILib's internal ÷2π conversion, so the SysId analysis tool sees
+true radian-based values. The reported gains can be entered directly into
+`subsystems.json` without any manual correction.
 
 Update the mechanism's section in `subsystems.json`:
 
@@ -167,7 +120,7 @@ Update the mechanism's section in `subsystems.json`:
 ```
 
 Use the kP value reported by the SysId Feedback Analysis section as your
-starting point. You will fine-tune it on the robot later (see Step 8). If SysId
+starting point. You will fine-tune it on the robot later (see Step 7). If SysId
 did not report a kP, start with `0.01` as a conservative default.
 
 Also update the velocity limits now that you know the real max speed:
@@ -180,7 +133,22 @@ Also update the velocity limits now that you know the real max speed:
 Set `maximumVelocityRpm` to roughly 80–90% of the calculated max to leave
 headroom for the PID controller to make corrections.
 
-## Step 7: Deploy and smoke test
+### How to verify the gains are reasonable
+
+Use this quick sanity check on kV:
+
+```
+Max achievable RPM ≈ (12V − kS) / kV / (2π / 60)
+```
+
+For the intake: `(12 − 0.306) / 0.083 / 0.1047 ≈ 1345 RPM`
+
+If the motor is a NEO Vortex (6784 RPM free speed) with a 4:1 gear ratio, the
+theoretical max mechanism speed is `6784 / 4 = 1696 RPM`. Getting ~1345 RPM
+under load is realistic. If the calculated max is wildly different from the
+theoretical max, something is wrong.
+
+## Step 6: Deploy and smoke test
 
 1. Deploy the updated config: `./gradlew deploy`.
 2. Enable teleop and command the mechanism to a moderate target (e.g., 400 RPM
@@ -190,11 +158,11 @@ headroom for the PID controller to make corrections.
    - `voltageCommandVolts` is reasonable (not saturated at 12V).
    - The mechanism reaches the target within a few seconds.
 
-If the mechanism barely moves, your kV is likely still too high (you may have
-forgotten the ÷2π correction). If it overshoots wildly, double-check kS and
-verify the motor direction.
+If the mechanism barely moves, double-check that the gear ratio in the motor
+config matches the physical mechanism. If it overshoots wildly, verify kS and
+the motor direction.
 
-## Step 8: Tune kP
+## Step 7: Tune kP
 
 Once feedforward is correct, tune kP to tighten the response:
 
@@ -209,6 +177,22 @@ Leave kI at `0.0` unless there is a persistent steady-state error that kP cannot
 fix. Leave kD at `0.0` for velocity mechanisms — derivative gain on a noisy
 velocity signal usually does more harm than good.
 
+## How the 2π compensation works
+
+WPILib's `SysIdRoutineLog.angularVelocity()` internally divides by 2π
+(converting radians/sec to rotations/sec) before writing to the log file. The
+SysId analysis tool then reads those rotations/sec values but treats them as
+radians/sec, which would inflate every velocity-dependent gain by 2π ≈ 6.2832.
+
+`SysIdHelper` compensates by multiplying position and velocity by 2π _before_
+passing them to the WPILib logger. The internal ÷2π then cancels out, and SysId
+sees the true radian-based values. This means gains reported by the tool are
+already in the correct per-radian units and can be used directly.
+
+If you ever bypass `SysIdHelper` and build a `SysIdRoutine` manually, you will
+need to apply this same pre-multiplication or divide the reported kV, kA, and kP
+by 2π after analysis.
+
 ## Diagnostic telemetry
 
 `SysIdHelper` logs the following values to AdvantageKit under the `SysIdHelper/`
@@ -216,21 +200,21 @@ prefix during SysId tests:
 
 | Key                      | What it shows                                    |
 | ------------------------ | ------------------------------------------------ |
-| `sysIdVelocityRadPerSec` | Mechanism velocity in rad/s (what we compute)    |
+| `sysIdVelocityRadPerSec` | Mechanism velocity in rad/s (true value)         |
 | `sysIdVelocityRpm`       | Mechanism velocity in RPM (converted from rad/s) |
 | `sysIdRawMotorRpm`       | Raw motor shaft RPM before gear ratio conversion |
-| `sysIdPositionRad`       | Mechanism position in radians                    |
+| `sysIdPositionRad`       | Mechanism position in radians (true value)       |
 | `sysIdVoltage`           | Applied voltage in volts                         |
 
 Use these to verify the SysId routine is seeing correct values. If
 `sysIdVelocityRpm` ÷ gear ratio ≈ `sysIdRawMotorRpm`, the conversion chain is
 correct.
 
+Note: the values logged to AdvantageKit are the _true_ mechanism values, not the
+pre-multiplied values fed to the SysId logger. Use these for debugging, not for
+manual gain computation.
+
 ## Troubleshooting
-
-### kV is suspiciously high (> 0.3 for a fast mechanism)
-
-You probably forgot the ÷2π correction. Divide kV and kA by 6.2832 and redeploy.
 
 ### Max calculated RPM is way above the motor's theoretical max
 
@@ -258,8 +242,7 @@ motor config and the SysId conversion chain.
 1. Set sysIdRampRateVoltsPerSecond and sysIdStepVoltage in subsystems.json.
 2. Deploy. Run all four SysId tests.
 3. Open the SysId tool and read kS, kV, kA, and kP (Feedback Analysis).
-4. CORRECT: kV = kV_raw / (2 * pi),  kA = kA_raw / (2 * pi),  kS = kS_raw.
-5. Enter corrected gains + SysId kP (or 0.01 if unavailable) in subsystems.json.
-6. Deploy. Verify target tracking in AdvantageScope.
-7. Tune kP until error is within tolerance.
+4. Enter gains directly into subsystems.json (no correction needed).
+5. Deploy. Verify target tracking in AdvantageScope.
+6. Tune kP until error is within tolerance.
 ```

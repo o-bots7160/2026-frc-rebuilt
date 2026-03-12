@@ -17,13 +17,11 @@ import frc.robot.shared.logging.Logger;
  * radians and radians per second respectively (mechanism-side, after gear ratio conversion).
  * </p>
  * <p>
- * IMPORTANT: WPILib's {@code SysIdRoutineLog.MotorLog.angularVelocity()} internally converts the velocity to
- * rotations per second (dividing by 2pi) before writing to the WPILog file. The SysId analysis tool then reads those
- * values but interprets them as if they were still in radians per second. This means every velocity-dependent gain
- * reported by SysId is inflated by a factor of 2pi. After running SysId and reading the gains from the tool, you must
- * divide kV and kA by 2pi (approximately 6.2832) before entering them into the subsystem config. kS is not affected
- * because it has no velocity dependency. See the SysId tuning guide at
- * {@code src/main/java/frc/robot/shared/subsystems/SYSID_GUIDE.md} for the full workflow.
+ * WPILib's {@code SysIdRoutineLog.MotorLog.angularVelocity()} internally divides by 2pi (converting radians/sec to
+ * rotations/sec) before writing to the log file. To compensate, this helper pre-multiplies position and velocity by
+ * 2pi before logging so the division cancels out and the SysId analysis tool sees true radian-based values. This means
+ * the gains reported by the SysId tool can be used directly in the subsystem config with no manual correction needed.
+ * See the SysId tuning guide at {@code src/main/java/frc/robot/shared/subsystems/SYSID_GUIDE.md} for the full workflow.
  * </p>
  */
 public final class SysIdHelper {
@@ -63,8 +61,8 @@ public final class SysIdHelper {
      * Creates a SysId routine that commands a motor with raw voltage, logs the measured state, and records diagnostic
      * telemetry including raw motor RPM.
      * <p>
-     * The gains reported by the SysId analysis tool require a 2pi correction before use. Divide kV and kA by 2pi;
-     * leave kS unchanged. See the class-level Javadoc and {@code SYSID_GUIDE.md} for details.
+     * Position and velocity are pre-multiplied by 2pi before logging to cancel WPILib's internal ÷2pi conversion.
+     * The gains reported by the SysId analysis tool can be used directly without correction.
      * </p>
      *
      * @param subsystem                        subsystem that owns the motor; used for command requirements
@@ -98,6 +96,9 @@ public final class SysIdHelper {
 
         Logger sysIdLog = Logger.getInstance(SysIdHelper.class);
 
+        // Pre-multiply by 2pi to cancel WPILib's internal ÷2pi conversion in the SysId log writer.
+        final double TWO_PI = 2.0 * Math.PI;
+
         return new SysIdRoutine(
                 config,
                 new SysIdRoutine.Mechanism(
@@ -110,10 +111,10 @@ public final class SysIdHelper {
 
                             log.motor(motorLabel)
                                     .voltage(measuredV)
-                                    .angularPosition(Units.Radians.of(posRad))
-                                    .angularVelocity(Units.RadiansPerSecond.of(velRadPerSec));
+                                    .angularPosition(Units.Radians.of(posRad * TWO_PI))
+                                    .angularVelocity(Units.RadiansPerSecond.of(velRadPerSec * TWO_PI));
 
-                            // Diagnostic telemetry so AdvantageScope shows the same values SysId logs.
+                            // Diagnostic telemetry — true mechanism values (not the pre-multiplied ones).
                             sysIdLog.recordOutput("sysIdVelocityRadPerSec", velRadPerSec);
                             sysIdLog.recordOutput("sysIdVelocityRpm",
                                     edu.wpi.first.math.util.Units.radiansPerSecondToRotationsPerMinute(velRadPerSec));

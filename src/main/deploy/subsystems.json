@@ -213,6 +213,7 @@
       "componentPivotY": 0.0,
       "componentPivotZ": 0.375
     },
+    "rotationalLeadTimeSeconds": 0.1,
     "turretZeroOffsetDegrees": 180.0,
     "fieldTargets": {
       "fieldLengthMeters": 16.54,
