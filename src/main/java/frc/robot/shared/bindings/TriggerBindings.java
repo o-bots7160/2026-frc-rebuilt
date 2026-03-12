@@ -436,17 +436,17 @@ public class TriggerBindings {
     /**
      * Wires operator controller buttons to gameplay state transition commands.
      * <p>
-     * Right trigger enters FIRE_READY, left trigger enters HARVEST_READY, start button enters CLIMB_READY, B button enters EJECT, and Y button
-     * returns to IDLE. Triggers use {@code onTrue} so the state change persists after release.
+     * Y enters FIRE_READY, X enters HARVEST_READY, start enters CLIMB_READY, A enters EJECT, B returns to IDLE, and right trigger enters TRAVEL.
+     * Triggers use {@code onTrue} so the state change persists after release.
      * </p>
      */
     private void configureOperatorBindings() {
         // Right trigger: fire fuel.
-        operatorController.rightTrigger().whileTrue(
+        operatorController.y().whileTrue(
                 gameplayStateCommandFactory.createTransitionCommand(GameplayState.FIRE_READY, "operator"));
 
         // Left trigger: harvest fuel.
-        operatorController.leftTrigger().onTrue(
+        operatorController.x().onTrue(
                 gameplayStateCommandFactory.createTransitionCommand(GameplayState.HARVEST_READY, "operator"));
 
         // Start button: prepare for climb.
@@ -454,12 +454,16 @@ public class TriggerBindings {
                 gameplayStateCommandFactory.createTransitionCommand(GameplayState.CLIMB_READY, "operator"));
 
         // B button: eject all Fuel.
-        operatorController.b().whileTrue(
+        operatorController.a().whileTrue(
                 gameplayStateCommandFactory.createTransitionCommand(GameplayState.EJECT, "operator"));
 
         // Y button: return to idle.
-        operatorController.y().onTrue(
+        operatorController.b().onTrue(
                 gameplayStateCommandFactory.createTransitionCommand(GameplayState.IDLE, "operator"));
+
+        // Right trigger: travel mode (stow harvester and idle all mechanisms).
+        operatorController.rightTrigger().onTrue(
+                gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRAVEL, "operator"));
     }
 
 }

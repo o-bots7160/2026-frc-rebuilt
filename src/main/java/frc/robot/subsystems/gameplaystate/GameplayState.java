@@ -44,7 +44,12 @@ public enum GameplayState {
     /**
      * Reverses the ball path to clear a jam. Intake, feeder, and indexer run in reverse. Shooter stops. Harvester stays in its current position.
      */
-    EJECT("Eject");
+    EJECT("Eject"),
+
+    /**
+     * Safe transit mode for moving across the field. The harvester stows to stay inside the frame perimeter while all other mechanisms idle.
+     */
+    TRAVEL("Travel");
 
     private final String displayName;
 

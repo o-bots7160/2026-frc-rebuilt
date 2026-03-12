@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.commands.AbstractSubsystemCommandFactory;
 import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
@@ -107,7 +108,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     /**
      * Builds the IDLE state command group: all subsystems return to their resting positions.
      * <p>
-     * The shooter idles at its configured idle RPM, the indexer and feeder idle, the intake stops, and the harvester stows.
+     * The shooter idles at its configured idle RPM, the indexer and feeder stop completely, the intake stops, and the harvester stows.
      * </p>
      *
      * @return parallel command group that idles all mechanisms
@@ -115,10 +116,9 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     public Command createIdleCommand() {
         return Commands.parallel(
                 shooterCommandFactory.createIdleCommand(),
-                indexerCommandFactory.createIdleCommand(),
-                feederCommandFactory.createIdleCommand(),
-                intakeCommandFactory.createIdleCommand(),
-                harvesterCommandFactory.createStowCommand())
+                indexerCommandFactory.createStopCommand(),
+                feederCommandFactory.createStopCommand(),
+                intakeCommandFactory.createIdleCommand())
                 .withName("GameplayState-Idle");
     }
 
@@ -139,7 +139,10 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * Builds the FIRE_READY state command group: spins up the shooter, aims the turret at the field target, and stages Fuel in the indexer while the
      * harvester stows.
      * <p>
-     * The indexer holds until the shooter and turret report ready, then feeds automatically via {@code createFireWhenReadyCommand}.
+     * Both the indexer and feeder wait until the shooter and turret report ready before activating. The indexer gates on readiness via
+     * {@code createFireWhenReadyCommand}, and the feeder similarly waits before running its reverse-pulse-then-forward sequence. When the command
+     * ends or is interrupted (e.g., operator releases the fire trigger), all mechanisms transition back to IDLE so the indexer and feeder stop
+     * cleanly.
      * </p>
      *
      * @return parallel command group that prepares the robot to score
@@ -155,7 +158,13 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 indexerCommandFactory.createFireWhenReadyCommand(
                         shooterCommandFactory.getSubsystem()::isAtTargetVelocity,
                         turretCommandFactory.getSubsystem()::isProfileSettled),
-                feederCommandFactory.createReversePulseThenForwardCommand())
+                Commands.waitUntil(() -> shooterCommandFactory.getSubsystem().isAtTargetVelocity()
+                        && turretCommandFactory.getSubsystem().isProfileSettled())
+                        .andThen(feederCommandFactory.createReversePulseThenForwardCommand()))
+                .finallyDo(() -> {
+                    subsystem.requestState(GameplayState.IDLE, "fire-end");
+                    CommandScheduler.getInstance().schedule(createIdleCommand());
+                })
                 .withName("GameplayState-FireReady");
     }
 
@@ -224,6 +233,25 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     }
 
     /**
+     * Builds the TRAVEL state command group: stows the harvester and idles all other mechanisms for safe field traversal.
+     * <p>
+     * This state is useful when driving across the field without actively collecting or scoring. The harvester moves to its stowed position so it
+     * stays inside the frame perimeter, while the shooter, indexer, feeder, and intake return to their idle behaviors.
+     * </p>
+     *
+     * @return parallel command group that stows the harvester and idles all other mechanisms
+     */
+    public Command createTravelCommand() {
+        return Commands.parallel(
+                harvesterCommandFactory.createStowCommand(),
+                shooterCommandFactory.createIdleCommand(),
+                indexerCommandFactory.createStopCommand(),
+                feederCommandFactory.createStopCommand(),
+                intakeCommandFactory.createIdleCommand())
+                .withName("GameplayState-Travel");
+    }
+
+    /**
      * Sets the idle command as the default behavior for the gameplay state subsystem.
      *
      * @return the idle command that was set as the default
@@ -248,6 +276,8 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
             return createClimbReadyCommand();
         case EJECT:
             return createEjectCommand();
+        case TRAVEL:
+            return createTravelCommand();
         default:
             return createIdleCommand();
         }

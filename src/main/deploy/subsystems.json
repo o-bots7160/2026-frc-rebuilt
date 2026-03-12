@@ -8,7 +8,7 @@
     "slowSpeedScale": 0.4,
     "triggerDeadband": 0.1,
     "joystickDeadband": 0.08,
-    "tuningEnabled": true
+    "tuningEnabled": false
   },
   "driveBaseSubsystem": {
     "enabled": true,
@@ -42,27 +42,27 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.01,
+      "kP": 0.01318,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.30559,
-      "kV": 0.08296,
-      "kA": 0.009004
+      "kS": 0.25003,
+      "kV": 0.082939,
+      "kA": 0.0070893
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
       "stepVoltage": 7.0
     },
     "motionProfile": {
-      "maximumVelocityRpm": 1300.0,
+      "maximumVelocityRpm": 1700.0,
       "maximumAccelerationRpmPerSecond": 500.0,
       "velocityToleranceRpm": 25,
       "settleTimeSeconds": 0.15,
       "idleVelocityRpm": 100
     },
-    "forwardVelocityRpm": 1000,
+    "forwardVelocityRpm": 1400,
     "reverseVelocityRpm": 1000
   },
   "harvesterSubsystem": {
@@ -115,14 +115,14 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.025503,
+      "kP": 0.018884,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.66654,
-      "kV": 0.08148,
-      "kA": 0.00926
+      "kS": 0.40455,
+      "kV": 0.080416,
+      "kA": 0.0087119
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
@@ -155,14 +155,14 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0084,
+      "kP": 0.0081756,
       "kI": 0.0,
-      "kD": 0.01
+      "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.28804,
-      "kV": 0.0829,
-      "kA": 0.00411
+      "kS": 0.31704,
+      "kV": 0.31704,
+      "kA": 0.008487
     },
     "motionProfile": {
       "maximumVelocityRpm": 1000.0,
@@ -251,14 +251,14 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0001,
+      "kP": 0.0019487,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.2043,
-      "kV": 0.0199,
-      "kA": 0.0024
+      "kS": 0.16876,
+      "kV": 0.0168,
+      "kA": 0.0040569
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
