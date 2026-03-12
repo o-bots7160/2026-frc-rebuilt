@@ -86,7 +86,8 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
      * </p>
      * <p>
      * Rotational lead-time compensation predicts where the robot heading will be after a short look-ahead period and subtracts that predicted change
-     * so the turret pre-rotates instead of lagging behind. The returned angle is clamped to the configured turret limits.
+     * so the turret pre-rotates instead of lagging behind. The result is negated to account for the turret's motor direction convention, then clamped
+     * to the configured turret limits.
      * </p>
      *
      * @param robotPose                    current robot pose in meters and radians
@@ -116,13 +117,7 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         double rotationalCompensationRadians = robotYawRateRadiansPerSecond * leadTimeSeconds;
         double compensatedTargetRadians      = rawTargetRadians - rotationalCompensationRadians;
 
-        return Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
-    }
-
-    @Override
-    public boolean isProfileSettled() {
-        // The turret is settled when the profiled motor is at its target and the velocity is below the configured threshold.
-        return true;
+        return -Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
     }
 
     /**

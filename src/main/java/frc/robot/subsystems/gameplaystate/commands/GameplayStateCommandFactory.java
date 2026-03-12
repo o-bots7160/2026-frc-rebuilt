@@ -1,8 +1,5 @@
 package frc.robot.subsystems.gameplaystate.commands;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,7 +11,6 @@ import frc.robot.subsystems.gameplaystate.GameplayStateSubsystem;
 import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.commands.IntakeSubsystemCommandFactory;
-import frc.robot.subsystems.robotpose.RobotPoseSubsystem;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
@@ -42,12 +38,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
 
     private final ClimberSubsystemCommandFactory   climberCommandFactory;
 
-    private final RobotPoseSubsystem               robotPoseSubsystem;
-
-    private final Supplier<Translation2d>          fieldTargetPositionSupplier;
-
-    private final Supplier<Double>                 robotYawRateRadiansPerSecondSupplier;
-
     /**
      * Creates a factory that composes gameplay state commands from individual subsystem command factories.
      *
@@ -59,9 +49,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @param turretCommandFactory                 factory for turret aiming commands
      * @param harvesterCommandFactory              factory for harvester arm commands
      * @param climberCommandFactory                factory for climber commands
-     * @param robotPoseSubsystem                   robot pose subsystem for turret tracking
-     * @param fieldTargetPositionSupplier          supplier of the active scoring target position in field coordinates (meters)
-     * @param robotYawRateRadiansPerSecondSupplier supplier of the robot's yaw rate in radians per second
      */
     public GameplayStateCommandFactory(
             GameplayStateSubsystem subsystem,
@@ -71,10 +58,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
             IntakeSubsystemCommandFactory intakeCommandFactory,
             TurretSubsystemCommandFactory turretCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            ClimberSubsystemCommandFactory climberCommandFactory,
-            RobotPoseSubsystem robotPoseSubsystem,
-            Supplier<Translation2d> fieldTargetPositionSupplier,
-            Supplier<Double> robotYawRateRadiansPerSecondSupplier) {
+            ClimberSubsystemCommandFactory climberCommandFactory) {
         super(subsystem);
         this.shooterCommandFactory                = shooterCommandFactory;
         this.indexerCommandFactory                = indexerCommandFactory;
@@ -83,9 +67,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         this.turretCommandFactory                 = turretCommandFactory;
         this.harvesterCommandFactory              = harvesterCommandFactory;
         this.climberCommandFactory                = climberCommandFactory;
-        this.robotPoseSubsystem                   = robotPoseSubsystem;
-        this.fieldTargetPositionSupplier          = fieldTargetPositionSupplier;
-        this.robotYawRateRadiansPerSecondSupplier = robotYawRateRadiansPerSecondSupplier;
     }
 
     /**
@@ -136,13 +117,13 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     }
 
     /**
-     * Builds the FIRE_READY state command group: spins up the shooter, aims the turret at the field target, and stages Fuel in the indexer while the
-     * harvester stows.
+     * Builds the FIRE_READY state command group: spins up the shooter and stages Fuel in the indexer while the turret continues tracking via its
+     * default command.
      * <p>
      * Both the indexer and feeder wait until the shooter and turret report ready before activating. The indexer gates on readiness via
      * {@code createFireWhenReadyCommand}, and the feeder similarly waits before running its reverse-pulse-then-forward sequence. When the command
      * ends or is interrupted (e.g., operator releases the fire trigger), all mechanisms transition back to IDLE so the indexer and feeder stop
-     * cleanly.
+     * cleanly. The turret is not explicitly commanded here because it runs its default tracking command at all times.
      * </p>
      *
      * @return parallel command group that prepares the robot to score
@@ -151,10 +132,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         return Commands.parallel(
                 shooterCommandFactory.createContinuousVelocityCommand(
                         shooterCommandFactory.getSubsystem().getConfig()::getMaximumShootingRpm),
-                turretCommandFactory.createTrackFieldTargetCommand(
-                        robotPoseSubsystem,
-                        fieldTargetPositionSupplier,
-                        robotYawRateRadiansPerSecondSupplier),
                 indexerCommandFactory.createFireWhenReadyCommand(
                         shooterCommandFactory.getSubsystem()::isAtTargetVelocity,
                         turretCommandFactory.getSubsystem()::isProfileSettled),
@@ -171,8 +148,9 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     /**
      * Builds the AUTO_CYCLE state command group used during autonomous routines.
      * <p>
-     * Deploys the harvester and runs the intake to collect Fuel while the shooter spins up and the turret tracks the scoring target. This allows
-     * autonomous routines to collect and score without explicit state transitions between harvest and fire.
+     * Deploys the harvester and runs the intake to collect Fuel while the shooter spins up. The turret continues tracking the scoring target via its
+     * default command, so it is not explicitly commanded here. This allows autonomous routines to collect and score without explicit state
+     * transitions between harvest and fire.
      * </p>
      *
      * @return parallel command group that simultaneously collects and prepares to score
@@ -184,10 +162,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 feederCommandFactory.createReversePulseThenForwardCommand(),
                 shooterCommandFactory.createSpinUpAndHoldCommand(
                         shooterCommandFactory.getSubsystem().getConfig()::getMaximumShootingRpm),
-                turretCommandFactory.createTrackFieldTargetCommand(
-                        robotPoseSubsystem,
-                        fieldTargetPositionSupplier,
-                        robotYawRateRadiansPerSecondSupplier),
                 indexerCommandFactory.createHoldCommand())
                 .withName("GameplayState-AutoCycle");
     }

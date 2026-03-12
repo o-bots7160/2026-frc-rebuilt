@@ -177,7 +177,7 @@
     "unjamReverseDurationSeconds": 0.3
   },
   "turretSubsystem": {
-    "enabled": false,
+    "enabled": true,
     "verbose": false,
     "turretMotorConfig": {
       "useSetpointLimits": true,
@@ -185,11 +185,11 @@
       "motorInverted": false,
       "smartCurrentLimitAmps": 40,
       "motorRotationsPerMechanismRotation": 10,
-      "reverseSoftLimitDegrees": -60.0,
-      "forwardSoftLimitDegrees": 60.0
+      "reverseSoftLimitDegrees": -100.0,
+      "forwardSoftLimitDegrees": 100.0
     },
     "pid": {
-      "kP": 8.0,
+      "kP": 5.5,
       "kI": 0.0,
       "kD": 0.05
     },
@@ -199,8 +199,8 @@
       "kA": 0.1
     },
     "motionProfile": {
-      "maximumVelocityDegreesPerSecond": 110.0,
-      "maximumAccelerationDegreesPerSecondSquared": 50.0,
+      "maximumVelocityDegreesPerSecond": 180.0,
+      "maximumAccelerationDegreesPerSecondSquared": 100.0,
       "positionToleranceDegrees": 5.0,
       "velocityToleranceDegreesPerSecond": 10.0,
       "initialPositionDegrees": 0.0,

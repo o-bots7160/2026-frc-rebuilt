@@ -197,7 +197,10 @@ public class RobotContainer {
                     intakeCommandFactory,
                     turretCommandFactory,
                     harvesterCommandFactory,
-                    climberCommandFactory,
+                    climberCommandFactory);
+
+            // Default commands
+            turretCommandFactory.setDefaultTrackFieldTargetCommand(
                     robotPoseSubsystem,
                     fieldTargetSelector::getActiveTargetPosition,
                     driveBaseSubsystem::getYawRateRadiansPerSecond);
