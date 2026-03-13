@@ -196,8 +196,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Returns the robot's current yaw rate (rotational velocity around the vertical axis).
      * <p>
-     * This value comes from the measured chassis speeds reported by the swerve IO layer. Positive values indicate
-     * counter-clockwise rotation following WPILib conventions.
+     * This value comes from the measured chassis speeds reported by the swerve IO layer. Positive values indicate counter-clockwise rotation
+     * following WPILib conventions.
      * </p>
      *
      * @return yaw rate in radians per second
@@ -282,9 +282,9 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         // Normalize: cap the vector magnitude to 1.0 so diagonal inputs (forward + left at full
         // deflection) do not exceed the maximum speed. Without this, a full diagonal would have
         // magnitude sqrt(2) and overshoot the speed limit.
-        double        magnitude         = rawVector.getNorm();
-        Translation2d clampedVector     = magnitude > 1.0 ? rawVector.div(magnitude) : rawVector;
-        double        simulationScale   = 1.0;
+        double        magnitude       = rawVector.getNorm();
+        Translation2d clampedVector   = magnitude > 1.0 ? rawVector.div(magnitude) : rawVector;
+        double        simulationScale = 1.0;
 
         // Simulation: optionally tone down speeds and increase telemetry detail to help debugging.
         if (isSimulation()) {
@@ -292,8 +292,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         }
 
         // Convert the unitless vector into real robot speeds in meters per second.
-        double        maxSpeed          = config.getMaximumLinearSpeedMetersPerSecond().get();
-        Translation2d commandedSpeeds   = new Translation2d(
+        double        maxSpeed        = config.getMaximumLinearSpeedMetersPerSecond().get();
+        Translation2d commandedSpeeds = new Translation2d(
                 clampedVector.getX() * simulationScale * maxSpeed,
                 clampedVector.getY() * simulationScale * maxSpeed);
 
@@ -472,10 +472,11 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             File configDirectory = new File(Filesystem.getDeployDirectory(), config.getSwerveConfigDirectory());
 
             // Load the swerve JSONs from the deploy folder so the robot and sim use the same hardware model.
-            // Use MACHINE verbosity so YAGSL skips its own SmartDashboard/NT publishes.
+            // Use MACHINE verbosity by default so YAGSL skips its own SmartDashboard/NT publishes.
             // All drive telemetry is already logged through AdvantageKit, so YAGSL's
             // built-in NT publishing is redundant and wastes significant loop time.
-            SwerveDriveTelemetry.verbosity = TelemetryVerbosity.MACHINE;
+            // When verbose logging is enabled, use HIGH to surface additional YAGSL diagnostics.
+            SwerveDriveTelemetry.verbosity = verbose ? TelemetryVerbosity.HIGH : TelemetryVerbosity.MACHINE;
 
             // Build the swerve drive using the maximum speed limit from config.
             swerveDrive                    = new SwerveParser(configDirectory)
