@@ -86,8 +86,7 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
      * </p>
      * <p>
      * Rotational lead-time compensation predicts where the robot heading will be after a short look-ahead period and subtracts that predicted change
-     * so the turret pre-rotates instead of lagging behind. The result is negated to account for the turret's motor direction convention, then clamped
-     * to the configured turret limits.
+     * so the turret pre-rotates instead of lagging behind. The result is clamped to the configured turret limits.
      * </p>
      *
      * @param robotPose                    current robot pose in meters and radians
@@ -190,21 +189,22 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         double compensatedTargetRadians      = rawTargetRadians - rotationalCompensationRadians;
 
         // Clamp the compensated angle to the turret's physical swing limits, then convert to degrees.
-        // The final negation accounts for the turret motor's direction convention: the math frame above
-        // treats counter-clockwise as positive, but the motor treats clockwise as positive. Without the
-        // negation the turret would rotate in the wrong direction.
+        // This method returns a pure math-frame result (positive = CCW). If the real motor's positive
+        // direction is CW, handle that via motorInverted = true in the motor config rather than
+        // negating here. Motor inversion flips both the SparkMax output and built-in encoder, keeping
+        // the PID frame consistent without polluting the targeting math.
         //
         // Forward-facing turret example (limits −90° to +90°):
         //   compensatedTarget = π/4 (45°) → after clamp = π/4 (within limits)
-        //   Return: −(45°) = −45° sent to motor → motor turns 45° CW = 45° CCW in math frame. Correct.
+        //   Return: 45° → motor drives to +45° encoder (CCW from zero). Correct.
         //
         // Rear-facing turret, unreachable target (limits −90° to +90°):
         //   Robot facing east, target due east (directly in front). fieldAngle = 0, offset = π.
         //   rawTarget = 0 − 0 − π = −π → normalized to −π by angleModulus, clamped to −π/2 (−90°).
-        //   Return: −(−90°) = +90° — turret swings to its physical limit, getting as close to forward
-        //   as it can. The target is unreachable because the turret faces backward, so it does the best
-        //   it can by parking at the nearest limit.
-        return -Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
+        //   Return: −90° — turret swings to its physical limit, getting as close to forward as it
+        //   can. The target is unreachable because the turret faces backward, so it does the best it
+        //   can by parking at the nearest limit.
+        return Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
     }
 
     /**

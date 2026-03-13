@@ -182,7 +182,7 @@
     "turretMotorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 56,
-      "motorInverted": false,
+      "motorInverted": true,
       "smartCurrentLimitAmps": 40,
       "motorRotationsPerMechanismRotation": 10,
       "reverseSoftLimitDegrees": -100.0,
