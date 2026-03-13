@@ -22,10 +22,7 @@ public interface MotorIO {
         /** Measured mechanism position in radians (post conversion). */
         public double  positionRadians            = 0.0;
 
-        /** Measured mechanism position in rotations (post conversion). */
-        public double  positionMotorRotations       = 0.0;
-
-        /** Measured mechanism position in radians (post conversion). */
+        /** Measured mechanism position in degrees (post conversion). */
         public double  positionDegrees         = 0.0;
 
         /** Measured mechanism velocity in radians per second (post conversion). */
@@ -33,9 +30,6 @@ public interface MotorIO {
 
         /** Measured motor shaft velocity in RPM (pre gear-reduction). */
         public double  velocityMotorRpm        = 0.0;
-
-        /** Raw value from SparkMax encoder getVelocity() before any Java-side conversion (diagnostic). */
-        public double  rawEncoderVelocity      = 0.0;
 
         /** Applied voltage from the motor controller output stage. */
         public Voltage appliedVolts            = Units.Volts.of(0.0);

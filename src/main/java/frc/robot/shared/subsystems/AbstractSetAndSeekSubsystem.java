@@ -153,7 +153,7 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         double voltageCommand   = controllerOutput + feedforwardVolts;
         double positionError    = goalState.position - measuredPosition;
 
-        log.recordOutput("positionErrorDegrees", Units.radiansToDegrees(positionError));
+        log.recordVerboseOutput("positionErrorDegrees", Units.radiansToDegrees(positionError));
         log.recordVerboseOutput("controllerOutputVolts", controllerOutput);
         log.recordVerboseOutput("feedforwardVolts", feedforwardVolts);
         log.recordOutput("voltageCommandVolts", voltageCommand);

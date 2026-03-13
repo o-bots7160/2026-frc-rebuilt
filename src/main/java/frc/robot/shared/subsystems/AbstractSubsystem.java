@@ -61,7 +61,11 @@ public abstract class AbstractSubsystem<TConfig extends AbstractSubsystemConfig>
         this.enabled   = config.enabled;
         this.verbose   = config.verbose;
         this.className = this.getClass().getSimpleName();
-        this.log       = Logger.getInstance(this.getClass(), verbose);
+        this.log       = Logger.getInstance(this.getClass(), config::getVerbose);
+
+        // Eagerly read the tunable so the LoggedNetworkBoolean is created at
+        // startup and the Elastic Dashboard toggle can bind immediately.
+        config.getVerbose();
     }
 
     /**
@@ -86,16 +90,30 @@ public abstract class AbstractSubsystem<TConfig extends AbstractSubsystemConfig>
      * Reports whether verbose telemetry and debug output are enabled for this subsystem.
      * <p>
      * The value is read from the tunable config each call so it can be toggled at
-     * runtime from SmartDashboard without redeploying. The logger's verbose flag is
-     * kept in sync so console output responds immediately.
+     * runtime from SmartDashboard without redeploying.
      * </p>
      *
      * @return True when verbose logging is enabled in the subsystem configuration.
      */
     public boolean isVerbose() {
         verbose = config.getVerbose();
-        log.setVerbose(verbose);
         return verbose;
+    }
+
+    /**
+     * Reports whether verbose AdvantageKit output should be recorded this cycle.
+     * <p>
+     * Combines two checks: the robot must not be attached to the FMS, and the
+     * subsystem's verbose config flag must be enabled. Use this to guard expensive
+     * pre-computation (array allocations, object construction) before calling
+     * {@code log.recordVerboseOutput(...)}. The logger's own verbose gate handles
+     * the actual suppression, but calling this first avoids unnecessary work.
+     * </p>
+     *
+     * @return true when verbose AdvantageKit output is active for this subsystem
+     */
+    public boolean isVerboseLoggingEnabled() {
+        return !isFMSAttached() && isVerbose();
     }
 
     /**

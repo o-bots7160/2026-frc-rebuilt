@@ -109,10 +109,7 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
         log.processInputs("RobotPose", inputs);
         fieldDisplay.setRobotPose(estimatedPose);
 
-        // Publish pose values to SmartDashboard so the Elastic Dashboard can display them.
-        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedXMeters", estimatedPose.getX());
-        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedYMeters", estimatedPose.getY());
-        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedHeadingDegrees", estimatedPose.getRotation().getDegrees());
+        // Publish operator-critical values to SmartDashboard for the Elastic Dashboard.
         SmartDashboard.putBoolean("RobotPoseSubsystem/HasVisionMeasurement", hasVisionMeasurement);
         SmartDashboard.putBoolean("RobotPoseSubsystem/EnableVisionFusion", enableVisionFusion);
     }

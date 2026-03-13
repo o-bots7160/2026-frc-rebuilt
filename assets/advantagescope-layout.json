@@ -1990,18 +1990,8 @@
               "controller": {
                 "leftSources": [
                   {
-                    "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/GameplayStateSubsystem/GameplayState/CurrentStateOrdinal",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#e5b31b",
-                      "size": "bold"
-                    }
-                  },
-                  {
                     "type": "smooth",
-                    "logKey": "NT:/SmartDashboard/GameplayStateSubsystem/MatchTimeSeconds",
+                    "logKey": "NT:/AdvantageKit/GameplayStateSubsystem/GameplayState/matchTimeSeconds",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -2009,45 +1999,8 @@
                     }
                   }
                 ],
-                "rightSources": [
-                  {
-                    "type": "smooth",
-                    "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/EstimatedXMeters",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a"
-                    }
-                  },
-                  {
-                    "type": "smooth",
-                    "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/EstimatedYMeters",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2"
-                    }
-                  },
-                  {
-                    "type": "smooth",
-                    "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/EstimatedHeadingDegrees",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "color": "#9b59b6"
-                    }
-                  }
-                ],
+                "rightSources": [],
                 "discreteSources": [
-                  {
-                    "type": "stripes",
-                    "logKey": "NT:/SmartDashboard/GameplayStateSubsystem/EndgameSuggested",
-                    "logType": "Boolean",
-                    "visible": true,
-                    "options": {
-                      "color": "#af2437"
-                    }
-                  },
                   {
                     "type": "stripes",
                     "logKey": "NT:/SmartDashboard/RobotPoseSubsystem/HasVisionMeasurement",
@@ -2064,6 +2017,15 @@
                     "visible": true,
                     "options": {
                       "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/GameplayStateSubsystem/GameplayState/endgameSuggested",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
                     }
                   }
                 ],

@@ -70,9 +70,9 @@ public class ClimberSubsystem extends AbstractSetAndSeekSubsystem<ClimberSubsyst
         log.processInputs("sensors", sensorInputs);
 
         // Computed telemetry from sensor readings
-        log.recordOutput("towerDetected", isTowerDetected());
-        log.recordOutput("alignedToTower", isAlignedToTower());
-        log.recordOutput("distanceDifferenceMillimeters", getDistanceDifferenceMillimeters());
+        log.recordVerboseOutput("towerDetected", isTowerDetected());
+        log.recordVerboseOutput("alignedToTower", isAlignedToTower());
+        log.recordVerboseOutput("distanceDifferenceMillimeters", getDistanceDifferenceMillimeters());
     }
 
     /**

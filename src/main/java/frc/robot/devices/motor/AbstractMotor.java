@@ -260,7 +260,6 @@ public abstract class AbstractMotor implements Motor {
             inputs.positionRadians         = 0.0;
             inputs.velocityRadPerSec       = 0.0;
             inputs.velocityMotorRpm        = 0.0;
-            inputs.rawEncoderVelocity      = 0.0;
             inputs.appliedVolts            = edu.wpi.first.units.Units.Volts.of(0.0);
             inputs.busVoltageVolts         = 0.0;
             inputs.commandedVolts          = edu.wpi.first.units.Units.Volts.of(0.0);
@@ -273,9 +272,7 @@ public abstract class AbstractMotor implements Motor {
         // Pull fresh sensor data for logging and telemetry dashboards.
         double rawEncoderVelocity = motor.getEncoder().getVelocity();
         double rawEncoderPosition = motor.getEncoder().getPosition();
-        inputs.rawEncoderVelocity      = rawEncoderVelocity;
         inputs.positionRadians         = rawEncoderPosition * positionRadiansPerMotorRotation;
-        inputs.positionMotorRotations  = rawEncoderPosition;
         inputs.positionDegrees         = Math.toDegrees(inputs.positionRadians);
         inputs.velocityRadPerSec       = rawEncoderVelocity * velocityRadPerSecPerMotorRpm;
         inputs.velocityMotorRpm        = rawEncoderVelocity;

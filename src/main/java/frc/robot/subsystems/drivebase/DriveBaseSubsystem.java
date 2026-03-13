@@ -157,9 +157,9 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         log.processInputs("DriveBase", inputs);
         // Publish odometry, module states, and chassis speeds for analysis.
         log.recordOutput("SwerveStates/Measured", inputs.moduleStates);
-        log.recordOutput("SwerveStates/Target", lastRequestedStates);
+        log.recordVerboseOutput("SwerveStates/Target", lastRequestedStates);
         log.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
-        log.recordOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
+        log.recordVerboseOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
         log.recordVerboseOutput("Swerve/RobotRotation", getOdometryPose().getRotation());
     }
 

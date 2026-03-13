@@ -98,10 +98,9 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
         double        yawRateRadians      = robotYawRateRadiansPerSecondSupplier.get();
         double        targetDegrees       = subsystem.calculateFieldTargetDegrees(robotPose, targetFieldPosition, yawRateRadians);
 
-        log.recordOutput("TargetPose", new Pose2d(targetFieldPosition, new Rotation2d()));
-
-        if (subsystem.isVerbose()) {
+        if (subsystem.isVerboseLoggingEnabled()) {
             // Log inputs and the computed target so we can verify field-relative math in AdvantageScope.
+            log.recordOutput("TargetPose", new Pose2d(targetFieldPosition, new Rotation2d()));
             log.recordOutput("RobotPose", robotPose);
             log.recordOutput(
                     "TargetFieldPositionMeters",

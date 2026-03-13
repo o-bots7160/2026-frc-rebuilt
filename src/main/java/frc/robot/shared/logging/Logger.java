@@ -1,5 +1,7 @@
 package frc.robot.shared.logging;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import edu.wpi.first.util.struct.StructSerializable;
@@ -11,6 +13,12 @@ import frc.robot.shared.config.RobotEnvironment;
  * Logger is a utility class for logging messages with different levels of severity. It supports verbose, debug, info, warning, and error messages.
  * The output is color-coded for better readability in the console and automatically includes the class name to help diagnose where the log
  * originated. AdvantageKit is the preferred telemetry path; SmartDashboard helpers remain for operator-critical values only.
+ * <p>
+ * The {@code recordVerboseOutput} family of methods gates on both FMS attachment and the per-instance
+ * verbose flag. Verbose output is suppressed when the robot is connected to the FMS or when the
+ * owning subsystem has verbose disabled in its configuration. Use {@code recordOutput} for data
+ * that must always be logged for match replay.
+ * </p>
  * <p>
  * For robot mode detection, FMS state, and Driver Station reporting, see {@link RobotEnvironment}.
  * </p>
@@ -29,7 +37,7 @@ public class Logger {
     }
 
     /**
-     * Returns an instance of Logger for the specified class
+     * Returns an instance of Logger for the specified class with a fixed verbosity setting.
      *
      * @param <T>     the type of the class for which the Logger instance is being created
      * @param c       the Class object for which the Logger instance is being created
@@ -41,29 +49,60 @@ public class Logger {
     }
 
     /**
-     * Returns an instance of Logger for the specified name
+     * Returns an instance of Logger for the specified class with a dynamic verbosity supplier.
+     * <p>
+     * The supplier is evaluated each time the logger checks verbosity, allowing live
+     * toggling from dashboards without calling {@code setVerbose}.
+     * </p>
      *
-     * @param className the name to scope the logger instance to
-     * @return a new Logger instance for the specified class with the given verbosity setting
+     * @param <T>             the type of the class for which the Logger instance is being created
+     * @param c               the Class object for which the Logger instance is being created
+     * @param verboseSupplier supplier that returns true when verbose output should be enabled
+     * @return a new Logger instance for the specified class with the given verbosity supplier
      */
-    public static Logger getInstance(String className) {
-        return new Logger(className, false);
+    public static <T> Logger getInstance(Class<T> c, BooleanSupplier verboseSupplier) {
+        return getInstance(c.getSimpleName(), verboseSupplier);
     }
 
     /**
      * Returns an instance of Logger for the specified name
      *
      * @param className the name to scope the logger instance to
+     * @return a new Logger instance for the specified class with the given verbosity setting
+     */
+    public static Logger getInstance(String className) {
+        return new Logger(className, () -> false);
+    }
+
+    /**
+     * Returns an instance of Logger for the specified name with a fixed verbosity setting.
+     *
+     * @param className the name to scope the logger instance to
      * @param verbose   the verbosity setting for the logger
      * @return a new Logger instance for the specified class with the given verbosity setting
      */
     public static Logger getInstance(String className, boolean verbose) {
-        return new Logger(className, verbose);
+        return new Logger(className, () -> verbose);
     }
 
-    private String  className;
+    /**
+     * Returns an instance of Logger for the specified name with a dynamic verbosity supplier.
+     * <p>
+     * The supplier is evaluated each time the logger checks verbosity, allowing live
+     * toggling from dashboards without calling {@code setVerbose}.
+     * </p>
+     *
+     * @param className       the name to scope the logger instance to
+     * @param verboseSupplier supplier that returns true when verbose output should be enabled
+     * @return a new Logger instance for the specified class with the given verbosity supplier
+     */
+    public static Logger getInstance(String className, BooleanSupplier verboseSupplier) {
+        return new Logger(className, verboseSupplier);
+    }
 
-    private boolean verbose;
+    private String          className;
+
+    private BooleanSupplier verboseSupplier;
 
     /** Persistent dashboard alert for the most recent error message. */
     private final Alert errorAlert;
@@ -78,23 +117,14 @@ public class Logger {
      * alerts are organized per-subsystem. Alerts remain active until explicitly cleared via {@link #clearAlerts()}.
      * </p>
      *
-     * @param className name to prefix all log messages with
-     * @param verbose   true to enable verbose and debug output
+     * @param className       name to prefix all log messages with
+     * @param verboseSupplier supplier evaluated each cycle to determine whether verbose output is enabled
      */
-    protected Logger(String className, boolean verbose) {
-        this.className    = className;
-        this.verbose      = verbose;
-        this.errorAlert   = new Alert(className, "", AlertType.kError);
-        this.warningAlert = new Alert(className, "", AlertType.kWarning);
-    }
-
-    /**
-     * Updates the verbose flag at runtime so console-level verbose and debug output can be toggled on the fly.
-     *
-     * @param verbose true to enable verbose and debug console output
-     */
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
+    protected Logger(String className, BooleanSupplier verboseSupplier) {
+        this.className       = className;
+        this.verboseSupplier = verboseSupplier;
+        this.errorAlert      = new Alert(className, "", AlertType.kError);
+        this.warningAlert    = new Alert(className, "", AlertType.kWarning);
     }
 
     /**
@@ -104,7 +134,7 @@ public class Logger {
      * @param message The message to be logged.
      */
     public void verbose(String message) {
-        if (verbose) {
+        if (verboseSupplier.getAsBoolean()) {
             System.out.println("\u001B[90mVERBOSE: " + className + ": " + message + "\u001B[0m");
         }
     }
@@ -116,7 +146,7 @@ public class Logger {
      * @param message The debug message to be logged.
      */
     public void debug(String message) {
-        if (verbose) {
+        if (verboseSupplier.getAsBoolean()) {
             System.out.println("\u001B[37mDEBUG: " + className + ": " + message + "\u001B[0m");
         }
     }
@@ -267,56 +297,56 @@ public class Logger {
     }
 
     /**
-     * Records a boolean to AdvantageKit only when not attached to the FMS.
+     * Records a boolean to AdvantageKit only when not attached to the FMS and verbose is enabled.
      *
      * @param key   telemetry key suffix
      * @param value value to record
      */
     public void recordVerboseOutput(String key, boolean value) {
-        if (!RobotEnvironment.isFMSAttached()) {
+        if (!RobotEnvironment.isFMSAttached() && verboseSupplier.getAsBoolean()) {
             recordOutput(key, value);
         }
     }
 
     /**
-     * Records a numeric value to AdvantageKit only when not attached to the FMS.
+     * Records a numeric value to AdvantageKit only when not attached to the FMS and verbose is enabled.
      *
      * @param key   telemetry key suffix
      * @param value value to record
      */
     public void recordVerboseOutput(String key, double value) {
-        if (!RobotEnvironment.isFMSAttached()) {
+        if (!RobotEnvironment.isFMSAttached() && verboseSupplier.getAsBoolean()) {
             recordOutput(key, value);
         }
     }
 
     /**
-     * Records an array of numeric values to AdvantageKit only when not attached to the FMS.
+     * Records an array of numeric values to AdvantageKit only when not attached to the FMS and verbose is enabled.
      *
      * @param key    telemetry key suffix
      * @param values values to record
      */
     public void recordVerboseOutput(String key, double[] values) {
-        if (!RobotEnvironment.isFMSAttached()) {
+        if (!RobotEnvironment.isFMSAttached() && verboseSupplier.getAsBoolean()) {
             recordOutput(key, values);
         }
     }
 
     /**
-     * Records a struct-serializable value to AdvantageKit only when not attached to the FMS.
+     * Records a struct-serializable value to AdvantageKit only when not attached to the FMS and verbose is enabled.
      *
      * @param key   telemetry key suffix
      * @param value struct-serializable value to record
      * @param <T>   value type that supports struct serialization
      */
     public <T extends StructSerializable> void recordVerboseOutput(String key, T value) {
-        if (!RobotEnvironment.isFMSAttached()) {
+        if (!RobotEnvironment.isFMSAttached() && verboseSupplier.getAsBoolean()) {
             recordOutput(key, value);
         }
     }
 
     /**
-     * Records an array of struct-serializable values to AdvantageKit only when not attached to the FMS.
+     * Records an array of struct-serializable values to AdvantageKit only when not attached to the FMS and verbose is enabled.
      *
      * @param key   telemetry key suffix
      * @param value struct-serializable values to record
@@ -324,20 +354,20 @@ public class Logger {
      */
     @SuppressWarnings("unchecked")
     public <T extends StructSerializable> void recordVerboseOutput(String key, T... value) {
-        if (!RobotEnvironment.isFMSAttached()) {
+        if (!RobotEnvironment.isFMSAttached() && verboseSupplier.getAsBoolean()) {
             recordOutput(key, value);
         }
     }
 
     /**
-     * Records a 2D array of struct-serializable values to AdvantageKit only when not attached to the FMS.
+     * Records a 2D array of struct-serializable values to AdvantageKit only when not attached to the FMS and verbose is enabled.
      *
      * @param key   telemetry key suffix
      * @param value struct-serializable values to record
      * @param <T>   value type that supports struct serialization
      */
     public <T extends StructSerializable> void recordVerboseOutput(String key, T[][] value) {
-        if (!RobotEnvironment.isFMSAttached()) {
+        if (!RobotEnvironment.isFMSAttached() && verboseSupplier.getAsBoolean()) {
             recordOutput(key, value);
         }
     }

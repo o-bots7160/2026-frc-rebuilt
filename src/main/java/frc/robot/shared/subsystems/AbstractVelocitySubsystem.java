@@ -157,8 +157,8 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         }
 
         log.recordOutput("isReady", isReady());
-        log.recordOutput("measuredRpm", getMeasuredVelocityRpm());
-        log.recordOutput("targetRpm", getTargetVelocityRpm());
+        log.recordVerboseOutput("measuredRpm", getMeasuredVelocityRpm());
+        log.recordVerboseOutput("targetRpm", getTargetVelocityRpm());
     }
 
     /**
@@ -218,9 +218,6 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
             return;
         }
 
-        // Refresh sensor data and log it.
-        updateAndLogMotorInputs();
-
         double measuredVelocityRadPerSec = getMeasuredVelocityRadiansPerSecond();
 
         // Step the velocity profile if a trapezoidal ramp is active.
@@ -242,15 +239,11 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         double velocityErrorRadPerSec = targetVelocityRadPerSec - measuredVelocityRadPerSec;
         double velocityErrorRpm       = Units.radiansPerSecondToRotationsPerMinute(velocityErrorRadPerSec);
 
-        log.recordOutput("velocityErrorRpm", velocityErrorRpm);
+        log.recordVerboseOutput("velocityErrorRpm", velocityErrorRpm);
         log.recordVerboseOutput("pidOutputVolts", pidOutput);
         log.recordVerboseOutput("feedforwardVolts", feedforwardVolts);
         log.recordOutput("voltageCommandVolts", voltageCommand);
-        log.recordOutput("targetRpm", getTargetVelocityRpm());
-        log.recordOutput("measuredRpm", getMeasuredVelocityRpm());
-        log.recordOutput("setpointRpm", Units.radiansPerSecondToRotationsPerMinute(setpointVelocityRadPerSec));
-        log.recordOutput("rawMotorRpm", motorInputs.velocityMotorRpm);
-        log.recordOutput("measuredRadPerSec", measuredVelocityRadPerSec);
+        log.recordVerboseOutput("setpointRpm", Units.radiansPerSecondToRotationsPerMinute(setpointVelocityRadPerSec));
 
         // Track settle status.
         double  toleranceRadPerSec = config.motionProfile.getVelocityToleranceRadiansPerSecond();
@@ -273,7 +266,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      */
     public boolean isAtTargetVelocity() {
         boolean atTarget = withinTolerance && settledTimer.hasElapsed(config.motionProfile.getSettleTimeSeconds());
-        log.recordOutput("atTargetVelocity", atTarget);
+        log.recordVerboseOutput("atTargetVelocity", atTarget);
         return atTarget;
     }
 

@@ -294,12 +294,15 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             List<Pose3d> robotPoses,
             List<Pose3d> acceptedPoses,
             List<Pose3d> rejectedPoses) {
+        if (!isVerboseLoggingEnabled()) {
+            return;
+        }
         // Prefix keeps the log tree organized per camera.
         String prefix = "Camera/" + cameraName;
-        log.recordVerboseOutput(prefix + "/TagPoses", tagPoses.toArray(new Pose3d[0]));
-        log.recordVerboseOutput(prefix + "/RobotPoses", robotPoses.toArray(new Pose3d[0]));
-        log.recordVerboseOutput(prefix + "/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
-        log.recordVerboseOutput(prefix + "/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+        log.recordOutput(prefix + "/TagPoses", tagPoses.toArray(new Pose3d[0]));
+        log.recordOutput(prefix + "/RobotPoses", robotPoses.toArray(new Pose3d[0]));
+        log.recordOutput(prefix + "/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
+        log.recordOutput(prefix + "/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
     }
 
     /**
@@ -316,12 +319,14 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             List<Pose3d> acceptedPoses,
             List<Pose3d> rejectedPoses) {
         // Summary logs help spot system-wide issues without checking each camera.
-        log.recordVerboseOutput("Summary/TagPoses", tagPoses.toArray(new Pose3d[0]));
-        log.recordVerboseOutput("Summary/RobotPoses", robotPoses.toArray(new Pose3d[0]));
         log.recordOutput("Summary/AcceptedCount", acceptedPoses.size());
         log.recordOutput("Summary/RejectedCount", rejectedPoses.size());
-        log.recordVerboseOutput("Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
-        log.recordVerboseOutput("Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+        if (isVerboseLoggingEnabled()) {
+            log.recordOutput("Summary/TagPoses", tagPoses.toArray(new Pose3d[0]));
+            log.recordOutput("Summary/RobotPoses", robotPoses.toArray(new Pose3d[0]));
+            log.recordOutput("Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
+            log.recordOutput("Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+        }
     }
 
 }

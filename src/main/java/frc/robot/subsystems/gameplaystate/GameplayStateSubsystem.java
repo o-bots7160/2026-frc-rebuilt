@@ -78,14 +78,9 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
 
         io.updateInputs(inputs);
         log.processInputs("GameplayState", inputs);
-        log.recordOutput("GameplayState/CurrentStateOrdinal", currentState.ordinal());
 
-        // Publish values to SmartDashboard so the Elastic Dashboard can show them.
+        // Publish operator-critical state to SmartDashboard for the Elastic Dashboard.
         SmartDashboard.putString("GameplayStateSubsystem/CurrentState", currentState.getDisplayName());
-        SmartDashboard.putString("GameplayStateSubsystem/TransitionSource", transitionSource);
-        SmartDashboard.putString("GameplayStateSubsystem/MatchPhase", detectMatchPhase().name());
-        SmartDashboard.putNumber("GameplayStateSubsystem/MatchTimeSeconds", RobotEnvironment.getMatchTimeSeconds());
-        SmartDashboard.putBoolean("GameplayStateSubsystem/EndgameSuggested", endgameSuggested);
     }
 
     /**
