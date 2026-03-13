@@ -49,7 +49,13 @@ public enum GameplayState {
     /**
      * Safe transit mode for moving across the field. The harvester stows to stay inside the frame perimeter while all other mechanisms idle.
      */
-    TRAVEL("Travel");
+    TRAVEL("Travel"),
+
+    /**
+     * Low-profile transit mode for passing under field obstacles such as the trench. The harvester deploys so the robot's profile clears the trench
+     * opening while all other mechanisms idle.
+     */
+    TRENCH_TRAVEL("Trench Travel");
 
     private final String displayName;
 

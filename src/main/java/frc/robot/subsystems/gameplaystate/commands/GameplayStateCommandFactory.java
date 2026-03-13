@@ -226,10 +226,31 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     }
 
     /**
+     * Builds the TRENCH_TRAVEL state command group: deploys the harvester for low-profile clearance under field obstacles while idling all other
+     * mechanisms.
+     * <p>
+     * This state is identical to TRAVEL except the harvester is deployed instead of stowed, allowing the robot to pass under structures such as the
+     * trench run.
+     * </p>
+     *
+     * @return parallel command group that deploys the harvester and idles all other mechanisms
+     */
+    public Command createTrenchTravelCommand() {
+        return Commands.parallel(
+                harvesterCommandFactory.createDeployCommand(),
+                shooterCommandFactory.createIdleCommand(),
+                indexerCommandFactory.createStopCommand(),
+                feederCommandFactory.createStopCommand(),
+                intakeCommandFactory.createIdleCommand())
+                .withName("GameplayState-TrenchTravel");
+    }
+
+    /**
      * Sets the idle command as the default behavior for the gameplay state subsystem.
      *
      * @return the idle command that was set as the default
      */
+
     public Command setDefaultIdleCommand() {
         Command command = createIdleCommand();
         subsystem.setDefaultCommand(command);
@@ -252,6 +273,8 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
             return createEjectCommand();
         case TRAVEL:
             return createTravelCommand();
+        case TRENCH_TRAVEL:
+            return createTrenchTravelCommand();
         default:
             return createIdleCommand();
         }
