@@ -12,6 +12,7 @@ import frc.robot.devices.motor.Motor;
 import frc.robot.shared.config.AbstractMotorConfig;
 import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
 import frc.robot.shared.config.RobotEnvironment;
+import frc.robot.shared.config.VelocityMotionConfig;
 
 /**
  * Base subsystem for mechanisms that maintain a target velocity using feedforward and PID control.
@@ -79,8 +80,8 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
                 ? realFactory.apply(motorConfig)
                 : simFactory.apply(
                         motorConfig,
-                        () -> AbstractVelocitySubsystemConfig.rpmToDegreesPerSecond(config.getMaximumVelocityRpm()),
-                        () -> AbstractVelocitySubsystemConfig.rpmToDegreesPerSecond(config.getMaximumAccelerationRpmPerSecond()));
+                        () -> VelocityMotionConfig.rpmToDegreesPerSecond(config.motionProfile.getMaximumVelocityRpm()),
+                        () -> VelocityMotionConfig.rpmToDegreesPerSecond(config.motionProfile.getMaximumAccelerationRpmPerSecond()));
     }
 
     /**
@@ -175,7 +176,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
             return;
         }
 
-        double  maximumRpm = config.getMaximumVelocityRpm();
+        double  maximumRpm = config.motionProfile.getMaximumVelocityRpm();
         double  clampedRpm = MathUtil.clamp(targetRpm, -maximumRpm, maximumRpm);
         boolean wasClamped = targetRpm != clampedRpm;
 
@@ -252,7 +253,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         log.recordOutput("measuredRadPerSec", measuredVelocityRadPerSec);
 
         // Track settle status.
-        double  toleranceRadPerSec = config.getVelocityToleranceRadiansPerSecond();
+        double  toleranceRadPerSec = config.motionProfile.getVelocityToleranceRadiansPerSecond();
         boolean currentlyWithin    = Math.abs(velocityErrorRadPerSec) <= toleranceRadPerSec;
         if (!currentlyWithin) {
             withinTolerance = false;
@@ -271,7 +272,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      * @return true when the mechanism is at the target velocity and has been stable long enough
      */
     public boolean isAtTargetVelocity() {
-        boolean atTarget = withinTolerance && settledTimer.hasElapsed(config.getSettleTimeSeconds());
+        boolean atTarget = withinTolerance && settledTimer.hasElapsed(config.motionProfile.getSettleTimeSeconds());
         log.recordOutput("atTargetVelocity", atTarget);
         return atTarget;
     }
@@ -316,7 +317,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      * @return idle velocity in mechanism RPM from config
      */
     public double getIdleVelocityRpm() {
-        return config.getIdleVelocityRpm();
+        return config.motionProfile.getIdleVelocityRpm();
     }
 
     /**
@@ -369,7 +370,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      * </p>
      */
     private void rebuildVelocityProfile() {
-        double maxAccelRadPerSecSq = config.getMaximumAccelerationRadiansPerSecondSquared();
+        double maxAccelRadPerSecSq = config.motionProfile.getMaximumAccelerationRadiansPerSecondSquared();
         if (maxAccelRadPerSecSq > 0.0) {
             velocityProfile = new TrapezoidProfile(
                     new TrapezoidProfile.Constraints(maxAccelRadPerSecSq, Double.POSITIVE_INFINITY));

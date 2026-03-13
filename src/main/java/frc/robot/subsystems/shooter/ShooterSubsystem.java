@@ -106,7 +106,7 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
      */
     @Override
     public void setTargetVelocityRpm(double targetRpm) {
-        double forwardOnlyRpm = MathUtil.clamp(targetRpm, 0.0, config.getMaximumVelocityRpm());
+        double forwardOnlyRpm = MathUtil.clamp(targetRpm, 0.0, config.motionProfile.getMaximumVelocityRpm());
         super.setTargetVelocityRpm(forwardOnlyRpm);
     }
 
@@ -127,7 +127,7 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
         }
 
         if (!hasDistanceRpmData) {
-            return config.getIdleVelocityRpm();
+            return config.motionProfile.getIdleVelocityRpm();
         }
 
         double interpolatedRpm = distanceRpmTable.get(distanceMeters);

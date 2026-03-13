@@ -55,17 +55,6 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
     }
 
     /**
-     * Returns the gravity feedforward gain by delegating to the nested {@link frc.robot.shared.config.FeedforwardConfig}.
-     *
-     * @return kG in volts (voltage to hold the arm horizontal against gravity)
-     * @deprecated Use {@code feedforward.getkG()} instead.
-     */
-    @Deprecated
-    public double getkG() {
-        return feedforward.getkG();
-    }
-
-    /**
      * Returns the horizontal offset angle in degrees, tuned via SmartDashboard.
      *
      * @return offset in degrees added to the encoder position to obtain the angle from horizontal

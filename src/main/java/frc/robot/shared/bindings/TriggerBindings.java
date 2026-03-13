@@ -298,16 +298,16 @@ public class TriggerBindings {
         switch (selected) {
         case TEST_SUBSYSTEM_SHOOTER:
             return shooterCommandFactory.createContinuousVelocityCommand(
-                    () -> -shooterCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
+                    () -> -shooterCommandFactory.getSubsystem().getConfig().motionProfile.getIdleVelocityRpm());
         case TEST_SUBSYSTEM_INDEXER:
             return indexerCommandFactory.createContinuousVelocityCommand(
-                    () -> -indexerCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
+                    () -> -indexerCommandFactory.getSubsystem().getConfig().motionProfile.getIdleVelocityRpm());
         case TEST_SUBSYSTEM_FEEDER:
             return feederCommandFactory.createContinuousVelocityCommand(
-                    () -> -feederCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
+                    () -> -feederCommandFactory.getSubsystem().getConfig().motionProfile.getIdleVelocityRpm());
         case TEST_SUBSYSTEM_INTAKE:
             return intakeCommandFactory.createContinuousVelocityCommand(
-                    () -> -intakeCommandFactory.getSubsystem().getConfig().getIdleVelocityRpm());
+                    () -> -intakeCommandFactory.getSubsystem().getConfig().motionProfile.getIdleVelocityRpm());
         case TEST_SUBSYSTEM_TURRET:
             return turretCommandFactory.createMoveToAngleCommand(
                     turretCommandFactory.getSubsystem().getConfig()::getMinimumSetpointDegrees);
@@ -337,16 +337,16 @@ public class TriggerBindings {
         switch (selected) {
         case TEST_SUBSYSTEM_SHOOTER:
             return shooterCommandFactory.createContinuousVelocityCommand(
-                    shooterCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
+                    shooterCommandFactory.getSubsystem().getConfig().motionProfile::getIdleVelocityRpm);
         case TEST_SUBSYSTEM_INDEXER:
             return indexerCommandFactory.createContinuousVelocityCommand(
-                    indexerCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
+                    indexerCommandFactory.getSubsystem().getConfig().motionProfile::getIdleVelocityRpm);
         case TEST_SUBSYSTEM_FEEDER:
             return feederCommandFactory.createContinuousVelocityCommand(
-                    feederCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
+                    feederCommandFactory.getSubsystem().getConfig().motionProfile::getIdleVelocityRpm);
         case TEST_SUBSYSTEM_INTAKE:
             return intakeCommandFactory.createContinuousVelocityCommand(
-                    intakeCommandFactory.getSubsystem().getConfig()::getIdleVelocityRpm);
+                    intakeCommandFactory.getSubsystem().getConfig().motionProfile::getIdleVelocityRpm);
         case TEST_SUBSYSTEM_TURRET:
             return turretCommandFactory.createMoveToAngleCommand(
                     turretCommandFactory.getSubsystem().getConfig()::getMaximumSetpointDegrees);
