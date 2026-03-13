@@ -26,4 +26,17 @@ public abstract class AbstractSubsystemConfig extends AbstractConfig {
      * </p>
      */
     public boolean verbose = false;
+
+    /**
+     * Returns whether verbose logging is enabled, tuned via SmartDashboard.
+     * <p>
+     * Toggle this at runtime from the dashboard to enable or disable detailed
+     * telemetry without redeploying code.
+     * </p>
+     *
+     * @return true when verbose logging is enabled
+     */
+    public boolean getVerbose() {
+        return readTunableBoolean("verbose", verbose);
+    }
 }

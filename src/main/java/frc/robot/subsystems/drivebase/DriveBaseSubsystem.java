@@ -476,7 +476,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             // All drive telemetry is already logged through AdvantageKit, so YAGSL's
             // built-in NT publishing is redundant and wastes significant loop time.
             // When verbose logging is enabled, use HIGH to surface additional YAGSL diagnostics.
-            SwerveDriveTelemetry.verbosity = verbose ? TelemetryVerbosity.HIGH : TelemetryVerbosity.MACHINE;
+            SwerveDriveTelemetry.verbosity = isVerbose() ? TelemetryVerbosity.HIGH : TelemetryVerbosity.MACHINE;
 
             // Build the swerve drive using the maximum speed limit from config.
             swerveDrive                    = new SwerveParser(configDirectory)

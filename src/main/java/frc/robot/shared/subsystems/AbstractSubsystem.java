@@ -85,12 +85,16 @@ public abstract class AbstractSubsystem<TConfig extends AbstractSubsystemConfig>
     /**
      * Reports whether verbose telemetry and debug output are enabled for this subsystem.
      * <p>
-     * Use this flag to gate detailed logging so it can be disabled quickly for events.
+     * The value is read from the tunable config each call so it can be toggled at
+     * runtime from SmartDashboard without redeploying. The logger's verbose flag is
+     * kept in sync so console output responds immediately.
      * </p>
      *
      * @return True when verbose logging is enabled in the subsystem configuration.
      */
     public boolean isVerbose() {
+        verbose = config.getVerbose();
+        log.setVerbose(verbose);
         return verbose;
     }
 

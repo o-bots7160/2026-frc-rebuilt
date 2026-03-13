@@ -1,6 +1,6 @@
 {
-  "version": 1.0,
-  "grid_size": 128,
+  "version": 1,
+  "grid_size": 128.0,
   "tabs": [
     {
       "name": "Competition",
@@ -456,7 +456,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0.0
+              "angle_offset": 0
             }
           },
           {
@@ -588,23 +588,6 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Motor On",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -898,6 +881,19 @@
               "true_icon": "None",
               "false_icon": "None"
             }
+          },
+          {
+            "title": "Verbose",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/IntakeSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -916,23 +912,6 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Motor On",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1279,6 +1258,19 @@
               "data_type": "double",
               "show_submit_button": false
             }
+          },
+          {
+            "title": "Verbose",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/HarvesterSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -1297,23 +1289,6 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Motor On",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1607,6 +1582,19 @@
               "true_icon": "None",
               "false_icon": "None"
             }
+          },
+          {
+            "title": "Verbose",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/FeederSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -1625,23 +1613,6 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Motor On",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1962,6 +1933,19 @@
               "period": 0.06,
               "show_submit_button": true
             }
+          },
+          {
+            "title": "Verbose",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/IndexerSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -1980,23 +1964,6 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Motor On",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -2325,6 +2292,19 @@
               "period": 0.06,
               "show_submit_button": false
             }
+          },
+          {
+            "title": "Verbose",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/TurretSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -2343,23 +2323,6 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Motor On",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/shooterMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -2678,6 +2641,19 @@
               "period": 0.06,
               "show_submit_button": true
             }
+          },
+          {
+            "title": "Verbose",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/ShooterSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -2755,23 +2731,6 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Config/climberSubsystem/enabled",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Motor On",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/climberSubsystem/climberMotorConfig/enabled",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -3147,6 +3106,19 @@
               "topic": "SmartDashboard/ClimberSubsystem/sampleTimeMilliseconds",
               "period": 0.06,
               "show_submit_button": true
+            }
+          },
+          {
+            "title": "Verbose",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/ClimberSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]

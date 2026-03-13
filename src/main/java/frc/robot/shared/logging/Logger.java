@@ -63,7 +63,7 @@ public class Logger {
 
     private String  className;
 
-    private Boolean verbose;
+    private boolean verbose;
 
     /** Persistent dashboard alert for the most recent error message. */
     private final Alert errorAlert;
@@ -86,6 +86,15 @@ public class Logger {
         this.verbose      = verbose;
         this.errorAlert   = new Alert(className, "", AlertType.kError);
         this.warningAlert = new Alert(className, "", AlertType.kWarning);
+    }
+
+    /**
+     * Updates the verbose flag at runtime so console-level verbose and debug output can be toggled on the fly.
+     *
+     * @param verbose true to enable verbose and debug console output
+     */
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
     /**

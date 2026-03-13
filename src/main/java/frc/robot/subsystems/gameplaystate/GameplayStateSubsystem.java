@@ -107,7 +107,7 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
         this.currentState     = state;
         this.transitionSource = source;
 
-        if (verbose) {
+        if (isVerbose()) {
             log.verbose("State transition: " + state.getDisplayName() + " (source: " + source + ")");
         }
     }
