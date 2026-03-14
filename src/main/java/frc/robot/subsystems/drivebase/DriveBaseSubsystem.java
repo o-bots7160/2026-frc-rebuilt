@@ -257,6 +257,67 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
+     * Drives the robot field-relative with PID-controlled heading instead of manual omega.
+     * <p>
+     * Translation axes come from the driver stick. The heading PID controller computes the
+     * angular velocity needed to reach the target heading, clamped to the configured maximum
+     * angular speed. This is the core API used by snap-to-heading commands.
+     * </p>
+     *
+     * @param vxMetersPerSecond      field-forward velocity in meters per second
+     * @param vyMetersPerSecond      field-left velocity in meters per second
+     * @param targetHeadingRadians   desired field-relative heading in radians (counter-clockwise positive)
+     */
+    public void driveFieldRelativeWithHeading(double vxMetersPerSecond, double vyMetersPerSecond, double targetHeadingRadians) {
+        if (isSubsystemDisabled()) {
+            logDisabled("driveFieldRelativeWithHeading");
+            return;
+        }
+
+        if (swerveController == null || swerveDrive == null) {
+            log.warning("Heading drive request ignored because the swerve drive is not available.");
+            return;
+        }
+
+        // Compute the omega correction using the heading PID controller.
+        double currentHeadingRadians = getOdometryPose().getRotation().getRadians();
+        double omegaRadiansPerSecond = swerveController.thetaController.calculate(
+                currentHeadingRadians, targetHeadingRadians);
+
+        // Clamp the PID output to the configured maximum angular speed.
+        double maxOmega = config.getMaximumAngularSpeedRadiansPerSecond().get();
+        omegaRadiansPerSecond = MathUtil.clamp(omegaRadiansPerSecond, -maxOmega, maxOmega);
+
+        log.recordVerboseOutput("HeadingControl/TargetRadians", targetHeadingRadians);
+        log.recordVerboseOutput("HeadingControl/CurrentRadians", currentHeadingRadians);
+        log.recordVerboseOutput("HeadingControl/OmegaOutput", omegaRadiansPerSecond);
+
+        requestDrive(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+    }
+
+    /**
+     * Resets the heading PID controller so accumulated integral error does not carry over between commands.
+     * <p>
+     * Call this when a heading-lock command initializes to prevent the PID from producing a large initial output
+     * based on stale error history.
+     * </p>
+     */
+    public void resetHeadingController() {
+        if (swerveController != null) {
+            swerveController.thetaController.reset();
+        }
+    }
+
+    /**
+     * Returns the configured rotation tolerance in radians for heading convergence checks.
+     *
+     * @return rotation tolerance in radians
+     */
+    public double getRotationToleranceRadians() {
+        return config.getRotationToleranceRadians().get();
+    }
+
+    /**
      * Converts pre-shaped driver axes into scaled translation speeds in meters per second. The input values should already have deadband and response
      * curve processing applied by TriggerBindings.
      *

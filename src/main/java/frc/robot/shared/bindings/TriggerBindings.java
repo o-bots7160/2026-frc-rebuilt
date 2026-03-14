@@ -239,6 +239,33 @@ public class TriggerBindings {
         // Left bumper: trench travel mode (deploy harvester for low-profile field traversal).
         driverController.leftBumper().onTrue(
                 gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRENCH_TRAVEL, "operator"));
+
+        // X button: spin 180 degrees from current heading. Hold to maintain heading lock;
+        // release to return to normal manual rotation control.
+        driverController.x().whileTrue(
+                driveBaseCommandFactory.createSpin180Command(
+                        () -> applyResponseCurve(
+                                driverController.getLeftY(),
+                                triggerBindingsConfig.getLeftStickYResponseExponent(),
+                                computeTranslationSpeedScale()),
+                        () -> applyResponseCurve(
+                                driverController.getLeftX(),
+                                triggerBindingsConfig.getLeftStickXResponseExponent(),
+                                computeTranslationSpeedScale())));
+
+        // Y button: snap to nearest field-facing orientation (0 or 180 degrees field-relative).
+        // If already at the nearest orientation, snaps to the opposite one instead.
+        // Hold to maintain heading lock; release to return to normal manual rotation control.
+        driverController.y().whileTrue(
+                driveBaseCommandFactory.createSnapToFieldFacingCommand(
+                        () -> applyResponseCurve(
+                                driverController.getLeftY(),
+                                triggerBindingsConfig.getLeftStickYResponseExponent(),
+                                computeTranslationSpeedScale()),
+                        () -> applyResponseCurve(
+                                driverController.getLeftX(),
+                                triggerBindingsConfig.getLeftStickXResponseExponent(),
+                                computeTranslationSpeedScale())));
     }
 
     /**
