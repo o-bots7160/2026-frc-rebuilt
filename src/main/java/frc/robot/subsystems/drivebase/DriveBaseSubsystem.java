@@ -112,14 +112,14 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 new PPHolonomicDriveController(
                         // Translation PID constants.
                         new PIDConstants(
-                                config.getPathTranslationKp().get(),
-                                config.getPathTranslationKi().get(),
-                                config.getPathTranslationKd().get()),
+                                config.getPathTranslation().getkP(),
+                                config.getPathTranslation().getkI(),
+                                config.getPathTranslation().getkD()),
                         // Rotation PID constants.
                         new PIDConstants(
-                                config.getPathRotationKp().get(),
-                                config.getPathRotationKi().get(),
-                                config.getPathRotationKd().get())),
+                                config.getPathRotation().getkP(),
+                                config.getPathRotation().getkI(),
+                                config.getPathRotation().getkD())),
                 // The robot configuration.
                 robotConfig,
                 () -> {
@@ -259,14 +259,13 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Drives the robot field-relative with PID-controlled heading instead of manual omega.
      * <p>
-     * Translation axes come from the driver stick. The heading PID controller computes the
-     * angular velocity needed to reach the target heading, clamped to the configured maximum
-     * angular speed. This is the core API used by snap-to-heading commands.
+     * Translation axes come from the driver stick. The heading PID controller computes the angular velocity needed to reach the target heading,
+     * clamped to the configured maximum angular speed. This is the core API used by snap-to-heading commands.
      * </p>
      *
-     * @param vxMetersPerSecond      field-forward velocity in meters per second
-     * @param vyMetersPerSecond      field-left velocity in meters per second
-     * @param targetHeadingRadians   desired field-relative heading in radians (counter-clockwise positive)
+     * @param vxMetersPerSecond    field-forward velocity in meters per second
+     * @param vyMetersPerSecond    field-left velocity in meters per second
+     * @param targetHeadingRadians desired field-relative heading in radians (counter-clockwise positive)
      */
     public void driveFieldRelativeWithHeading(double vxMetersPerSecond, double vyMetersPerSecond, double targetHeadingRadians) {
         if (isSubsystemDisabled()) {
@@ -285,7 +284,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
                 currentHeadingRadians, targetHeadingRadians);
 
         // Clamp the PID output to the configured maximum angular speed.
-        double maxOmega = config.getMaximumAngularSpeedRadiansPerSecond().get();
+        double maxOmega              = config.getMaximumAngularSpeedRadiansPerSecond().get();
         omegaRadiansPerSecond = MathUtil.clamp(omegaRadiansPerSecond, -maxOmega, maxOmega);
 
         log.recordVerboseOutput("HeadingControl/TargetRadians", targetHeadingRadians);
@@ -298,8 +297,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Resets the heading PID controller so accumulated integral error does not carry over between commands.
      * <p>
-     * Call this when a heading-lock command initializes to prevent the PID from producing a large initial output
-     * based on stale error history.
+     * Call this when a heading-lock command initializes to prevent the PID from producing a large initial output based on stale error history.
      * </p>
      */
     public void resetHeadingController() {
@@ -315,6 +313,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     public double getRotationToleranceRadians() {
         return config.getRotationToleranceRadians().get();
+    }
+
+    /**
+     * Returns the configured field-facing margin in radians. The robot is considered facing a field-aligned heading when it is within this many
+     * radians of that heading.
+     *
+     * @return field-facing margin in radians
+     */
+    public double getFieldFacingMarginRadians() {
+        return config.getFieldFacingMarginRadians().get();
     }
 
     /**
@@ -516,9 +524,9 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             // Apply live-tuned heading gains so changes take effect immediately.
             swerveController.thetaController.setTolerance(config.getRotationToleranceRadians().get(), 0.1);
             swerveController.thetaController.setPID(
-                    config.getHeadingKp().get(),
-                    config.getHeadingKi().get(),
-                    config.getHeadingKd().get());
+                    config.getHeading().getkP(),
+                    config.getHeading().getkI(),
+                    config.getHeading().getkD());
         }
     }
 
@@ -553,9 +561,9 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             swerveController = swerveDrive.swerveController;
             swerveController.thetaController.setTolerance(config.getRotationToleranceRadians().get(), 0.1);
             swerveController.thetaController.setPID(
-                    config.getHeadingKp().get(),
-                    config.getHeadingKi().get(),
-                    config.getHeadingKd().get());
+                    config.getHeading().getkP(),
+                    config.getHeading().getkI(),
+                    config.getHeading().getkD());
 
             // Default to brake mode so the robot resists rolling when no command is active.
             swerveDrive.setMotorIdleMode(true);

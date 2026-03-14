@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.util.Units;
 import frc.robot.shared.config.AbstractSubsystemConfig;
+import frc.robot.shared.config.PidConfig;
 
 /**
  * Configuration bundle for the drive base subsystem. The values are mirrored to SmartDashboard so they can be tuned live without redeploying
@@ -14,77 +15,53 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
     /**
      * Maximum linear speed in feet per second.
      */
-    public double maximumLinearSpeedFeetPerSecond;
+    public double    maximumLinearSpeedFeetPerSecond;
 
     /**
      * Maximum angular speed in degrees per second.
      */
-    public double maximumAngularSpeedDegreesPerSecond;
+    public double    maximumAngularSpeedDegreesPerSecond;
 
     /**
-     * Heading controller proportional gain.
+     * PID gains for the heading hold controller.
      */
-    public double headingKp;
-
-    /**
-     * Heading controller integral gain.
-     */
-    public double headingKi;
-
-    /**
-     * Heading controller derivative gain.
-     */
-    public double headingKd;
+    public PidConfig heading                  = new PidConfig();
 
     /**
      * Allowed heading error in degrees.
      */
-    public double rotationToleranceDegrees;
+    public double    rotationToleranceDegrees;
 
     /**
-     * Path following translation proportional gain.
+     * Margin in degrees around each field-facing orientation (0 and 180 degrees) within which the robot is considered to already be facing that
+     * direction. Used by the snap-to-field-facing command to decide whether to flip to the opposite heading.
      */
-    public double pathTranslationKp;
+    public double    fieldFacingMarginDegrees = 15.0;
 
     /**
-     * Path following translation integral gain.
+     * PID gains for the path following translation controller.
      */
-    public double pathTranslationKi;
+    public PidConfig pathTranslation          = new PidConfig();
 
     /**
-     * Path following translation derivative gain.
+     * PID gains for the path following rotation controller.
      */
-    public double pathTranslationKd;
-
-    /**
-     * Path following rotation proportional gain.
-     */
-    public double pathRotationKp;
-
-    /**
-     * Path following rotation integral gain.
-     */
-    public double pathRotationKi;
-
-    /**
-     * Path following rotation derivative gain.
-     */
-    public double pathRotationKd;
+    public PidConfig pathRotation             = new PidConfig();
 
     /**
      * Additional translation scale applied in simulation.
      */
-    public double simulationTranslationScale;
+    public double    simulationTranslationScale;
 
     /**
      * Additional rotation scale applied in simulation.
      */
-    public double simulationOmegaScale;
+    public double    simulationOmegaScale;
 
     /**
      * Name of the swerve configuration directory under the deploy folder (e.g., "swerve" or "swerve-test").
      */
-    public String swerveConfigDirectory = "swerve";
+    public String    swerveConfigDirectory    = "swerve";
 
     /**
      * Returns the swerve configuration directory name relative to the deploy folder.
@@ -116,30 +93,12 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
     }
 
     /**
-     * Supplies the heading hold proportional gain.
+     * Returns the heading PID config.
      *
-     * @return supplier yielding the current heading Kp
+     * @return heading PID config
      */
-    public Supplier<Double> getHeadingKp() {
-        return () -> readTunableNumber("headingKp", headingKp);
-    }
-
-    /**
-     * Supplies the heading hold integral gain.
-     *
-     * @return supplier yielding the current heading Ki
-     */
-    public Supplier<Double> getHeadingKi() {
-        return () -> readTunableNumber("headingKi", headingKi);
-    }
-
-    /**
-     * Supplies the heading hold derivative gain.
-     *
-     * @return supplier yielding the current heading Kd
-     */
-    public Supplier<Double> getHeadingKd() {
-        return () -> readTunableNumber("headingKd", headingKd);
+    public PidConfig getHeading() {
+        return heading;
     }
 
     /**
@@ -171,56 +130,31 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
     }
 
     /**
-     * Supplies the path following translation proportional gain.
+     * Supplies the field-facing margin in radians. The robot is considered "facing" a field-aligned heading when it is within this many radians of
+     * that heading.
      *
-     * @return supplier yielding the current translation Kp
+     * @return supplier yielding the current field-facing margin (rad)
      */
-    public Supplier<Double> getPathTranslationKp() {
-        return () -> readTunableNumber("pathTranslationKp", pathTranslationKp);
+    public Supplier<Double> getFieldFacingMarginRadians() {
+        return () -> Units.degreesToRadians(
+                readTunableNumber("fieldFacingMarginDegrees", fieldFacingMarginDegrees));
     }
 
     /**
-     * Supplies the path following translation integral gain.
+     * Returns the path following translation PID config.
      *
-     * @return supplier yielding the current translation Ki
+     * @return path translation PID config
      */
-    public Supplier<Double> getPathTranslationKi() {
-        return () -> readTunableNumber("pathTranslationKi", pathTranslationKi);
+    public PidConfig getPathTranslation() {
+        return pathTranslation;
     }
 
     /**
-     * Supplies the path following translation derivative gain.
+     * Returns the path following rotation PID config.
      *
-     * @return supplier yielding the current translation Kd
+     * @return path rotation PID config
      */
-    public Supplier<Double> getPathTranslationKd() {
-        return () -> readTunableNumber("pathTranslationKd", pathTranslationKd);
-    }
-
-    /**
-     * Supplies the path following rotation proportional gain.
-     *
-     * @return supplier yielding the current rotation Kp
-     */
-    public Supplier<Double> getPathRotationKp() {
-        return () -> readTunableNumber("pathRotationKp", pathRotationKp);
-    }
-
-    /**
-     * Supplies the path following rotation integral gain.
-     *
-     * @return supplier yielding the current rotation Ki
-     */
-    public Supplier<Double> getPathRotationKi() {
-        return () -> readTunableNumber("pathRotationKi", pathRotationKi);
-    }
-
-    /**
-     * Supplies the path following rotation derivative gain.
-     *
-     * @return supplier yielding the current rotation Kd
-     */
-    public Supplier<Double> getPathRotationKd() {
-        return () -> readTunableNumber("pathRotationKd", pathRotationKd);
+    public PidConfig getPathRotation() {
+        return pathRotation;
     }
 }

@@ -16,18 +16,25 @@
     "swerveConfigDirectory": "swerve",
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
-    "headingKp": 0.85,
-    "headingKi": 0.0,
-    "headingKd": 0.02,
-    "pathTranslationKp": 5.0,
-    "pathTranslationKi": 0.0,
-    "pathTranslationKd": 0.0,
-    "pathRotationKp": 5.0,
-    "pathRotationKi": 0.0,
-    "pathRotationKd": 0.0,
+    "heading": {
+      "kP": 0.85,
+      "kI": 0.0,
+      "kD": 0.02
+    },
+    "pathTranslation": {
+      "kP": 5.0,
+      "kI": 0.0,
+      "kD": 0.0
+    },
+    "pathRotation": {
+      "kP": 5.0,
+      "kI": 0.0,
+      "kD": 0.0
+    },
     "simulationTranslationScale": 0.4,
     "simulationOmegaScale": 0.5,
-    "rotationToleranceDegrees": 2.0
+    "rotationToleranceDegrees": 2.0,
+    "fieldFacingMarginDegrees": 15.0
   },
   "intakeSubsystem": {
     "enabled": true,

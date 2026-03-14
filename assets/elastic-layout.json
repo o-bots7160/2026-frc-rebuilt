@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "grid_size": 128.0,
+  "version": 1.0,
+  "grid_size": 128,
   "tabs": [
     {
       "name": "Competition",
@@ -250,7 +250,7 @@
           },
           {
             "title": "Max Lin ft/s",
-            "x": 128.0,
+            "x": 256.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -264,7 +264,7 @@
           },
           {
             "title": "Max Ang °/s",
-            "x": 384.0,
+            "x": 512.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -278,7 +278,7 @@
           },
           {
             "title": "Rot Tol °",
-            "x": 640.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -292,7 +292,7 @@
           },
           {
             "title": "Sim Trans",
-            "x": 896.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -306,7 +306,7 @@
           },
           {
             "title": "Sim Omega",
-            "x": 1152.0,
+            "x": 1280.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -456,7 +456,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0
+              "angle_offset": 0.0
             }
           },
           {
@@ -569,6 +569,33 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Facing Margin °",
+            "x": 1536.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/fieldFacingMarginDegrees",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Verbose",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "SmartDashboard/DriveBaseSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]

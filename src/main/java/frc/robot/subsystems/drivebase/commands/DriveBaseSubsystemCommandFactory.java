@@ -139,8 +139,8 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
             Supplier<Translation2d> translationSupplier = subsystem.mapDriverTranslationSupplier(forwardAxis, leftAxis);
 
             // Capture the current heading and add 180 degrees (pi radians).
-            double currentRadians = subsystem.getOdometryPose().getRotation().getRadians();
-            double targetRadians  = MathUtil.angleModulus(currentRadians + Math.PI);
+            double                  currentRadians      = subsystem.getOdometryPose().getRotation().getRadians();
+            double                  targetRadians       = MathUtil.angleModulus(currentRadians + Math.PI);
 
             return createMoveManualWithHeadingCommand(
                     () -> translationSupplier.get().getX(),
@@ -167,24 +167,27 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
         return Commands.deferredProxy(() -> {
             Supplier<Translation2d> translationSupplier = subsystem.mapDriverTranslationSupplier(forwardAxis, leftAxis);
 
-            double currentRadians   = subsystem.getOdometryPose().getRotation().getRadians();
-            double toleranceRadians = subsystem.getRotationToleranceRadians();
+            double                  currentRadians      = subsystem.getOdometryPose().getRotation().getRadians();
+            double                  facingMarginRadians = subsystem.getFieldFacingMarginRadians();
 
             // Determine which field-facing orientation is closest.
-            double forwardRadians  = 0.0;
-            double backwardRadians = Math.PI;
+            double                  forwardRadians      = 0.0;
+            double                  backwardRadians     = Math.PI;
 
             // Compute the shortest angular distance to each candidate.
-            double distanceToForward  = Math.abs(MathUtil.angleModulus(currentRadians - forwardRadians));
-            double distanceToBackward = Math.abs(MathUtil.angleModulus(currentRadians - backwardRadians));
+            double                  distanceToForward   = Math.abs(MathUtil.angleModulus(currentRadians - forwardRadians));
+            double                  distanceToBackward  = Math.abs(MathUtil.angleModulus(currentRadians - backwardRadians));
 
-            double targetRadians;
-            if (distanceToForward <= distanceToBackward) {
-                // Closest to forward; pick forward unless we are already there.
-                targetRadians = distanceToForward <= toleranceRadians ? backwardRadians : forwardRadians;
+            double                  targetRadians;
+            if (distanceToForward <= facingMarginRadians) {
+                // Already facing forward; flip to backward.
+                targetRadians = backwardRadians;
+            } else if (distanceToBackward <= facingMarginRadians) {
+                // Already facing backward; flip to forward.
+                targetRadians = forwardRadians;
             } else {
-                // Closest to backward; pick backward unless we are already there.
-                targetRadians = distanceToBackward <= toleranceRadians ? forwardRadians : backwardRadians;
+                // Not facing either direction; snap to whichever is closer.
+                targetRadians = distanceToForward <= distanceToBackward ? forwardRadians : backwardRadians;
             }
 
             // Normalize the target so the PID wraps correctly.
