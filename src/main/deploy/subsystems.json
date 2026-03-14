@@ -196,18 +196,18 @@
       "forwardSoftLimitDegrees": 100.0
     },
     "pid": {
-      "kP": 5.5,
+      "kP": 3.5,
       "kI": 0.0,
-      "kD": 0.05
+      "kD": 0.3
     },
     "feedforward": {
-      "kS": 0.25,
+      "kS": 0.15,
       "kV": 1.3,
       "kA": 0.1
     },
     "motionProfile": {
-      "maximumVelocityDegreesPerSecond": 180.0,
-      "maximumAccelerationDegreesPerSecondSquared": 100.0,
+      "maximumVelocityDegreesPerSecond": 200.0,
+      "maximumAccelerationDegreesPerSecondSquared": 200.0,
       "positionToleranceDegrees": 5.0,
       "velocityToleranceDegreesPerSecond": 10.0,
       "initialPositionDegrees": 0.0,
@@ -264,7 +264,7 @@
     },
     "feedforward": {
       "kS": 0.16876,
-      "kV": 0.0168,
+      "kV": 0.0199,
       "kA": 0.0040569
     },
     "sysId": {
@@ -275,41 +275,29 @@
       "dynamicTimeoutSeconds": 4.0
     },
     "motionProfile": {
-      "maximumVelocityRpm": 2800.0,
+      "maximumVelocityRpm": 4500.0,
       "maximumAccelerationRpmPerSecond": 8000.0,
-      "velocityToleranceRpm": 150.0,
+      "velocityToleranceRpm": 175.0,
       "settleTimeSeconds": 0.25,
       "idleVelocityRpm": 1000.0
     },
     "reverseVelocityRpm": 1000.0,
     "distanceRpmPoints": [
       {
-        "distanceMeters": 1.0,
-        "rpm": 1500.0
+        "distanceMeters": 1.93,
+        "rpm": 2300.0
       },
       {
-        "distanceMeters": 2.0,
-        "rpm": 2000.0
+        "distanceMeters": 2.92,
+        "rpm": 2900.0
       },
       {
-        "distanceMeters": 3.5,
-        "rpm": 2400.0
-      },
-      {
-        "distanceMeters": 5.0,
-        "rpm": 2600.0
-      },
-      {
-        "distanceMeters": 7.0,
-        "rpm": 2750.0
-      },
-      {
-        "distanceMeters": 8.0,
-        "rpm": 2800.0
+        "distanceMeters": 4.11,
+        "rpm": 3100.0
       }
     ],
     "minimumShootingRpm": 1500.0,
-    "maximumShootingRpm": 2800.0,
+    "maximumShootingRpm": 4500.0,
     "distanceRpmMultiplier": 1.0
   },
   "aprilTagVisionSubsystem": {
@@ -321,7 +309,7 @@
     "cameras": {
       "Obots7160OV9281": {
         "x": -0.051,
-        "y": 0.23,
+        "y": -0.23,
         "z": 0.5,
         "roll": 0.0,
         "pitch": 0.0,
@@ -329,7 +317,7 @@
       },
       "Obots7160cam20260219a": {
         "x": -0.089,
-        "y": -0.24,
+        "y": 0.24,
         "z": 0.49,
         "roll": 0.0,
         "pitch": 0.0,

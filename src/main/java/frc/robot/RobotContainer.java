@@ -197,7 +197,8 @@ public class RobotContainer {
                     intakeCommandFactory,
                     turretCommandFactory,
                     harvesterCommandFactory,
-                    climberCommandFactory);
+                    climberCommandFactory,
+                    () -> robotPoseSubsystem.getDistanceToPointMeters(fieldTargetSelector.getActiveTargetPosition()));
 
             // Default commands
             turretCommandFactory.setDefaultTrackFieldTargetCommand(

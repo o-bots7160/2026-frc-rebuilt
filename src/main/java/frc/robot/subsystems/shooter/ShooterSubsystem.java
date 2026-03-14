@@ -134,4 +134,20 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
         double scaledRpm       = interpolatedRpm * config.getDistanceRpmMultiplier();
         return MathUtil.clamp(scaledRpm, config.getMinimumShootingRpm(), config.getMaximumShootingRpm());
     }
+
+    /**
+     * Reports whether the flywheel is spinning at a meaningful shooting velocity and is within tolerance of its current target.
+     * <p>
+     * Unlike {@link #isAtTargetVelocity()}, this method does not require the settle timer to have elapsed, making it suitable for
+     * continuously-updating targets such as distance-based RPM. It also verifies that the current target is at or above the configured minimum
+     * shooting RPM, preventing false positives when the shooter is still at idle speed.
+     * </p>
+     *
+     * @return true when the flywheel is within tolerance and the target is at or above the minimum shooting RPM
+     */
+    public boolean isAtShootingVelocity() {
+        boolean atShooting = isWithinTolerance() && getTargetVelocityRpm() >= config.getMinimumShootingRpm();
+        log.recordVerboseOutput("atShootingVelocity", atShooting);
+        return atShooting;
+    }
 }

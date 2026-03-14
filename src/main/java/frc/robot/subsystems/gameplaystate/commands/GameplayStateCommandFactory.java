@@ -1,5 +1,7 @@
 package frc.robot.subsystems.gameplaystate.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -38,6 +40,9 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
 
     private final ClimberSubsystemCommandFactory   climberCommandFactory;
 
+    /** Supplies the distance from the robot to the active scoring target in meters. */
+    private final Supplier<Double>                 distanceToTargetMetersSupplier;
+
     /**
      * Creates a factory that composes gameplay state commands from individual subsystem command factories.
      *
@@ -49,6 +54,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @param turretCommandFactory                 factory for turret aiming commands
      * @param harvesterCommandFactory              factory for harvester arm commands
      * @param climberCommandFactory                factory for climber commands
+     * @param distanceToTargetMetersSupplier       supplier returning the distance from the robot to the active scoring target in meters
      */
     public GameplayStateCommandFactory(
             GameplayStateSubsystem subsystem,
@@ -58,7 +64,8 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
             IntakeSubsystemCommandFactory intakeCommandFactory,
             TurretSubsystemCommandFactory turretCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            ClimberSubsystemCommandFactory climberCommandFactory) {
+            ClimberSubsystemCommandFactory climberCommandFactory,
+            Supplier<Double> distanceToTargetMetersSupplier) {
         super(subsystem);
         this.shooterCommandFactory                = shooterCommandFactory;
         this.indexerCommandFactory                = indexerCommandFactory;
@@ -67,6 +74,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         this.turretCommandFactory                 = turretCommandFactory;
         this.harvesterCommandFactory              = harvesterCommandFactory;
         this.climberCommandFactory                = climberCommandFactory;
+        this.distanceToTargetMetersSupplier        = distanceToTargetMetersSupplier;
     }
 
     /**
@@ -130,13 +138,15 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      */
     public Command createFireReadyCommand() {
         return Commands.parallel(
-                shooterCommandFactory.createContinuousVelocityCommand(
-                        shooterCommandFactory.getSubsystem().getConfig()::getMaximumShootingRpm),
+                shooterCommandFactory.createDistanceBasedSpinCommand(distanceToTargetMetersSupplier),
                 indexerCommandFactory.createFireWhenReadyCommand(
-                        shooterCommandFactory.getSubsystem()::isAtTargetVelocity,
-                        turretCommandFactory.getSubsystem()::isProfileSettled),
-                Commands.waitUntil(() -> shooterCommandFactory.getSubsystem().isAtTargetVelocity()
-                        && turretCommandFactory.getSubsystem().isProfileSettled())
+                        shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
+                        () -> true
+                        // turretCommandFactory.getSubsystem()::isProfileSettled
+                        ),
+                Commands.waitUntil(() -> shooterCommandFactory.getSubsystem().isAtShootingVelocity()
+                        //&& turretCommandFactory.getSubsystem().isProfileSettled()
+                        )
                         .andThen(feederCommandFactory.createReversePulseThenForwardCommand()))
                 .finallyDo(() -> {
                     subsystem.requestState(GameplayState.IDLE, "fire-end");
@@ -160,8 +170,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 harvesterCommandFactory.createDeployCommand(),
                 intakeCommandFactory.createIntakeAndHoldCommand(),
                 feederCommandFactory.createReversePulseThenForwardCommand(),
-                shooterCommandFactory.createSpinUpAndHoldCommand(
-                        shooterCommandFactory.getSubsystem().getConfig()::getMaximumShootingRpm),
+                shooterCommandFactory.createDistanceBasedSpinCommand(distanceToTargetMetersSupplier),
                 indexerCommandFactory.createHoldCommand())
                 .withName("GameplayState-AutoCycle");
     }

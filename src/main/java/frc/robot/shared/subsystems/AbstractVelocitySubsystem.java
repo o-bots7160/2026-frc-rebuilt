@@ -271,6 +271,20 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
     }
 
     /**
+     * Reports whether the measured velocity is currently within tolerance of the target, without requiring the settle timer.
+     * <p>
+     * Use this for continuously-updating targets (such as distance-based RPM) where the settle timer resets each time the target changes.
+     * {@link #isAtTargetVelocity()} is still preferred for fixed-target scenarios where stability over time matters.
+     * </p>
+     *
+     * @return true when the measured velocity is within tolerance of the current target right now
+     */
+    public boolean isWithinTolerance() {
+        log.recordVerboseOutput("withinTolerance", withinTolerance);
+        return withinTolerance;
+    }
+
+    /**
      * Reports whether the subsystem is ready for downstream consumers.
      * <p>
      * This is a stable, uniform API that all velocity subsystems expose. Composite commands and cross-subsystem suppliers should prefer this method
