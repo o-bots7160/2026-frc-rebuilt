@@ -100,6 +100,12 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
     private double                 setpointVelocityRadPerSec;
 
     /**
+     * Previous cycle's velocity setpoint in radians per second, used by {@code calculateWithVelocities} so the feedforward accounts for acceleration
+     * (kA).
+     */
+    private double                 previousSetpointVelocityRadPerSec;
+
+    /**
      * Optional trapezoidal profile for smooth velocity ramps. Null when acceleration limit is zero (direct control).
      */
     private TrapezoidProfile       velocityProfile;
@@ -128,15 +134,16 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
     protected AbstractVelocitySubsystem(TConfig config, Motor motor) {
         super(config, motor);
 
-        controller                = new PIDController(
+        controller                        = new PIDController(
                 config.pid.getkP(),
                 config.pid.getkI(),
                 config.pid.getkD(),
                 kDt);
 
-        targetVelocityRadPerSec   = 0.0;
-        setpointVelocityRadPerSec = 0.0;
-        withinTolerance           = false;
+        targetVelocityRadPerSec           = 0.0;
+        setpointVelocityRadPerSec         = 0.0;
+        previousSetpointVelocityRadPerSec = 0.0;
+        withinTolerance                   = false;
 
         rebuildVelocityProfile();
         settledTimer.start();
@@ -230,10 +237,14 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         }
 
         // PID corrects for velocity error.
-        double pidOutput              = controller.calculate(measuredVelocityRadPerSec, setpointVelocityRadPerSec);
+        double pidOutput        = controller.calculate(measuredVelocityRadPerSec, setpointVelocityRadPerSec);
 
-        // Feedforward estimates the voltage needed to maintain the setpoint velocity.
-        double feedforwardVolts       = feedforward.calculate(setpointVelocityRadPerSec);
+        // Feedforward estimates the voltage needed to transition from the previous setpoint
+        // to the current setpoint. Using calculateWithVelocities (discrete plant inversion)
+        // ensures the kA term accounts for acceleration during velocity ramps.
+        double feedforwardVolts = feedforward.calculateWithVelocities(
+                previousSetpointVelocityRadPerSec, setpointVelocityRadPerSec);
+        previousSetpointVelocityRadPerSec = setpointVelocityRadPerSec;
         double voltageCommand         = pidOutput + feedforwardVolts;
 
         double velocityErrorRadPerSec = targetVelocityRadPerSec - measuredVelocityRadPerSec;
@@ -338,9 +349,10 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         // Temporary diagnostic: log who called stop() so we can trace unexpected shutdowns.
         log.warning("stop() called — stack: " + getCallerInfo());
 
-        targetVelocityRadPerSec   = 0.0;
-        setpointVelocityRadPerSec = 0.0;
-        withinTolerance           = false;
+        targetVelocityRadPerSec           = 0.0;
+        setpointVelocityRadPerSec         = 0.0;
+        previousSetpointVelocityRadPerSec = 0.0;
+        withinTolerance                   = false;
         if (velocityProfile != null) {
             profileState = new TrapezoidProfile.State(0.0, 0.0);
         }
