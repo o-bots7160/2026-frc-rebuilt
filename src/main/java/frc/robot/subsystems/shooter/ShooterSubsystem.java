@@ -113,12 +113,12 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
     /**
      * Computes the target flywheel RPM for a given distance using the configured interpolation table.
      * <p>
-     * The raw interpolated value is scaled by the tunable multiplier and then clamped to the configured minimum and maximum shooting RPM. Returns the
-     * idle RPM when the interpolation table is empty.
+     * The raw interpolated value is scaled by the tunable multiplier and then clamped to the configured maximum velocity. Returns the idle RPM
+     * when the interpolation table is empty.
      * </p>
      *
      * @param distanceMeters distance from the robot to the target in meters
-     * @return target flywheel RPM, scaled and clamped to configured limits
+     * @return target flywheel RPM, scaled and clamped to the configured maximum
      */
     public double calculateRpmFromDistanceMeters(double distanceMeters) {
         if (isSubsystemDisabled()) {
@@ -132,22 +132,22 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
 
         double interpolatedRpm = distanceRpmTable.get(distanceMeters);
         double scaledRpm       = interpolatedRpm * config.getDistanceRpmMultiplier();
-        return MathUtil.clamp(scaledRpm, config.getMinimumShootingRpm(), config.getMaximumShootingRpm());
+        return MathUtil.clamp(scaledRpm, 0.0, config.motionProfile.getMaximumVelocityRpm());
     }
 
     /**
      * Reports whether the flywheel is spinning at a meaningful shooting velocity and is within tolerance of its current target.
      * <p>
-     * Delegates to the base class {@link #isWithinTolerance()} for the velocity error check and additionally verifies that the current target is at
-     * or above the configured minimum shooting RPM. This prevents false positives when the shooter is still at idle speed.
+     * Delegates to the base class {@link #isWithinTolerance()} for the velocity error check and additionally verifies that the current target is
+     * above idle speed. This prevents false positives when the shooter is still at idle speed.
      * </p>
      *
-     * @return true when the flywheel is within tolerance and the target is at or above the minimum shooting RPM
+     * @return true when the flywheel is within tolerance and the target is above idle velocity
      */
     public boolean isAtShootingVelocity() {
         boolean withinTolerance = isWithinTolerance();
-        boolean aboveMinimum   = getTargetVelocityRpm() >= config.getMinimumShootingRpm();
-        boolean atShooting     = withinTolerance && aboveMinimum;
+        boolean aboveIdle      = getTargetVelocityRpm() > config.motionProfile.getIdleVelocityRpm();
+        boolean atShooting     = withinTolerance && aboveIdle;
         log.recordOutput("atShootingVelocity", atShooting);
         return atShooting;
     }

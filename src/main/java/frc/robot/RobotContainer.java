@@ -216,7 +216,7 @@ public class RobotContainer {
             // These must be registered before pre-loading autos so PathPlanner can resolve them.
             NamedCommands.registerCommand("MoveHarvesterToPositionCommand", harvesterCommandFactory.createDeployCommand());
             NamedCommands.registerCommand("SpinUpShooterCommand",
-                    shooterCommandFactory.createSpinUpCommand(subsystemsConfig.shooterSubsystem::getMaximumShootingRpm));
+                    shooterCommandFactory.createSpinUpCommand(subsystemsConfig.shooterSubsystem.motionProfile::getMaximumVelocityRpm));
             NamedCommands.registerCommand("SetStateIdle",
                     gameplayStateCommandFactory.createTransitionCommand(GameplayState.IDLE, "auto"));
             NamedCommands.registerCommand("SetStateHarvestReady",

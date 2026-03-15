@@ -263,7 +263,6 @@
       "settleTimeSeconds": 0.25,
       "idleVelocityRpm": 1000
     },
-    "reverseVelocityRpm": 1000,
     "distanceRpmPoints": [
       {
         "distanceMeters": 1.0,
@@ -282,8 +281,6 @@
         "rpm": 4500.0
       }
     ],
-    "minimumShootingRpm": 1500.0,
-    "maximumShootingRpm": 4500.0,
     "distanceRpmMultiplier": 1.0
   },
   "aprilTagVisionSubsystem": {
