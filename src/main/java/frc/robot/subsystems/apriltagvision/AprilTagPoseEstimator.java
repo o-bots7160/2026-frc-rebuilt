@@ -48,6 +48,16 @@ public class AprilTagPoseEstimator {
             Matrix<N3, N1> standardDeviations) {
     }
 
+    /**
+     * Huge standard deviation assigned to single-tag rotation observations.
+     * <p>
+     * Single-tag PnP solves produce very noisy rotation estimates. By assigning an enormous angular
+     * uncertainty the Kalman filter effectively ignores the rotation component while still fusing
+     * the more reliable x/y translation.
+     * </p>
+     */
+    private static final double SINGLE_TAG_ROTATION_STD_DEV_RADIANS = 1.0e6;
+
     private final Params params;
 
     /**
@@ -77,7 +87,9 @@ public class AprilTagPoseEstimator {
         // Farther tags and fewer tags mean less confidence, so scale up the uncertainty.
         double factor        = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
         double linearStdDev  = params.linearStdDevBaseline() * factor;
-        double angularStdDev = params.angularStdDevBaseline() * factor;
+        double angularStdDev = observation.tagCount() > 1
+                ? params.angularStdDevBaseline() * factor
+                : SINGLE_TAG_ROTATION_STD_DEV_RADIANS;
 
         // Package the pose, timestamp, and uncertainty so the estimator can fuse it.
         return Optional.of(new VisionMeasurement(
