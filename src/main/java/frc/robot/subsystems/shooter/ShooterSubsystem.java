@@ -138,26 +138,16 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
     /**
      * Reports whether the flywheel is spinning at a meaningful shooting velocity and is within tolerance of its current target.
      * <p>
-     * This method computes its own instantaneous tolerance check from the current measured and target velocities rather than relying on the
-     * {@code withinTolerance} field used by {@link #isAtTargetVelocity()}. The distance-based spin command continuously updates the target RPM as
-     * the robot moves, and each call to {@code setTargetVelocityRpm} resets that field to {@code false}. By computing tolerance independently, this
-     * method avoids the reset-flicker and reliably gates the indexer and feeder during the fire sequence.
-     * </p>
-     * <p>
-     * The method also verifies that the current target is at or above the configured minimum shooting RPM, preventing false positives when the
-     * shooter is still at idle speed.
+     * Delegates to the base class {@link #isWithinTolerance()} for the velocity error check and additionally verifies that the current target is at
+     * or above the configured minimum shooting RPM. This prevents false positives when the shooter is still at idle speed.
      * </p>
      *
      * @return true when the flywheel is within tolerance and the target is at or above the minimum shooting RPM
      */
     public boolean isAtShootingVelocity() {
-        double targetRpm          = getTargetVelocityRpm();
-        double measuredRpm        = getMeasuredVelocityRpm();
-        double errorRpm           = Math.abs(targetRpm - measuredRpm);
-        double toleranceRpm       = config.motionProfile.getVelocityToleranceRpm();
-        boolean withinTolerance   = errorRpm <= toleranceRpm;
-        boolean aboveMinimum      = targetRpm >= config.getMinimumShootingRpm();
-        boolean atShooting        = withinTolerance && aboveMinimum;
+        boolean withinTolerance = isWithinTolerance();
+        boolean aboveMinimum   = getTargetVelocityRpm() >= config.getMinimumShootingRpm();
+        boolean atShooting     = withinTolerance && aboveMinimum;
         log.recordOutput("atShootingVelocity", atShooting);
         return atShooting;
     }

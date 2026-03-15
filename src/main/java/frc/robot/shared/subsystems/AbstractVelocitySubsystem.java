@@ -174,6 +174,11 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      * The target is in mechanism RPM (after gear reduction). Positive values spin the mechanism forward; negative values spin it in reverse.
      * Requested and clamped values are logged for tuning visibility.
      * </p>
+     * <p>
+     * The settle timer and tolerance flag are only reset when the measured velocity is outside tolerance of the new target. This prevents
+     * reset-flicker in distance-based commands where the interpolated target drifts slightly each cycle while the mechanism is already tracking
+     * within tolerance. Large target jumps (e.g., idle to full speed) still trigger a full reset and settle window.
+     * </p>
      *
      * @param targetRpm desired mechanism velocity in RPM (0 to stop, positive for forward, negative for reverse)
      */
@@ -209,10 +214,25 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
             profileState = new TrapezoidProfile.State(getMeasuredVelocityRadiansPerSecond(), 0.0);
         }
 
-        // Reset settle tracking since we have a new target.
-        withinTolerance = false;
-        settledTimer.reset();
-        settledTimer.start();
+        // Only reset settle tracking when the measured velocity is outside tolerance
+        // of the new target. Distance-based commands update the target slightly each
+        // cycle as the robot moves; unconditionally resetting here causes the
+        // withinTolerance field to flicker false even though the flywheel is keeping
+        // up with the drifting setpoint. Preserving tolerance state for small target
+        // changes eliminates the flicker while still enforcing a full settle window
+        // after large jumps (e.g., idle to full speed).
+        double  measuredRadPerSec      = getMeasuredVelocityRadiansPerSecond();
+        double  errorToNewTargetRadSec = Math.abs(newTargetRadPerSec - measuredRadPerSec);
+        double  toleranceRadPerSec     = config.motionProfile.getVelocityToleranceRadiansPerSecond();
+        boolean stillWithinTolerance   = errorToNewTargetRadSec <= toleranceRadPerSec;
+
+        if (!stillWithinTolerance) {
+            withinTolerance = false;
+            settledTimer.reset();
+            settledTimer.start();
+        }
+
+        log.recordVerboseOutput("tolerancePreservedOnTargetChange", stillWithinTolerance);
     }
 
     /**

@@ -46,15 +46,15 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     /**
      * Creates a factory that composes gameplay state commands from individual subsystem command factories.
      *
-     * @param subsystem                            gameplay state subsystem that tracks the current operating mode
-     * @param shooterCommandFactory                factory for shooter flywheel commands
-     * @param indexerCommandFactory                factory for indexer roller commands
-     * @param feederCommandFactory                 factory for feeder belt commands
-     * @param intakeCommandFactory                 factory for intake roller commands
-     * @param turretCommandFactory                 factory for turret aiming commands
-     * @param harvesterCommandFactory              factory for harvester arm commands
-     * @param climberCommandFactory                factory for climber commands
-     * @param distanceToTargetMetersSupplier       supplier returning the distance from the robot to the active scoring target in meters
+     * @param subsystem                      gameplay state subsystem that tracks the current operating mode
+     * @param shooterCommandFactory          factory for shooter flywheel commands
+     * @param indexerCommandFactory          factory for indexer roller commands
+     * @param feederCommandFactory           factory for feeder belt commands
+     * @param intakeCommandFactory           factory for intake roller commands
+     * @param turretCommandFactory           factory for turret aiming commands
+     * @param harvesterCommandFactory        factory for harvester arm commands
+     * @param climberCommandFactory          factory for climber commands
+     * @param distanceToTargetMetersSupplier supplier returning the distance from the robot to the active scoring target in meters
      */
     public GameplayStateCommandFactory(
             GameplayStateSubsystem subsystem,
@@ -67,14 +67,14 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
             ClimberSubsystemCommandFactory climberCommandFactory,
             Supplier<Double> distanceToTargetMetersSupplier) {
         super(subsystem);
-        this.shooterCommandFactory                = shooterCommandFactory;
-        this.indexerCommandFactory                = indexerCommandFactory;
-        this.feederCommandFactory                 = feederCommandFactory;
-        this.intakeCommandFactory                 = intakeCommandFactory;
-        this.turretCommandFactory                 = turretCommandFactory;
-        this.harvesterCommandFactory              = harvesterCommandFactory;
-        this.climberCommandFactory                = climberCommandFactory;
-        this.distanceToTargetMetersSupplier        = distanceToTargetMetersSupplier;
+        this.shooterCommandFactory          = shooterCommandFactory;
+        this.indexerCommandFactory          = indexerCommandFactory;
+        this.feederCommandFactory           = feederCommandFactory;
+        this.intakeCommandFactory           = intakeCommandFactory;
+        this.turretCommandFactory           = turretCommandFactory;
+        this.harvesterCommandFactory        = harvesterCommandFactory;
+        this.climberCommandFactory          = climberCommandFactory;
+        this.distanceToTargetMetersSupplier = distanceToTargetMetersSupplier;
     }
 
     /**
@@ -142,12 +142,13 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 indexerCommandFactory.createFireWhenReadyCommand(
                         shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
                         () -> true
-                        // turretCommandFactory.getSubsystem()::isProfileSettled
-                        ),
-                Commands.waitUntil(() -> shooterCommandFactory.getSubsystem().isAtShootingVelocity()
-                        //&& turretCommandFactory.getSubsystem().isProfileSettled()
-                        )
-                        .andThen(feederCommandFactory.createReversePulseThenForwardCommand()))
+                // turretCommandFactory.getSubsystem()::isProfileSettled
+                ),
+                feederCommandFactory.createFireWhenReadyCommand(
+                        shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
+                        () -> true
+                // turretCommandFactory.getSubsystem()::isProfileSettled
+                ))
                 .finallyDo(() -> {
                     subsystem.requestState(GameplayState.IDLE, "fire-end");
                     CommandScheduler.getInstance().schedule(createIdleCommand());

@@ -165,13 +165,16 @@ public abstract class AbstractVelocityCommandFactory<TSubsystem extends Abstract
      */
     public Command createContinuousVelocityCommand(Supplier<Double> targetRpmSupplier) {
         // Track the last-applied target so setTargetVelocityRpm is only called when the
-        // supplier returns a new value. Calling it every cycle resets the trapezoidal
-        // velocity profile, which prevents the setpoint from ramping to the goal.
-        double[] lastTarget = { Double.NaN };
+        // supplier returns a new value. A small RPM epsilon avoids forwarding trivial
+        // floating-point noise that would still pass the base class's rad/s epsilon
+        // guard and reset the trapezoidal velocity profile.
+        final double TARGET_EPSILON_RPM = 0.1;
+        double[]     lastTarget         = { Double.NaN };
 
         return Commands.run(() -> {
             double currentTarget = targetRpmSupplier.get();
-            if (currentTarget != lastTarget[0]) {
+            // Double.NaN comparisons are always false, so the first cycle always applies.
+            if (Double.isNaN(lastTarget[0]) || Math.abs(currentTarget - lastTarget[0]) > TARGET_EPSILON_RPM) {
                 subsystem.setTargetVelocityRpm(currentTarget);
                 lastTarget[0] = currentTarget;
             }

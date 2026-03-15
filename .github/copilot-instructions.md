@@ -367,21 +367,6 @@ Follow this pattern when adding a new subsystem that can be toggled off:
 - On-the-fly alignment paths should set `preventFlipping = true` when
   coordinates have already been adjusted for the current alliance.
 
-## Formatting generated and edited files
-
-- After creating or editing a Java file, **always** run the VS Code formatter on
-  the file before moving on. Use the `editor.action.formatDocument` command (or
-  the equivalent agent tool) so the result matches the workspace's formatter
-  settings (indentation, brace placement, line length, import order, etc.).
-- When multiple files are created or edited in a single task, format each file
-  individually after its content is finalized—do not skip formatting because
-  "it's just generated code."
-- This applies to all file types the workspace formatter supports (Java, JSON,
-  Markdown, etc.), not only Java.
-- If the workspace has a `.editorconfig`, Checkstyle config, or other formatter
-  profile, the VS Code formatter will respect it automatically; no extra flags
-  are needed.
-
 ## Testing and validation
 
 - When logic changes could affect runtime behavior, add or update

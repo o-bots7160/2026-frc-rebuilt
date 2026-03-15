@@ -101,6 +101,24 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
     }
 
     /**
+     * Builds a composite command that waits until the shooter and turret are both ready, then runs the reverse-pulse-then-forward sequence.
+     * <p>
+     * The command blocks while either readiness supplier returns false. Once both report true, it executes
+     * {@link #createReversePulseThenForwardCommand()} to briefly reverse the belt (dislodging jammed Fuel) and then transport forward. This keeps the
+     * feeder decoupled from the shooter and turret subsystems — readiness is checked through suppliers wired in {@code RobotContainer}.
+     * </p>
+     *
+     * @param shooterReadySupplier   supplier that returns true when the shooter flywheel is at the target RPM
+     * @param turretOnTargetSupplier supplier that returns true when the turret is aimed at the scoring target
+     * @return composite command that waits for readiness then runs the reverse-pulse-then-forward sequence
+     */
+    public Command createFireWhenReadyCommand(Supplier<Boolean> shooterReadySupplier, Supplier<Boolean> turretOnTargetSupplier) {
+        return Commands.waitUntil(() -> shooterReadySupplier.get() && turretOnTargetSupplier.get())
+                .andThen(createReversePulseThenForwardCommand())
+                .withName("FeederFireWhenReady");
+    }
+
+    /**
      * Builds a command that continuously reads a target RPM from a supplier and seeks that velocity every cycle.
      * <p>
      * Unlike fixed-target commands which lock the target at command start, this command re-evaluates the supplier each cycle. Use this when the
