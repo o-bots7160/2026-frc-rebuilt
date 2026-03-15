@@ -2,6 +2,7 @@ package frc.robot.subsystems.apriltagvision;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.shared.subsystems.VisionMeasurementConsumer;
+import frc.robot.subsystems.apriltagvision.AprilTagPoseEstimator.VisionMeasurement;
 import frc.robot.subsystems.apriltagvision.config.AprilTagVisionSubsystemConfig;
 import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIO;
 import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIOInputsAutoLogged;
@@ -70,6 +72,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
 
     /** Reusable per-cycle list to avoid allocating new lists every loop. */
     private final List<Pose3d> allRejectedPoses = new ArrayList<>();
+
+    /** Accepted measurements collected from all cameras, sorted by timestamp before forwarding. */
+    private final List<VisionMeasurement> pendingMeasurements = new ArrayList<>();
 
     /** Guards the disabled-periodic log message so it prints only once per disable cycle. */
     private boolean                           disabledPeriodicLogged;
@@ -133,6 +138,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         allRobotPoses.clear();
         allAcceptedPoses.clear();
         allRejectedPoses.clear();
+        pendingMeasurements.clear();
 
         for (var camera : cameras.values()) {
             // Pull the newest data from this camera and send raw inputs to the logger.
@@ -142,14 +148,25 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             // Update the driver alert so we can see missing cameras quickly on the DS.
             camera.disconnectedAlert().set(!camera.inputs().connected);
 
-            // Filter and forward any valid robot pose observations.
+            // Filter and collect any valid robot pose observations.
             processCameraObservations(
                     camera.name(),
                     camera.inputs(),
+                    pendingMeasurements,
                     allTagPoses,
                     allRobotPoses,
                     allAcceptedPoses,
                     allRejectedPoses);
+        }
+
+        // Sort accepted measurements by timestamp so the pose estimator replays them in true
+        // chronological order, regardless of camera iteration order or framerate differences.
+        pendingMeasurements.sort(Comparator.comparingDouble(VisionMeasurement::timestampSeconds));
+        for (var measurement : pendingMeasurements) {
+            consumer.accept(
+                    measurement.pose(),
+                    measurement.timestampSeconds(),
+                    measurement.standardDeviations());
         }
 
         // Log a combined summary across all cameras for quick debugging.
@@ -214,22 +231,24 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     }
 
     /**
-     * Evaluates pose observations from a single camera and forwards accepted measurements.
+     * Evaluates pose observations from a single camera and collects accepted measurements.
      * <p>
-     * Each observation is passed through the {@link AprilTagPoseEstimator}. Accepted poses are
-     * forwarded to the consumer; rejected poses are collected for diagnostic logging.
+     * Each observation is passed through the {@link AprilTagPoseEstimator}. Accepted measurements are appended to
+     * {@code pendingMeasurements} for chronological sorting later; rejected poses are collected for diagnostic logging.
      * </p>
      *
-     * @param cameraName       human-readable camera name for per-camera logging
-     * @param cameraInputs     latest logged inputs from this camera
-     * @param allTagPoses      accumulator for observed tag field poses across all cameras
-     * @param allRobotPoses    accumulator for raw robot pose estimates across all cameras
-     * @param allAcceptedPoses accumulator for accepted robot pose estimates across all cameras
-     * @param allRejectedPoses accumulator for rejected robot pose estimates across all cameras
+     * @param cameraName          human-readable camera name for per-camera logging
+     * @param cameraInputs        latest logged inputs from this camera
+     * @param pendingMeasurements accumulator for accepted measurements across all cameras
+     * @param allTagPoses         accumulator for observed tag field poses across all cameras
+     * @param allRobotPoses       accumulator for raw robot pose estimates across all cameras
+     * @param allAcceptedPoses    accumulator for accepted robot pose estimates across all cameras
+     * @param allRejectedPoses    accumulator for rejected robot pose estimates across all cameras
      */
     private void processCameraObservations(
             String cameraName,
             AprilTagVisionIOInputsAutoLogged cameraInputs,
+            List<VisionMeasurement> pendingMeasurements,
             List<Pose3d> allTagPoses,
             List<Pose3d> allRobotPoses,
             List<Pose3d> allAcceptedPoses,
@@ -257,13 +276,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 continue;
             }
 
-            // Forward accepted measurements to the robot state estimator.
+            // Collect accepted measurements for chronological sorting before fusion.
             acceptedPoses.add(poseObservation.pose());
-            var measurement = maybeMeasurement.get();
-            consumer.accept(
-                    measurement.pose(),
-                    measurement.timestampSeconds(),
-                    measurement.standardDeviations());
+            pendingMeasurements.add(maybeMeasurement.get());
         }
 
         // Log per-camera data so we can compare cameras side by side.
