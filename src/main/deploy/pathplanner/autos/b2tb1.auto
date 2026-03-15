@@ -55,13 +55,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "b1 to depot"
+            "pathName": "b1 travel out"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "b1 from depot"
+            "pathName": "b1 intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "b1 travel back"
           }
         },
         {
