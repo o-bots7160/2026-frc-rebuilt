@@ -1,8 +1,8 @@
 package frc.robot.shared.bindings;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -113,7 +113,7 @@ public class TriggerBindings {
     /**
      * Dashboard chooser that selects which subsystem the A/B/X test buttons control. Only initialized when tuning mode is enabled.
      */
-    private SendableChooser<String>                testSubsystemChooser;
+    private LoggedDashboardChooser<String>          testSubsystemChooser;
 
     /**
      * Creates trigger bindings with the default driver controller port.
@@ -278,14 +278,13 @@ public class TriggerBindings {
      */
     private void configureSubsystemTestBindings() {
         // Build the subsystem test chooser and publish it to SmartDashboard.
-        testSubsystemChooser = new SendableChooser<>();
-        testSubsystemChooser.setDefaultOption(TEST_SUBSYSTEM_SHOOTER, TEST_SUBSYSTEM_SHOOTER);
+        testSubsystemChooser = new LoggedDashboardChooser<>("TriggerBindings/TestSubsystem");
+        testSubsystemChooser.addDefaultOption(TEST_SUBSYSTEM_SHOOTER, TEST_SUBSYSTEM_SHOOTER);
         testSubsystemChooser.addOption(TEST_SUBSYSTEM_INDEXER, TEST_SUBSYSTEM_INDEXER);
         testSubsystemChooser.addOption(TEST_SUBSYSTEM_FEEDER, TEST_SUBSYSTEM_FEEDER);
         testSubsystemChooser.addOption(TEST_SUBSYSTEM_INTAKE, TEST_SUBSYSTEM_INTAKE);
         testSubsystemChooser.addOption(TEST_SUBSYSTEM_TURRET, TEST_SUBSYSTEM_TURRET);
         testSubsystemChooser.addOption(TEST_SUBSYSTEM_HARVESTER, TEST_SUBSYSTEM_HARVESTER);
-        SmartDashboard.putData("TriggerBindings/TestSubsystem", testSubsystemChooser);
 
         // A button: reverse (velocity) or move to minimum setpoint (set-and-seek).
         driverController.a().whileTrue(
@@ -317,7 +316,7 @@ public class TriggerBindings {
      * @return command for the selected subsystem, or {@link Commands#none()} if nothing is selected
      */
     private Command createSelectedReverseCommand() {
-        String selected = testSubsystemChooser.getSelected();
+        String selected = testSubsystemChooser.get();
         if (selected == null) {
             return Commands.none();
         }
@@ -356,7 +355,7 @@ public class TriggerBindings {
      * @return command for the selected subsystem, or {@link Commands#none()} if nothing is selected
      */
     private Command createSelectedForwardCommand() {
-        String selected = testSubsystemChooser.getSelected();
+        String selected = testSubsystemChooser.get();
         if (selected == null) {
             return Commands.none();
         }
@@ -395,7 +394,7 @@ public class TriggerBindings {
      * @return SysId sweep command for the selected subsystem, or {@link Commands#none()} if nothing is selected
      */
     private Command createSelectedSysIdCommand() {
-        String selected = testSubsystemChooser.getSelected();
+        String selected = testSubsystemChooser.get();
         if (selected == null) {
             return Commands.none();
         }

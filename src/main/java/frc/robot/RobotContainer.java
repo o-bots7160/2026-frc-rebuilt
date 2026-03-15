@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -220,8 +221,19 @@ public class RobotContainer {
                     gameplayStateCommandFactory.createTransitionCommand(GameplayState.FIRE_READY, "auto"));
             NamedCommands.registerCommand("SetStateAutoCycle",
                     gameplayStateCommandFactory.createTransitionCommand(GameplayState.AUTO_CYCLE, "auto"));
+            NamedCommands.registerCommand("SetStateClimbReady",
+                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.CLIMB_READY, "auto"));
+            NamedCommands.registerCommand("SetStateEject",
+                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.EJECT, "auto"));
+            NamedCommands.registerCommand("SetStateTravel",
+                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRAVEL, "auto"));
+            NamedCommands.registerCommand("SetStateTrenchTravel",
+                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRENCH_TRAVEL, "auto"));
 
             pathPlannerCommandFactory = new PathPlannerCommandFactory(robotPoseSubsystem::getEstimatedPose);
+
+            // Dashboard choosers
+            RobotEnvironment.initAllianceChooser();
 
             // Dashboard commands (clickable buttons in Elastic Dashboard)
             SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());
@@ -289,10 +301,10 @@ public class RobotContainer {
             return Commands.none();
         }
 
-        Command autoCommand = pathPlannerCommandFactory.createAutoCommandForPosition(RobotEnvironment.getAlliance().get(),
-                RobotEnvironment.getLocation().getAsInt());
+        Alliance alliance = RobotEnvironment.getAlliance().orElse(Alliance.Blue);
+        String   autoName = pathPlannerCommandFactory.getSelectedAutoName();
 
-        return autoCommand;
+        return pathPlannerCommandFactory.createAutoCommand(alliance, autoName);
     }
 
     /**

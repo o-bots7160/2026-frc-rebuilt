@@ -3,6 +3,8 @@ package frc.robot.shared.config;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -16,15 +18,35 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class RobotEnvironment {
 
-    private static boolean fmsAttachedCached = false;
+    private static final String                   ALLIANCE_CHOOSER_AUTO   = "Auto (FMS)";
 
-    private static boolean autonomousCached  = false;
+    private static final String                   ALLIANCE_CHOOSER_BLUE_1 = "Blue 1";
 
-    private static boolean teleopCached      = false;
+    private static final String                   ALLIANCE_CHOOSER_BLUE_2 = "Blue 2";
 
-    private static boolean disabledCached    = true;
+    private static final String                   ALLIANCE_CHOOSER_BLUE_3 = "Blue 3";
 
-    private static double  matchTimeCached   = -1.0;
+    private static final String                   ALLIANCE_CHOOSER_RED_1  = "Red 1";
+
+    private static final String                   ALLIANCE_CHOOSER_RED_2  = "Red 2";
+
+    private static final String                   ALLIANCE_CHOOSER_RED_3  = "Red 3";
+
+    private static LoggedDashboardChooser<String> allianceChooser;
+
+    private static Optional<Alliance>             allianceCached          = Optional.empty();
+
+    private static OptionalInt                    locationCached          = OptionalInt.empty();
+
+    private static boolean                        fmsAttachedCached       = false;
+
+    private static boolean                        autonomousCached        = false;
+
+    private static boolean                        teleopCached            = false;
+
+    private static boolean                        disabledCached          = true;
+
+    private static double                         matchTimeCached         = -1.0;
 
     /**
      * Refreshes cached environment state once per robot loop.
@@ -39,6 +61,8 @@ public final class RobotEnvironment {
         teleopCached      = DriverStation.isTeleop();
         disabledCached    = DriverStation.isDisabled();
         matchTimeCached   = DriverStation.getMatchTime();
+        allianceCached    = resolveAlliance();
+        locationCached    = resolveLocation();
     }
 
     /**
@@ -72,27 +96,48 @@ public final class RobotEnvironment {
     }
 
     /**
-     * Returns the current alliance color from the Driver Station.
+     * Returns the current alliance color, resolved from the FMS or dashboard override.
      * <p>
-     * The value may be empty early in the match lifecycle or in simulation before an alliance is selected.
+     * When the FMS is attached its alliance always wins. When the FMS is absent the dashboard {@code Alliance Chooser} is consulted: selecting "Blue"
+     * or "Red" forces that alliance, while "Auto (FMS)" falls through to {@link DriverStation#getAlliance()}. The resolved value is cached per cycle
+     * by {@link #refreshCycle()} so all consumers in the same loop see a consistent answer.
      * </p>
      *
      * @return optional alliance color
      */
     public static Optional<Alliance> getAlliance() {
-        return DriverStation.getAlliance();
+        return allianceCached;
+    }
+
+    /**
+     * Initializes the alliance dashboard chooser with Auto and alliance/station options.
+     * <p>
+     * Call this once during {@code RobotContainer} construction. The chooser is automatically published to {@code SmartDashboard/Alliance} by the
+     * {@link LoggedDashboardChooser} constructor.
+     * </p>
+     */
+    public static void initAllianceChooser() {
+        allianceChooser = new LoggedDashboardChooser<>("Alliance");
+        allianceChooser.addDefaultOption(ALLIANCE_CHOOSER_AUTO, ALLIANCE_CHOOSER_AUTO);
+        allianceChooser.addOption(ALLIANCE_CHOOSER_BLUE_1, ALLIANCE_CHOOSER_BLUE_1);
+        allianceChooser.addOption(ALLIANCE_CHOOSER_BLUE_2, ALLIANCE_CHOOSER_BLUE_2);
+        allianceChooser.addOption(ALLIANCE_CHOOSER_BLUE_3, ALLIANCE_CHOOSER_BLUE_3);
+        allianceChooser.addOption(ALLIANCE_CHOOSER_RED_1, ALLIANCE_CHOOSER_RED_1);
+        allianceChooser.addOption(ALLIANCE_CHOOSER_RED_2, ALLIANCE_CHOOSER_RED_2);
+        allianceChooser.addOption(ALLIANCE_CHOOSER_RED_3, ALLIANCE_CHOOSER_RED_3);
     }
 
     /**
      * Returns the driver station position number (1, 2, or 3).
      * <p>
-     * The value may be empty if the driver station has not assigned a position yet.
+     * When the FMS is attached the value comes directly from the Driver Station. When the FMS is absent the dashboard alliance chooser is consulted.
+     * The resolved value is cached per cycle by {@link #refreshCycle()}.
      * </p>
      *
      * @return optional station number
      */
     public static OptionalInt getLocation() {
-        return DriverStation.getLocation();
+        return locationCached;
     }
 
     /**
@@ -177,6 +222,64 @@ public final class RobotEnvironment {
      */
     public static void silenceJoystickConnectionWarning(boolean silence) {
         DriverStation.silenceJoystickConnectionWarning(silence);
+    }
+
+    /**
+     * Resolves the alliance from the FMS or dashboard override.
+     * <p>
+     * FMS takes priority when attached. Otherwise the dashboard chooser is consulted.
+     * </p>
+     *
+     * @return resolved alliance, or empty if undetermined
+     */
+    private static Optional<Alliance> resolveAlliance() {
+        // FMS always wins when attached.
+        if (fmsAttachedCached) {
+            return DriverStation.getAlliance();
+        }
+
+        // Consult the dashboard override when FMS is absent.
+        if (allianceChooser != null) {
+            String selected = allianceChooser.get();
+            if (selected != null && selected.startsWith("Blue")) {
+                return Optional.of(Alliance.Blue);
+            }
+            if (selected != null && selected.startsWith("Red")) {
+                return Optional.of(Alliance.Red);
+            }
+        }
+
+        // "Auto (FMS)" or no chooser — fall through to DriverStation.
+        return DriverStation.getAlliance();
+    }
+
+    /**
+     * Resolves the station position from the FMS or dashboard override.
+     * <p>
+     * FMS takes priority when attached. Otherwise the trailing digit from the dashboard chooser selection is parsed.
+     * </p>
+     *
+     * @return resolved station number, or empty if undetermined
+     */
+    private static OptionalInt resolveLocation() {
+        // FMS always wins when attached.
+        if (fmsAttachedCached) {
+            return DriverStation.getLocation();
+        }
+
+        // Parse the station number from the chooser selection (e.g., "Blue 2" → 2).
+        if (allianceChooser != null) {
+            String selected = allianceChooser.get();
+            if (selected != null && selected.length() >= 2) {
+                char lastChar = selected.charAt(selected.length() - 1);
+                if (lastChar >= '1' && lastChar <= '3') {
+                    return OptionalInt.of(lastChar - '0');
+                }
+            }
+        }
+
+        // "Auto (FMS)" or no chooser — fall through to DriverStation.
+        return DriverStation.getLocation();
     }
 
     private RobotEnvironment() {

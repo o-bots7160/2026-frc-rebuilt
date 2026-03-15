@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
@@ -45,6 +47,18 @@ public class PathPlannerCommandFactory {
     /** Maximum angular acceleration for the alignment path in radians per second squared. */
     private static final double                ALIGN_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 4 * Math.PI;
 
+    /** All auto names available for selection, in display order. */
+    private static final String[]              ALL_AUTO_NAMES                                            = {
+            "b1", "b2tb1", "b2tb3", "b3", "sine", "Default Auto" };
+
+    /**
+     * Dashboard chooser that lets drivers select which autonomous routine to run.
+     * <p>
+     * Published to {@code SmartDashboard/Auto Chooser} at construction time.
+     * </p>
+     */
+    private LoggedDashboardChooser<String>     autoChooser;
+
     /**
      * Supplier of the robot's current fused pose from odometry and vision.
      * <p>
@@ -77,19 +91,17 @@ public class PathPlannerCommandFactory {
     }
 
     /**
-     * Builds the full autonomous command for the given alliance and driver-station position.
+     * Builds the full autonomous command for the given alliance using the auto name selected on the dashboard.
      * <p>
      * The returned command sequences an alignment path (current pose to expected start) followed by the pre-loaded PathPlanner auto. If the auto has
      * no recorded starting pose the alignment step is skipped.
      * </p>
      *
-     * @param alliance         alliance color used to mirror the starting pose to the correct side of the field
-     * @param allianceLocation driver-station position number (1, 2, or 3) that selects which auto to load
+     * @param alliance alliance color used to mirror the starting pose to the correct side of the field
+     * @param autoName name of the auto to run, matching a key in the cache
      * @return composite command that first aligns then runs the auto
      */
-    public Command createAutoCommandForPosition(Alliance alliance, int allianceLocation) {
-        String          autoName           = resolveAutoName(allianceLocation);
-
+    public Command createAutoCommand(Alliance alliance, String autoName) {
         // Pull from the cache; fall back to a live load if the cache missed.
         PathPlannerAuto pathPlannerCommand = autoCache.get(autoName);
         if (pathPlannerCommand == null) {
@@ -111,19 +123,56 @@ public class PathPlannerCommandFactory {
     }
 
     /**
-     * Pre-loads every PathPlanner auto into the cache so they are ready when autonomous is enabled.
+     * Returns the auto name currently selected on the dashboard chooser.
      * <p>
-     * Iterates through driver-station positions 1–3 plus the default fallback and creates a {@link PathPlannerAuto} for each unique auto name. The
-     * cached instances are reused via {@link Command#asProxy()} in {@link #createAutoCommandForPosition} so that WPILib allows them to participate in
-     * multiple compositions.
+     * Falls back to {@code "b1"} if the chooser has not been initialized or returns null.
+     * </p>
+     *
+     * @return selected auto name
+     */
+    public String getSelectedAutoName() {
+        String selected = autoChooser.get();
+        return selected != null ? selected : "b1";
+    }
+
+    /**
+     * Builds the full autonomous command for the given alliance and driver-station position.
+     * <p>
+     * The returned command sequences an alignment path (current pose to expected start) followed by the pre-loaded PathPlanner auto. If the auto has
+     * no recorded starting pose the alignment step is skipped.
+     * </p>
+     *
+     * @param alliance         alliance color used to mirror the starting pose to the correct side of the field
+     * @param allianceLocation driver-station position number (1, 2, or 3) that selects which auto to load
+     * @return composite command that first aligns then runs the auto
+     * @deprecated use {@link #createAutoCommand(Alliance, String)} with {@link #getSelectedAutoName()} instead
+     */
+    @Deprecated
+    public Command createAutoCommandForPosition(Alliance alliance, int allianceLocation) {
+        String autoName = resolveAutoName(allianceLocation);
+        return createAutoCommand(alliance, autoName);
+    }
+
+    /**
+     * Pre-loads every PathPlanner auto into the cache and populates the dashboard chooser.
+     * <p>
+     * Loads all autos listed in {@link #ALL_AUTO_NAMES} so they are ready when autonomous is enabled. The first entry is set as the default option in
+     * the {@link LoggedDashboardChooser}. The chooser is published to {@code SmartDashboard/Auto Chooser}.
      * </p>
      */
     private void initializeAutos() {
-        int[] positions = { 1, 2, 3, 0 };
+        autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
+        boolean first = true;
+        for (String autoName : ALL_AUTO_NAMES) {
+            // Populate the dashboard chooser.
+            if (first) {
+                autoChooser.addDefaultOption(autoName, autoName);
+                first = false;
+            } else {
+                autoChooser.addOption(autoName, autoName);
+            }
 
-        for (int position : positions) {
-            String autoName = resolveAutoName(position);
-
+            // Pre-load into the cache.
             if (autoCache.containsKey(autoName)) {
                 continue;
             }

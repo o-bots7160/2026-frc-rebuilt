@@ -2184,7 +2184,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/resetEncoder",
+              "topic": "SmartDashboard/TurretSubsystem/ResetEncoder",
               "period": 0.06,
               "show_type": true,
               "maximize_button_space": false
@@ -2957,7 +2957,7 @@
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "SmartDashboard/ClimberSubsystem/resetEncoder",
+              "topic": "SmartDashboard/ClimberSubsystem/ResetEncoder",
               "period": 0.06,
               "show_type": true,
               "maximize_button_space": false
