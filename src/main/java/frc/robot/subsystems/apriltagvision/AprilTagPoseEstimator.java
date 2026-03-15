@@ -53,6 +53,7 @@ public class AprilTagPoseEstimator {
             Matrix<N3, N1> standardDeviations) {
     }
 
+    /** Huge standard deviation for single-tag rotation observations, effectively disabling rotation updates. */
     private static final double SINGLE_TAG_ROTATION_STD_DEV_RADIANS = 1.0e6;
 
     private Params               params;
@@ -67,6 +68,15 @@ public class AprilTagPoseEstimator {
      */
     public AprilTagPoseEstimator(Params params) {
         this.params = params;
+    }
+
+    /**
+     * Returns the active estimator parameters.
+     *
+     * @return current filtering and uncertainty parameters
+     */
+    public Params getParams() {
+        return params;
     }
 
     /**

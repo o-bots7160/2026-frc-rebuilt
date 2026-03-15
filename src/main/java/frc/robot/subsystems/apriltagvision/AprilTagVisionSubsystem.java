@@ -119,7 +119,14 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         }
 
         disabledPeriodicLogged = false;
-        poseEstimator.setParams(buildEstimatorParams());
+
+        // If we're not on the field, allow live-tuning the estimator parameters from the dashboard.
+        if (!isFMSAttached()) {
+            var newParams = buildEstimatorParams();
+            if (!newParams.equals(poseEstimator.getParams())) {
+                poseEstimator.setParams(newParams);
+            }
+        }
 
         // Clear reusable per-cycle buckets so we can log everything together at the end of this loop.
         allTagPoses.clear();
