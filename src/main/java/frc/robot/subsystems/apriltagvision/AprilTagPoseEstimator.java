@@ -57,6 +57,9 @@ public class AprilTagPoseEstimator {
 
     private Params               params;
 
+    /** True after the first measurement is accepted, enabling residual gating for all subsequent observations. */
+    private boolean              referencePoseInitialized = false;
+
     /**
      * Creates a new AprilTagPoseEstimator.
      *
@@ -73,6 +76,27 @@ public class AprilTagPoseEstimator {
      */
     public void setParams(Params params) {
         this.params = params;
+    }
+
+    /**
+     * Returns whether a reference pose has been established for residual gating.
+     *
+     * @return true after the first measurement has been accepted
+     */
+    public boolean isReferencePoseInitialized() {
+        return referencePoseInitialized;
+    }
+
+    /**
+     * Explicitly marks the reference pose as initialized or uninitialized.
+     * <p>
+     * Call this after a pose reset so residual gating resumes immediately, or clear it to allow the next observation through without residual checks.
+     * </p>
+     *
+     * @param initialized true to enable residual gating, false to disable until the next accepted measurement
+     */
+    public void setReferencePoseInitialized(boolean initialized) {
+        this.referencePoseInitialized = initialized;
     }
 
     /**
@@ -99,6 +123,7 @@ public class AprilTagPoseEstimator {
                 : SINGLE_TAG_ROTATION_STD_DEV_RADIANS;
 
         // Package the pose, timestamp, and uncertainty so the estimator can fuse it.
+        referencePoseInitialized = true;
         return Optional.of(new VisionMeasurement(
                 observation.pose().toPose2d(),
                 observation.timestamp(),
@@ -140,23 +165,19 @@ public class AprilTagPoseEstimator {
         }
 
         Pose2d pose2d = pose.toPose2d();
-        if (isReferencePoseInitialized(referencePose)
+        if (referencePoseInitialized
                 && pose2d.getTranslation().getDistance(referencePose.getTranslation()) > params.maxResidualTranslationMeters()) {
             return true;
         }
 
         if (observation.tagCount() > 1
-                && isReferencePoseInitialized(referencePose)
+                && referencePoseInitialized
                 && Math.abs(MathUtil.angleModulus(
                         pose2d.getRotation().minus(referencePose.getRotation()).getRadians())) > params.maxResidualRotationRadians()) {
             return true;
         }
 
         return false;
-    }
-
-    private boolean isReferencePoseInitialized(Pose2d referencePose) {
-        return referencePose != null && referencePose.getTranslation().getNorm() > 1.0e-9;
     }
 
 }
