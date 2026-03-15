@@ -694,34 +694,41 @@
             }
           },
           {
-            "title": "Inverted",
-            "x": 256.0,
+            "title": "Ready",
+            "x": 128.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/isReady",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
               "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
             }
           },
           {
-            "title": "CAN ID",
-            "x": 384.0,
+            "title": "RPM",
+            "x": 256.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/measuredRpm",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "end_angle": 140.0,
+              "max_value": 1500.0,
+              "min_value": -1500.0,
+              "number_of_labels": 8,
+              "show_pointer": true,
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
             }
           },
           {
@@ -768,7 +775,7 @@
           },
           {
             "title": "kS",
-            "x": 1024.0,
+            "x": 896.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -782,7 +789,7 @@
           },
           {
             "title": "kV",
-            "x": 1152.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -796,7 +803,7 @@
           },
           {
             "title": "kA",
-            "x": 1280.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -812,70 +819,43 @@
             "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/IntakeSubsystem/motor/AppliedVolts",
               "period": 0.06,
               "data_type": "double",
-              "min_value": -1.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
             "title": "Cmd V",
-            "x": 256.0,
+            "x": 128.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/IntakeSubsystem/motor/CommandedVolts",
               "period": 0.06,
               "data_type": "double",
-              "min_value": -1.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
-            "title": "Fwd RPM",
+            "title": "Idle RPM",
             "x": 512.0,
             "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/forwardVelocityRpm",
-              "period": 0.06,
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Rev RPM",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IntakeSubsystem/reverseVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Idle RPM",
-            "x": 1024.0,
-            "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -887,9 +867,9 @@
           },
           {
             "title": "Max RPM",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 640.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -901,9 +881,9 @@
           },
           {
             "title": "Max Accel",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 768.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -915,9 +895,9 @@
           },
           {
             "title": "Vel Tol",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 896.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -929,9 +909,9 @@
           },
           {
             "title": "Settle (s)",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -942,47 +922,40 @@
             }
           },
           {
-            "title": "RPM",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/measuredRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "start_angle": -140.0,
-              "end_angle": 140.0,
-              "min_value": -1500.0,
-              "max_value": 1500.0,
-              "number_of_labels": 8,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
-            }
-          },
-          {
-            "title": "Ready",
+            "title": "Inverted",
             "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
+            "y": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/isReady",
+              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
               "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
+            }
+          },
+          {
+            "title": "CAN ID",
+            "x": 128.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorCanId",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
             }
           },
           {
             "title": "Verbose",
-            "x": 128.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Toggle Button",
@@ -990,6 +963,34 @@
               "topic": "SmartDashboard/IntakeSubsystem/verbose",
               "period": 0.06,
               "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Fwd RPM",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IntakeSubsystem/forwardVelocityRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Rev RPM",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IntakeSubsystem/reverseVelocityRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           }
         ]
@@ -1388,41 +1389,48 @@
               "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/enabled",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
               "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
             }
           },
           {
-            "title": "Inverted",
-            "x": 256.0,
+            "title": "Ready",
+            "x": 128.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/isReady",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
               "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
             }
           },
           {
-            "title": "CAN ID",
-            "x": 384.0,
+            "title": "RPM",
+            "x": 256.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/measuredRpm",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "end_angle": 140.0,
+              "max_value": 1500.0,
+              "min_value": -1500.0,
+              "number_of_labels": 8,
+              "show_pointer": true,
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
             }
           },
           {
@@ -1469,7 +1477,7 @@
           },
           {
             "title": "kS",
-            "x": 1024.0,
+            "x": 896.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1483,7 +1491,7 @@
           },
           {
             "title": "kV",
-            "x": 1152.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1497,7 +1505,7 @@
           },
           {
             "title": "kA",
-            "x": 1280.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1513,71 +1521,43 @@
             "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/FeederSubsystem/motor/AppliedVolts",
               "period": 0.06,
               "data_type": "double",
-              "min_value": -1.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
             "title": "Cmd V",
-            "x": 256.0,
+            "x": 128.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/FeederSubsystem/motor/CommandedVolts",
               "period": 0.06,
               "data_type": "double",
-              "min_value": -1.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
-            "title": "Fwd RPM",
+            "title": "Idle RPM",
             "x": 512.0,
             "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/forwardVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Rev RPM",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/FeederSubsystem/reverseVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Idle RPM",
-            "x": 1024.0,
-            "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1589,9 +1569,9 @@
           },
           {
             "title": "Max RPM",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 640.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1603,9 +1583,9 @@
           },
           {
             "title": "Max Accel",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 768.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1617,9 +1597,9 @@
           },
           {
             "title": "Vel Tol",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 896.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1631,9 +1611,9 @@
           },
           {
             "title": "Settle (s)",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1644,47 +1624,40 @@
             }
           },
           {
-            "title": "RPM",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/measuredRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "start_angle": -140.0,
-              "end_angle": 140.0,
-              "min_value": -1500.0,
-              "max_value": 1500.0,
-              "number_of_labels": 8,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
-            }
-          },
-          {
-            "title": "Ready",
+            "title": "Inverted",
             "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
+            "y": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/isReady",
+              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
               "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
+            }
+          },
+          {
+            "title": "CAN ID",
+            "x": 128.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorCanId",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
             }
           },
           {
             "title": "Verbose",
-            "x": 128.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Toggle Button",
@@ -1692,6 +1665,34 @@
               "topic": "SmartDashboard/FeederSubsystem/verbose",
               "period": 0.06,
               "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Fwd RPM",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/FeederSubsystem/forwardVelocityRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Rev RPM",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/FeederSubsystem/reverseVelocityRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           }
         ]
@@ -1713,41 +1714,48 @@
               "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/enabled",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
               "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
             }
           },
           {
-            "title": "Inverted",
-            "x": 256.0,
+            "title": "Ready",
+            "x": 128.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/isReady",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
               "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
             }
           },
           {
-            "title": "CAN ID",
-            "x": 384.0,
+            "title": "RPM",
+            "x": 256.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Radial Gauge",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/measuredRpm",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "end_angle": 140.0,
+              "max_value": 1000.0,
+              "min_value": -1000.0,
+              "number_of_labels": 8,
+              "show_pointer": true,
+              "show_ticks": true,
+              "start_angle": -140.0,
+              "wrap_value": false
             }
           },
           {
@@ -1794,7 +1802,7 @@
           },
           {
             "title": "kS",
-            "x": 1024.0,
+            "x": 896.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1808,7 +1816,7 @@
           },
           {
             "title": "kV",
-            "x": 1152.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1822,7 +1830,7 @@
           },
           {
             "title": "kA",
-            "x": 1280.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -1838,71 +1846,43 @@
             "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/IndexerSubsystem/motor/AppliedVolts",
               "period": 0.06,
               "data_type": "double",
-              "min_value": -1.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
             "title": "Cmd V",
-            "x": 256.0,
+            "x": 128.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/IndexerSubsystem/motor/CommandedVolts",
               "period": 0.06,
               "data_type": "double",
-              "min_value": -1.0,
-              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
+              "max_value": 13.0,
+              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
           {
-            "title": "Feed RPM",
+            "title": "Idle RPM",
             "x": 512.0,
             "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/feedVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Rev RPM",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/reverseVelocityRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Idle RPM",
-            "x": 1024.0,
-            "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1914,9 +1894,9 @@
           },
           {
             "title": "Max RPM",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 640.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1928,9 +1908,9 @@
           },
           {
             "title": "Max Accel",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 768.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1942,9 +1922,9 @@
           },
           {
             "title": "Vel Tol",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 896.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1956,9 +1936,9 @@
           },
           {
             "title": "Settle (s)",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -1969,48 +1949,82 @@
             }
           },
           {
-            "title": "RPM",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/measuredRpm",
-              "period": 0.06,
-              "data_type": "double",
-              "start_angle": -140.0,
-              "end_angle": 140.0,
-              "min_value": -1000.0,
-              "max_value": 1000.0,
-              "number_of_labels": 8,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
-            }
-          },
-          {
-            "title": "Ready",
+            "title": "Inverted",
             "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
+            "y": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/isReady",
+              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
-              "true_color": 4283215696,
               "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
+            }
+          },
+          {
+            "title": "CAN ID",
+            "x": 128.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorCanId",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Verbose",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "SmartDashboard/IndexerSubsystem/verbose",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Feed RPM",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IndexerSubsystem/feedVelocityRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Rev RPM",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "SmartDashboard/IndexerSubsystem/reverseVelocityRpm",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           },
           {
             "title": "Unjam Fwd (s)",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 256.0,
+            "x": 640.0,
+            "y": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2021,28 +2035,15 @@
           },
           {
             "title": "Unjam Rev (s)",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 256.0,
+            "x": 768.0,
+            "y": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
               "topic": "SmartDashboard/IndexerSubsystem/unjamReverseDurationSeconds",
               "period": 0.06,
               "show_submit_button": true
-            }
-          },
-          {
-            "title": "Verbose",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/verbose",
-              "period": 0.06,
-              "data_type": "boolean"
             }
           }
         ]
@@ -2435,8 +2436,8 @@
           },
           {
             "title": "Inverted",
-            "x": 256.0,
-            "y": 0.0,
+            "x": 0.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -2452,8 +2453,8 @@
           },
           {
             "title": "CAN ID",
-            "x": 384.0,
-            "y": 0.0,
+            "x": 128.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -2552,7 +2553,7 @@
             "title": "Applied V",
             "x": 0.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
@@ -2568,9 +2569,9 @@
           },
           {
             "title": "Cmd V",
-            "x": 256.0,
+            "x": 128.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Voltage View",
             "properties": {
@@ -2588,7 +2589,7 @@
             "title": "Idle RPM",
             "x": 512.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2600,9 +2601,9 @@
           },
           {
             "title": "Max RPM",
-            "x": 768.0,
+            "x": 640.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2614,9 +2615,9 @@
           },
           {
             "title": "Max Accel",
-            "x": 1024.0,
+            "x": 768.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2628,9 +2629,9 @@
           },
           {
             "title": "Vel Tol",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 896.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2642,9 +2643,9 @@
           },
           {
             "title": "Settle (s)",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2656,8 +2657,8 @@
           },
           {
             "title": "RPM",
-            "x": 512.0,
-            "y": 256.0,
+            "x": 256.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Radial Gauge",
@@ -2677,9 +2678,9 @@
           },
           {
             "title": "Ready",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -2694,9 +2695,9 @@
           },
           {
             "title": "Dist Mult",
-            "x": 1024.0,
-            "y": 256.0,
-            "width": 256.0,
+            "x": 1152.0,
+            "y": 128.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2708,8 +2709,8 @@
           },
           {
             "title": "Verbose",
-            "x": 128.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Toggle Button",
