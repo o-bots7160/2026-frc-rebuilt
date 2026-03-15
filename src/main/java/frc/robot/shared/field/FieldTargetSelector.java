@@ -64,6 +64,28 @@ public class FieldTargetSelector {
     }
 
     /**
+     * Returns a human-readable name for the active field target based on the robot's current zone and alliance.
+     * <p>
+     * Use this for operator telemetry so drivers can see whether the turret is aiming at the hub or a rally point.
+     * </p>
+     *
+     * @return display name of the active target: "Hub", "Left Rally", or "Right Rally"
+     */
+    public String getActiveTargetName() {
+        Pose2d  robotPose     = robotPoseSupplier.get();
+        boolean isRedAlliance = isRedAlliance();
+        double  robotX        = robotPose.getX();
+
+        if (isInAllianceZone(robotX, isRedAlliance)) {
+            return "Hub";
+        }
+
+        double leftDistanceY  = Math.abs(robotPose.getY() - config.leftZonePositionYMeters);
+        double rightDistanceY = Math.abs(robotPose.getY() - config.rightZonePositionYMeters);
+        return leftDistanceY <= rightDistanceY ? "Left Rally" : "Right Rally";
+    }
+
+    /**
      * Determines whether the robot is in its own alliance zone.
      *
      * @param robotX        robot's current X position in meters

@@ -164,8 +164,8 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
         }
 
         log.recordOutput("isReady", isReady());
-        log.recordVerboseOutput("measuredRpm", getMeasuredVelocityRpm());
-        log.recordVerboseOutput("targetRpm", getTargetVelocityRpm());
+        log.recordOutput("measuredRpm", getMeasuredVelocityRpm());
+        log.recordOutput("targetRpm", getTargetVelocityRpm());
     }
 
     /**

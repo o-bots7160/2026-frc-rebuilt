@@ -172,13 +172,17 @@ public class RobotContainer {
             feederSubsystem             = new FeederSubsystem(subsystemsConfig.feederSubsystem);
             intakeSubsystem             = new IntakeSubsystem(subsystemsConfig.intakeSubsystem);
             harvesterSubsystem          = new HarvesterSubsystem(subsystemsConfig.harvesterSubsystem);
-            gameplayStateSubsystem      = new GameplayStateSubsystem(subsystemsConfig.gameplayStateSubsystem);
 
-            // Cross-subsystem utilities
+            // Cross-subsystem utilities (before gameplayState so targeting suppliers are available)
             fieldTargetSelector         = new FieldTargetSelector(
                     subsystemsConfig.turretSubsystem.fieldTargets,
                     robotPoseSubsystem::getEstimatedPose,
                     RobotEnvironment::getAlliance);
+
+            gameplayStateSubsystem      = new GameplayStateSubsystem(
+                    subsystemsConfig.gameplayStateSubsystem,
+                    () -> robotPoseSubsystem.getDistanceToPointMeters(fieldTargetSelector.getActiveTargetPosition()),
+                    fieldTargetSelector::getActiveTargetName);
 
             // Command factories
             driveBaseCommandFactory     = new DriveBaseSubsystemCommandFactory(driveBaseSubsystem);

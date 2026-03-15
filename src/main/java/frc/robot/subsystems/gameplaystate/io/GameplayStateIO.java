@@ -61,6 +61,16 @@ public interface GameplayStateIO {
          * True when the endgame threshold has been reached but auto-transition is disabled.
          */
         public boolean endgameSuggested              = false;
+
+        /**
+         * Straight-line distance from the robot to the active field target in meters.
+         */
+        public double  distanceToTargetMeters        = 0.0;
+
+        /**
+         * Human-readable name of the active field target (e.g., "Hub", "Left Rally", "Right Rally").
+         */
+        public String  activeTargetName              = "Unknown";
     }
 
     /**

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.gameplaystate;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractSubsystem;
@@ -30,6 +32,10 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
 
     private final GameplayStateIOInputsAutoLogged inputs           = new GameplayStateIOInputsAutoLogged();
 
+    private final Supplier<Double>                distanceToTargetMetersSupplier;
+
+    private final Supplier<String>                activeTargetNameSupplier;
+
     private GameplayState                         currentState     = GameplayState.IDLE;
 
     private GameplayState                         requestedState   = GameplayState.IDLE;
@@ -44,17 +50,26 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
     private MatchPhase                            previousPhase    = MatchPhase.DISABLED;
 
     /**
-     * Creates the Gameplay State subsystem.
+     * Creates the Gameplay State subsystem with targeting telemetry suppliers.
      *
-     * @param config configuration values for auto-transition behavior and endgame thresholds
+     * @param config                          configuration values for auto-transition behavior and endgame thresholds
+     * @param distanceToTargetMetersSupplier  supplier returning the distance from the robot to the active field target in meters
+     * @param activeTargetNameSupplier        supplier returning the human-readable name of the active field target
      */
-    public GameplayStateSubsystem(GameplayStateSubsystemConfig config) {
+    public GameplayStateSubsystem(
+            GameplayStateSubsystemConfig config,
+            Supplier<Double> distanceToTargetMetersSupplier,
+            Supplier<String> activeTargetNameSupplier) {
         super(config);
 
-        this.io = this::updateInputs;
+        this.io                             = this::updateInputs;
+        this.distanceToTargetMetersSupplier  = distanceToTargetMetersSupplier != null ? distanceToTargetMetersSupplier : () -> 0.0;
+        this.activeTargetNameSupplier        = activeTargetNameSupplier != null ? activeTargetNameSupplier : () -> "Unknown";
 
         // Publish initial state so the NetworkTables topic exists before the first periodic cycle.
         SmartDashboard.putString("GameplayStateSubsystem/CurrentState", currentState.getDisplayName());
+        SmartDashboard.putNumber("GameplayStateSubsystem/DistanceToTargetMeters", 0.0);
+        SmartDashboard.putString("GameplayStateSubsystem/ActiveTarget", "Unknown");
 
         if (isSubsystemDisabled()) {
             log.verbose("GameplayStateSubsystem disabled; skipping initialization.");
@@ -81,6 +96,8 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
 
         // Publish operator-critical state to SmartDashboard for the Elastic Dashboard.
         SmartDashboard.putString("GameplayStateSubsystem/CurrentState", currentState.getDisplayName());
+        SmartDashboard.putNumber("GameplayStateSubsystem/DistanceToTargetMeters", distanceToTargetMetersSupplier.get());
+        SmartDashboard.putString("GameplayStateSubsystem/ActiveTarget", activeTargetNameSupplier.get());
     }
 
     /**
@@ -205,6 +222,8 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
         inputs.autoTransitionEnabled        = config.getAutoTransitionEnabled();
         inputs.endgameAutoTransitionEnabled = config.getEndgameAutoTransitionEnabled();
         inputs.endgameSuggested             = endgameSuggested;
+        inputs.distanceToTargetMeters       = distanceToTargetMetersSupplier.get();
+        inputs.activeTargetName             = activeTargetNameSupplier.get();
     }
 
     private void refreshTunables() {
