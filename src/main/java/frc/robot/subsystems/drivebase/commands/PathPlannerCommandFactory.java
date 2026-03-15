@@ -187,7 +187,7 @@ public class PathPlannerCommandFactory {
     private String resolveAutoName(int allianceLocation) {
         return switch (allianceLocation) {
         case 1 -> "b1";
-        case 2 -> "b2tb1";
+        case 2 -> "sine";
         case 3 -> "b3";
         default -> "Default Auto";
         };
