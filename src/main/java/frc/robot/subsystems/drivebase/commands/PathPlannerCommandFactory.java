@@ -49,7 +49,7 @@ public class PathPlannerCommandFactory {
 
     /** All auto names available for selection, in display order. */
     private static final String[]              ALL_AUTO_NAMES                                            = {
-            "b1", "b2tb1", "b2tb3", "b3", "sine", "Default Auto" };
+            "b1", "b2tb1", "b2tb3", "b3", "sine", "Default Auto", "bandharvest" };
 
     /**
      * Dashboard chooser that lets drivers select which autonomous routine to run.
