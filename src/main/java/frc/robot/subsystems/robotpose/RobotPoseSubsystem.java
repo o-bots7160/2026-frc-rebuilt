@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shared.subsystems.AbstractSubsystem;
@@ -48,6 +49,10 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
     private Pose2d                             lastVisionPose             = new Pose2d();
 
     private double                             lastVisionTimestampSeconds = Double.NaN;
+
+    private double                             lastVisionLinearStdDevMeters = Double.POSITIVE_INFINITY;
+
+    private double                             lastVisionAngularStdDevRadians = Double.POSITIVE_INFINITY;
 
     private boolean                            hasVisionMeasurement       = false;
 
@@ -138,6 +143,10 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
         // Always record the measurement for telemetry regardless of fusion state.
         this.lastVisionPose             = robotPose;
         this.lastVisionTimestampSeconds = timestampSeconds;
+        this.lastVisionLinearStdDevMeters = Math.max(
+                standardDeviations.get(0, 0),
+                standardDeviations.get(1, 0));
+        this.lastVisionAngularStdDevRadians = standardDeviations.get(2, 0);
         this.hasVisionMeasurement       = true;
 
         if (!enableVisionFusion) {
@@ -166,6 +175,8 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
         this.estimatedPose              = pose;
         this.lastVisionPose             = pose;
         this.lastVisionTimestampSeconds = Double.NaN;
+        this.lastVisionLinearStdDevMeters = Double.POSITIVE_INFINITY;
+        this.lastVisionAngularStdDevRadians = Double.POSITIVE_INFINITY;
         this.hasVisionMeasurement       = false;
 
         odometryResetConsumer.accept(pose);
@@ -186,6 +197,23 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
 
         if (!hasVisionMeasurement) {
             reportWarning("resetPoseFromVision skipped: no vision measurement received yet.", false);
+            return;
+        }
+
+        double visionAgeSeconds = Timer.getFPGATimestamp() - lastVisionTimestampSeconds;
+        if (Double.isNaN(lastVisionTimestampSeconds)
+                || visionAgeSeconds > config.getMaximumVisionResetAgeSeconds()) {
+            reportWarning("resetPoseFromVision skipped: latest vision measurement is stale.", false);
+            return;
+        }
+
+        if (lastVisionLinearStdDevMeters > config.getMaximumVisionResetLinearStdDevMeters()) {
+            reportWarning("resetPoseFromVision skipped: latest vision measurement is too uncertain in translation.", false);
+            return;
+        }
+
+        if (lastVisionAngularStdDevRadians > config.getMaximumVisionResetAngularStdDevRadians()) {
+            reportWarning("resetPoseFromVision skipped: latest vision measurement is too uncertain in rotation.", false);
             return;
         }
 
@@ -224,6 +252,8 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
         inputs.odometryOnlyPose           = odometryOnlyPose;
         inputs.lastVisionPose             = lastVisionPose;
         inputs.lastVisionTimestampSeconds = lastVisionTimestampSeconds;
+        inputs.lastVisionLinearStdDevMeters = lastVisionLinearStdDevMeters;
+        inputs.lastVisionAngularStdDevRadians = lastVisionAngularStdDevRadians;
         inputs.hasVisionMeasurement       = hasVisionMeasurement;
         inputs.enableVisionFusion         = enableVisionFusion;
     }

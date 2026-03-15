@@ -56,6 +56,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /** Filters and weights raw pose observations before forwarding them to the consumer. */
     private final AprilTagPoseEstimator       poseEstimator;
 
+    /** Reference pose used for simulation camera placement and odometry-vs-vision residual gating. */
+    private final Supplier<Pose2d>            referencePoseSupplier;
+
     /** Reusable per-cycle list to avoid allocating new lists every loop. */
     private final List<Pose3d> allTagPoses      = new ArrayList<>();
 
@@ -80,27 +83,23 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
      * @param config       configuration for vision processing and tunable thresholds
      * @param fieldLayout  AprilTag field layout in meters
      * @param consumer     consumer that receives accepted pose measurements with standard deviations
-     * @param poseSupplier supplier for the current robot pose in meters and radians (used for simulation). Use raw odometry or ground-truth poses,
-     *                     not the fused robot state pose, to avoid feedback loops in sim.
+     * @param referencePoseSupplier supplier for the current robot pose in meters and radians. Use raw odometry or ground-truth poses, not the fused
+     *                     robot state pose, so simulation and residual gating do not create feedback loops.
      */
     public AprilTagVisionSubsystem(
             AprilTagVisionSubsystemConfig config,
             AprilTagFieldLayout fieldLayout,
             VisionMeasurementConsumer consumer,
-            Supplier<Pose2d> poseSupplier) {
+            Supplier<Pose2d> referencePoseSupplier) {
 
         super(config);
-        this.consumer      = consumer;
-        this.fieldLayout   = fieldLayout;
+        this.consumer              = consumer;
+        this.fieldLayout           = fieldLayout;
+        this.referencePoseSupplier = referencePoseSupplier != null ? referencePoseSupplier : Pose2d::new;
 
-        this.poseEstimator = new AprilTagPoseEstimator(new AprilTagPoseEstimator.Params(
-                fieldLayout.getFieldLength(),
-                fieldLayout.getFieldWidth(),
-                config.getMaximumAmbiguity(),
-                config.getLinearStandardDeviationBaseline(),
-                config.getAngularStandardDeviationBaseline()));
+        this.poseEstimator         = new AprilTagPoseEstimator(buildEstimatorParams());
 
-        this.cameras       = createCameras(config, fieldLayout, poseSupplier);
+        this.cameras               = createCameras(config, fieldLayout, this.referencePoseSupplier);
 
         log.info("Initialized with " + cameras.size() + " camera(s)");
     }
@@ -120,6 +119,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         }
 
         disabledPeriodicLogged = false;
+        poseEstimator.setParams(buildEstimatorParams());
 
         // Clear reusable per-cycle buckets so we can log everything together at the end of this loop.
         allTagPoses.clear();
@@ -236,12 +236,14 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         // Convert the observed tag IDs into field poses for logging.
         collectTagPoses(cameraInputs.tagIds, tagPoses);
 
+        Pose2d referencePose = referencePoseSupplier.get();
+
         for (var poseObservation : cameraInputs.poseObservations) {
             // Track every raw robot pose we saw, even if we reject it later.
             robotPoses.add(poseObservation.pose());
 
             // Let the estimator decide if this observation is trustworthy.
-            var maybeMeasurement = poseEstimator.estimate(poseObservation);
+            var maybeMeasurement = poseEstimator.estimate(poseObservation, referencePose);
             if (maybeMeasurement.isEmpty()) {
                 // Store rejected poses so we can diagnose filtering issues.
                 rejectedPoses.add(poseObservation.pose());
@@ -327,6 +329,17 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             log.recordOutput("Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
             log.recordOutput("Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
         }
+    }
+
+    private AprilTagPoseEstimator.Params buildEstimatorParams() {
+        return new AprilTagPoseEstimator.Params(
+                fieldLayout.getFieldLength(),
+                fieldLayout.getFieldWidth(),
+                config.getMaximumAmbiguity(),
+                config.getLinearStandardDeviationBaseline(),
+                config.getAngularStandardDeviationBaseline(),
+                config.getMaximumResidualTranslationMeters(),
+                config.getMaximumResidualRotationRadians());
     }
 
 }

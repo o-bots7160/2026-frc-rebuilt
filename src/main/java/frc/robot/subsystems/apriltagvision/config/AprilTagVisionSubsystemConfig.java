@@ -84,6 +84,16 @@ public class AprilTagVisionSubsystemConfig extends AbstractSubsystemConfig {
     public double                       maximumAmbiguity;
 
     /**
+     * Maximum allowed translation delta between odometry and a vision pose before the observation is rejected.
+     */
+    public double                       maximumResidualTranslationMeters = 1.0;
+
+    /**
+     * Maximum allowed heading delta between odometry and a multi-tag vision pose before the observation is rejected.
+     */
+    public double                       maximumResidualRotationDegrees   = 30.0;
+
+    /**
      * Returns the angular standard deviation baseline for pose estimation.
      *
      * @return angular std dev baseline (radians)
@@ -108,6 +118,24 @@ public class AprilTagVisionSubsystemConfig extends AbstractSubsystemConfig {
      */
     public double getMaximumAmbiguity() {
         return readTunableNumber("maximumAmbiguity", maximumAmbiguity);
+    }
+
+    /**
+     * Returns the maximum allowed translation residual for a vision observation.
+     *
+     * @return translation residual threshold in meters
+     */
+    public double getMaximumResidualTranslationMeters() {
+        return readTunableNumber("maximumResidualTranslationMeters", maximumResidualTranslationMeters);
+    }
+
+    /**
+     * Returns the maximum allowed rotation residual for a multi-tag vision observation.
+     *
+     * @return rotation residual threshold in radians
+     */
+    public double getMaximumResidualRotationRadians() {
+        return readTunableDegreesAsRadians("maximumResidualRotationDegrees", maximumResidualRotationDegrees);
     }
 
     /**

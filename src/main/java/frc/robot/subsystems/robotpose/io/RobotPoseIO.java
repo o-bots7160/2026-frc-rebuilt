@@ -38,6 +38,16 @@ public interface RobotPoseIO {
         public double  lastVisionTimestampSeconds = Double.NaN;
 
         /**
+         * Largest translational standard deviation of the last vision pose in meters.
+         */
+        public double  lastVisionLinearStdDevMeters = Double.POSITIVE_INFINITY;
+
+        /**
+         * Rotational standard deviation of the last vision pose in radians.
+         */
+        public double  lastVisionAngularStdDevRadians = Double.POSITIVE_INFINITY;
+
+        /**
          * True when a vision measurement has been received.
          */
         public boolean hasVisionMeasurement       = false;

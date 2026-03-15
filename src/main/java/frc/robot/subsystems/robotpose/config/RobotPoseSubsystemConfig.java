@@ -17,6 +17,21 @@ public class RobotPoseSubsystemConfig extends AbstractSubsystemConfig {
     public boolean enableVisionFusion = true;
 
     /**
+     * Maximum age of a vision sample that is allowed to seed the robot pose.
+     */
+    public double  maximumVisionResetAgeSeconds           = 0.5;
+
+    /**
+     * Maximum translational standard deviation allowed when seeding from vision.
+     */
+    public double  maximumVisionResetLinearStdDevMeters   = 0.35;
+
+    /**
+     * Maximum rotational standard deviation, in degrees, allowed when seeding from vision.
+     */
+    public double  maximumVisionResetAngularStdDevDegrees = 15.0;
+
+    /**
      * Returns whether vision fusion should be enabled.
      * <p>
      * Disable this when running without cameras or while diagnosing vision issues. When disabled, vision measurements are still recorded for logging
@@ -27,5 +42,32 @@ public class RobotPoseSubsystemConfig extends AbstractSubsystemConfig {
      */
     public boolean getEnableVisionFusion() {
         return readTunableBoolean("enableVisionFusion", enableVisionFusion);
+    }
+
+    /**
+     * Returns the maximum age of a vision sample that may be used for a pose reset.
+     *
+     * @return age threshold in seconds
+     */
+    public double getMaximumVisionResetAgeSeconds() {
+        return readTunableNumber("maximumVisionResetAgeSeconds", maximumVisionResetAgeSeconds);
+    }
+
+    /**
+     * Returns the maximum translational uncertainty allowed for a vision-based reset.
+     *
+     * @return translational standard deviation threshold in meters
+     */
+    public double getMaximumVisionResetLinearStdDevMeters() {
+        return readTunableNumber("maximumVisionResetLinearStdDevMeters", maximumVisionResetLinearStdDevMeters);
+    }
+
+    /**
+     * Returns the maximum rotational uncertainty allowed for a vision-based reset.
+     *
+     * @return rotational standard deviation threshold in radians
+     */
+    public double getMaximumVisionResetAngularStdDevRadians() {
+        return readTunableDegreesAsRadians("maximumVisionResetAngularStdDevDegrees", maximumVisionResetAngularStdDevDegrees);
     }
 }

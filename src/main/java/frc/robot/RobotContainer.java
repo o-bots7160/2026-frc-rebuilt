@@ -164,9 +164,8 @@ public class RobotContainer {
                     subsystemsConfig.aprilTagVisionSubsystem,
                     aprilTagFieldLayoutSupplier.get(),
                     robotPoseSubsystem::addVisionMeasurement,
-                    // This is only for simulation purposes, in real life the vision subsystem will feed directly into the robot state subsystem and
-                    // not reset odometry
-                    driveBaseSubsystem::getOdometryPose);
+                    // Use odometry-only pose so sim and residual gating do not compare vision against an already vision-corrected estimate.
+                    driveBaseSubsystem::getOdometryOnlyPose);
             driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
             climberSubsystem            = new ClimberSubsystem(subsystemsConfig.climberSubsystem);
             feederSubsystem             = new FeederSubsystem(subsystemsConfig.feederSubsystem);
