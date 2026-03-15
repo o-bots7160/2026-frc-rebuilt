@@ -36,12 +36,28 @@
         "y": 0.5
       },
       "prevControl": {
-        "x": 3.25,
+        "x": 2.625,
+        "y": 0.5000000000000001
+      },
+      "nextControl": {
+        "x": 3.75,
         "y": 0.5
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.0,
+        "y": 1.0
+      },
+      "prevControl": {
+        "x": 2.75,
+        "y": 1.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "b3tb"
     }
   ],
   "rotationTargets": [
@@ -51,6 +67,10 @@
     },
     {
       "waypointRelativePos": 0.9974975585937473,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2,
       "rotationDegrees": 0.0
     }
   ],
@@ -67,7 +87,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -118.00000000000001
   },
   "reversed": false,
   "folder": "b3",

@@ -7,13 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "MoveHarvesterToPositionCommand"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ContinuousIntakeCommand"
+            "name": "SetStateHarvestReady"
           }
         },
         {
@@ -49,13 +43,19 @@
         {
           "type": "named",
           "data": {
-            "name": "SpinDownShooterCommand"
+            "name": "SetStateHarvestReady"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "b3 to outpost"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
           }
         },
         {
@@ -79,7 +79,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SpinDownShooterCommand"
+            "name": "SetStateHarvestReady"
           }
         }
       ]
