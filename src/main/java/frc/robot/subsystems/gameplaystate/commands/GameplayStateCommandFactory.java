@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.commands.AbstractSubsystemCommandFactory;
-import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
 import frc.robot.subsystems.gameplaystate.GameplayState;
 import frc.robot.subsystems.gameplaystate.GameplayStateSubsystem;
@@ -38,7 +37,8 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
 
     private final HarvesterSubsystemCommandFactory harvesterCommandFactory;
 
-    private final ClimberSubsystemCommandFactory   climberCommandFactory;
+    // TODO: Re-enable climber for post-first-competition
+    // private final ClimberSubsystemCommandFactory   climberCommandFactory;
 
     /** Supplies the distance from the robot to the active scoring target in meters. */
     private final Supplier<Double>                 distanceToTargetMetersSupplier;
@@ -53,7 +53,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @param intakeCommandFactory           factory for intake roller commands
      * @param turretCommandFactory           factory for turret aiming commands
      * @param harvesterCommandFactory        factory for harvester arm commands
-     * @param climberCommandFactory          factory for climber commands
      * @param distanceToTargetMetersSupplier supplier returning the distance from the robot to the active scoring target in meters
      */
     public GameplayStateCommandFactory(
@@ -64,7 +63,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
             IntakeSubsystemCommandFactory intakeCommandFactory,
             TurretSubsystemCommandFactory turretCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            ClimberSubsystemCommandFactory climberCommandFactory,
             Supplier<Double> distanceToTargetMetersSupplier) {
         super(subsystem);
         this.shooterCommandFactory          = shooterCommandFactory;
@@ -73,7 +71,8 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         this.intakeCommandFactory           = intakeCommandFactory;
         this.turretCommandFactory           = turretCommandFactory;
         this.harvesterCommandFactory        = harvesterCommandFactory;
-        this.climberCommandFactory          = climberCommandFactory;
+        // TODO: Re-enable climber for post-first-competition
+        // this.climberCommandFactory          = climberCommandFactory;
         this.distanceToTargetMetersSupplier = distanceToTargetMetersSupplier;
     }
 
@@ -177,10 +176,10 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     }
 
     /**
-     * Builds the CLIMB_READY state command group: stops ball-path mechanisms and prepares the climber.
+     * Builds the CLIMB_READY state command group: stops ball-path mechanisms and stows the harvester.
      * <p>
-     * The shooter, indexer, feeder, and intake all idle while the harvester stows to clear the climber's path. The climber is commanded to its deploy
-     * position.
+     * The climber command is temporarily removed for the first competition. All other mechanisms idle or stow to clear
+     * the climber path.
      * </p>
      *
      * @return parallel command group that prepares the robot for climbing
@@ -191,9 +190,10 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 indexerCommandFactory.createIdleCommand(),
                 feederCommandFactory.createIdleCommand(),
                 intakeCommandFactory.createIdleCommand(),
-                harvesterCommandFactory.createStowCommand(),
-                climberCommandFactory.createMoveToPositionCommand(
-                        climberCommandFactory.getSubsystem().getConfig()::getMaximumSetpointDegrees))
+                harvesterCommandFactory.createStowCommand())
+                // TODO: Re-enable climber for post-first-competition
+                // climberCommandFactory.createMoveToPositionCommand(
+                //         climberCommandFactory.getSubsystem().getConfig()::getMaximumSetpointDegrees))
                 .withName("GameplayState-ClimbReady");
     }
 

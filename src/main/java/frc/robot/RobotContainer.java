@@ -21,13 +21,15 @@ import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.SubsystemsConfig;
 import frc.robot.shared.field.FieldTargetSelector;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionSubsystem;
-import frc.robot.subsystems.climber.ClimberSubsystem;
-import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
+// TODO: Re-enable climber for post-first-competition
+// import frc.robot.subsystems.climber.ClimberSubsystem;
+// import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
-import frc.robot.subsystems.drivercameravision.DriverCameraSubsystem;
-import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
+// TODO: Re-enable driver camera for post-first-competition
+// import frc.robot.subsystems.drivercameravision.DriverCameraSubsystem;
+// import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
 import frc.robot.subsystems.gameplaystate.GameplayState;
@@ -51,94 +53,96 @@ import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 public class RobotContainer {
 
     /** Deserialized subsystem configuration loaded from the environment-specific JSON file. */
-    private final SubsystemsConfig                    subsystemsConfig;
+    private final SubsystemsConfig                 subsystemsConfig;
 
     /** Field layout configuration that supplies the current AprilTag positions. */
-    private final FieldLayoutConfig                   fieldLayoutConfig;
+    private final FieldLayoutConfig                fieldLayoutConfig;
 
     /** Lazily supplies the loaded {@link AprilTagFieldLayout} for vision and navigation. */
-    private final Supplier<AprilTagFieldLayout>       aprilTagFieldLayoutSupplier;
+    private final Supplier<AprilTagFieldLayout>    aprilTagFieldLayoutSupplier;
 
     /** Swerve drive subsystem responsible for chassis motion and odometry. */
     // Subsystems
-    private final DriveBaseSubsystem                  driveBaseSubsystem;
+    private final DriveBaseSubsystem               driveBaseSubsystem;
 
     /** Turret subsystem that rotates the shooter to face field targets. */
-    private final TurretSubsystem                     turretSubsystem;
+    private final TurretSubsystem                  turretSubsystem;
 
     /** Shooter subsystem that spins flywheels to launch game pieces. */
-    private final ShooterSubsystem                    shooterSubsystem;
+    private final ShooterSubsystem                 shooterSubsystem;
 
     /** Indexer subsystem that stages game pieces between the feeder and shooter. */
-    private final IndexerSubsystem                    indexerSubsystem;
+    private final IndexerSubsystem                 indexerSubsystem;
 
     /** Robot pose subsystem that fuses odometry and vision into a field-relative estimate. */
-    private final RobotPoseSubsystem                  robotPoseSubsystem;
+    private final RobotPoseSubsystem               robotPoseSubsystem;
 
     /** AprilTag vision subsystem that sends pose observations to the robot pose estimator. */
     @SuppressWarnings("unused")
-    private final AprilTagVisionSubsystem             aprilTagVisionSubsystem;
+    private final AprilTagVisionSubsystem          aprilTagVisionSubsystem;
 
-    /** Driver camera subsystem that manages camera stream modes for the operator. */
-    @SuppressWarnings("unused")
-    private final DriverCameraSubsystem               driverCameraSubsystem;
+    // TODO: Re-enable driver camera for post-first-competition
+    // /** Driver camera subsystem that manages camera stream modes for the operator. */
+    // @SuppressWarnings("unused")
+    // private final DriverCameraSubsystem driverCameraSubsystem;
 
-    /** Climber subsystem for end-game climbing. */
-    private final ClimberSubsystem                    climberSubsystem;
+    // TODO: Re-enable climber for post-first-competition
+    // /** Climber subsystem for end-game climbing. */
+    // private final ClimberSubsystem climberSubsystem;
 
     /** Feeder subsystem that transports game pieces into the indexer. */
-    private final FeederSubsystem                     feederSubsystem;
+    private final FeederSubsystem                  feederSubsystem;
 
     /** Intake subsystem that collects game pieces from the ground. */
-    private final IntakeSubsystem                     intakeSubsystem;
+    private final IntakeSubsystem                  intakeSubsystem;
 
     /** Harvester subsystem that deploys and stows the intake arm. */
-    private final HarvesterSubsystem                  harvesterSubsystem;
+    private final HarvesterSubsystem               harvesterSubsystem;
 
     /** Gameplay state machine that orchestrates multi-subsystem transitions. */
-    private final GameplayStateSubsystem              gameplayStateSubsystem;
+    private final GameplayStateSubsystem           gameplayStateSubsystem;
 
     /** Factory that builds PathPlanner autonomous commands from pre-loaded auto files. */
-    private final PathPlannerCommandFactory           pathPlannerCommandFactory;
+    private final PathPlannerCommandFactory        pathPlannerCommandFactory;
 
     /** Factory that builds drive base teleop and utility commands. */
-    private final DriveBaseSubsystemCommandFactory    driveBaseCommandFactory;
+    private final DriveBaseSubsystemCommandFactory driveBaseCommandFactory;
 
     /** Factory that builds turret aiming and tracking commands. */
-    private final TurretSubsystemCommandFactory       turretCommandFactory;
+    private final TurretSubsystemCommandFactory    turretCommandFactory;
 
     /** Factory that builds shooter spin-up and idle commands. */
-    private final ShooterSubsystemCommandFactory      shooterCommandFactory;
+    private final ShooterSubsystemCommandFactory   shooterCommandFactory;
 
     /** Factory that builds indexer hold, unjam, and feed commands. */
-    private final IndexerSubsystemCommandFactory      indexerCommandFactory;
+    private final IndexerSubsystemCommandFactory   indexerCommandFactory;
 
-    /** Factory that builds driver camera stream-toggle commands. */
-    @SuppressWarnings("unused")
-    private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
+    // TODO: Re-enable driver camera for post-first-competition
+    // /** Factory that builds driver camera stream-toggle commands. */
+    // private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
 
-    /** Factory that builds climber positioning commands. */
-    @SuppressWarnings("unused")
-    private final ClimberSubsystemCommandFactory      climberCommandFactory;
+    // TODO: Re-enable climber for post-first-competition
+    // /** Factory that builds climber positioning commands. */
+    // private final ClimberSubsystemCommandFactory climberCommandFactory;
 
     /** Factory that builds feeder transport commands. */
-    private final FeederSubsystemCommandFactory       feederCommandFactory;
+    private final FeederSubsystemCommandFactory    feederCommandFactory;
 
     /** Factory that builds intake collect and eject commands. */
-    private final IntakeSubsystemCommandFactory       intakeCommandFactory;
+    private final IntakeSubsystemCommandFactory    intakeCommandFactory;
 
     /** Factory that builds harvester deploy and stow commands. */
-    private final HarvesterSubsystemCommandFactory    harvesterCommandFactory;
+    private final HarvesterSubsystemCommandFactory harvesterCommandFactory;
 
     /** Factory that builds gameplay state transition commands. */
-    private final GameplayStateCommandFactory         gameplayStateCommandFactory;
+    private final GameplayStateCommandFactory      gameplayStateCommandFactory;
 
     /** Selects the nearest field target for turret tracking based on alliance and pose. */
-    private final FieldTargetSelector                 fieldTargetSelector;
+    private final FieldTargetSelector              fieldTargetSelector;
 
     /** Binds controller buttons and triggers to commands for both driver and operator. */
     @SuppressWarnings("unused")
-    private final TriggerBindings                     triggerBindings;
+    private final TriggerBindings                  triggerBindings;
 
     /**
      * Builds the robot container and wires subsystems, command factories, and bindings.
@@ -167,8 +171,10 @@ public class RobotContainer {
                     // This is only for simulation purposes, in real life the vision subsystem will feed directly into the robot state subsystem and
                     // not reset odometry
                     driveBaseSubsystem::getOdometryPose);
-            driverCameraSubsystem       = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
-            climberSubsystem            = new ClimberSubsystem(subsystemsConfig.climberSubsystem);
+            // TODO: Re-enable driver camera for post-first-competition
+            // driverCameraSubsystem = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
+            // TODO: Re-enable climber for post-first-competition
+            // climberSubsystem = new ClimberSubsystem(subsystemsConfig.climberSubsystem);
             feederSubsystem             = new FeederSubsystem(subsystemsConfig.feederSubsystem);
             intakeSubsystem             = new IntakeSubsystem(subsystemsConfig.intakeSubsystem);
             harvesterSubsystem          = new HarvesterSubsystem(subsystemsConfig.harvesterSubsystem);
@@ -189,8 +195,10 @@ public class RobotContainer {
             turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
             shooterCommandFactory       = new ShooterSubsystemCommandFactory(shooterSubsystem);
             indexerCommandFactory       = new IndexerSubsystemCommandFactory(indexerSubsystem);
-            driverCameraCommandFactory  = new DriverCameraSubsystemCommandFactory(driverCameraSubsystem);
-            climberCommandFactory       = new ClimberSubsystemCommandFactory(climberSubsystem);
+            // TODO: Re-enable driver camera for post-first-competition
+            // driverCameraCommandFactory = new DriverCameraSubsystemCommandFactory(driverCameraSubsystem);
+            // TODO: Re-enable climber for post-first-competition
+            // climberCommandFactory = new ClimberSubsystemCommandFactory(climberSubsystem);
             feederCommandFactory        = new FeederSubsystemCommandFactory(feederSubsystem);
             intakeCommandFactory        = new IntakeSubsystemCommandFactory(intakeSubsystem);
             harvesterCommandFactory     = new HarvesterSubsystemCommandFactory(harvesterSubsystem);
@@ -202,7 +210,6 @@ public class RobotContainer {
                     intakeCommandFactory,
                     turretCommandFactory,
                     harvesterCommandFactory,
-                    climberCommandFactory,
                     () -> robotPoseSubsystem.getDistanceToPointMeters(fieldTargetSelector.getActiveTargetPosition()));
 
             // Default commands
@@ -225,8 +232,9 @@ public class RobotContainer {
                     gameplayStateCommandFactory.createTransitionCommand(GameplayState.FIRE_READY, "auto"));
             NamedCommands.registerCommand("SetStateAutoCycle",
                     gameplayStateCommandFactory.createTransitionCommand(GameplayState.AUTO_CYCLE, "auto"));
-            NamedCommands.registerCommand("SetStateClimbReady",
-                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.CLIMB_READY, "auto"));
+            // TODO: Re-enable climber for post-first-competition
+            // NamedCommands.registerCommand("SetStateClimbReady",
+            // gameplayStateCommandFactory.createTransitionCommand(GameplayState.CLIMB_READY, "auto"));
             NamedCommands.registerCommand("SetStateEject",
                     gameplayStateCommandFactory.createTransitionCommand(GameplayState.EJECT, "auto"));
             NamedCommands.registerCommand("SetStateTravel",
@@ -242,11 +250,11 @@ public class RobotContainer {
             // Dashboard commands (clickable buttons in Elastic Dashboard)
             SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());
             SmartDashboard.putData("HarvesterSubsystem/ResetEncoder", harvesterCommandFactory.createResetEncoderCommand());
-            SmartDashboard.putData("ClimberSubsystem/ResetEncoder", climberCommandFactory.createResetEncoderCommand());
+            // TODO: Re-enable climber for post-first-competition
+            // SmartDashboard.putData("ClimberSubsystem/ResetEncoder", climberCommandFactory.createResetEncoderCommand());
             SmartDashboard.putData("ResetAllEncoders", Commands.parallel(
                     turretCommandFactory.createResetEncoderCommand(),
-                    harvesterCommandFactory.createResetEncoderCommand(),
-                    climberCommandFactory.createResetEncoderCommand())
+                    harvesterCommandFactory.createResetEncoderCommand())
                     .withName("Reset All Encoders"));
 
             // Input bindings
@@ -256,7 +264,6 @@ public class RobotContainer {
                     turretCommandFactory,
                     shooterCommandFactory,
                     indexerCommandFactory,
-                    climberCommandFactory,
                     feederCommandFactory,
                     intakeCommandFactory,
                     harvesterCommandFactory,

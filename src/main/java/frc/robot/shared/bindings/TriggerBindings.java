@@ -6,7 +6,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
 import frc.robot.subsystems.gameplaystate.GameplayState;
@@ -84,11 +83,12 @@ public class TriggerBindings {
      */
     private final IndexerSubsystemCommandFactory   indexerCommandFactory;
 
-    /**
-     * Factory that creates climber commands tied to driver buttons.
-     */
-    @SuppressWarnings("unused")
-    private final ClimberSubsystemCommandFactory   climberCommandFactory;
+    // TODO: Re-enable climber for post-first-competition
+    // /**
+    // * Factory that creates climber commands tied to driver buttons.
+    // */
+    // @SuppressWarnings("unused")
+    // private final ClimberSubsystemCommandFactory climberCommandFactory;
 
     /**
      * Factory that creates feeder commands tied to driver buttons.
@@ -113,7 +113,7 @@ public class TriggerBindings {
     /**
      * Dashboard chooser that selects which subsystem the A/B/X test buttons control. Only initialized when tuning mode is enabled.
      */
-    private LoggedDashboardChooser<String>          testSubsystemChooser;
+    private LoggedDashboardChooser<String>         testSubsystemChooser;
 
     /**
      * Creates trigger bindings with the default driver controller port.
@@ -135,7 +135,6 @@ public class TriggerBindings {
             TurretSubsystemCommandFactory turretCommandFactory,
             ShooterSubsystemCommandFactory shooterCommandFactory,
             IndexerSubsystemCommandFactory indexerCommandFactory,
-            ClimberSubsystemCommandFactory climberCommandFactory,
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
@@ -146,7 +145,6 @@ public class TriggerBindings {
                 turretCommandFactory,
                 shooterCommandFactory,
                 indexerCommandFactory,
-                climberCommandFactory,
                 feederCommandFactory,
                 intakeCommandFactory,
                 harvesterCommandFactory,
@@ -163,7 +161,6 @@ public class TriggerBindings {
      * @param turretCommandFactory        factory for creating turret commands
      * @param shooterCommandFactory       factory for creating shooter commands
      * @param indexerCommandFactory       factory for creating indexer commands
-     * @param climberCommandFactory       factory for creating climber commands
      * @param feederCommandFactory        factory for creating feeder commands
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
@@ -177,7 +174,6 @@ public class TriggerBindings {
             TurretSubsystemCommandFactory turretCommandFactory,
             ShooterSubsystemCommandFactory shooterCommandFactory,
             IndexerSubsystemCommandFactory indexerCommandFactory,
-            ClimberSubsystemCommandFactory climberCommandFactory,
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
@@ -189,7 +185,8 @@ public class TriggerBindings {
         this.turretCommandFactory        = turretCommandFactory;
         this.shooterCommandFactory       = shooterCommandFactory;
         this.indexerCommandFactory       = indexerCommandFactory;
-        this.climberCommandFactory       = climberCommandFactory;
+        // TODO: Re-enable climber for post-first-competition
+        // this.climberCommandFactory = climberCommandFactory;
         this.feederCommandFactory        = feederCommandFactory;
         this.intakeCommandFactory        = intakeCommandFactory;
         this.harvesterCommandFactory     = harvesterCommandFactory;
