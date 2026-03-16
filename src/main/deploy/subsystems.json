@@ -283,24 +283,24 @@
     },
     "distanceRpmPoints": [
       {
-        "distanceMeters": 1.93,
+        "distanceMeters": 1.7,
         "rpm": 2200.0
       },
       {
-        "distanceMeters": 2.92,
-        "rpm": 2800.0
+        "distanceMeters": 2.1,
+        "rpm": 2300.0
       },
       {
-        "distanceMeters": 3.2,
-        "rpm": 3000.0
+        "distanceMeters": 3.09,
+        "rpm": 2800.0
       },
       {
         "distanceMeters": 4.00,
         "rpm": 3200.0
       },
       {
-        "distanceMeters": 4.9,
-        "rpm": 3500.0
+        "distanceMeters": 4.8,
+        "rpm": 3400.0
       }
     ],
     "distanceRpmMultiplier": 1.0
