@@ -5,87 +5,149 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "SetStateHarvestReady"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "b2tb3"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "b3 travel out"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "b3 intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "b3 travel back"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpinUpShooterCommand"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetStateHarvestReady"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "b3 to outpost"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "b3 from outpost"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpinUpShooterCommand"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetStateHarvestReady"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateHarvestReady"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b3 travel out"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b3 intake"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b3 travel back"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "SpinUpShooterCommand"
+                            }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 2.0
+                                  }
+                                },
+                                {
+                                  "type": "parallel",
+                                  "data": {
+                                    "commands": [
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "SetStateHarvestReady"
+                                        }
+                                      },
+                                      {
+                                        "type": "sequential",
+                                        "data": {
+                                          "commands": [
+                                            {
+                                              "type": "path",
+                                              "data": {
+                                                "pathName": "b3 to outpost"
+                                              }
+                                            },
+                                            {
+                                              "type": "wait",
+                                              "data": {
+                                                "waitTime": 2.0
+                                              }
+                                            },
+                                            {
+                                              "type": "path",
+                                              "data": {
+                                                "pathName": "b3 from outpost"
+                                              }
+                                            },
+                                            {
+                                              "type": "parallel",
+                                              "data": {
+                                                "commands": [
+                                                  {
+                                                    "type": "named",
+                                                    "data": {
+                                                      "name": "SpinUpShooterCommand"
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "sequential",
+                                                    "data": {
+                                                      "commands": [
+                                                        {
+                                                          "type": "wait",
+                                                          "data": {
+                                                            "waitTime": 2.0
+                                                          }
+                                                        },
+                                                        {
+                                                          "type": "named",
+                                                          "data": {
+                                                            "name": "SetStateHarvestReady"
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
