@@ -12,7 +12,7 @@
   },
   "driveBaseSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "swerveConfigDirectory": "swerve",
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
@@ -185,7 +185,7 @@
   },
   "turretSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "turretMotorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 56,
@@ -291,15 +291,23 @@
         "rpm": 2800.0
       },
       {
-        "distanceMeters": 4.11,
+        "distanceMeters": 3.2,
         "rpm": 3000.0
+      },
+      {
+        "distanceMeters": 4.00,
+        "rpm": 3200.0
+      },
+      {
+        "distanceMeters": 4.9,
+        "rpm": 3500.0
       }
     ],
     "distanceRpmMultiplier": 1.0
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "fieldType": "ANDYMARK",
     "linearStandardDeviationBaseline": 0.08,
     "angularStandardDeviationBaseline": 1.0,
@@ -309,8 +317,9 @@
       "maximumPoseDeviationMeters": 1.5,
       "maximumMultiTagAmbiguity": 0.2,
       "maximumZHeightMeters": 0.5,
-      "ignoredTagIds": [],
-      "tagSwitchStdDevMultiplier": 3.0
+      "ignoredTagIds": [25, 21, 27, 30, 32],
+      "tagSwitchStdDevMultiplier": 3.0,
+      "initialPoseAcceptanceCount": 3
     },
     "cameras": {
       "Obots7160OV9281": {

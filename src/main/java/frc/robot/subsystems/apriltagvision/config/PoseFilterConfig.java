@@ -52,6 +52,17 @@ public class PoseFilterConfig extends AbstractConfig {
     public double tagSwitchStdDevMultiplier  = 3.0;
 
     /**
+     * Number of vision poses to accept without checking odometry deviation at startup.
+     * <p>
+     * At startup the robot's odometry initializes at (0, 0). Because the real robot is placed elsewhere on the field, every vision observation will
+     * exceed {@link #maximumPoseDeviationMeters} and be rejected. Setting this to a value greater than zero lets that many observations through
+     * regardless of deviation so the pose estimator can lock onto the correct field position. After the configured count of measurements have been
+     * accepted, normal deviation filtering resumes. Set to 0 to disable this behavior.
+     * </p>
+     */
+    public int initialPoseAcceptanceCount = 3;
+
+    /**
      * Returns the maximum average tag distance threshold.
      *
      * @return maximum tag distance in meters
@@ -103,5 +114,14 @@ public class PoseFilterConfig extends AbstractConfig {
      */
     public double getTagSwitchStdDevMultiplier() {
         return readTunableNumber("tagSwitchStdDevMultiplier", tagSwitchStdDevMultiplier);
+    }
+
+    /**
+     * Returns the number of initial pose observations to accept without odometry deviation checking.
+     *
+     * @return number of poses to accept at startup before enforcing deviation limits, or 0 to disable
+     */
+    public int getInitialPoseAcceptanceCount() {
+        return initialPoseAcceptanceCount;
     }
 }

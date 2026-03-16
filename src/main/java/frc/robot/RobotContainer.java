@@ -155,8 +155,8 @@ public class RobotContainer {
             aprilTagVisionSubsystem     = new AprilTagVisionSubsystem(
                     subsystemsConfig.aprilTagVisionSubsystem,
                     robotPoseSubsystem::addVisionMeasurement,
-                    // This is only for simulation purposes, in real life the vision subsystem will feed directly into the robot state subsystem and
-                    // not reset odometry
+                    robotPoseSubsystem::resetPose,
+                    // Pose supplier is used for simulation cameras only; use raw odometry to avoid feedback loops.
                     driveBaseSubsystem::getOdometryPose);
             // TODO: Re-enable driver camera for post-first-competition
             // driverCameraSubsystem = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);

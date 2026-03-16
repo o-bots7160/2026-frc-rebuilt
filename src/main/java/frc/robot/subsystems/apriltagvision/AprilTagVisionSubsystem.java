@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -53,6 +54,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /** Consumer that forwards accepted pose measurements to the robot state estimator. */
     private final VisionMeasurementConsumer     consumer;
 
+    /** Consumer that hard-resets odometry to a given pose for initial baseline seeding. */
+    private final Consumer<Pose2d>              odometryResetConsumer;
+
     /** AprilTag field layout used to resolve tag IDs into 3D poses for logging. */
     private final AprilTagFieldLayout           fieldLayout;
 
@@ -77,6 +81,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /** Guards the disabled-periodic log message so it prints only once per disable cycle. */
     private boolean                             disabledPeriodicLogged;
 
+    /** Tracks whether odometry has been hard-reset from the first accepted vision pose at startup. */
+    private boolean                             hasResetOdometryFromVision;
+
     /**
      * Creates a new AprilTagVisionSubsystem.
      * <p>
@@ -84,19 +91,24 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
      * layout is loaded from the subsystem config so each robot variant can specify its own AprilTag field layout.
      * </p>
      *
-     * @param config       configuration for vision processing, field layout, and tunable thresholds
-     * @param consumer     consumer that receives accepted pose measurements with standard deviations
-     * @param poseSupplier supplier for the current robot pose in meters and radians (used for simulation). Use raw odometry or ground-truth poses,
-     *                     not the fused robot state pose, to avoid feedback loops in sim.
+     * @param config                configuration for vision processing, field layout, and tunable thresholds
+     * @param consumer              consumer that receives accepted pose measurements with standard deviations
+     * @param odometryResetConsumer consumer that hard-resets odometry to a given pose in meters and radians; called once when the first vision
+     *                              measurement is accepted during the initial acceptance window to establish a reliable baseline
+     * @param poseSupplier          supplier for the current robot pose in meters and radians (used for simulation). Use raw odometry or ground-truth
+     *                              poses, not the fused robot state pose, to avoid feedback loops in sim.
      */
     public AprilTagVisionSubsystem(
             AprilTagVisionSubsystemConfig config,
             VisionMeasurementConsumer consumer,
+            Consumer<Pose2d> odometryResetConsumer,
             Supplier<Pose2d> poseSupplier) {
 
         super(config);
-        this.consumer    = consumer;
-        this.fieldLayout = config.loadLayout();
+        this.consumer              = consumer;
+        this.odometryResetConsumer = odometryResetConsumer != null ? odometryResetConsumer : pose -> {
+                                  };
+        this.fieldLayout           = config.loadLayout();
 
         PoseFilterConfig poseFilter = config.getPoseFilter();
         this.poseEstimator = new AprilTagPoseEstimator(
@@ -111,7 +123,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                         poseFilter.getMaximumMultiTagAmbiguity(),
                         poseFilter.getMaximumZHeightMeters(),
                         poseFilter.getIgnoredTagIds(),
-                        poseFilter.getTagSwitchStdDevMultiplier()),
+                        poseFilter.getTagSwitchStdDevMultiplier(),
+                        poseFilter.getInitialPoseAcceptanceCount()),
                 poseSupplier);
 
         this.cameras       = createCameras(config, fieldLayout, poseSupplier);
@@ -269,6 +282,15 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             // Forward accepted measurements to the robot state estimator.
             acceptedPoses.add(poseObservation.pose());
             var measurement = result.measurement().get();
+
+            // On the very first accepted vision pose, hard-reset odometry so the Kalman filter
+            // starts from the correct field position instead of gradually correcting from (0, 0).
+            if (!hasResetOdometryFromVision && poseEstimator.isWithinInitialAcceptanceWindow()) {
+                odometryResetConsumer.accept(measurement.pose());
+                hasResetOdometryFromVision = true;
+                log.info("Odometry reset from initial vision pose: " + measurement.pose());
+            }
+
             consumer.accept(
                     measurement.pose(),
                     measurement.timestampSeconds(),
@@ -339,6 +361,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         // Summary logs help spot system-wide issues without checking each camera.
         log.recordOutput("Summary/AcceptedCount", acceptedPoses.size());
         log.recordOutput("Summary/RejectedCount", rejectedPoses.size());
+        log.recordOutput("Summary/InitialAcceptanceWindow", poseEstimator.isWithinInitialAcceptanceWindow());
+        log.recordOutput("Summary/OdometryResetFromVision", hasResetOdometryFromVision);
         for (var entry : rejectionCounts.entrySet()) {
             log.recordOutput("Summary/Rejected/" + entry.getKey().name(), entry.getValue());
         }

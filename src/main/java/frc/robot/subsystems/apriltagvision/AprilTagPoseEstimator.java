@@ -81,17 +81,18 @@ public class AprilTagPoseEstimator {
     /**
      * Parameters for pose estimation filtering and uncertainty calculation.
      *
-     * @param fieldLengthMeters         field length for bounds checking in meters
-     * @param fieldWidthMeters          field width for bounds checking in meters
-     * @param maxAmbiguity              maximum dimensionless ambiguity for single-tag observations
-     * @param linearStdDevBaseline      baseline standard deviation for x/y in meters at 1 meter with 1 tag
-     * @param angularStdDevBaseline     baseline standard deviation for rotation in radians at 1 meter with 1 tag
-     * @param maxTagDistanceMeters      maximum average tag distance in meters before rejection
-     * @param maxPoseDeviationMeters    maximum deviation from odometry in meters before rejection
-     * @param maxMultiTagAmbiguity      maximum ambiguity for multi-tag observations
-     * @param maxZHeightMeters          maximum absolute Z height in meters for the estimated pose
-     * @param ignoredTagIds             tag IDs to ignore during estimation
-     * @param tagSwitchStdDevMultiplier standard deviation multiplier when tag IDs change between frames
+     * @param fieldLengthMeters            field length for bounds checking in meters
+     * @param fieldWidthMeters             field width for bounds checking in meters
+     * @param maxAmbiguity                 maximum dimensionless ambiguity for single-tag observations
+     * @param linearStdDevBaseline         baseline standard deviation for x/y in meters at 1 meter with 1 tag
+     * @param angularStdDevBaseline        baseline standard deviation for rotation in radians at 1 meter with 1 tag
+     * @param maxTagDistanceMeters         maximum average tag distance in meters before rejection
+     * @param maxPoseDeviationMeters       maximum deviation from odometry in meters before rejection
+     * @param maxMultiTagAmbiguity         maximum ambiguity for multi-tag observations
+     * @param maxZHeightMeters             maximum absolute Z height in meters for the estimated pose
+     * @param ignoredTagIds                tag IDs to ignore during estimation
+     * @param tagSwitchStdDevMultiplier    standard deviation multiplier when tag IDs change between frames
+     * @param initialPoseAcceptanceCount   number of poses to accept without odometry deviation checking at startup, or 0 to disable
      */
     public record Params(
             double fieldLengthMeters,
@@ -104,7 +105,8 @@ public class AprilTagPoseEstimator {
             double maxMultiTagAmbiguity,
             double maxZHeightMeters,
             int[] ignoredTagIds,
-            double tagSwitchStdDevMultiplier) {
+            double tagSwitchStdDevMultiplier,
+            int initialPoseAcceptanceCount) {
     }
 
     /**
@@ -137,6 +139,9 @@ public class AprilTagPoseEstimator {
 
     private final Map<String, Set<Integer>> lastTagIdsByCamera                  = new HashMap<>();
 
+    /** Counts accepted measurements so the initial pose acceptance window can expire. */
+    private int                             acceptedMeasurementCount;
+
     /**
      * Creates a new AprilTagPoseEstimator.
      *
@@ -149,6 +154,20 @@ public class AprilTagPoseEstimator {
         this.ignoredTagIdSet      = Arrays.stream(params.ignoredTagIds())
                 .boxed()
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns whether the estimator is still within the initial pose acceptance window.
+     * <p>
+     * While this returns true, the odometry deviation filter is bypassed so the pose estimator can lock onto a real
+     * field position at startup.
+     * </p>
+     *
+     * @return true if the accepted measurement count has not yet reached the configured initial acceptance count
+     */
+    public boolean isWithinInitialAcceptanceWindow() {
+        return params.initialPoseAcceptanceCount() > 0
+                && acceptedMeasurementCount < params.initialPoseAcceptanceCount();
     }
 
     /**
@@ -183,6 +202,7 @@ public class AprilTagPoseEstimator {
         angularStdDev *= tagSwitchMultiplier;
 
         // Package the pose, timestamp, and uncertainty so the estimator can fuse it.
+        acceptedMeasurementCount++;
         return EstimationResult.accepted(new VisionMeasurement(
                 observation.pose().toPose2d(),
                 observation.timestamp(),
@@ -242,11 +262,17 @@ public class AprilTagPoseEstimator {
         }
 
         // Reject poses that deviate too far from odometry.
-        Pose2d odometryPose = odometryPoseSupplier.get();
-        Pose2d visionPose2d = pose.toPose2d();
-        double deviation    = odometryPose.getTranslation().getDistance(visionPose2d.getTranslation());
-        if (deviation > params.maxPoseDeviationMeters()) {
-            return Optional.of(RejectionReason.ODOMETRY_DEVIATION);
+        // Skip this check during the initial acceptance window so the estimator can lock onto a real field position
+        // before odometry has converged.
+        boolean withinInitialAcceptanceWindow = params.initialPoseAcceptanceCount() > 0
+                && acceptedMeasurementCount < params.initialPoseAcceptanceCount();
+        if (!withinInitialAcceptanceWindow) {
+            Pose2d odometryPose = odometryPoseSupplier.get();
+            Pose2d visionPose2d = pose.toPose2d();
+            double deviation    = odometryPose.getTranslation().getDistance(visionPose2d.getTranslation());
+            if (deviation > params.maxPoseDeviationMeters()) {
+                return Optional.of(RejectionReason.ODOMETRY_DEVIATION);
+            }
         }
 
         return Optional.empty();
