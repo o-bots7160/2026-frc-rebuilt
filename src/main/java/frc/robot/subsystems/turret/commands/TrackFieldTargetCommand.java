@@ -89,8 +89,8 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
     }
 
     /**
-     * Reads the current robot pose and target position, computes the turret angle, logs telemetry,
-     * and pushes the new setpoint to the turret subsystem.
+     * Reads the current robot pose and target position, computes the turret angle, logs telemetry, and pushes the new setpoint to the turret
+     * subsystem.
      */
     private void updateTarget() {
         Pose2d        robotPose           = robotPoseSubsystem.getEstimatedPose();
@@ -98,16 +98,15 @@ public class TrackFieldTargetCommand extends AbstractSubsystemCommand<TurretSubs
         double        yawRateRadians      = robotYawRateRadiansPerSecondSupplier.get();
         double        targetDegrees       = subsystem.calculateFieldTargetDegrees(robotPose, targetFieldPosition, yawRateRadians);
 
-        if (subsystem.isVerboseLoggingEnabled()) {
-            // Log inputs and the computed target so we can verify field-relative math in AdvantageScope.
-            log.recordOutput("TargetPose", new Pose2d(targetFieldPosition, new Rotation2d()));
-            log.recordOutput("RobotPose", robotPose);
-            log.recordOutput(
-                    "TargetFieldPositionMeters",
-                    new double[] { targetFieldPosition.getX(), targetFieldPosition.getY() });
-            log.recordOutput("TargetDegrees", targetDegrees);
-            log.recordOutput("RobotYawRateRadiansPerSecond", yawRateRadians);
-        }
+        // Log inputs and the computed target so we can verify field-relative math in AdvantageScope.
+        log.recordVerboseOutput("TargetPose", new Pose2d(targetFieldPosition, new Rotation2d()));
+        log.recordVerboseOutput("RobotPose", robotPose);
+        log.recordVerboseOutput(
+                "TargetFieldPositionMeters",
+                new double[] { targetFieldPosition.getX(), targetFieldPosition.getY() });
+        log.recordVerboseOutput("TargetDegrees", targetDegrees);
+        log.recordVerboseOutput("RobotYawRateRadiansPerSecond", yawRateRadians);
+
         subsystem.setTarget(targetDegrees);
     }
 }

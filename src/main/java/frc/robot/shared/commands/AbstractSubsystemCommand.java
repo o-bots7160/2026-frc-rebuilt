@@ -28,7 +28,7 @@ public abstract class AbstractSubsystemCommand<TSubsystem extends AbstractSubsys
      */
     protected AbstractSubsystemCommand(TSubsystem subsystem) {
         this.subsystem = subsystem;
-        this.log       = Logger.getInstance(getClass());
+        this.log       = Logger.getInstance(getClass(), subsystem::isVerbose);
 
         addRequirements(subsystem);
     }

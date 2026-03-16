@@ -1,6 +1,12 @@
 package frc.robot.subsystems.apriltagvision;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -19,20 +25,86 @@ import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIO.PoseObservation;
 public class AprilTagPoseEstimator {
 
     /**
+     * Reason a pose observation was rejected by the estimator. Used for per-reason telemetry so operators can see which filter is triggering during a
+     * match.
+     */
+    public enum RejectionReason {
+        /** No tags were detected in the observation. */
+        NO_TAGS,
+        /** Single-tag observation exceeded the ambiguity threshold. */
+        SINGLE_TAG_AMBIGUITY,
+        /** Multi-tag observation exceeded the ambiguity threshold. */
+        MULTI_TAG_AMBIGUITY,
+        /** Estimated pose is outside the field boundaries. */
+        OUTSIDE_FIELD,
+        /** Average tag distance exceeded the maximum allowed distance. */
+        TOO_FAR,
+        /** Estimated Z height is physically unreasonable. */
+        BAD_Z_HEIGHT,
+        /** Vision pose deviates too far from the current odometry pose. */
+        ODOMETRY_DEVIATION,
+        /** All observed tags are in the ignored tag list. */
+        IGNORED_TAGS
+    }
+
+    /**
+     * Result of evaluating a pose observation. Contains either an accepted measurement or a rejection reason for telemetry.
+     *
+     * @param measurement     the validated vision measurement, or empty if rejected
+     * @param rejectionReason the reason for rejection, or empty if accepted
+     */
+    public record EstimationResult(
+            Optional<VisionMeasurement> measurement,
+            Optional<RejectionReason> rejectionReason) {
+
+        /**
+         * Creates an accepted result containing a vision measurement.
+         *
+         * @param measurement the validated measurement to forward to the pose estimator
+         * @return accepted result
+         */
+        public static EstimationResult accepted(VisionMeasurement measurement) {
+            return new EstimationResult(Optional.of(measurement), Optional.empty());
+        }
+
+        /**
+         * Creates a rejected result with the given reason.
+         *
+         * @param reason why the observation was rejected
+         * @return rejected result
+         */
+        public static EstimationResult rejected(RejectionReason reason) {
+            return new EstimationResult(Optional.empty(), Optional.of(reason));
+        }
+    }
+
+    /**
      * Parameters for pose estimation filtering and uncertainty calculation.
      *
-     * @param fieldLengthMeters     field length for bounds checking in meters
-     * @param fieldWidthMeters      field width for bounds checking in meters
-     * @param maxAmbiguity          maximum dimensionless ambiguity for single-tag observations
-     * @param linearStdDevBaseline  baseline standard deviation for x/y in meters at 1 meter with 1 tag
-     * @param angularStdDevBaseline baseline standard deviation for rotation in radians at 1 meter with 1 tag
+     * @param fieldLengthMeters         field length for bounds checking in meters
+     * @param fieldWidthMeters          field width for bounds checking in meters
+     * @param maxAmbiguity              maximum dimensionless ambiguity for single-tag observations
+     * @param linearStdDevBaseline      baseline standard deviation for x/y in meters at 1 meter with 1 tag
+     * @param angularStdDevBaseline     baseline standard deviation for rotation in radians at 1 meter with 1 tag
+     * @param maxTagDistanceMeters      maximum average tag distance in meters before rejection
+     * @param maxPoseDeviationMeters    maximum deviation from odometry in meters before rejection
+     * @param maxMultiTagAmbiguity      maximum ambiguity for multi-tag observations
+     * @param maxZHeightMeters          maximum absolute Z height in meters for the estimated pose
+     * @param ignoredTagIds             tag IDs to ignore during estimation
+     * @param tagSwitchStdDevMultiplier standard deviation multiplier when tag IDs change between frames
      */
     public record Params(
             double fieldLengthMeters,
             double fieldWidthMeters,
             double maxAmbiguity,
             double linearStdDevBaseline,
-            double angularStdDevBaseline) {
+            double angularStdDevBaseline,
+            double maxTagDistanceMeters,
+            double maxPoseDeviationMeters,
+            double maxMultiTagAmbiguity,
+            double maxZHeightMeters,
+            int[] ignoredTagIds,
+            double tagSwitchStdDevMultiplier) {
     }
 
     /**
@@ -51,89 +123,163 @@ public class AprilTagPoseEstimator {
     /**
      * Huge standard deviation assigned to single-tag rotation observations.
      * <p>
-     * Single-tag PnP solves produce very noisy rotation estimates. By assigning an enormous angular
-     * uncertainty the Kalman filter effectively ignores the rotation component while still fusing
-     * the more reliable x/y translation.
+     * Single-tag PnP solves produce very noisy rotation estimates. By assigning an enormous angular uncertainty the Kalman filter effectively ignores
+     * the rotation component while still fusing the more reliable x/y translation.
      * </p>
      */
-    private static final double SINGLE_TAG_ROTATION_STD_DEV_RADIANS = 1.0e6;
+    private static final double             SINGLE_TAG_ROTATION_STD_DEV_RADIANS = 1.0e6;
 
-    private final Params params;
+    private final Params                    params;
+
+    private final Supplier<Pose2d>          odometryPoseSupplier;
+
+    private final Set<Integer>              ignoredTagIdSet;
+
+    private final Map<String, Set<Integer>> lastTagIdsByCamera                  = new HashMap<>();
 
     /**
      * Creates a new AprilTagPoseEstimator.
      *
-     * @param params configuration parameters for filtering and uncertainty
+     * @param params               configuration parameters for filtering and uncertainty
+     * @param odometryPoseSupplier supplier for the current odometry pose used for consistency checking
      */
-    public AprilTagPoseEstimator(Params params) {
-        this.params = params;
+    public AprilTagPoseEstimator(Params params, Supplier<Pose2d> odometryPoseSupplier) {
+        this.params               = params;
+        this.odometryPoseSupplier = odometryPoseSupplier;
+        this.ignoredTagIdSet      = Arrays.stream(params.ignoredTagIds())
+                .boxed()
+                .collect(Collectors.toSet());
     }
 
     /**
-     * Processes a pose observation and returns a measurement if accepted.
+     * Processes a pose observation and returns an estimation result.
      * <p>
-     * Standard deviations are scaled by distance squared divided by tag count, using meters for distance.
+     * Standard deviations are scaled by distance squared divided by tag count, using meters for distance. When the set of observed tag IDs changes
+     * between consecutive frames from the same camera, the standard deviations are further multiplied by the tag-switch multiplier to dampen jitter
+     * from same-face tag pairs.
      * </p>
      *
      * @param observation the raw pose observation from vision
-     * @return the validated measurement, or empty if the observation was rejected
+     * @param cameraName  the name of the camera that produced this observation
+     * @return estimation result containing the measurement or rejection reason
      */
-    public Optional<VisionMeasurement> estimate(PoseObservation observation) {
-        // Stop early if the camera data fails our safety checks.
-        if (shouldReject(observation)) {
-            return Optional.empty();
+    public EstimationResult estimate(PoseObservation observation, String cameraName) {
+        // Run rejection filters first.
+        Optional<RejectionReason> rejection = checkRejection(observation);
+        if (rejection.isPresent()) {
+            return EstimationResult.rejected(rejection.get());
         }
 
         // Farther tags and fewer tags mean less confidence, so scale up the uncertainty.
-        double factor        = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
-        double linearStdDev  = params.linearStdDevBaseline() * factor;
-        double angularStdDev = observation.tagCount() > 1
+        double factor              = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
+        double linearStdDev        = params.linearStdDevBaseline() * factor;
+        double angularStdDev       = observation.tagCount() > 1
                 ? params.angularStdDevBaseline() * factor
                 : SINGLE_TAG_ROTATION_STD_DEV_RADIANS;
 
+        // Apply tag-switch dampening when the camera switches between different tags.
+        double tagSwitchMultiplier = computeTagSwitchMultiplier(observation, cameraName);
+        linearStdDev  *= tagSwitchMultiplier;
+        angularStdDev *= tagSwitchMultiplier;
+
         // Package the pose, timestamp, and uncertainty so the estimator can fuse it.
-        return Optional.of(new VisionMeasurement(
+        return EstimationResult.accepted(new VisionMeasurement(
                 observation.pose().toPose2d(),
                 observation.timestamp(),
                 VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev)));
     }
 
     /**
-     * Determines whether a pose observation should be rejected.
-     * <p>
-     * Observations are rejected if:
-     * </p>
-     * <ul>
-     * <li>No tags were detected</li>
-     * <li>Single-tag observation exceeds the dimensionless ambiguity threshold</li>
-     * <li>Estimated pose is outside field boundaries in meters</li>
-     * </ul>
+     * Checks whether a pose observation should be rejected and returns the reason.
      *
      * @param observation the pose observation to evaluate
-     * @return true if the observation should be rejected
+     * @return the rejection reason, or empty if the observation passes all checks
      */
-    public boolean shouldReject(PoseObservation observation) {
+    private Optional<RejectionReason> checkRejection(PoseObservation observation) {
         // If we see no tags, there is no useful pose to trust.
         if (observation.tagCount() == 0) {
-            return true;
+            return Optional.of(RejectionReason.NO_TAGS);
+        }
+
+        // Reject observations where all tags are in the ignore list.
+        if (ignoredTagIdSet.size() > 0 && observation.tagIds().length > 0) {
+            boolean allIgnored = Arrays.stream(observation.tagIds())
+                    .allMatch(ignoredTagIdSet::contains);
+            if (allIgnored) {
+                return Optional.of(RejectionReason.IGNORED_TAGS);
+            }
         }
 
         // Single-tag measurements can be ambiguous; reject if too uncertain.
         if (observation.tagCount() == 1
                 && observation.ambiguity() > params.maxAmbiguity()) {
-            return true;
+            return Optional.of(RejectionReason.SINGLE_TAG_AMBIGUITY);
+        }
+
+        // Multi-tag measurements can also be ambiguous with degenerate configurations.
+        if (observation.tagCount() > 1
+                && observation.ambiguity() > params.maxMultiTagAmbiguity()) {
+            return Optional.of(RejectionReason.MULTI_TAG_AMBIGUITY);
+        }
+
+        // Reject tags that are too far away for reliable pose estimation.
+        if (observation.averageTagDistance() > params.maxTagDistanceMeters()) {
+            return Optional.of(RejectionReason.TOO_FAR);
+        }
+
+        // Reject poses with unreasonable Z heights.
+        var pose = observation.pose();
+        if (Math.abs(pose.getZ()) > params.maxZHeightMeters()) {
+            return Optional.of(RejectionReason.BAD_Z_HEIGHT);
         }
 
         // Reject poses that fall outside the field rectangle.
-        var pose = observation.pose();
         if (pose.getX() < 0.0 || pose.getX() > params.fieldLengthMeters()) {
-            return true;
+            return Optional.of(RejectionReason.OUTSIDE_FIELD);
         }
         if (pose.getY() < 0.0 || pose.getY() > params.fieldWidthMeters()) {
-            return true;
+            return Optional.of(RejectionReason.OUTSIDE_FIELD);
         }
 
-        return false;
+        // Reject poses that deviate too far from odometry.
+        Pose2d odometryPose = odometryPoseSupplier.get();
+        Pose2d visionPose2d = pose.toPose2d();
+        double deviation    = odometryPose.getTranslation().getDistance(visionPose2d.getTranslation());
+        if (deviation > params.maxPoseDeviationMeters()) {
+            return Optional.of(RejectionReason.ODOMETRY_DEVIATION);
+        }
+
+        return Optional.empty();
     }
 
+    /**
+     * Computes the standard deviation multiplier for tag-switch dampening.
+     * <p>
+     * Tracks the last accepted tag IDs per camera. When the set of tag IDs changes, returns the configured multiplier to reduce trust in the
+     * transitional frame. When the tags are the same as the previous frame (or this is the first frame for a camera), returns 1.0.
+     * </p>
+     *
+     * @param observation the current observation with tag IDs
+     * @param cameraName  the camera that produced the observation
+     * @return multiplier to apply to standard deviations (1.0 = no dampening)
+     */
+    private double computeTagSwitchMultiplier(PoseObservation observation, String cameraName) {
+        Set<Integer> currentTagIds  = Arrays.stream(observation.tagIds())
+                .boxed()
+                .collect(Collectors.toSet());
+
+        Set<Integer> previousTagIds = lastTagIdsByCamera.put(cameraName, currentTagIds);
+
+        // First observation from this camera — no dampening.
+        if (previousTagIds == null) {
+            return 1.0;
+        }
+
+        // Tags are the same as last time — no dampening.
+        if (currentTagIds.equals(previousTagIds)) {
+            return 1.0;
+        }
+
+        return params.tagSwitchStdDevMultiplier();
+    }
 }

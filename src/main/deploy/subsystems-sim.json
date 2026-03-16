@@ -174,7 +174,7 @@
   },
   "turretSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "turretMotorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 56,
@@ -285,10 +285,19 @@
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
+    "fieldType": "WELDED",
     "linearStandardDeviationBaseline": 0.08,
     "angularStandardDeviationBaseline": 1.0,
-    "maximumAmbiguity": 0.3,
+    "maximumAmbiguity": 0.15,
+    "poseFilter": {
+      "maximumTagDistanceMeters": 5.0,
+      "maximumPoseDeviationMeters": 1.5,
+      "maximumMultiTagAmbiguity": 0.2,
+      "maximumZHeightMeters": 0.5,
+      "ignoredTagIds": [],
+      "tagSwitchStdDevMultiplier": 3.0
+    },
     "cameras": {
       "Obots7160OV9281": {
         "x": -0.051,

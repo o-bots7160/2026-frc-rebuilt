@@ -146,12 +146,17 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
                 .map(Short::intValue)
                 .toList());
 
+        int[] tagIdArray = multitagResult.fiducialIDsUsed.stream()
+                .mapToInt(Short::intValue)
+                .toArray();
+
         return Optional.of(new PoseObservation(
                 pipelineResult.getTimestampSeconds(),
                 robotPose,
                 multitagResult.estimatedPose.ambiguity,
                 tagCount,
-                averageTagDistance));
+                averageTagDistance,
+                tagIdArray));
     }
 
     /**
@@ -178,7 +183,8 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
                 robotPose,
                 target.poseAmbiguity,
                 1,
-                tagDistance));
+                tagDistance,
+                new int[] { target.fiducialId }));
     }
 
     /**

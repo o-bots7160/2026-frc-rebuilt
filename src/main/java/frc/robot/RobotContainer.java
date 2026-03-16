@@ -4,19 +4,15 @@
 
 package frc.robot;
 
-import java.util.function.Supplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.bindings.TriggerBindings;
 import frc.robot.shared.config.ConfigurationLoader;
-import frc.robot.shared.config.FieldLayoutConfig;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.SubsystemsConfig;
 import frc.robot.shared.field.FieldTargetSelector;
@@ -54,12 +50,6 @@ public class RobotContainer {
 
     /** Deserialized subsystem configuration loaded from the environment-specific JSON file. */
     private final SubsystemsConfig                 subsystemsConfig;
-
-    /** Field layout configuration that supplies the current AprilTag positions. */
-    private final FieldLayoutConfig                fieldLayoutConfig;
-
-    /** Lazily supplies the loaded {@link AprilTagFieldLayout} for vision and navigation. */
-    private final Supplier<AprilTagFieldLayout>    aprilTagFieldLayoutSupplier;
 
     /** Swerve drive subsystem responsible for chassis motion and odometry. */
     // Subsystems
@@ -150,8 +140,6 @@ public class RobotContainer {
     public RobotContainer() {
         try {
             subsystemsConfig            = ConfigurationLoader.load(resolveSubsystemsConfigFileName(), SubsystemsConfig.class);
-            fieldLayoutConfig           = ConfigurationLoader.load("field-layout.json", FieldLayoutConfig.class);
-            aprilTagFieldLayoutSupplier = fieldLayoutConfig::loadLayout;
 
             // Subsystems (order matters: drivebase is constructed first so robot state can reference it)
             driveBaseSubsystem          = new DriveBaseSubsystem(subsystemsConfig.driveBaseSubsystem);
@@ -166,7 +154,6 @@ public class RobotContainer {
             indexerSubsystem            = new IndexerSubsystem(subsystemsConfig.indexerSubsystem);
             aprilTagVisionSubsystem     = new AprilTagVisionSubsystem(
                     subsystemsConfig.aprilTagVisionSubsystem,
-                    aprilTagFieldLayoutSupplier.get(),
                     robotPoseSubsystem::addVisionMeasurement,
                     // This is only for simulation purposes, in real life the vision subsystem will feed directly into the robot state subsystem and
                     // not reset odometry

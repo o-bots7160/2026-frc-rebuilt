@@ -2,6 +2,7 @@ package frc.robot.subsystems.apriltagvision;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,9 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.shared.subsystems.VisionMeasurementConsumer;
+import frc.robot.subsystems.apriltagvision.AprilTagPoseEstimator.RejectionReason;
 import frc.robot.subsystems.apriltagvision.config.AprilTagVisionSubsystemConfig;
+import frc.robot.subsystems.apriltagvision.config.PoseFilterConfig;
 import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIO;
 import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIOInputsAutoLogged;
 import frc.robot.subsystems.apriltagvision.io.AprilTagVisionIOPhotonVision;
@@ -45,60 +48,71 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     }
 
     /** Immutable map of camera name to its runtime resources, built at construction time. */
-    private final Map<String, CameraInstance> cameras;
+    private final Map<String, CameraInstance>   cameras;
 
     /** Consumer that forwards accepted pose measurements to the robot state estimator. */
-    private final VisionMeasurementConsumer    consumer;
+    private final VisionMeasurementConsumer     consumer;
 
     /** AprilTag field layout used to resolve tag IDs into 3D poses for logging. */
-    private final AprilTagFieldLayout         fieldLayout;
+    private final AprilTagFieldLayout           fieldLayout;
 
     /** Filters and weights raw pose observations before forwarding them to the consumer. */
-    private final AprilTagPoseEstimator       poseEstimator;
+    private final AprilTagPoseEstimator         poseEstimator;
+
+    /** Per-cycle rejection reason counters for telemetry. */
+    private final Map<RejectionReason, Integer> rejectionCounts  = new EnumMap<>(RejectionReason.class);
 
     /** Reusable per-cycle list to avoid allocating new lists every loop. */
-    private final List<Pose3d> allTagPoses      = new ArrayList<>();
+    private final List<Pose3d>                  allTagPoses      = new ArrayList<>();
 
     /** Reusable per-cycle list to avoid allocating new lists every loop. */
-    private final List<Pose3d> allRobotPoses    = new ArrayList<>();
+    private final List<Pose3d>                  allRobotPoses    = new ArrayList<>();
 
     /** Reusable per-cycle list to avoid allocating new lists every loop. */
-    private final List<Pose3d> allAcceptedPoses = new ArrayList<>();
+    private final List<Pose3d>                  allAcceptedPoses = new ArrayList<>();
 
     /** Reusable per-cycle list to avoid allocating new lists every loop. */
-    private final List<Pose3d> allRejectedPoses = new ArrayList<>();
+    private final List<Pose3d>                  allRejectedPoses = new ArrayList<>();
 
     /** Guards the disabled-periodic log message so it prints only once per disable cycle. */
-    private boolean                           disabledPeriodicLogged;
+    private boolean                             disabledPeriodicLogged;
 
     /**
      * Creates a new AprilTagVisionSubsystem.
      * <p>
-     * Call this once during robot setup. The subsystem owns the camera I/O objects and streams accepted measurements to the consumer.
+     * Call this once during robot setup. The subsystem owns the camera I/O objects and streams accepted measurements to the consumer. The field
+     * layout is loaded from the subsystem config so each robot variant can specify its own AprilTag field layout.
      * </p>
      *
-     * @param config       configuration for vision processing and tunable thresholds
-     * @param fieldLayout  AprilTag field layout in meters
+     * @param config       configuration for vision processing, field layout, and tunable thresholds
      * @param consumer     consumer that receives accepted pose measurements with standard deviations
      * @param poseSupplier supplier for the current robot pose in meters and radians (used for simulation). Use raw odometry or ground-truth poses,
      *                     not the fused robot state pose, to avoid feedback loops in sim.
      */
     public AprilTagVisionSubsystem(
             AprilTagVisionSubsystemConfig config,
-            AprilTagFieldLayout fieldLayout,
             VisionMeasurementConsumer consumer,
             Supplier<Pose2d> poseSupplier) {
 
         super(config);
-        this.consumer      = consumer;
-        this.fieldLayout   = fieldLayout;
+        this.consumer    = consumer;
+        this.fieldLayout = config.loadLayout();
 
-        this.poseEstimator = new AprilTagPoseEstimator(new AprilTagPoseEstimator.Params(
-                fieldLayout.getFieldLength(),
-                fieldLayout.getFieldWidth(),
-                config.getMaximumAmbiguity(),
-                config.getLinearStandardDeviationBaseline(),
-                config.getAngularStandardDeviationBaseline()));
+        PoseFilterConfig poseFilter = config.getPoseFilter();
+        this.poseEstimator = new AprilTagPoseEstimator(
+                new AprilTagPoseEstimator.Params(
+                        fieldLayout.getFieldLength(),
+                        fieldLayout.getFieldWidth(),
+                        config.getMaximumAmbiguity(),
+                        config.getLinearStandardDeviationBaseline(),
+                        config.getAngularStandardDeviationBaseline(),
+                        poseFilter.getMaximumTagDistanceMeters(),
+                        poseFilter.getMaximumPoseDeviationMeters(),
+                        poseFilter.getMaximumMultiTagAmbiguity(),
+                        poseFilter.getMaximumZHeightMeters(),
+                        poseFilter.getIgnoredTagIds(),
+                        poseFilter.getTagSwitchStdDevMultiplier()),
+                poseSupplier);
 
         this.cameras       = createCameras(config, fieldLayout, poseSupplier);
 
@@ -106,8 +120,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     }
 
     /**
-     * Pulls the latest frames from each camera, filters pose observations, and forwards accepted
-     * measurements to the robot state estimator.
+     * Pulls the latest frames from each camera, filters pose observations, and forwards accepted measurements to the robot state estimator.
      */
     @Override
     public void periodic() {
@@ -126,6 +139,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         allRobotPoses.clear();
         allAcceptedPoses.clear();
         allRejectedPoses.clear();
+        for (RejectionReason reason : RejectionReason.values()) {
+            rejectionCounts.put(reason, 0);
+        }
 
         for (var camera : cameras.values()) {
             // Pull the newest data from this camera and send raw inputs to the logger.
@@ -209,8 +225,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /**
      * Evaluates pose observations from a single camera and forwards accepted measurements.
      * <p>
-     * Each observation is passed through the {@link AprilTagPoseEstimator}. Accepted poses are
-     * forwarded to the consumer; rejected poses are collected for diagnostic logging.
+     * Each observation is passed through the {@link AprilTagPoseEstimator}. Accepted poses are forwarded to the consumer; rejected poses are
+     * collected for diagnostic logging.
      * </p>
      *
      * @param cameraName       human-readable camera name for per-camera logging
@@ -241,16 +257,18 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             robotPoses.add(poseObservation.pose());
 
             // Let the estimator decide if this observation is trustworthy.
-            var maybeMeasurement = poseEstimator.estimate(poseObservation);
-            if (maybeMeasurement.isEmpty()) {
+            var result = poseEstimator.estimate(poseObservation, cameraName);
+            if (result.rejectionReason().isPresent()) {
                 // Store rejected poses so we can diagnose filtering issues.
                 rejectedPoses.add(poseObservation.pose());
+                RejectionReason reason = result.rejectionReason().get();
+                rejectionCounts.merge(reason, 1, Integer::sum);
                 continue;
             }
 
             // Forward accepted measurements to the robot state estimator.
             acceptedPoses.add(poseObservation.pose());
-            var measurement = maybeMeasurement.get();
+            var measurement = result.measurement().get();
             consumer.accept(
                     measurement.pose(),
                     measurement.timestampSeconds(),
@@ -321,12 +339,14 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         // Summary logs help spot system-wide issues without checking each camera.
         log.recordOutput("Summary/AcceptedCount", acceptedPoses.size());
         log.recordOutput("Summary/RejectedCount", rejectedPoses.size());
-        if (isVerboseLoggingEnabled()) {
-            log.recordOutput("Summary/TagPoses", tagPoses.toArray(new Pose3d[0]));
-            log.recordOutput("Summary/RobotPoses", robotPoses.toArray(new Pose3d[0]));
-            log.recordOutput("Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
-            log.recordOutput("Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+        for (var entry : rejectionCounts.entrySet()) {
+            log.recordOutput("Summary/Rejected/" + entry.getKey().name(), entry.getValue());
         }
+
+        log.recordVerboseOutput("Summary/TagPoses", tagPoses.toArray(new Pose3d[0]));
+        log.recordVerboseOutput("Summary/RobotPoses", robotPoses.toArray(new Pose3d[0]));
+        log.recordVerboseOutput("Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
+        log.recordVerboseOutput("Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
     }
 
 }
