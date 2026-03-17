@@ -63,6 +63,24 @@ public class PoseFilterConfig extends AbstractConfig {
     public int initialPoseAcceptanceCount = 3;
 
     /**
+     * Standard deviation for linear (x/y) pose measurements at 1 meter with a single tag. Used as the baseline that is scaled by tag distance and
+     * count to produce the final measurement uncertainty.
+     */
+    public double linearStandardDeviationBaseline = 0.08;
+
+    /**
+     * Standard deviation for angular (rotation) pose measurements at 1 meter with a single tag. Used as the baseline that is scaled by tag distance
+     * and count to produce the final measurement uncertainty.
+     */
+    public double angularStandardDeviationBaseline = 1.0;
+
+    /**
+     * Maximum pose ambiguity allowed for single-tag observations. Observations with higher ambiguity are rejected. Complements
+     * {@link #maximumMultiTagAmbiguity} which applies to multi-tag observations.
+     */
+    public double maximumAmbiguity = 0.15;
+
+    /**
      * Returns the maximum average tag distance threshold.
      *
      * @return maximum tag distance in meters
@@ -123,5 +141,32 @@ public class PoseFilterConfig extends AbstractConfig {
      */
     public int getInitialPoseAcceptanceCount() {
         return initialPoseAcceptanceCount;
+    }
+
+    /**
+     * Returns the linear standard deviation baseline for pose estimation.
+     *
+     * @return linear std dev baseline in meters
+     */
+    public double getLinearStandardDeviationBaseline() {
+        return readTunableNumber("linearStandardDeviationBaseline", linearStandardDeviationBaseline);
+    }
+
+    /**
+     * Returns the angular standard deviation baseline for pose estimation.
+     *
+     * @return angular std dev baseline in radians
+     */
+    public double getAngularStandardDeviationBaseline() {
+        return readTunableNumber("angularStandardDeviationBaseline", angularStandardDeviationBaseline);
+    }
+
+    /**
+     * Returns the maximum ambiguity threshold for single-tag observations.
+     *
+     * @return max ambiguity (dimensionless)
+     */
+    public double getMaximumAmbiguity() {
+        return readTunableNumber("maximumAmbiguity", maximumAmbiguity);
     }
 }

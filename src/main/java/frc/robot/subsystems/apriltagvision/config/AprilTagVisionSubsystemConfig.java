@@ -155,48 +155,6 @@ public class AprilTagVisionSubsystemConfig extends AbstractSubsystemConfig {
     public PoseFilterConfig             poseFilter = new PoseFilterConfig();
 
     /**
-     * Standard deviation for angular (rotation) pose measurements at 1 meter with a single tag.
-     */
-    public double                       angularStandardDeviationBaseline;
-
-    /**
-     * Standard deviation for linear (x/y) pose measurements at 1 meter with a single tag.
-     */
-    public double                       linearStandardDeviationBaseline;
-
-    /**
-     * Maximum pose ambiguity allowed for single-tag observations. Observations with higher ambiguity are rejected.
-     */
-    public double                       maximumAmbiguity;
-
-    /**
-     * Returns the angular standard deviation baseline for pose estimation.
-     *
-     * @return angular std dev baseline (radians)
-     */
-    public double getAngularStandardDeviationBaseline() {
-        return readTunableNumber("angularStandardDeviationBaseline", angularStandardDeviationBaseline);
-    }
-
-    /**
-     * Returns the linear standard deviation baseline for pose estimation.
-     *
-     * @return linear std dev baseline (meters)
-     */
-    public double getLinearStandardDeviationBaseline() {
-        return readTunableNumber("linearStandardDeviationBaseline", linearStandardDeviationBaseline);
-    }
-
-    /**
-     * Returns the maximum ambiguity threshold for single-tag observations.
-     *
-     * @return max ambiguity (dimensionless)
-     */
-    public double getMaximumAmbiguity() {
-        return readTunableNumber("maximumAmbiguity", maximumAmbiguity);
-    }
-
-    /**
      * Returns the configured camera map.
      *
      * @return map of camera names to robot-to-camera transforms

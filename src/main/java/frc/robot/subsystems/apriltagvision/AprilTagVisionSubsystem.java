@@ -115,9 +115,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 new AprilTagPoseEstimator.Params(
                         fieldLayout.getFieldLength(),
                         fieldLayout.getFieldWidth(),
-                        config.getMaximumAmbiguity(),
-                        config.getLinearStandardDeviationBaseline(),
-                        config.getAngularStandardDeviationBaseline(),
+                        poseFilter.getMaximumAmbiguity(),
+                        poseFilter.getLinearStandardDeviationBaseline(),
+                        poseFilter.getAngularStandardDeviationBaseline(),
                         poseFilter.getMaximumTagDistanceMeters(),
                         poseFilter.getMaximumPoseDeviationMeters(),
                         poseFilter.getMaximumMultiTagAmbiguity(),
