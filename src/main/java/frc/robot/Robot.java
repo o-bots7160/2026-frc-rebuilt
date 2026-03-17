@@ -181,8 +181,9 @@ public class Robot extends LoggedRobot {
     /**
      * Seeds the robot pose and cancels any lingering autonomous command when teleop begins.
      * <p>
-     * On a real robot the pose is reset from the latest vision measurement so driver-relative controls start from an accurate field position. In
-     * simulation a computed start pose is used instead.
+     * In simulation a computed start pose is used. On real hardware without FMS, the pose is reset from the latest vision measurement so
+     * driver-relative controls start from an accurate field position. During competition (FMS attached), the vision subsystem's automatic odometry
+     * reset handles pose seeding, so an explicit reset here is skipped to avoid overwriting the already-converged estimate.
      * </p>
      */
     @Override
@@ -190,7 +191,7 @@ public class Robot extends LoggedRobot {
         if (isSimulation()) {
             Pose2d startPose = getSimulationStartPose();
             m_robotContainer.resetPose(startPose);
-        } else {
+        } else if (!RobotEnvironment.isFMSAttached()) {
             m_robotContainer.resetPoseFromVision();
         }
 
