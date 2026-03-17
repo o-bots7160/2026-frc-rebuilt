@@ -3,16 +3,16 @@
     "leftStickYResponseExponent": 2.0,
     "leftStickXResponseExponent": 2.0,
     "rightStickXResponseExponent": 2.0,
-    "normalSpeedScale": 0.8,
-    "sprintSpeedScale": 1.0,
-    "slowSpeedScale": 0.4,
+    "normalSpeedScale": 0.5,
+    "sprintSpeedScale": 0.75,
+    "slowSpeedScale": 0.25,
     "triggerDeadband": 0.1,
     "joystickDeadband": 0.08,
     "tuningEnabled": false
   },
   "driveBaseSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "swerveConfigDirectory": "swerve",
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
@@ -34,8 +34,8 @@
     "sysId": {
       "rampRateVoltsPerSecond": 1.0,
       "stepVoltage": 6.0,
-      "delaySeconds": 10.0,
-      "quasistaticTimeoutSeconds": 40.0,
+      "delaySeconds": 2.0,
+      "quasistaticTimeoutSeconds": 16.0,
       "dynamicTimeoutSeconds": 4.0
     }
   },
@@ -187,7 +187,7 @@
     "unjamReverseDurationSeconds": 0.3
   },
   "turretSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": false,
     "turretMotorConfig": {
       "useSetpointLimits": true,
