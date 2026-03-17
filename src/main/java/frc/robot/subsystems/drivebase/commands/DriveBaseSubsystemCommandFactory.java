@@ -1,22 +1,44 @@
 package frc.robot.subsystems.drivebase.commands;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.shared.commands.AbstractSubsystemCommandFactory;
+import frc.robot.shared.config.SysIdRoutineConfig;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
+import swervelib.SwerveModule;
+import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
  * Factory that creates drive base commands and wires default behaviors.
  */
 public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFactory<DriveBaseSubsystem> {
+
+    /** Module index for the front-left swerve module in the YAGSL modules array. */
+    public static final int MODULE_FRONT_LEFT  = 0;
+
+    /** Module index for the front-right swerve module in the YAGSL modules array. */
+    public static final int MODULE_FRONT_RIGHT = 1;
+
+    /** Module index for the back-left swerve module in the YAGSL modules array. */
+    public static final int MODULE_BACK_LEFT   = 2;
+
+    /** Module index for the back-right swerve module in the YAGSL modules array. */
+    public static final int MODULE_BACK_RIGHT  = 3;
+
+    /** Human-readable names for each module index, matching the YAGSL swervedrive.json ordering. */
+    private static final String[] MODULE_NAMES = {"FrontLeft", "FrontRight", "BackLeft", "BackRight"};
 
     /**
      * Creates a factory that produces commands operating on the provided drive base subsystem.
@@ -67,7 +89,8 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
     }
 
     /**
-     * Creates a SysId command that exercises the drive motors using the configured YAGSL characterization routine.
+     * Creates a SysId command that exercises all four drive motors simultaneously using the configured YAGSL
+     * characterization routine. Timing is read from the drivebase SysId config.
      *
      * @return command suitable for binding to a dashboard/button for on-robot testing
      */
@@ -81,12 +104,23 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
             return Commands.print("Drive SysId skipped: swerve drive not configured.");
         }
 
-        SysIdRoutine routine = SwerveDriveTest.setDriveSysIdRoutine(new SysIdRoutine.Config(), subsystem, drive, 6.0, false);
-        return SwerveDriveTest.generateSysIdCommand(routine, 3.0, 3.0, 3.0);
+        SysIdRoutineConfig sysIdConfig = subsystem.getConfig().sysId;
+        SysIdRoutine.Config routineConfig = new SysIdRoutine.Config(
+                Volts.per(edu.wpi.first.units.Units.Second).of(sysIdConfig.getRampRateVoltsPerSecond()),
+                Volts.of(sysIdConfig.getStepVoltage()),
+                Seconds.of(sysIdConfig.getQuasistaticTimeoutSeconds() + sysIdConfig.getDynamicTimeoutSeconds()
+                        + sysIdConfig.getDelaySeconds() * 3));
+        SysIdRoutine routine = SwerveDriveTest.setDriveSysIdRoutine(
+                routineConfig, subsystem, drive, sysIdConfig.getStepVoltage(), false);
+        return SwerveDriveTest.generateSysIdCommand(
+                routine, sysIdConfig.getDelaySeconds(),
+                sysIdConfig.getQuasistaticTimeoutSeconds(),
+                sysIdConfig.getDynamicTimeoutSeconds());
     }
 
     /**
-     * Creates a SysId command that exercises the steer (angle) motors using the configured YAGSL characterization routine.
+     * Creates a SysId command that exercises all four steer (angle) motors simultaneously using the configured YAGSL
+     * characterization routine. Timing is read from the drivebase SysId config.
      *
      * @return command suitable for binding to a dashboard/button for on-robot testing
      */
@@ -100,8 +134,138 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
             return Commands.print("Angle SysId skipped: swerve drive not configured.");
         }
 
-        SysIdRoutine routine = SwerveDriveTest.setAngleSysIdRoutine(new SysIdRoutine.Config(), subsystem, drive);
-        return SwerveDriveTest.generateSysIdCommand(routine, 3.0, 4.0, 4.0);
+        SysIdRoutineConfig sysIdConfig = subsystem.getConfig().sysId;
+        SysIdRoutine.Config routineConfig = new SysIdRoutine.Config(
+                Volts.per(edu.wpi.first.units.Units.Second).of(sysIdConfig.getRampRateVoltsPerSecond()),
+                Volts.of(sysIdConfig.getStepVoltage()),
+                Seconds.of(sysIdConfig.getQuasistaticTimeoutSeconds() + sysIdConfig.getDynamicTimeoutSeconds()
+                        + sysIdConfig.getDelaySeconds() * 3));
+        SysIdRoutine routine = SwerveDriveTest.setAngleSysIdRoutine(routineConfig, subsystem, drive);
+        return SwerveDriveTest.generateSysIdCommand(
+                routine, sysIdConfig.getDelaySeconds(),
+                sysIdConfig.getQuasistaticTimeoutSeconds(),
+                sysIdConfig.getDynamicTimeoutSeconds());
+    }
+
+    /**
+     * Creates a SysId command that exercises a single drive motor identified by module index. All other drive motors
+     * are held at zero voltage. The module is centered (angle set to 0 degrees) before the test begins.
+     * <p>
+     * Use the {@code MODULE_FRONT_LEFT}, {@code MODULE_FRONT_RIGHT}, {@code MODULE_BACK_LEFT}, and
+     * {@code MODULE_BACK_RIGHT} constants for the module index.
+     * </p>
+     *
+     * @param moduleIndex index of the swerve module (0 = front-left, 1 = front-right, 2 = back-left, 3 = back-right)
+     * @return command that runs a full SysId sweep on the specified drive motor
+     */
+    public Command createDriveSysIdCommandForModule(int moduleIndex) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Drive SysId skipped: drive base disabled.");
+        }
+
+        SwerveDrive drive = subsystem.getSwerveDrive();
+        if (drive == null) {
+            return Commands.print("Drive SysId skipped: swerve drive not configured.");
+        }
+
+        SwerveModule[] modules = drive.getModules();
+        if (moduleIndex < 0 || moduleIndex >= modules.length) {
+            return Commands.print("Drive SysId skipped: invalid module index " + moduleIndex + ".");
+        }
+
+        SwerveModule targetModule = modules[moduleIndex];
+        String moduleName = MODULE_NAMES[moduleIndex];
+        SysIdRoutineConfig sysIdConfig = subsystem.getConfig().sysId;
+
+        SysIdRoutine.Config routineConfig = new SysIdRoutine.Config(
+                Volts.per(edu.wpi.first.units.Units.Second).of(sysIdConfig.getRampRateVoltsPerSecond()),
+                Volts.of(sysIdConfig.getStepVoltage()),
+                Seconds.of(sysIdConfig.getQuasistaticTimeoutSeconds() + sysIdConfig.getDynamicTimeoutSeconds()
+                        + sysIdConfig.getDelaySeconds() * 3));
+
+        SysIdRoutine routine = new SysIdRoutine(routineConfig, new SysIdRoutine.Mechanism(
+                (Voltage voltage) -> {
+                    // Center the target module and apply voltage only to its drive motor.
+                    if (!SwerveDriveTelemetry.isSimulation) {
+                        targetModule.getAngleMotor().setReference(0, 0);
+                        targetModule.getDriveMotor().setVoltage(voltage.in(Volts));
+                        // Hold all other drive motors at zero.
+                        for (int i = 0; i < modules.length; i++) {
+                            if (i != moduleIndex) {
+                                modules[i].getDriveMotor().setVoltage(0);
+                            }
+                        }
+                    }
+                },
+                log -> SwerveDriveTest.logDriveMotorVoltage(targetModule, log),
+                subsystem,
+                "drive-" + moduleName));
+
+        return SwerveDriveTest.generateSysIdCommand(
+                routine, sysIdConfig.getDelaySeconds(),
+                sysIdConfig.getQuasistaticTimeoutSeconds(),
+                sysIdConfig.getDynamicTimeoutSeconds());
+    }
+
+    /**
+     * Creates a SysId command that exercises a single angle (steer) motor identified by module index. All other angle
+     * motors are held at zero voltage and all drive motors are held at zero. This isolates the angular response of a
+     * single module for characterization.
+     * <p>
+     * Use the {@code MODULE_FRONT_LEFT}, {@code MODULE_FRONT_RIGHT}, {@code MODULE_BACK_LEFT}, and
+     * {@code MODULE_BACK_RIGHT} constants for the module index.
+     * </p>
+     *
+     * @param moduleIndex index of the swerve module (0 = front-left, 1 = front-right, 2 = back-left, 3 = back-right)
+     * @return command that runs a full SysId sweep on the specified angle motor
+     */
+    public Command createAngleSysIdCommandForModule(int moduleIndex) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Angle SysId skipped: drive base disabled.");
+        }
+
+        SwerveDrive drive = subsystem.getSwerveDrive();
+        if (drive == null) {
+            return Commands.print("Angle SysId skipped: swerve drive not configured.");
+        }
+
+        SwerveModule[] modules = drive.getModules();
+        if (moduleIndex < 0 || moduleIndex >= modules.length) {
+            return Commands.print("Angle SysId skipped: invalid module index " + moduleIndex + ".");
+        }
+
+        SwerveModule targetModule = modules[moduleIndex];
+        String moduleName = MODULE_NAMES[moduleIndex];
+        SysIdRoutineConfig sysIdConfig = subsystem.getConfig().sysId;
+
+        SysIdRoutine.Config routineConfig = new SysIdRoutine.Config(
+                Volts.per(edu.wpi.first.units.Units.Second).of(sysIdConfig.getRampRateVoltsPerSecond()),
+                Volts.of(sysIdConfig.getStepVoltage()),
+                Seconds.of(sysIdConfig.getQuasistaticTimeoutSeconds() + sysIdConfig.getDynamicTimeoutSeconds()
+                        + sysIdConfig.getDelaySeconds() * 3));
+
+        SysIdRoutine routine = new SysIdRoutine(routineConfig, new SysIdRoutine.Mechanism(
+                (Voltage voltage) -> {
+                    if (!SwerveDriveTelemetry.isSimulation) {
+                        // Apply voltage only to the target angle motor.
+                        targetModule.getAngleMotor().setVoltage(voltage.in(Volts));
+                        // Hold all drive motors and other angle motors at zero.
+                        for (int i = 0; i < modules.length; i++) {
+                            modules[i].getDriveMotor().setVoltage(0);
+                            if (i != moduleIndex) {
+                                modules[i].getAngleMotor().setVoltage(0);
+                            }
+                        }
+                    }
+                },
+                log -> SwerveDriveTest.logAngularMotorVoltage(targetModule, log),
+                subsystem,
+                "angle-" + moduleName));
+
+        return SwerveDriveTest.generateSysIdCommand(
+                routine, sysIdConfig.getDelaySeconds(),
+                sysIdConfig.getQuasistaticTimeoutSeconds(),
+                sysIdConfig.getDynamicTimeoutSeconds());
     }
 
     /**

@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.util.Units;
 import frc.robot.shared.config.AbstractSubsystemConfig;
 import frc.robot.shared.config.PidConfig;
+import frc.robot.shared.config.SysIdRoutineConfig;
 
 /**
  * Configuration bundle for the drive base subsystem. The values are mirrored to SmartDashboard so they can be tuned live without redeploying
@@ -32,6 +33,11 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
      * direction. Used by the snap-to-field-facing command to decide whether to flip to the opposite heading.
      */
     public double    fieldFacingMarginDegrees = 15.0;
+
+    /**
+     * SysId routine parameters shared by all drive base motors (drive and angle).
+     */
+    public SysIdRoutineConfig sysId            = new SysIdRoutineConfig();
 
     /**
      * PID gains for the path following translation controller.

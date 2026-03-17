@@ -281,28 +281,88 @@ mechanical change.
 ### Step 7: Run SysId for drive and angle motors (optional)
 
 WPILib's System Identification (SysId) tool can characterize the drive and steer
-motors to produce mathematically optimal feedforward and feedback gains. This
-step is optional but recommended for competition-level accuracy.
+motors to produce feedback gains. This step is optional but recommended for
+competition-level accuracy.
 
-The `DriveBaseSubsystemCommandFactory` provides two commands:
+#### What SysId results are used for
+
+YAGSL only uses **kP** for drive motors (velocity P-loop) and **kP + kD** for
+angle motors (position PD-loop). The feedforward values (kS, kV, kA) produced by
+SysId are **not wired into YAGSL's module control pipeline** — they serve as
+diagnostic data for comparing module health and flagging mechanical issues
+(e.g., a module with a significantly different kV likely has a problem).
+
+#### SysId configuration
+
+All SysId timing is read from the `sysId` block in `subsystems.json` under
+`driveBaseSubsystem`. The same config applies to both grouped and per-module
+tests:
+
+| Parameter                   | Default | Purpose                                |
+| --------------------------- | ------- | -------------------------------------- |
+| `rampRateVoltsPerSecond`    | 1.0     | Quasistatic voltage ramp rate (V/s)    |
+| `stepVoltage`               | 6.0     | Dynamic test step voltage (V)          |
+| `delaySeconds`              | 10.0    | Pause between test phases (s)          |
+| `quasistaticTimeoutSeconds` | 40.0    | Duration of each quasistatic phase (s) |
+| `dynamicTimeoutSeconds`     | 4.0     | Duration of each dynamic phase (s)     |
+
+#### Grouped SysId (all motors at once)
+
+The `DriveBaseSubsystemCommandFactory` provides two commands that test all four
+motors of the same type simultaneously:
 
 - `createDriveSysIdCommand()` — exercises all four drive motors.
 - `createAngleSysIdCommand()` — exercises all four steer motors.
 
 These use YAGSL's built-in `SwerveDriveTest` routines, which handle the
-quasistatic ramp, dynamic step, and data logging automatically.
+quasistatic ramp, dynamic step, and data logging automatically. In tuning mode,
+the driver Y button runs angle SysId followed by drive SysId in sequence.
 
-**To run SysId:**
+#### Per-module SysId (one motor at a time)
 
-1. Bind the SysId commands to controller buttons in `TriggerBindings`.
+Per-module SysId isolates a single motor for characterization while holding all
+other motors at zero voltage. This is valuable because each module may have
+different friction, gear mesh, or wiring characteristics.
+
+The factory provides two parameterized methods:
+
+- `createDriveSysIdCommandForModule(int moduleIndex)` — exercises one drive
+  motor.
+- `createAngleSysIdCommandForModule(int moduleIndex)` — exercises one angle
+  motor.
+
+Module index constants are defined on `DriveBaseSubsystemCommandFactory`:
+`MODULE_FRONT_LEFT (0)`, `MODULE_FRONT_RIGHT (1)`, `MODULE_BACK_LEFT (2)`,
+`MODULE_BACK_RIGHT (3)`.
+
+In tuning mode (`tuningEnabled = true`), the operator controller is mapped to
+per-module SysId:
+
+| Button        | Motor Type | Module      |
+| ------------- | ---------- | ----------- |
+| A             | Drive      | Front Left  |
+| B             | Drive      | Front Right |
+| X             | Drive      | Back Left   |
+| Y             | Drive      | Back Right  |
+| Left Bumper   | Angle      | Front Left  |
+| Right Bumper  | Angle      | Front Right |
+| Left Trigger  | Angle      | Back Left   |
+| Right Trigger | Angle      | Back Right  |
+
+**To run per-module SysId:**
+
+1. Set `tuningEnabled` to `true` in `subsystems.json` and restart the robot
+   code.
 2. Place the robot on blocks with wheels free to spin.
-3. Enable teleop and trigger the command. It runs all four test phases
-   (quasistatic forward, quasistatic reverse, dynamic forward, dynamic reverse)
-   automatically.
-4. Disable the robot and pull the WPILog file.
-5. Open WPILib's SysId analysis tool, load the log, and read kS, kV, kA, and kP
-   from the results.
-6. Enter the gains into the module JSON files.
+3. Enable teleop and press the operator button for the motor you want to test.
+   Hold the button — it runs all four test phases automatically. Release to
+   cancel early.
+4. Repeat for each motor.
+5. Disable the robot and pull the WPILog file.
+6. Open WPILib's SysId analysis tool, load the log, and read kP from the results
+   for each drive motor.
+7. Enter the kP values into each module JSON file's `"drive"` → `"p"` field. Use
+   kS/kV/kA to compare modules and flag outliers.
 
 > **Note:** The YAGSL swerve SysId workflow is different from the project's
 > `SysIdHelper`-based workflow used by other subsystems (turret, shooter, etc.).

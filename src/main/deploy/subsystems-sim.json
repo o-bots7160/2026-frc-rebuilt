@@ -13,7 +13,7 @@
   "driveBaseSubsystem": {
     "enabled": true,
     "verbose": false,
-    "swerveConfigDirectory": "swerve-test",
+    "swerveConfigDirectory": "swerve-sim",
     "maximumLinearSpeedFeetPerSecond": 25.1,
     "maximumAngularSpeedDegreesPerSecond": 800,
     "headingCorrectionEnabled": false,
@@ -30,7 +30,14 @@
     "simulationTranslationScale": 0.4,
     "simulationOmegaScale": 0.5,
     "rotationToleranceDegrees": 2,
-    "fieldFacingMarginDegrees": 15
+    "fieldFacingMarginDegrees": 15,
+    "sysId": {
+      "rampRateVoltsPerSecond": 1.0,
+      "stepVoltage": 6.0,
+      "delaySeconds": 10.0,
+      "quasistaticTimeoutSeconds": 40.0,
+      "dynamicTimeoutSeconds": 4.0
+    }
   },
   "intakeSubsystem": {
     "enabled": true,

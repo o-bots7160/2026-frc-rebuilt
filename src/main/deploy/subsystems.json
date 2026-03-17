@@ -30,7 +30,14 @@
     "simulationTranslationScale": 0.4,
     "simulationOmegaScale": 0.5,
     "rotationToleranceDegrees": 2.0,
-    "fieldFacingMarginDegrees": 15.0
+    "fieldFacingMarginDegrees": 15.0,
+    "sysId": {
+      "rampRateVoltsPerSecond": 1.0,
+      "stepVoltage": 6.0,
+      "delaySeconds": 10.0,
+      "quasistaticTimeoutSeconds": 40.0,
+      "dynamicTimeoutSeconds": 4.0
+    }
   },
   "intakeSubsystem": {
     "enabled": true,

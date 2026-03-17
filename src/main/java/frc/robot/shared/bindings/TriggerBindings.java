@@ -301,6 +301,27 @@ public class TriggerBindings {
         driverController.y().whileTrue(
                 driveBaseCommandFactory.createAngleSysIdCommand()
                         .andThen(driveBaseCommandFactory.createDriveSysIdCommand()));
+
+        // Operator controller: per-module SysId characterization.
+        // Drive motors: A = front-left, B = front-right, X = back-left, Y = back-right.
+        operatorController.a().whileTrue(
+                driveBaseCommandFactory.createDriveSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_FRONT_LEFT));
+        operatorController.b().whileTrue(
+                driveBaseCommandFactory.createDriveSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_FRONT_RIGHT));
+        operatorController.x().whileTrue(
+                driveBaseCommandFactory.createDriveSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_BACK_LEFT));
+        operatorController.y().whileTrue(
+                driveBaseCommandFactory.createDriveSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_BACK_RIGHT));
+
+        // Angle motors: LB = front-left, RB = front-right, LT = back-left, RT = back-right.
+        operatorController.leftBumper().whileTrue(
+                driveBaseCommandFactory.createAngleSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_FRONT_LEFT));
+        operatorController.rightBumper().whileTrue(
+                driveBaseCommandFactory.createAngleSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_FRONT_RIGHT));
+        operatorController.leftTrigger().whileTrue(
+                driveBaseCommandFactory.createAngleSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_BACK_LEFT));
+        operatorController.rightTrigger().whileTrue(
+                driveBaseCommandFactory.createAngleSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_BACK_RIGHT));
     }
 
     /**
