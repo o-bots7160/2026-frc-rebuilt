@@ -242,8 +242,8 @@ public class AprilTagPoseEstimator {
             return Optional.of(RejectionReason.MULTI_TAG_AMBIGUITY);
         }
 
-        // Reject tags that are too far away for reliable pose estimation.
-        if (observation.averageTagDistance() > params.maxTagDistanceMeters()) {
+        // Reject observations where any single tag is too far away for reliable pose estimation.
+        if (observation.maxTagDistance() > params.maxTagDistanceMeters()) {
             return Optional.of(RejectionReason.TOO_FAR);
         }
 

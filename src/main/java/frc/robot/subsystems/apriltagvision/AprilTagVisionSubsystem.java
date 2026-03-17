@@ -127,7 +127,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                         poseFilter.getInitialPoseAcceptanceCount()),
                 poseSupplier);
 
-        this.cameras       = createCameras(config, fieldLayout, poseSupplier);
+        this.cameras       = createCameras(config, fieldLayout, poseSupplier,
+                poseFilter.getMaximumTagDistanceMeters());
 
         log.info("Initialized with " + cameras.size() + " camera(s)");
     }
@@ -181,15 +182,17 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /**
      * Builds and returns an immutable map of camera instances from the subsystem config.
      *
-     * @param config       vision config containing camera names and transforms
-     * @param fieldLayout  AprilTag field layout for sim camera setup
-     * @param poseSupplier robot pose supplier used by sim cameras
+     * @param config               vision config containing camera names and transforms
+     * @param fieldLayout          AprilTag field layout for sim camera setup
+     * @param poseSupplier         robot pose supplier used by sim cameras
+     * @param maxTagDistanceMeters maximum tag distance in meters passed to IO for per-tag filtering
      * @return unmodifiable map of camera name to {@link CameraInstance}
      */
     private Map<String, CameraInstance> createCameras(
             AprilTagVisionSubsystemConfig config,
             AprilTagFieldLayout fieldLayout,
-            Supplier<Pose2d> poseSupplier) {
+            Supplier<Pose2d> poseSupplier,
+            double maxTagDistanceMeters) {
 
         var configCameras = config.getCameras();
         if (configCameras.isEmpty()) {
@@ -212,6 +215,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                         cameraName,
                         transform3d,
                         fieldLayout,
+                        maxTagDistanceMeters,
                         poseSupplier);
                 log.info("Created simulated camera: " + cameraName);
             } else {
@@ -219,7 +223,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 visionIo = new AprilTagVisionIOPhotonVision(
                         cameraName,
                         transform3d,
-                        fieldLayout);
+                        fieldLayout,
+                        maxTagDistanceMeters);
                 log.info("Created real camera: " + cameraName);
             }
 

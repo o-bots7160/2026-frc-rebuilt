@@ -1,6 +1,7 @@
 package frc.robot.subsystems.apriltagvision.io;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -52,19 +53,27 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
     protected final AprilTagFieldLayout fieldLayout;
 
     /**
+     * Maximum distance in meters from the camera to a tag before the tag is excluded from observations.
+     */
+    protected final double              maxTagDistanceMeters;
+
+    /**
      * Creates a PhotonVision-backed AprilTag IO implementation.
      *
-     * @param cameraName    name of the PhotonVision camera instance
-     * @param robotToCamera robot-to-camera transform in meters and radians
-     * @param fieldLayout   AprilTag field layout used to look up tag poses
+     * @param cameraName           name of the PhotonVision camera instance
+     * @param robotToCamera        robot-to-camera transform in meters and radians
+     * @param fieldLayout          AprilTag field layout used to look up tag poses
+     * @param maxTagDistanceMeters maximum distance in meters from camera to a tag; tags beyond this are excluded
      */
     public AprilTagVisionIOPhotonVision(
             String cameraName,
             Transform3d robotToCamera,
-            AprilTagFieldLayout fieldLayout) {
-        this.camera        = new PhotonCamera(cameraName);
-        this.robotToCamera = robotToCamera;
-        this.fieldLayout   = fieldLayout;
+            AprilTagFieldLayout fieldLayout,
+            double maxTagDistanceMeters) {
+        this.camera               = new PhotonCamera(cameraName);
+        this.robotToCamera        = robotToCamera;
+        this.fieldLayout          = fieldLayout;
+        this.maxTagDistanceMeters = maxTagDistanceMeters;
     }
 
     @Override
@@ -113,13 +122,26 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
 
     /**
      * Extracts a pose observation from the frame, preferring multi-tag results when available.
+     * <p>
+     * When a multi-tag result is present but one or more tags exceed the maximum distance, the
+     * multi-tag PnP solution is discarded because far tags add noise to the solve. A single-tag
+     * observation from the closest in-range target is produced instead.
+     * </p>
      */
     private Optional<PoseObservation> extractPoseObservation(
             final PhotonPipelineResult pipelineResult,
             Set<Integer> observedTagIds) {
 
         if (pipelineResult.multitagResult.isPresent()) {
-            return extractMultiTagObservation(pipelineResult, observedTagIds);
+            boolean hasFarTag = pipelineResult.targets.stream()
+                    .anyMatch(t -> t.bestCameraToTarget.getTranslation().getNorm() > maxTagDistanceMeters);
+
+            if (!hasFarTag) {
+                return extractMultiTagObservation(pipelineResult, observedTagIds);
+            }
+
+            // Far tags contaminate the multi-tag PnP solve. Fall back to closest in-range tag.
+            return extractClosestInRangeObservation(pipelineResult, observedTagIds);
         }
 
         if (!pipelineResult.targets.isEmpty()) {
@@ -140,6 +162,7 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
 
         Pose3d               robotPose          = calculateRobotPoseFromCamera(multitagResult.estimatedPose.best);
         double               averageTagDistance = calculateAverageTagDistance(pipelineResult.targets);
+        double               maxTagDistance     = calculateMaxTagDistance(pipelineResult.targets);
         int                  tagCount           = multitagResult.fiducialIDsUsed.size();
 
         observedTagIds.addAll(multitagResult.fiducialIDsUsed.stream()
@@ -156,6 +179,7 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
                 multitagResult.estimatedPose.ambiguity,
                 tagCount,
                 averageTagDistance,
+                maxTagDistance,
                 tagIdArray));
     }
 
@@ -183,6 +207,48 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
                 robotPose,
                 target.poseAmbiguity,
                 1,
+                tagDistance,
+                tagDistance,
+                new int[] { target.fiducialId }));
+    }
+
+    /**
+     * Finds the closest target within the maximum distance and produces a single-tag observation.
+     * <p>
+     * All visible tag IDs are still added to the observed set for diagnostic logging, even though
+     * only the closest in-range tag is used for the pose estimate.
+     * </p>
+     */
+    private Optional<PoseObservation> extractClosestInRangeObservation(
+            final PhotonPipelineResult pipelineResult,
+            Set<Integer> observedTagIds) {
+
+        // Record all visible tags for logging regardless of distance.
+        pipelineResult.targets.forEach(t -> observedTagIds.add(t.fiducialId));
+
+        Optional<PhotonTrackedTarget> closestTarget = pipelineResult.targets.stream()
+                .filter(t -> t.bestCameraToTarget.getTranslation().getNorm() <= maxTagDistanceMeters)
+                .min(Comparator.comparingDouble(t -> t.bestCameraToTarget.getTranslation().getNorm()));
+
+        if (closestTarget.isEmpty()) {
+            return Optional.empty();
+        }
+
+        PhotonTrackedTarget target  = closestTarget.get();
+        Optional<Pose3d>    tagPose = fieldLayout.getTagPose(target.fiducialId);
+        if (tagPose.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Pose3d robotPose  = calculateRobotPoseFromTag(tagPose.get(), target.bestCameraToTarget);
+        double tagDistance = target.bestCameraToTarget.getTranslation().getNorm();
+
+        return Optional.of(new PoseObservation(
+                pipelineResult.getTimestampSeconds(),
+                robotPose,
+                target.poseAmbiguity,
+                1,
+                tagDistance,
                 tagDistance,
                 new int[] { target.fiducialId }));
     }
@@ -219,5 +285,19 @@ public class AprilTagVisionIOPhotonVision implements AprilTagVisionIO {
                 .sum();
 
         return totalDistance / targets.size();
+    }
+
+    /**
+     * Computes the maximum distance from camera to any single visible tag.
+     */
+    private double calculateMaxTagDistance(final List<PhotonTrackedTarget> targets) {
+        if (targets.isEmpty()) {
+            return 0.0;
+        }
+
+        return targets.stream()
+                .mapToDouble(t -> t.bestCameraToTarget.getTranslation().getNorm())
+                .max()
+                .orElse(0.0);
     }
 }

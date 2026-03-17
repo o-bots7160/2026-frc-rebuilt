@@ -29,17 +29,19 @@ public class AprilTagVisionIOPhotonVisionSim extends AprilTagVisionIOPhotonVisio
      * Use the drive base pose so the simulated camera can render realistic tag observations.
      * </p>
      *
-     * @param cameraName    name of the PhotonVision camera instance
-     * @param robotToCamera robot-to-camera transform in meters and radians
-     * @param fieldLayout   AprilTag field layout used for tag poses
-     * @param poseSupplier  supplier of the robot pose used for simulation updates (odometry or ground truth, not fused robot state)
+     * @param cameraName           name of the PhotonVision camera instance
+     * @param robotToCamera        robot-to-camera transform in meters and radians
+     * @param fieldLayout          AprilTag field layout used for tag poses
+     * @param maxTagDistanceMeters maximum distance in meters from camera to a tag; tags beyond this are excluded
+     * @param poseSupplier         supplier of the robot pose used for simulation updates (odometry or ground truth, not fused robot state)
      */
     public AprilTagVisionIOPhotonVisionSim(
             String cameraName,
             Transform3d robotToCamera,
             AprilTagFieldLayout fieldLayout,
+            double maxTagDistanceMeters,
             Supplier<Pose2d> poseSupplier) {
-        super(cameraName, robotToCamera, fieldLayout);
+        super(cameraName, robotToCamera, fieldLayout, maxTagDistanceMeters);
         this.poseSupplier = poseSupplier;
 
         if (visionSim == null) {

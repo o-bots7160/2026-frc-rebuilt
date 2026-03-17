@@ -53,6 +53,7 @@ public interface AprilTagVisionIO {
      * @param ambiguity          pose ambiguity ratio from the solver (0 = unambiguous, 1 = fully ambiguous)
      * @param tagCount           number of AprilTags used to compute this pose estimate
      * @param averageTagDistance average distance in meters from the camera to the observed tags
+     * @param maxTagDistance     maximum distance in meters from the camera to any single observed tag
      * @param tagIds             IDs of the AprilTags used to compute this pose estimate
      */
     public static record PoseObservation(
@@ -61,6 +62,7 @@ public interface AprilTagVisionIO {
             double ambiguity,
             int tagCount,
             double averageTagDistance,
+            double maxTagDistance,
             int[] tagIds) {
     }
 
