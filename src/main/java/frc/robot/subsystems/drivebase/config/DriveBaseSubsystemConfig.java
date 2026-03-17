@@ -23,11 +23,6 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
     public double    maximumAngularSpeedDegreesPerSecond;
 
     /**
-     * PID gains for the heading hold controller.
-     */
-    public PidConfig heading                  = new PidConfig();
-
-    /**
      * Allowed heading error in degrees.
      */
     public double    rotationToleranceDegrees;
@@ -64,6 +59,14 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
     public String    swerveConfigDirectory    = "swerve";
 
     /**
+     * Whether YAGSL heading correction is enabled. Heading correction passively counteracts gyro drift during straight-line driving.
+     * <p>
+     * Disable in simulation where the correction assumes real-world friction and inertia.
+     * </p>
+     */
+    public boolean   headingCorrectionEnabled = true;
+
+    /**
      * Returns the swerve configuration directory name relative to the deploy folder.
      *
      * @return directory name such as "swerve" or "swerve-test"
@@ -93,12 +96,12 @@ public class DriveBaseSubsystemConfig extends AbstractSubsystemConfig {
     }
 
     /**
-     * Returns the heading PID config.
+     * Returns whether YAGSL heading correction is enabled.
      *
-     * @return heading PID config
+     * @return true when heading correction should be active
      */
-    public PidConfig getHeading() {
-        return heading;
+    public boolean isHeadingCorrectionEnabled() {
+        return headingCorrectionEnabled;
     }
 
     /**

@@ -87,8 +87,14 @@ values are [tunable](../../GLOSSARY.md#tunable) through SmartDashboard.
 | `rotationPidKp`, `Ki`, `Kd`           | unitless | [PID](../../GLOSSARY.md#pid) for autonomous heading tracking     |
 | `translationToleranceMeters`          | meters   | Position tolerance for pose targeting                            |
 | `rotationToleranceRadians`            | radians  | Heading tolerance for pose targeting                             |
-| `headingPidKp`, `Ki`, `Kd`            | unitless | [PID](../../GLOSSARY.md#pid) for heading hold during teleop      |
+| `headingCorrectionEnabled`            | boolean  | Toggles YAGSL passive heading drift correction                   |
 | `joystickTranslationScale`            | 0.0–1.0  | Scales joystick sensitivity                                      |
+
+Heading hold [PID](../../GLOSSARY.md#pid) gains (`p`, `i`, `d`) are configured
+in `controllerproperties.json` inside the swerve deploy folder (e.g.,
+`src/main/deploy/swerve/controllerproperties.json`). These gains are shared
+between the explicit heading hold controller and YAGSL's passive heading
+correction feature, giving a single source of truth for heading tuning.
 
 ## Calibration and tuning guide
 

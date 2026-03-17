@@ -1,6 +1,6 @@
 {
-  "version": 1.0,
-  "grid_size": 128,
+  "version": 1,
+  "grid_size": 128.0,
   "tabs": [
     {
       "name": "Competition",
@@ -389,50 +389,8 @@
             }
           },
           {
-            "title": "H kP",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/headingKp",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "H kI",
-            "x": 128.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/headingKi",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "H kD",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/DriveBaseSubsystem/headingKd",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": true
-            }
-          },
-          {
             "title": "PT kP",
-            "x": 512.0,
+            "x": 0.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -446,7 +404,7 @@
           },
           {
             "title": "PT kI",
-            "x": 640.0,
+            "x": 128.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -460,7 +418,7 @@
           },
           {
             "title": "PT kD",
-            "x": 768.0,
+            "x": 256.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -474,7 +432,7 @@
           },
           {
             "title": "PR kP",
-            "x": 1024.0,
+            "x": 512.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -488,7 +446,7 @@
           },
           {
             "title": "PR kI",
-            "x": 1152.0,
+            "x": 640.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -502,7 +460,7 @@
           },
           {
             "title": "PR kD",
-            "x": 1280.0,
+            "x": 768.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -526,7 +484,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0.0
+              "angle_offset": 0
             }
           },
           {

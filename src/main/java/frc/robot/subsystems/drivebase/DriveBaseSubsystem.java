@@ -142,11 +142,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     @Override
     public void periodic() {
-        if (!isFMSAttached()) {
-            // Only allow live tuning when we are not connected to the official field system.
-            refreshTunables();
-        }
-
         if (isSubsystemDisabled() || swerveDrive == null) {
             // No hardware to talk to, so skip the rest of the telemetry pipeline.
             return;
@@ -514,23 +509,6 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Refreshes PID gains and tolerances from tunable config values.
-     * <p>
-     * Call this when tuning so any SmartDashboard changes take effect without a redeploy.
-     * </p>
-     */
-    private void refreshTunables() {
-        if (swerveController != null) {
-            // Apply live-tuned heading gains so changes take effect immediately.
-            swerveController.thetaController.setTolerance(config.getRotationToleranceRadians().get(), 0.1);
-            swerveController.thetaController.setPID(
-                    config.getHeading().getkP(),
-                    config.getHeading().getkI(),
-                    config.getHeading().getkD());
-        }
-    }
-
-    /**
      * Loads the YAGSL swerve configuration and wires up the controllers.
      * <p>
      * This method configures telemetry and handles simulation-only settings.
@@ -551,19 +529,22 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             swerveDrive                    = new SwerveParser(configDirectory)
                     .createSwerveDrive(config.getMaximumLinearSpeedMetersPerSecond().get());
 
-            if (isSimulation()) {
-                // Simulation safety: disable corrections that assume real-world friction and inertia.
+            if (!config.isHeadingCorrectionEnabled()) {
+                // Heading correction passively counteracts drift during straight-line driving.
+                // Disable when the config says so (e.g., simulation where friction/inertia differ).
                 swerveDrive.setHeadingCorrection(false);
+            }
+
+            if (isSimulation()) {
+                // Cosine compensation assumes real-world module geometry; disable in sim.
                 swerveDrive.setCosineCompensator(false);
             }
 
-            // Cache the controller so we can tune its PID gains at runtime.
+            // Cache the controller for heading hold. Heading PID gains are defined in
+            // controllerproperties.json (shared with YAGSL heading correction) so there
+            // is a single source of truth for heading tuning.
             swerveController = swerveDrive.swerveController;
             swerveController.thetaController.setTolerance(config.getRotationToleranceRadians().get(), 0.1);
-            swerveController.thetaController.setPID(
-                    config.getHeading().getkP(),
-                    config.getHeading().getkI(),
-                    config.getHeading().getkD());
 
             // Default to brake mode so the robot resists rolling when no command is active.
             swerveDrive.setMotorIdleMode(true);
