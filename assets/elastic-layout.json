@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "grid_size": 128.0,
+  "version": 1.0,
+  "grid_size": 128,
   "tabs": [
     {
       "name": "Competition",
@@ -526,7 +526,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0
+              "angle_offset": 0.0
             }
           },
           {
@@ -537,7 +537,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/swerve/modules/frontleft/Raw Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/frontleft/Raw Absolute Encoder",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -551,7 +551,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/swerve/modules/frontright/Raw Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/frontright/Raw Absolute Encoder",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -565,7 +565,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/swerve/modules/backleft/Raw Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/backleft/Raw Absolute Encoder",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -579,7 +579,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/swerve/modules/backright/Raw Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/backright/Raw Absolute Encoder",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -593,7 +593,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/swerve/modules/frontleft/Adjusted Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/frontleft/Adjusted Absolute Encoder",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -607,7 +607,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/swerve/modules/frontright/Adjusted Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/frontright/Adjusted Absolute Encoder",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -621,7 +621,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/swerve/modules/backleft/Adjusted Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/backleft/Adjusted Absolute Encoder",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -635,7 +635,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "SmartDashboard/swerve/modules/backright/Adjusted Absolute Encoder",
+              "topic": "/SmartDashboard/swerve/modules/backright/Adjusted Absolute Encoder",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -704,10 +704,10 @@
               "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/isReady",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -721,14 +721,14 @@
               "topic": "/AdvantageKit/RealOutputs/IntakeSubsystem/measuredRpm",
               "period": 0.06,
               "data_type": "double",
-              "end_angle": 140.0,
-              "max_value": 1500.0,
-              "min_value": -1500.0,
-              "number_of_labels": 8,
-              "show_pointer": true,
-              "show_ticks": true,
               "start_angle": -140.0,
-              "wrap_value": false
+              "end_angle": 140.0,
+              "min_value": -1500.0,
+              "max_value": 1500.0,
+              "number_of_labels": 8,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
             }
           },
           {
@@ -826,10 +826,10 @@
               "topic": "/AdvantageKit/IntakeSubsystem/motor/AppliedVolts",
               "period": 0.06,
               "data_type": "double",
+              "min_value": -1.0,
+              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
-              "max_value": 13.0,
-              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
@@ -844,10 +844,10 @@
               "topic": "/AdvantageKit/IntakeSubsystem/motor/CommandedVolts",
               "period": 0.06,
               "data_type": "double",
+              "min_value": -1.0,
+              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
-              "max_value": 13.0,
-              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
@@ -932,10 +932,10 @@
               "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -1389,10 +1389,10 @@
               "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/enabled",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -1406,10 +1406,10 @@
               "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/isReady",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -1423,14 +1423,14 @@
               "topic": "/AdvantageKit/RealOutputs/FeederSubsystem/measuredRpm",
               "period": 0.06,
               "data_type": "double",
-              "end_angle": 140.0,
-              "max_value": 1500.0,
-              "min_value": -1500.0,
-              "number_of_labels": 8,
-              "show_pointer": true,
-              "show_ticks": true,
               "start_angle": -140.0,
-              "wrap_value": false
+              "end_angle": 140.0,
+              "min_value": -1500.0,
+              "max_value": 1500.0,
+              "number_of_labels": 8,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
             }
           },
           {
@@ -1528,10 +1528,10 @@
               "topic": "/AdvantageKit/FeederSubsystem/motor/AppliedVolts",
               "period": 0.06,
               "data_type": "double",
+              "min_value": -1.0,
+              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
-              "max_value": 13.0,
-              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
@@ -1546,10 +1546,10 @@
               "topic": "/AdvantageKit/FeederSubsystem/motor/CommandedVolts",
               "period": 0.06,
               "data_type": "double",
+              "min_value": -1.0,
+              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
-              "max_value": 13.0,
-              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
@@ -1634,10 +1634,10 @@
               "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -1714,10 +1714,10 @@
               "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/enabled",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -1731,10 +1731,10 @@
               "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/isReady",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -1748,14 +1748,14 @@
               "topic": "/AdvantageKit/RealOutputs/IndexerSubsystem/measuredRpm",
               "period": 0.06,
               "data_type": "double",
-              "end_angle": 140.0,
-              "max_value": 1000.0,
-              "min_value": -1000.0,
-              "number_of_labels": 8,
-              "show_pointer": true,
-              "show_ticks": true,
               "start_angle": -140.0,
-              "wrap_value": false
+              "end_angle": 140.0,
+              "min_value": -1000.0,
+              "max_value": 1000.0,
+              "number_of_labels": 8,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
             }
           },
           {
@@ -1853,10 +1853,10 @@
               "topic": "/AdvantageKit/IndexerSubsystem/motor/AppliedVolts",
               "period": 0.06,
               "data_type": "double",
+              "min_value": -1.0,
+              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
-              "max_value": 13.0,
-              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
@@ -1871,10 +1871,10 @@
               "topic": "/AdvantageKit/IndexerSubsystem/motor/CommandedVolts",
               "period": 0.06,
               "data_type": "double",
+              "min_value": -1.0,
+              "max_value": 13.0,
               "divisions": 3,
               "inverted": false,
-              "max_value": 13.0,
-              "min_value": -1.0,
               "orientation": "horizontal"
             }
           },
@@ -1959,10 +1959,10 @@
               "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -2767,23 +2767,10 @@
             }
           },
           {
-            "title": "Limelight",
+            "title": "Max Tag Distance (m)",
             "x": 512.0,
             "y": 0.0,
-            "width": 896.0,
-            "height": 512.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "CameraPublisher/limelight",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
-            "title": "Max Tag Distance (m)",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2795,9 +2782,9 @@
           },
           {
             "title": "Max Pose Deviation (m)",
-            "x": 384.0,
-            "y": 128.0,
-            "width": 128.0,
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2809,9 +2796,9 @@
           },
           {
             "title": "Max Multi-Tag Ambiguity",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 128.0,
+            "x": 512.0,
+            "y": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2823,9 +2810,9 @@
           },
           {
             "title": "Max Z Height (m)",
-            "x": 128.0,
+            "x": 512.0,
             "y": 256.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2837,9 +2824,9 @@
           },
           {
             "title": "Tag Switch StdDev Mult",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 128.0,
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2851,9 +2838,9 @@
           },
           {
             "title": "Max Ambiguity (1-tag)",
-            "x": 384.0,
-            "y": 256.0,
-            "width": 128.0,
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2865,9 +2852,9 @@
           },
           {
             "title": "Linear StdDev Baseline",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 128.0,
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2879,9 +2866,9 @@
           },
           {
             "title": "Angular StdDev Baseline",
-            "x": 128.0,
-            "y": 384.0,
-            "width": 128.0,
+            "x": 1024.0,
+            "y": 256.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -2900,7 +2887,8 @@
             "type": "Toggle Switch",
             "properties": {
               "topic": "SmartDashboard/AprilTagVisionSubsystem/verbose",
-              "period": 0.06
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]

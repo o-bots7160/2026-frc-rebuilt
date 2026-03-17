@@ -12,7 +12,7 @@
   },
   "driveBaseSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "swerveConfigDirectory": "swerve",
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
@@ -185,7 +185,7 @@
   },
   "turretSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "turretMotorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 56,
@@ -307,7 +307,7 @@
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "fieldType": "ANDYMARK",
     "linearStandardDeviationBaseline": 0.08,
     "angularStandardDeviationBaseline": 1.0,
