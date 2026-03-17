@@ -92,7 +92,18 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "SpinUpShooter",
+      "waypointRelativePos": 3.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SpinUpShooterCommand"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

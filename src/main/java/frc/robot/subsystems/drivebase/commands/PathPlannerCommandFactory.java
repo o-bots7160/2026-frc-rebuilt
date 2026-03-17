@@ -1,22 +1,16 @@
 package frc.robot.subsystems.drivebase.commands;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -60,14 +54,6 @@ public class PathPlannerCommandFactory {
     private LoggedDashboardChooser<String>     autoChooser;
 
     /**
-     * Supplier of the robot's current fused pose from odometry and vision.
-     * <p>
-     * Typically wired to {@code RobotPoseSubsystem::getEstimatedPose}.
-     * </p>
-     */
-    private final Supplier<Pose2d>             currentPoseSupplier;
-
-    /**
      * Pre-loaded PathPlanner autos keyed by auto name.
      * <p>
      * Populated at construction time so there is no file-parsing delay when autonomous starts. Cached instances are wrapped with
@@ -82,11 +68,8 @@ public class PathPlannerCommandFactory {
      * <p>
      * Call this once during robot initialization in {@code RobotContainer} and reuse the instance every time an autonomous command is needed.
      * </p>
-     *
-     * @param currentPoseSupplier supplier of the current fused robot pose, typically {@code robotPoseSubsystem::getEstimatedPose}
      */
-    public PathPlannerCommandFactory(Supplier<Pose2d> currentPoseSupplier) {
-        this.currentPoseSupplier = currentPoseSupplier;
+    public PathPlannerCommandFactory() {
         initializeAutos();
     }
 
@@ -188,40 +171,23 @@ public class PathPlannerCommandFactory {
     }
 
     /**
-     * Creates an on-the-fly path command that drives from the robot's current pose to the target pose.
+     * Creates a pathfinding command that drives from the robot's current pose to the target pose.
      * <p>
-     * The path ends at zero velocity with the target's holonomic rotation so the robot is stationary and facing the correct direction when the
-     * planned auto takes over. Coordinates are already alliance-corrected so {@code preventFlipping} is set to avoid re-mirroring.
+     * Uses PathPlanner's AD* pathfinder for obstacle-aware routing. The command ends at zero velocity so the robot is stationary when the planned
+     * auto takes over. Coordinates are already alliance-corrected by the caller.
      * </p>
      *
      * @param targetPose field pose the robot should arrive at, already alliance-flipped if on Red
-     * @return command that follows the alignment path and stops at the target
+     * @return command that pathfinds to the target pose and stops
      */
     private Command buildAlignmentCommand(Pose2d targetPose) {
-        Pose2d          currentPose   = currentPoseSupplier.get();
-
-        // Direction of travel from the current position toward the target.
-        Rotation2d      travelHeading = targetPose.getTranslation().minus(currentPose.getTranslation()).getAngle();
-
-        List<Waypoint>  waypoints     = PathPlannerPath.waypointsFromPoses(
-                new Pose2d(currentPose.getTranslation(), travelHeading),
-                new Pose2d(targetPose.getTranslation(), travelHeading));
-
-        PathConstraints constraints   = new PathConstraints(
+        PathConstraints constraints = new PathConstraints(
                 ALIGN_MAX_VELOCITY_METERS_PER_SECOND,
                 ALIGN_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED,
                 ALIGN_MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
                 ALIGN_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
 
-        PathPlannerPath alignmentPath = new PathPlannerPath(
-                waypoints,
-                constraints,
-                null,
-                new GoalEndState(0.0, targetPose.getRotation()));
-
-        alignmentPath.preventFlipping = true;
-
-        return AutoBuilder.followPath(alignmentPath);
+        return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
 
     /**

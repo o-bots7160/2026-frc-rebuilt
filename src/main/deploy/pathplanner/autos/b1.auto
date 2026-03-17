@@ -5,15 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetStateHarvestReady"
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
@@ -41,110 +35,96 @@
                       "data": {
                         "pathName": "b1 travel back"
                       }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateHarvestReady"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateFireReady"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b1 adjust"
+                      }
                     },
                     {
-                      "type": "parallel",
+                      "type": "path",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "SpinUpShooterCommand"
-                            }
-                          },
-                          {
-                            "type": "sequential",
-                            "data": {
-                              "commands": [
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 2.0
-                                  }
-                                },
-                                {
-                                  "type": "parallel",
-                                  "data": {
-                                    "commands": [
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "SetStateHarvestReady"
-                                        }
-                                      },
-                                      {
-                                        "type": "sequential",
-                                        "data": {
-                                          "commands": [
-                                            {
-                                              "type": "path",
-                                              "data": {
-                                                "pathName": "b1 adjust"
-                                              }
-                                            },
-                                            {
-                                              "type": "path",
-                                              "data": {
-                                                "pathName": "b1 travel out"
-                                              }
-                                            },
-                                            {
-                                              "type": "path",
-                                              "data": {
-                                                "pathName": "b1 intake"
-                                              }
-                                            },
-                                            {
-                                              "type": "path",
-                                              "data": {
-                                                "pathName": "b1 travel back"
-                                              }
-                                            },
-                                            {
-                                              "type": "parallel",
-                                              "data": {
-                                                "commands": [
-                                                  {
-                                                    "type": "named",
-                                                    "data": {
-                                                      "name": "SpinUpShooterCommand"
-                                                    }
-                                                  },
-                                                  {
-                                                    "type": "sequential",
-                                                    "data": {
-                                                      "commands": [
-                                                        {
-                                                          "type": "wait",
-                                                          "data": {
-                                                            "waitTime": 2.0
-                                                          }
-                                                        },
-                                                        {
-                                                          "type": "named",
-                                                          "data": {
-                                                            "name": "SetStateHarvestReady"
-                                                          }
-                                                        }
-                                                      ]
-                                                    }
-                                                  }
-                                                ]
-                                              }
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        ]
+                        "pathName": "b1 travel out"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b1 intake"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b1 travel back"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateHarvestReady"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateFireReady"
                 }
               }
             ]

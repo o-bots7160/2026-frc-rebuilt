@@ -229,7 +229,7 @@ public class RobotContainer {
             NamedCommands.registerCommand("SetStateTrenchTravel",
                     gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRENCH_TRAVEL, "auto"));
 
-            pathPlannerCommandFactory = new PathPlannerCommandFactory(robotPoseSubsystem::getEstimatedPose);
+            pathPlannerCommandFactory = new PathPlannerCommandFactory();
 
             // Dashboard choosers
             RobotEnvironment.initAllianceChooser();
