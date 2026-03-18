@@ -13,7 +13,6 @@ import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.commands.IntakeSubsystemCommandFactory;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
-import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
 /**
  * Composes parallel command groups that coordinate multiple subsystems for each {@link GameplayState}.
@@ -33,12 +32,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
 
     private final IntakeSubsystemCommandFactory    intakeCommandFactory;
 
-    private final TurretSubsystemCommandFactory    turretCommandFactory;
-
     private final HarvesterSubsystemCommandFactory harvesterCommandFactory;
-
-    // TODO: Re-enable climber for post-first-competition
-    // private final ClimberSubsystemCommandFactory   climberCommandFactory;
 
     /** Supplies the distance from the robot to the active scoring target in meters. */
     private final Supplier<Double>                 distanceToTargetMetersSupplier;
@@ -51,7 +45,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @param indexerCommandFactory          factory for indexer roller commands
      * @param feederCommandFactory           factory for feeder belt commands
      * @param intakeCommandFactory           factory for intake roller commands
-     * @param turretCommandFactory           factory for turret aiming commands
      * @param harvesterCommandFactory        factory for harvester arm commands
      * @param distanceToTargetMetersSupplier supplier returning the distance from the robot to the active scoring target in meters
      */
@@ -61,7 +54,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
             IndexerSubsystemCommandFactory indexerCommandFactory,
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
-            TurretSubsystemCommandFactory turretCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
             Supplier<Double> distanceToTargetMetersSupplier) {
         super(subsystem);
@@ -69,28 +61,8 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         this.indexerCommandFactory          = indexerCommandFactory;
         this.feederCommandFactory           = feederCommandFactory;
         this.intakeCommandFactory           = intakeCommandFactory;
-        this.turretCommandFactory           = turretCommandFactory;
         this.harvesterCommandFactory        = harvesterCommandFactory;
-        // TODO: Re-enable climber for post-first-competition
-        // this.climberCommandFactory          = climberCommandFactory;
         this.distanceToTargetMetersSupplier = distanceToTargetMetersSupplier;
-    }
-
-    /**
-     * Builds a command that transitions the robot to the specified gameplay state.
-     * <p>
-     * This is the central dispatch method. It records the state on the {@link GameplayStateSubsystem} and returns the appropriate parallel command
-     * group for the requested state.
-     * </p>
-     *
-     * @param state  desired gameplay state
-     * @param source description of what triggered the transition (e.g., "operator", "auto", "fms")
-     * @return command group that coordinates all relevant subsystems for the requested state
-     */
-    public Command createTransitionCommand(GameplayState state, String source) {
-        return Commands.runOnce(() -> subsystem.requestState(state, source))
-                .andThen(createCommandGroupForState(state))
-                .withName("Transition-" + state.getDisplayName());
     }
 
     /**
@@ -150,51 +122,9 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 ))
                 .finallyDo(() -> {
                     subsystem.requestState(GameplayState.IDLE, "fire-end");
-                    CommandScheduler.getInstance().schedule(createIdleCommand());
+                    CommandScheduler.getInstance().schedule(createIdleCommand().asProxy());
                 })
                 .withName("GameplayState-FireReady");
-    }
-
-    /**
-     * Builds the AUTO_CYCLE state command group used during autonomous routines.
-     * <p>
-     * Deploys the harvester and runs the intake to collect Fuel while the shooter spins up. The turret continues tracking the scoring target via its
-     * default command, so it is not explicitly commanded here. This allows autonomous routines to collect and score without explicit state
-     * transitions between harvest and fire.
-     * </p>
-     *
-     * @return parallel command group that simultaneously collects and prepares to score
-     */
-    public Command createAutoCycleCommand() {
-        return Commands.parallel(
-                harvesterCommandFactory.createDeployCommand(),
-                intakeCommandFactory.createIntakeAndHoldCommand(),
-                feederCommandFactory.createReversePulseThenForwardCommand(),
-                shooterCommandFactory.createDistanceBasedSpinCommand(distanceToTargetMetersSupplier),
-                indexerCommandFactory.createHoldCommand())
-                .withName("GameplayState-AutoCycle");
-    }
-
-    /**
-     * Builds the CLIMB_READY state command group: stops ball-path mechanisms and stows the harvester.
-     * <p>
-     * The climber command is temporarily removed for the first competition. All other mechanisms idle or stow to clear
-     * the climber path.
-     * </p>
-     *
-     * @return parallel command group that prepares the robot for climbing
-     */
-    public Command createClimbReadyCommand() {
-        return Commands.parallel(
-                shooterCommandFactory.createStopCommand(),
-                indexerCommandFactory.createIdleCommand(),
-                feederCommandFactory.createIdleCommand(),
-                intakeCommandFactory.createIdleCommand(),
-                harvesterCommandFactory.createStowCommand())
-                // TODO: Re-enable climber for post-first-competition
-                // climberCommandFactory.createMoveToPositionCommand(
-                //         climberCommandFactory.getSubsystem().getConfig()::getMaximumSetpointDegrees))
-                .withName("GameplayState-ClimbReady");
     }
 
     /**
@@ -265,28 +195,5 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         Command command = createIdleCommand();
         subsystem.setDefaultCommand(command);
         return command;
-    }
-
-    private Command createCommandGroupForState(GameplayState state) {
-        switch (state) {
-        case IDLE:
-            return createIdleCommand();
-        case HARVEST_READY:
-            return createHarvestReadyCommand();
-        case FIRE_READY:
-            return createFireReadyCommand();
-        case AUTO_CYCLE:
-            return createAutoCycleCommand();
-        case CLIMB_READY:
-            return createClimbReadyCommand();
-        case EJECT:
-            return createEjectCommand();
-        case TRAVEL:
-            return createTravelCommand();
-        case TRENCH_TRAVEL:
-            return createTrenchTravelCommand();
-        default:
-            return createIdleCommand();
-        }
     }
 }

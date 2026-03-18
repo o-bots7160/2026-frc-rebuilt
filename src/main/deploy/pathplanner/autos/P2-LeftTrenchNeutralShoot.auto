@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "b2tb1"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -21,19 +27,19 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b3 travel out"
+                        "pathName": "b1 travel out"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b3 intake"
+                        "pathName": "b1 intake"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b3 travel back"
+                        "pathName": "b1 travel back"
                       }
                     }
                   ]
@@ -44,12 +50,18 @@
                 "data": {
                   "name": "SetStateHarvestReady"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateIdle"
+                }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -78,19 +90,25 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b3 to outpost"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.0
+                        "pathName": "b1 adjust"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b3 from outpost"
+                        "pathName": "b1 travel out"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b1 intake"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "b1 travel back"
                       }
                     }
                   ]

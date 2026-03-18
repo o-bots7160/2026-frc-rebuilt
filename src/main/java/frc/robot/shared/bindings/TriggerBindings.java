@@ -231,11 +231,11 @@ public class TriggerBindings {
 
         // Right bumper: travel mode (stow harvester and idle all mechanisms).
         driverController.rightBumper().onTrue(
-                gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRAVEL, "operator"));
+                gameplayStateCommandFactory.createTravelCommand());
 
         // Left bumper: trench travel mode (deploy harvester for low-profile field traversal).
         driverController.leftBumper().onTrue(
-                gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRENCH_TRAVEL, "operator"));
+                gameplayStateCommandFactory.createTrenchTravelCommand());
 
         // X button: spin 180 degrees from current heading. Hold to maintain heading lock;
         // release to return to normal manual rotation control.
@@ -495,31 +495,27 @@ public class TriggerBindings {
     private void configureOperatorBindings() {
         // Y button: fire fuel.
         operatorController.y().whileTrue(
-                gameplayStateCommandFactory.createTransitionCommand(GameplayState.FIRE_READY, "operator"));
+                gameplayStateCommandFactory.createFireReadyCommand());
 
         // X button: harvest fuel.
         operatorController.x().onTrue(
-                gameplayStateCommandFactory.createTransitionCommand(GameplayState.HARVEST_READY, "operator"));
-
-        // Start button: prepare for climb.
-        // operatorController.start().onTrue(
-        // gameplayStateCommandFactory.createTransitionCommand(GameplayState.CLIMB_READY, "operator"));
+                gameplayStateCommandFactory.createHarvestReadyCommand());
 
         // A button: eject all fuel.
         operatorController.a().whileTrue(
-                gameplayStateCommandFactory.createTransitionCommand(GameplayState.EJECT, "operator"));
+                gameplayStateCommandFactory.createEjectCommand());
 
         // B button: return to idle.
         operatorController.b().onTrue(
-                gameplayStateCommandFactory.createTransitionCommand(GameplayState.IDLE, "operator"));
+                gameplayStateCommandFactory.createIdleCommand());
 
         // Right trigger: travel mode (stow harvester and idle all mechanisms).
         operatorController.rightTrigger().onTrue(
-                gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRAVEL, "operator"));
+                gameplayStateCommandFactory.createTravelCommand());
 
         // Left trigger: trench travel mode (deploy harvester for low-profile field traversal).
         operatorController.leftTrigger().onTrue(
-                gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRENCH_TRAVEL, "operator"));
+                gameplayStateCommandFactory.createTrenchTravelCommand());
     }
 
 }

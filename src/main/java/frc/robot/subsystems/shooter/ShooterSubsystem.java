@@ -126,7 +126,7 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
             return 0.0;
         }
 
-        if (!hasDistanceRpmData) {
+        if (!hasDistanceRpmData || Double.isNaN(distanceMeters) || distanceMeters < 0.0) {
             return config.motionProfile.getIdleVelocityRpm();
         }
 

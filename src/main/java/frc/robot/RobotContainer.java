@@ -28,7 +28,6 @@ import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
 // import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
-import frc.robot.subsystems.gameplaystate.GameplayState;
 import frc.robot.subsystems.gameplaystate.GameplayStateSubsystem;
 import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
 import frc.robot.subsystems.harvester.HarvesterSubsystem;
@@ -195,7 +194,6 @@ public class RobotContainer {
                     indexerCommandFactory,
                     feederCommandFactory,
                     intakeCommandFactory,
-                    turretCommandFactory,
                     harvesterCommandFactory,
                     () -> robotPoseSubsystem.getDistanceToPointMeters(fieldTargetSelector.getActiveTargetPosition()));
 
@@ -205,29 +203,25 @@ public class RobotContainer {
                     fieldTargetSelector::getActiveTargetPosition,
                     driveBaseSubsystem::getYawRateRadiansPerSecond);
 
-            // Register named commands for PathPlanner autos before pre-loading
-            // Register named commands that PathPlanner autos reference by string key.
+            // Register named commands for PathPlanner autos before pre-loading.
             // These must be registered before pre-loading autos so PathPlanner can resolve them.
-            NamedCommands.registerCommand("MoveHarvesterToPositionCommand", harvesterCommandFactory.createDeployCommand());
-            NamedCommands.registerCommand("SpinUpShooterCommand",
-                    shooterCommandFactory.createSpinUpCommand(subsystemsConfig.shooterSubsystem.motionProfile::getMaximumVelocityRpm));
+            // Each command is wrapped with asProxy() so its subsystem requirements are NOT
+            // aggregated into the auto's SequentialCommandGroup at construction time. Without
+            // proxying, the auto would claim Shooter/Indexer/Feeder/Intake for its entire
+            // duration, conflicting with the GameplayStateSubsystem default idle command and
+            // causing the scheduler to cancel the auto on the first cycle.
             NamedCommands.registerCommand("SetStateIdle",
-                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.IDLE, "auto"));
+                    gameplayStateCommandFactory.createIdleCommand().asProxy());
             NamedCommands.registerCommand("SetStateHarvestReady",
-                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.HARVEST_READY, "auto"));
+                    gameplayStateCommandFactory.createHarvestReadyCommand().asProxy());
             NamedCommands.registerCommand("SetStateFireReady",
-                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.FIRE_READY, "auto"));
-            NamedCommands.registerCommand("SetStateAutoCycle",
-                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.AUTO_CYCLE, "auto"));
-            // TODO: Re-enable climber for post-first-competition
-            // NamedCommands.registerCommand("SetStateClimbReady",
-            // gameplayStateCommandFactory.createTransitionCommand(GameplayState.CLIMB_READY, "auto"));
+                    gameplayStateCommandFactory.createFireReadyCommand().asProxy());
             NamedCommands.registerCommand("SetStateEject",
-                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.EJECT, "auto"));
+                    gameplayStateCommandFactory.createEjectCommand().asProxy());
             NamedCommands.registerCommand("SetStateTravel",
-                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRAVEL, "auto"));
+                    gameplayStateCommandFactory.createTravelCommand().asProxy());
             NamedCommands.registerCommand("SetStateTrenchTravel",
-                    gameplayStateCommandFactory.createTransitionCommand(GameplayState.TRENCH_TRAVEL, "auto"));
+                    gameplayStateCommandFactory.createTrenchTravelCommand().asProxy());
 
             pathPlannerCommandFactory = new PathPlannerCommandFactory();
 

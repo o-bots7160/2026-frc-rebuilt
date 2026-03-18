@@ -43,7 +43,8 @@ public class PathPlannerCommandFactory {
 
     /** All auto names available for selection, in display order. */
     private static final String[]              ALL_AUTO_NAMES                                            = {
-            "b1", "b2tb1", "b2tb3", "b3", "sine", "Default Auto", "bandharvest" };
+            "P1-NeutralShootDepotShoot", "P2-RightTrenchNeutralShootDepotShoot", "P2-LeftTrenchNeutralShoot", "P3-NeutralShootRightTrenchShoot",
+            "P3-NeutralShoot" };
 
     /**
      * Dashboard chooser that lets drivers select which autonomous routine to run.
@@ -119,24 +120,6 @@ public class PathPlannerCommandFactory {
     }
 
     /**
-     * Builds the full autonomous command for the given alliance and driver-station position.
-     * <p>
-     * The returned command sequences an alignment path (current pose to expected start) followed by the pre-loaded PathPlanner auto. If the auto has
-     * no recorded starting pose the alignment step is skipped.
-     * </p>
-     *
-     * @param alliance         alliance color used to mirror the starting pose to the correct side of the field
-     * @param allianceLocation driver-station position number (1, 2, or 3) that selects which auto to load
-     * @return composite command that first aligns then runs the auto
-     * @deprecated use {@link #createAutoCommand(Alliance, String)} with {@link #getSelectedAutoName()} instead
-     */
-    @Deprecated
-    public Command createAutoCommandForPosition(Alliance alliance, int allianceLocation) {
-        String autoName = resolveAutoName(allianceLocation);
-        return createAutoCommand(alliance, autoName);
-    }
-
-    /**
      * Pre-loads every PathPlanner auto into the cache and populates the dashboard chooser.
      * <p>
      * Loads all autos listed in {@link #ALL_AUTO_NAMES} so they are ready when autonomous is enabled. The first entry is set as the default option in
@@ -188,24 +171,6 @@ public class PathPlannerCommandFactory {
                 ALIGN_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
 
         return AutoBuilder.pathfindToPose(targetPose, constraints);
-    }
-
-    /**
-     * Maps a driver-station position number to a PathPlanner auto file name.
-     * <p>
-     * Names must match the {@code .auto} files under {@code src/main/deploy/pathplanner/autos/}.
-     * </p>
-     *
-     * @param allianceLocation driver-station position (1, 2, or 3)
-     * @return auto file name without the {@code .auto} extension
-     */
-    private String resolveAutoName(int allianceLocation) {
-        return switch (allianceLocation) {
-        case 1 -> "b1";
-        case 2 -> "sine";
-        case 3 -> "b3";
-        default -> "Default Auto";
-        };
     }
 
     /**

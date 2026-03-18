@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "b2tb1"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -27,19 +21,19 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b1 travel out"
+                        "pathName": "b3 travel out"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b1 intake"
+                        "pathName": "b3 intake"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b1 travel back"
+                        "pathName": "b3 travel back"
                       }
                     }
                   ]
@@ -84,25 +78,19 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b1 adjust"
+                        "pathName": "b3 to outpost"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "b1 travel out"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "b1 intake"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "b1 travel back"
+                        "pathName": "b3 from outpost"
                       }
                     }
                   ]
