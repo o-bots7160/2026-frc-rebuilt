@@ -43,7 +43,7 @@ public class PathPlannerCommandFactory {
 
     /** All auto names available for selection, in display order. */
     private static final String[]              ALL_AUTO_NAMES                                            = {
-            "P1-NeutralShootDepotShoot", "P2-RightTrenchNeutralShootDepotShoot", "P2-LeftTrenchNeutralShoot", "P3-NeutralShootRightTrenchShoot",
+            "P1-NeutralShootOutpostShoot", "P2-RightTrenchNeutralShootOutpostShoot", "P2-LeftTrenchNeutralShoot", "P3-NeutralShootRightTrenchShoot",
             "P3-NeutralShoot" };
 
     /**
