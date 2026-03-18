@@ -280,7 +280,7 @@
     "motionProfile": {
       "maximumVelocityRpm": 4500.0,
       "maximumAccelerationRpmPerSecond": 8000.0,
-      "velocityToleranceRpm": 175.0,
+      "velocityToleranceRpm": 100.0,
       "settleTimeSeconds": 0.25,
       "idleVelocityRpm": 1000.0
     },
@@ -290,20 +290,8 @@
         "rpm": 2200.0
       },
       {
-        "distanceMeters": 2.1,
-        "rpm": 2300.0
-      },
-      {
-        "distanceMeters": 3.09,
-        "rpm": 2800.0
-      },
-      {
-        "distanceMeters": 4.00,
-        "rpm": 3200.0
-      },
-      {
-        "distanceMeters": 4.8,
-        "rpm": 3400.0
+        "distanceMeters": 5.0,
+        "rpm": 3350.0
       }
     ],
     "distanceRpmMultiplier": 1.0
