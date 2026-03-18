@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 7.5,
-        "y": 4.5
+        "y": 3.5
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.75,
-        "y": 4.5
+        "y": 3.5
       },
       "isLocked": false,
       "linkedName": null
@@ -61,10 +61,6 @@
     }
   ],
   "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7481163552722083,
-      "rotationDegrees": 90.0
-    },
     {
       "waypointRelativePos": 0.9974975585937473,
       "rotationDegrees": 0.0
@@ -119,7 +115,7 @@
   "folder": "b3",
   "idealStartingState": {
     "velocity": 1.0,
-    "rotation": 90.0
+    "rotation": 80.0
   },
   "useDefaultConstraints": false
 }
