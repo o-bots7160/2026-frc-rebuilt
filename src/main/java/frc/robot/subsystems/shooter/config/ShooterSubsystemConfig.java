@@ -43,6 +43,9 @@ public class ShooterSubsystemConfig extends AbstractVelocitySubsystemConfig {
     /** Scale factor applied to the interpolated RPM for quick field adjustments. */
     public double             distanceRpmMultiplier      = 1.0;
 
+    /** RPM amount added or subtracted when the operator uses the boost or cut triggers. */
+    public double             rpmAdjustmentAmountRpm     = 100.0;
+
     /**
      * Returns the scale factor applied to interpolated distance-based RPM, tuned via SmartDashboard.
      * <p>
@@ -54,5 +57,14 @@ public class ShooterSubsystemConfig extends AbstractVelocitySubsystemConfig {
      */
     public double getDistanceRpmMultiplier() {
         return readTunableNumber("distanceRpmMultiplier", distanceRpmMultiplier);
+    }
+
+    /**
+     * Returns the RPM adjustment applied by the operator boost and cut triggers, tuned via SmartDashboard.
+     *
+     * @return RPM adjustment amount (always positive; negated internally for cut)
+     */
+    public double getRpmAdjustmentAmountRpm() {
+        return readTunableNumber("rpmAdjustmentAmountRpm", rpmAdjustmentAmountRpm);
     }
 }

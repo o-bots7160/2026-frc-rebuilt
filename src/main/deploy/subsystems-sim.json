@@ -284,7 +284,8 @@
         "rpm": 4500.0
       }
     ],
-    "distanceRpmMultiplier": 1.0
+    "distanceRpmMultiplier": 1.0,
+    "rpmAdjustmentAmountRpm": 100.0
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,

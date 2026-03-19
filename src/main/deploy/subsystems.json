@@ -278,7 +278,7 @@
       "dynamicTimeoutSeconds": 4.0
     },
     "motionProfile": {
-      "maximumVelocityRpm": 4500.0,
+      "maximumVelocityRpm": 4000.0,
       "maximumAccelerationRpmPerSecond": 8000.0,
       "velocityToleranceRpm": 100.0,
       "settleTimeSeconds": 0.25,
@@ -294,7 +294,8 @@
         "rpm": 3350.0
       }
     ],
-    "distanceRpmMultiplier": 1.0
+    "distanceRpmMultiplier": 1.0,
+    "rpmAdjustmentAmountRpm": 100.0
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,

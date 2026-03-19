@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
-import frc.robot.subsystems.gameplaystate.GameplayState;
 import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
 import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
@@ -510,12 +509,20 @@ public class TriggerBindings {
                 gameplayStateCommandFactory.createIdleCommand());
 
         // Right trigger: travel mode (stow harvester and idle all mechanisms).
-        operatorController.rightTrigger().onTrue(
+        operatorController.rightBumper().onTrue(
                 gameplayStateCommandFactory.createTravelCommand());
 
         // Left trigger: trench travel mode (deploy harvester for low-profile field traversal).
-        operatorController.leftTrigger().onTrue(
+        operatorController.leftBumper().onTrue(
                 gameplayStateCommandFactory.createTrenchTravelCommand());
+
+        // Right trigger: boost shooter RPM by the configured adjustment amount while held.
+        operatorController.rightTrigger().whileTrue(
+                shooterCommandFactory.createBoostRpmCommand());
+
+        // Left trigger: cut shooter RPM by the configured adjustment amount while held.
+        operatorController.leftTrigger().whileTrue(
+                shooterCommandFactory.createCutRpmCommand());
     }
 
 }

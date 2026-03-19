@@ -82,6 +82,14 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
     private final boolean                    hasDistanceRpmData;
 
     /**
+     * Operator-controlled RPM offset applied on top of the calculated target each cycle.
+     * <p>
+     * Positive values boost the flywheel speed; negative values cut it. Reset to zero when the operator releases the trigger.
+     * </p>
+     */
+    private double                           rpmOffsetRpm;
+
+    /**
      * Builds the shooter subsystem with a primary motor and an optional follower motor.
      * <p>
      * When the follower motor config is enabled, both motors are wrapped in a {@link CompositeMotor} so the subsystem hierarchy sees a single
@@ -94,19 +102,49 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
         super(config, buildShooterMotor(config));
         distanceRpmTable   = buildDistanceRpmTable(config.distanceRpmPoints);
         hasDistanceRpmData = config.distanceRpmPoints != null && config.distanceRpmPoints.length > 0;
+        rpmOffsetRpm       = 0.0;
     }
 
     /**
-     * Sets a new target velocity, clamped to forward-only rotation.
+     * Sets the operator RPM offset applied on top of every target velocity.
      * <p>
-     * Flywheels should never reverse through the velocity controller. Negative values are clamped to zero before delegating to the base class.
+     * Positive values boost flywheel speed; negative values cut it. Set to zero to clear the adjustment. The offset is added to the raw target
+     * inside {@link #setTargetVelocityRpm(double)} before the forward-only clamp, so it takes effect immediately on the next control cycle.
+     * </p>
+     *
+     * @param offsetRpm RPM to add to the calculated target (positive = boost, negative = cut)
+     */
+    public void setRpmOffset(double offsetRpm) {
+        if (isSubsystemDisabled()) {
+            logDisabled("setRpmOffset");
+            return;
+        }
+        rpmOffsetRpm = offsetRpm;
+        log.recordOutput("rpmOffsetRpm", rpmOffsetRpm);
+    }
+
+    /**
+     * Returns the current operator RPM offset.
+     *
+     * @return RPM offset currently applied (positive = boost, negative = cut, zero = none)
+     */
+    public double getRpmOffset() {
+        return rpmOffsetRpm;
+    }
+
+    /**
+     * Sets a new target velocity, applies the operator RPM offset, and clamps to forward-only rotation.
+     * <p>
+     * The operator offset is added before clamping so boost and cut adjustments take effect for all shooting modes (distance-based, fixed RPM,
+     * continuous). Flywheels should never reverse through the velocity controller, so the result is clamped to zero at the low end.
      * </p>
      *
      * @param targetRpm desired flywheel velocity in RPM (0 to stop, positive to spin forward)
      */
     @Override
     public void setTargetVelocityRpm(double targetRpm) {
-        double forwardOnlyRpm = MathUtil.clamp(targetRpm, 0.0, config.motionProfile.getMaximumVelocityRpm());
+        double adjustedRpm    = targetRpm + rpmOffsetRpm;
+        double forwardOnlyRpm = MathUtil.clamp(adjustedRpm, 0.0, config.motionProfile.getMaximumVelocityRpm());
         super.setTargetVelocityRpm(forwardOnlyRpm);
     }
 

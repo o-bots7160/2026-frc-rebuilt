@@ -108,4 +108,36 @@ public class ShooterSubsystemCommandFactory extends AbstractVelocityCommandFacto
     public Command createDistanceBasedSpinCommand(Supplier<Double> distanceMetersSupplier) {
         return createContinuousSpinCommand(() -> subsystem.calculateRpmFromDistanceMeters(distanceMetersSupplier.get()));
     }
+
+    /**
+     * Builds a command that boosts the shooter RPM by the configured adjustment amount while held.
+     * <p>
+     * The command does not require the shooter subsystem so it can run concurrently with an active shooting command. When the command ends (trigger
+     * released), the offset resets to zero.
+     * </p>
+     *
+     * @return command that applies a positive RPM offset while active
+     */
+    public Command createBoostRpmCommand() {
+        return Commands.startEnd(
+                () -> subsystem.setRpmOffset(subsystem.getConfig().getRpmAdjustmentAmountRpm()),
+                () -> subsystem.setRpmOffset(0.0))
+                .withName("Shooter-BoostRpm");
+    }
+
+    /**
+     * Builds a command that cuts the shooter RPM by the configured adjustment amount while held.
+     * <p>
+     * The command does not require the shooter subsystem so it can run concurrently with an active shooting command. When the command ends (trigger
+     * released), the offset resets to zero.
+     * </p>
+     *
+     * @return command that applies a negative RPM offset while active
+     */
+    public Command createCutRpmCommand() {
+        return Commands.startEnd(
+                () -> subsystem.setRpmOffset(-subsystem.getConfig().getRpmAdjustmentAmountRpm()),
+                () -> subsystem.setRpmOffset(0.0))
+                .withName("Shooter-CutRpm");
+    }
 }
