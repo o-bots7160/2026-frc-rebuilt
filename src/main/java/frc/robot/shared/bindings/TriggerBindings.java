@@ -509,20 +509,26 @@ public class TriggerBindings {
                 gameplayStateCommandFactory.createIdleCommand());
 
         // Right trigger: travel mode (stow harvester and idle all mechanisms).
-        operatorController.rightBumper().onTrue(
+        operatorController.rightTrigger().onTrue(
                 gameplayStateCommandFactory.createTravelCommand());
 
         // Left trigger: trench travel mode (deploy harvester for low-profile field traversal).
-        operatorController.leftBumper().onTrue(
+        operatorController.leftTrigger().onTrue(
                 gameplayStateCommandFactory.createTrenchTravelCommand());
 
-        // Right trigger: boost shooter RPM by the configured adjustment amount while held.
-        operatorController.rightTrigger().whileTrue(
+        // D-pad up: boost shooter RPM by the configured adjustment amount while held.
+        operatorController.povUp().whileTrue(
                 shooterCommandFactory.createBoostRpmCommand());
 
-        // Left trigger: cut shooter RPM by the configured adjustment amount while held.
-        operatorController.leftTrigger().whileTrue(
+        // D-pad down: cut shooter RPM by the configured adjustment amount while held.
+        operatorController.povDown().whileTrue(
                 shooterCommandFactory.createCutRpmCommand());
+
+        // Select (back) button: toggle turret lock to 0 degrees.
+        // First press locks the turret at 0 and disables field tracking.
+        // Second press releases the lock and resumes the default tracking command.
+        operatorController.back().toggleOnTrue(
+                turretCommandFactory.createLockToZeroCommand());
     }
 
 }

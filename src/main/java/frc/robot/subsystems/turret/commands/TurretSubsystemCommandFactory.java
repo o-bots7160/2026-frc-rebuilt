@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.commands.AbstractSetAndSeekCommandFactory;
 import frc.robot.subsystems.robotpose.RobotPoseSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -72,5 +73,20 @@ public class TurretSubsystemCommandFactory extends AbstractSetAndSeekCommandFact
         Command command = createTrackFieldTargetCommand(robotPoseSubsystem, targetFieldPositionSupplier, robotYawRateRadiansPerSecondSupplier);
         subsystem.setDefaultCommand(command);
         return command;
+    }
+
+    /**
+     * Builds a non-finishing command that profiles the turret to 0 degrees and then holds it there indefinitely.
+     * <p>
+     * Intended for use with {@code toggleOnTrue} so the operator can lock the turret when vision tracking is
+     * inaccurate or offline, then press the same button again to resume the default tracking command.
+     * </p>
+     *
+     * @return non-finishing command that locks the turret at 0 degrees until cancelled
+     */
+    public Command createLockToZeroCommand() {
+        return createMoveToAngleCommand(0.0)
+                .andThen(Commands.run(subsystem::seekTarget, subsystem))
+                .withName("Lock Turret to Zero");
     }
 }
