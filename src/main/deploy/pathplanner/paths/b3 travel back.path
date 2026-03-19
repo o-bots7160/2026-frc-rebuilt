@@ -73,11 +73,11 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.5,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 0.7545150415585076,
+      "maxWaypointRelativePos": 1.0027539920502102,
       "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 3.0,
+        "maxVelocity": 0.75,
+        "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -88,13 +88,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "SpinUpShooter",
+      "name": "",
       "waypointRelativePos": 2.25,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "SpinUpShooterCommand"
+          "name": null
         }
       }
     }

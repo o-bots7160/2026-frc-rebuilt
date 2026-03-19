@@ -78,10 +78,6 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7499819581613584,
-      "rotationDegrees": -90.0
-    },
-    {
       "waypointRelativePos": 1,
       "rotationDegrees": 180.0
     },
@@ -90,22 +86,37 @@
       "rotationDegrees": 180.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.7534920689396966,
+      "maxWaypointRelativePos": 1.001416483626198,
+      "constraints": {
+        "maxVelocity": 0.75,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "SpinUpShooter",
+      "name": "",
       "waypointRelativePos": 3.0,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "SpinUpShooterCommand"
+          "name": null
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 2.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -120,7 +131,7 @@
   "folder": "b1",
   "idealStartingState": {
     "velocity": 1.0,
-    "rotation": -90.0
+    "rotation": -100.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
