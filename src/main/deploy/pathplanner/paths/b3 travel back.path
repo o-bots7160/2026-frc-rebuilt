@@ -88,7 +88,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "",
+      "name": "SetStateFireReady",
       "waypointRelativePos": 2.25,
       "endWaypointRelativePos": null,
       "command": {
