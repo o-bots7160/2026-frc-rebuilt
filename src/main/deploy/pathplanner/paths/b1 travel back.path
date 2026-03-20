@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 7.5,
-        "y": 3.5
+        "y": 4.5
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.75,
-        "y": 3.5
+        "y": 4.5
       },
       "isLocked": false,
       "linkedName": "b1i end"
@@ -104,7 +104,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "",
+      "name": "SetStateFireReady",
       "waypointRelativePos": 3.0,
       "endWaypointRelativePos": null,
       "command": {
