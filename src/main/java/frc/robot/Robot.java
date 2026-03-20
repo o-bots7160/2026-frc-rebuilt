@@ -120,6 +120,7 @@ public class Robot extends LoggedRobot {
     /** Runs once when the robot enters the disabled state; no-op by default. */
     @Override
     public void disabledInit() {
+        
     }
 
     /** Runs each loop while the robot is disabled; no-op by default. */
@@ -191,7 +192,7 @@ public class Robot extends LoggedRobot {
         if (isSimulation()) {
             Pose2d startPose = getSimulationStartPose();
             m_robotContainer.resetPose(startPose);
-        } else if (!RobotEnvironment.isFMSAttached()) {
+        } else {//if (!RobotEnvironment.isFMSAttached()) {
             m_robotContainer.resetPoseFromVision();
         }
 
