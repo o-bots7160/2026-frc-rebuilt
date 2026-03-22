@@ -223,50 +223,63 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         //
         // Rear-facing turret, unreachable target (limits −90° to +90°):
         //   Robot facing east, target due east (directly in front). fieldAngle = 0, offset = π.
-        //   rawTarget = 0 − 0 − π = −π → normalized to −π by angleModulus, clamped to −π/2 (−90°).
-        //   Return: −90° — turret swings to its physical limit, getting as close to forward as it
-        //   can. The target is unreachable because the turret faces backward, so it does the best it
-        //   can by parking at the nearest limit.
-        return Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
+        //   rawTarget = 0 − 0 − π = −π → normalized to −π by angleModulus.
+        //   Return: −180° — the angle is outside the turret's reachable range. setTarget will
+        //   clamp it to the nearest limit and flag targetWasClamped so isOnTarget returns false.
+        return Units.radiansToDegrees(normalizeAngleRadians(compensatedTargetRadians));
     }
 
     /**
-     * Normalizes and clamps a turret target angle to the configured setpoint limits.
+     * Sets a new turret goal after normalizing the angle into the [-180, 180] range.
      * <p>
-     * The angle is first wrapped into the [-pi, pi] range with {@link MathUtil#angleModulus(double)}, then clamped to the configured min/max setpoint
-     * radians. When the target is outside the turret's reachable range (e.g., a target in front of a rear-facing turret), the turret moves to the
-     * nearest limit, which keeps the barrel as close to the target direction as possible.
+     * The superclass clamp then detects whether the normalized angle falls outside the turret's
+     * setpoint limits and flags it so {@link #isOnTarget()} correctly returns false for unreachable targets.
+     * </p>
+     *
+     * @param targetPositionDegrees desired turret position in degrees, relative to turret zero
+     */
+    @Override
+    public void setTarget(double targetPositionDegrees) {
+        double normalizedDegrees = Units.radiansToDegrees(
+                MathUtil.angleModulus(Units.degreesToRadians(targetPositionDegrees)));
+        super.setTarget(normalizedDegrees);
+    }
+
+    /**
+     * Checks whether the turret is aimed close enough to shoot, ignoring velocity.
+     * <p>
+     * Returns false when the requested target was clamped (target is outside the turret's reachable arc).
+     * Otherwise compares the position error against {@code onTargetPositionToleranceDegrees} from the turret config.
+     * </p>
+     *
+     * @return true when the turret is within the on-target tolerance of its goal
+     */
+    public boolean isOnTarget() {
+        if (targetWasClamped) {
+            log.recordOutput("onTarget", false);
+            return false;
+        }
+
+        double positionErrorRadians = Math.abs(goalState.position - getMeasuredPosition());
+        double toleranceRadians     = Units.degreesToRadians(config.getOnTargetPositionToleranceDegrees());
+        boolean onTarget            = positionErrorRadians <= toleranceRadians;
+        log.recordOutput("onTarget", onTarget);
+        return onTarget;
+    }
+
+    /**
+     * Normalizes a turret target angle into the [-pi, pi] range.
+     * <p>
+     * Wrapping ensures equivalent angles are recognized before the superclass clamps to the
+     * configured setpoint limits. Without normalization, angles like 3pi/2 (270 degrees) would
+     * not be recognized as equivalent to -pi/2 (-90 degrees).
      * </p>
      *
      * @param targetRadians requested turret angle in radians, relative to turret zero
-     * @return closest reachable angle within the turret limits in radians
+     * @return normalized angle in the [-pi, pi] range in radians
      */
-    private double clampToTurretLimitsRadians(double targetRadians) {
-        // Read the configured turret swing limits in radians (converted from degrees in the config).
-        // For a turret with minimumSetpointDegrees = −90 and maximumSetpointDegrees = +90:
-        //   minRadians = −π/2 (−1.571 rad), maxRadians = +π/2 (+1.571 rad)
-        // This means the turret can swing 90° in either direction from its zero.
-        double minRadians = config.getMinimumSetpointRadians();
-        double maxRadians = config.getMaximumSetpointRadians();
-
-        // Wrap the raw angle into the [−π, +π] range so equivalent angles are recognized.
-        // Without normalization, angles like 3π/2 (270°) would not be recognized as equivalent
-        // to −π/2 (−90°), and the subsequent clamp would produce incorrect results.
-        //
-        // Example: raw angle = 5π/4 (225°) → normalized to −3π/4 (−135°).
-        //   Now the clamp correctly sees the angle is past the −90° limit.
-        double normalized = MathUtil.angleModulus(targetRadians);
-
-        // Clamp the normalized angle into [minRadians, maxRadians]. If the target falls outside the
-        // turret's reachable arc, the angle snaps to whichever limit is closer.
-        //
-        // Forward-facing turret example (limits −π/2 to +π/2):
-        //   normalized = π/4 (45°) → within limits, returned as-is.
-        //
-        // Rear-facing turret, target behind and to the far left:
-        //   normalized = −3π/4 (−135°) → clamped to −π/2 (−90°).
-        //   The turret parks at its left-most swing, the closest it can get to the target.
-        return MathUtil.clamp(normalized, minRadians, maxRadians);
+    private double normalizeAngleRadians(double targetRadians) {
+        return MathUtil.angleModulus(targetRadians);
     }
 
 }

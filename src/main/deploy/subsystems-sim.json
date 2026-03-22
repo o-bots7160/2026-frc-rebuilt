@@ -243,6 +243,7 @@
       "componentPivotZ": 0.375
     },
     "rotationalLeadTimeSeconds": 0.1,
+    "onTargetPositionToleranceDegrees": 4.0,
     "sotmEnabled": true,
     "sotmDragCoefficient": 0.47,
     "sotmMinSpeedMetersPerSecond": 0.1,

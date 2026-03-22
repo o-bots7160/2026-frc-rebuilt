@@ -195,7 +195,7 @@ public class RobotContainer {
                     intakeCommandFactory,
                     harvesterCommandFactory,
                     turretCommandFactory::getCompensatedDistanceMeters,
-                    turretSubsystem::isProfileSettled);
+                    turretSubsystem::isOnTarget);
 
             // Default commands
             turretCommandFactory.setDefaultTrackFieldTargetCommand(

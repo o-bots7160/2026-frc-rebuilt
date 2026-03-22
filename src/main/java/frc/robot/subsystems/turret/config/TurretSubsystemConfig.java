@@ -26,6 +26,15 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
     public double turretZeroOffsetDegrees = 180.0;
 
     /**
+     * Position error threshold for the on-target readiness check, in degrees.
+     * <p>
+     * This is typically wider than the profile's position tolerance and ignores velocity, so the turret
+     * can report "ready to shoot" while the profile is still making fine corrections.
+     * </p>
+     */
+    public double onTargetPositionToleranceDegrees = 8.0;
+
+    /**
      * Look-ahead time for rotational velocity compensation in seconds.
      * <p>
      * When the robot is spinning, the turret can lead its aim by this many seconds of predicted heading
@@ -78,6 +87,15 @@ public class TurretSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
      */
     public double getTurretZeroOffsetDegrees() {
         return readTunableDegrees("turretZeroOffsetDegrees", turretZeroOffsetDegrees);
+    }
+
+    /**
+     * Returns the on-target position tolerance for the turret readiness check.
+     *
+     * @return tolerance in degrees
+     */
+    public double getOnTargetPositionToleranceDegrees() {
+        return readTunableDegrees("onTargetPositionToleranceDegrees", onTargetPositionToleranceDegrees);
     }
 
     /**
