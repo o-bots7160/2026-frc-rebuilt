@@ -195,13 +195,16 @@ public class RobotContainer {
                     feederCommandFactory,
                     intakeCommandFactory,
                     harvesterCommandFactory,
-                    () -> robotPoseSubsystem.getDistanceToPointMeters(fieldTargetSelector.getActiveTargetPosition()));
+                    turretCommandFactory::getCompensatedDistanceMeters,
+                    turretSubsystem::isProfileSettled);
 
             // Default commands
             turretCommandFactory.setDefaultTrackFieldTargetCommand(
                     robotPoseSubsystem,
                     fieldTargetSelector::getActiveTargetPosition,
-                    driveBaseSubsystem::getYawRateRadiansPerSecond);
+                    driveBaseSubsystem::getYawRateRadiansPerSecond,
+                    driveBaseSubsystem::getFieldRelativeVelocity,
+                    shooterSubsystem::getTimeOfFlightSeconds);
 
             // Register named commands for PathPlanner autos before pre-loading.
             // These must be registered before pre-loading autos so PathPlanner can resolve them.

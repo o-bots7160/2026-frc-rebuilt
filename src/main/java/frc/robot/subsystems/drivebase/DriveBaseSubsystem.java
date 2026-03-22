@@ -202,6 +202,20 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
+     * Returns the robot's current velocity in the field coordinate frame.
+     * <p>
+     * The returned speeds express how the robot moves relative to the field: vx along field +X (toward the opposing alliance wall), vy along field +Y
+     * (to the left when facing the opposing wall), and omega counter-clockwise. This is used by the shoot-on-the-move solver to compute how far the
+     * ball drifts during flight.
+     * </p>
+     *
+     * @return field-relative chassis speeds in meters per second and radians per second
+     */
+    public ChassisSpeeds getFieldRelativeVelocity() {
+        return inputs.chassisSpeeds;
+    }
+
+    /**
      * Resets odometry and gyro heading to the supplied pose.
      *
      * @param pose desired pose in meters and radians for the robot to assume immediately

@@ -75,6 +75,29 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
     }
 
     /**
+     * Computes the turret pivot position on the field by transforming the configured component offset from robot-relative to field-relative
+     * coordinates.
+     * <p>
+     * The offset comes from {@code componentPoseConfig} (the same values used for AdvantageScope rendering), so the sim model and the aim
+     * calculations always agree on where the turret sits. This method is used by {@link #calculateFieldTargetDegrees} and by the shoot-on-the-move
+     * solver for distance and velocity calculations.
+     * </p>
+     *
+     * @param robotPose current robot pose in meters and radians
+     * @return turret pivot position on the field in meters
+     */
+    public Translation2d getTurretFieldPosition(Pose2d robotPose) {
+        double heading = robotPose.getRotation().getRadians();
+        double cosH    = Math.cos(heading);
+        double sinH    = Math.sin(heading);
+        double pivotX  = config.componentPoseConfig.componentPivotX;
+        double pivotY  = config.componentPoseConfig.componentPivotY;
+        return new Translation2d(
+                robotPose.getX() + pivotX * cosH - pivotY * sinH,
+                robotPose.getY() + pivotX * sinH + pivotY * cosH);
+    }
+
+    /**
      * Computes the turret target angle needed to face a field-relative target while compensating for robot rotation.
      * <p>
      * The returned angle is relative to the turret's own zero direction, which is defined by {@code turretZeroOffsetDegrees}. For a rear-facing
@@ -83,6 +106,10 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
      * </p>
      * <p>
      * {@code turretAngle = fieldAngleToTarget − robotHeading − turretZeroOffset}
+     * </p>
+     * <p>
+     * The angle is measured from the turret's physical pivot point (defined by {@code componentPoseConfig}) rather than from the robot center. This
+     * eliminates a small aim error that would otherwise grow at close range.
      * </p>
      * <p>
      * Rotational lead-time compensation predicts where the robot heading will be after a short look-ahead period and subtracts that predicted change
@@ -99,17 +126,13 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
             Translation2d targetFieldPositionMeters,
             double robotYawRateRadiansPerSecond) {
 
-        // Compute the vector from the robot's position to the target in field coordinates.
-        // deltaX points along field +X (toward the opposing alliance wall).
-        // deltaY points along field +Y (to the left when facing the opposing wall).
-        //
-        // Forward-facing turret example (offset = 0°):
-        //   Robot at (1, 1), target at (3, 3) → deltaX = 2, deltaY = 2
-        //
-        // Rear-facing turret example (offset = 180°):
-        //   Robot at (1, 1), target at (-1, 1) → deltaX = -2, deltaY = 0
-        double deltaX                        = targetFieldPositionMeters.getX() - robotPose.getX();
-        double deltaY                        = targetFieldPositionMeters.getY() - robotPose.getY();
+        // Compute the vector from the turret pivot to the target in field coordinates.
+        // The pivot position accounts for the turret's physical offset from robot center
+        // (componentPoseConfig), ensuring the aim angle is measured from where the ball
+        // actually launches rather than from the robot's geometric center.
+        Translation2d turretFieldPos             = getTurretFieldPosition(robotPose);
+        double deltaX                            = targetFieldPositionMeters.getX() - turretFieldPos.getX();
+        double deltaY                            = targetFieldPositionMeters.getY() - turretFieldPos.getY();
 
         // Compute the field-relative angle from the robot to the target using atan2.
         // atan2 returns an angle in radians measured counter-clockwise from the +X axis,

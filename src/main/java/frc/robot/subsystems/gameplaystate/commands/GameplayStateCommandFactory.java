@@ -37,6 +37,9 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
     /** Supplies the distance from the robot to the active scoring target in meters. */
     private final Supplier<Double>                 distanceToTargetMetersSupplier;
 
+    /** Supplies whether the turret has settled on its target and is ready to fire. */
+    private final Supplier<Boolean>                turretReadySupplier;
+
     /**
      * Creates a factory that composes gameplay state commands from individual subsystem command factories.
      *
@@ -47,6 +50,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @param intakeCommandFactory           factory for intake roller commands
      * @param harvesterCommandFactory        factory for harvester arm commands
      * @param distanceToTargetMetersSupplier supplier returning the distance from the robot to the active scoring target in meters
+     * @param turretReadySupplier            supplier returning true when the turret has settled on its target
      */
     public GameplayStateCommandFactory(
             GameplayStateSubsystem subsystem,
@@ -55,7 +59,8 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            Supplier<Double> distanceToTargetMetersSupplier) {
+            Supplier<Double> distanceToTargetMetersSupplier,
+            Supplier<Boolean> turretReadySupplier) {
         super(subsystem);
         this.shooterCommandFactory          = shooterCommandFactory;
         this.indexerCommandFactory          = indexerCommandFactory;
@@ -63,6 +68,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         this.intakeCommandFactory           = intakeCommandFactory;
         this.harvesterCommandFactory        = harvesterCommandFactory;
         this.distanceToTargetMetersSupplier = distanceToTargetMetersSupplier;
+        this.turretReadySupplier            = turretReadySupplier;
     }
 
     /**
@@ -112,14 +118,10 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 shooterCommandFactory.createDistanceBasedSpinCommand(distanceToTargetMetersSupplier),
                 indexerCommandFactory.createFireWhenReadyCommand(
                         shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
-                        () -> true
-                // turretCommandFactory.getSubsystem()::isProfileSettled
-                ),
+                        turretReadySupplier),
                 feederCommandFactory.createFireWhenReadyCommand(
                         shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
-                        () -> true
-                // turretCommandFactory.getSubsystem()::isProfileSettled
-                ))
+                        turretReadySupplier))
                 .finallyDo(() -> {
                     subsystem.requestState(GameplayState.IDLE, "fire-end");
                     CommandScheduler.getInstance().schedule(createIdleCommand().asProxy());

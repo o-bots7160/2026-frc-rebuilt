@@ -254,6 +254,11 @@
       "componentPivotZ": 0.375
     },
     "rotationalLeadTimeSeconds": 0.1,
+    "sotmEnabled": true,
+    "sotmDragCoefficient": 0.47,
+    "sotmMinSpeedMetersPerSecond": 0.1,
+    "sotmMaxIterations": 10,
+    "sotmConvergenceToleranceSeconds": 0.001,
     "turretZeroOffsetDegrees": 180.0,
     "fieldTargets": {
       "fieldLengthMeters": 16.54,
@@ -317,11 +322,13 @@
     "distanceRpmPoints": [
       {
         "distanceMeters": 1.7,
-        "rpm": 2200.0
+        "rpm": 2200.0,
+        "timeOfFlightSeconds": 0.3
       },
       {
         "distanceMeters": 5.0,
-        "rpm": 3350.0
+        "rpm": 3350.0,
+        "timeOfFlightSeconds": 0.8
       }
     ],
     "distanceRpmMultiplier": 1.0,
