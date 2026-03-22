@@ -143,8 +143,11 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
      * @return composite command that waits for readiness then feeds
      */
     public Command createFireWhenReadyCommand(Supplier<Boolean> shooterReadySupplier, Supplier<Boolean> turretOnTargetSupplier) {
-        return Commands.waitUntil(() -> shooterReadySupplier.get() && turretOnTargetSupplier.get())
-                .andThen(createFeedAndHoldCommand())
+        Supplier<Boolean> readySupplier = () -> shooterReadySupplier.get() && turretOnTargetSupplier.get();
+        return Commands.waitUntil(readySupplier::get)
+                .andThen(createFeedAndHoldCommand()
+                        .onlyWhile(readySupplier::get))
+                .repeatedly()
                 .withName("FireWhenReady");
     }
 }
