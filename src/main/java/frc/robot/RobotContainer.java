@@ -130,7 +130,6 @@ public class RobotContainer {
     private final FieldTargetSelector              fieldTargetSelector;
 
     /** Binds controller buttons and triggers to commands for both driver and operator. */
-    @SuppressWarnings("unused")
     private final TriggerBindings                  triggerBindings;
 
     /**
@@ -300,6 +299,16 @@ public class RobotContainer {
         String   autoName = pathPlannerCommandFactory.getSelectedAutoName();
 
         return pathPlannerCommandFactory.createAutoCommand(alliance, autoName);
+    }
+
+    /**
+     * Runs once per robot loop to perform non-subsystem periodic checks.
+     * <p>
+     * Call from {@code Robot.robotPeriodic()} after the environment snapshot is refreshed.
+     * </p>
+     */
+    public void periodic() {
+        triggerBindings.checkControllerHealth();
     }
 
     /**

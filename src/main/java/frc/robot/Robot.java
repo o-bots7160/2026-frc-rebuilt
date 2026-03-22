@@ -106,14 +106,14 @@ public class Robot extends LoggedRobot {
     /**
      * Runs once every scheduler cycle regardless of robot mode.
      * <p>
-     * Refreshes the cached environment state so all code this cycle uses the same snapshot,
-     * then advances the command scheduler.
+     * Refreshes the cached environment state so all code this cycle uses the same snapshot, then advances the command scheduler.
      * </p>
      */
     @Override
     public void robotPeriodic() {
         // Refresh the cached environment state so all code this cycle uses the same snapshot.
         RobotEnvironment.refreshCycle();
+        m_robotContainer.periodic();
         CommandScheduler.getInstance().run();
     }
 
@@ -135,8 +135,7 @@ public class Robot extends LoggedRobot {
     /**
      * Runs once when the simulator first starts.
      * <p>
-     * Seeds the drivebase with a computed start pose so the simulated robot appears at a
-     * realistic field location rather than the origin.
+     * Seeds the drivebase with a computed start pose so the simulated robot appears at a realistic field location rather than the origin.
      * </p>
      */
     @Override
@@ -148,8 +147,8 @@ public class Robot extends LoggedRobot {
     /**
      * Seeds the robot pose and schedules the selected autonomous routine.
      * <p>
-     * On a real robot the pose is reset from the latest vision measurement so the autonomous path starts at the correct field location. In
-     * simulation a computed start pose is used instead since cameras are not present.
+     * On a real robot the pose is reset from the latest vision measurement so the autonomous path starts at the correct field location. In simulation
+     * a computed start pose is used instead since cameras are not present.
      * </p>
      */
     @Override
@@ -237,13 +236,14 @@ public class Robot extends LoggedRobot {
     private Pose2d getSimulationStartPose() {
         // Prefer the live driver station info, but default to Blue/center when not present in sim.
         Optional<edu.wpi.first.wpilibj.DriverStation.Alliance> alliance        = RobotEnvironment.getAlliance();
-        OptionalInt                      stationPosition = RobotEnvironment.getLocation();
+        OptionalInt                                            stationPosition = RobotEnvironment.getLocation();
 
-        boolean                          isRedAlliance   = alliance.orElse(edu.wpi.first.wpilibj.DriverStation.Alliance.Blue) == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
-        int                              station         = stationPosition.orElse(2);
+        boolean                                                isRedAlliance   = alliance
+                .orElse(edu.wpi.first.wpilibj.DriverStation.Alliance.Blue) == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
+        int                                                    station         = stationPosition.orElse(2);
 
         // Spread start locations by station: 1 (near edge), 2 (center), 3 (far edge).
-        double                           yPositionMeters;
+        double                                                 yPositionMeters;
         switch (station) {
         case 1 -> yPositionMeters = EDGE_Y_OFFSET_METERS;
         case 3 -> yPositionMeters = FIELD_WIDTH_METERS - EDGE_Y_OFFSET_METERS;

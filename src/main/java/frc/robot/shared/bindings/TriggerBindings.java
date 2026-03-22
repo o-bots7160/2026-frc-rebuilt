@@ -8,11 +8,13 @@ import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.shared.config.RobotEnvironment;
+import frc.robot.shared.logging.Logger;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
 import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
@@ -54,6 +56,9 @@ public class TriggerBindings {
 
     private static final String                    TEST_SUBSYSTEM_HARVESTER         = "Harvester";
 
+    /** Number of consecutive zero-input cycles before a stale-input warning fires (~1 second at 50 Hz). */
+    private static final int                       STALE_INPUT_CYCLE_THRESHOLD      = 50;
+
     /**
      * Driver gamepad used for manual driving.
      */
@@ -84,17 +89,17 @@ public class TriggerBindings {
      */
     private final ShooterSubsystemCommandFactory   shooterCommandFactory;
 
-    /**
-     * Factory that creates indexer commands tied to driver buttons.
-     */
-    private final IndexerSubsystemCommandFactory   indexerCommandFactory;
-
     // TODO: Re-enable climber for post-first-competition
     // /**
     // * Factory that creates climber commands tied to driver buttons.
     // */
     // @SuppressWarnings("unused")
     // private final ClimberSubsystemCommandFactory climberCommandFactory;
+
+    /**
+     * Factory that creates indexer commands tied to driver buttons.
+     */
+    private final IndexerSubsystemCommandFactory   indexerCommandFactory;
 
     /**
      * Factory that creates feeder commands tied to driver buttons.
@@ -120,6 +125,38 @@ public class TriggerBindings {
      * Dashboard chooser that selects which subsystem the A/B/X test buttons control. Only initialized when tuning mode is enabled.
      */
     private LoggedDashboardChooser<String>         testSubsystemChooser;
+
+    /** Logger for controller health telemetry. */
+    private final Logger                           log                              = Logger.getInstance("TriggerBindings");
+
+    /** USB port number for the driver controller, stored for health checks. */
+    private final int                              driverControllerPort;
+
+    /** USB port number for the operator controller, stored for health checks. */
+    private final int                              operatorControllerPort;
+
+    /** True when the driver controller was connected on the previous cycle. */
+    private boolean                                driverConnectedLastCycle         = true;
+
+    /** True when the operator controller was connected on the previous cycle. */
+    private boolean                                operatorConnectedLastCycle       = true;
+
+    /**
+     * Number of consecutive teleop cycles where all driver controller axes have been exactly zero. Used to detect a stale USB data pipe where the
+     * controller appears connected in the DS but is not actually sending input data.
+     */
+    private int                                    driverZeroCycleCount             = 0;
+
+    /**
+     * Number of consecutive teleop cycles where all operator controller axes have been exactly zero.
+     */
+    private int                                    operatorZeroCycleCount           = 0;
+
+    /** True once the stale-input warning has been reported for the driver controller this enable cycle. */
+    private boolean                                driverStaleWarningFired          = false;
+
+    /** True once the stale-input warning has been reported for the operator controller this enable cycle. */
+    private boolean                                operatorStaleWarningFired        = false;
 
     /**
      * Creates trigger bindings with the default driver controller port.
@@ -197,6 +234,8 @@ public class TriggerBindings {
         this.intakeCommandFactory        = intakeCommandFactory;
         this.harvesterCommandFactory     = harvesterCommandFactory;
         this.gameplayStateCommandFactory = gameplayStateCommandFactory;
+        this.driverControllerPort        = driverControllerPort;
+        this.operatorControllerPort      = operatorControllerPort;
         this.driverController            = new CommandXboxController(driverControllerPort);
         this.operatorController          = new CommandXboxController(operatorControllerPort);
 
@@ -206,6 +245,63 @@ public class TriggerBindings {
             configureDriveControllerBindings();
             configureOperatorBindings();
         }
+    }
+
+    /**
+     * Checks controller connectivity and input health, logging warnings and telemetry.
+     * <p>
+     * Call this once per robot cycle (e.g., from a default command supplier or {@code robotPeriodic}). It performs two checks per controller:
+     * </p>
+     * <p>
+     * 1. Connection check via {@link DriverStation#isJoystickConnected(int)}. A warning fires once when a controller transitions from connected to
+     * disconnected. The latch resets when the controller reconnects.
+     * </p>
+     * <p>
+     * 2. Stale-input detection during teleop. If a controller reports as connected but all axes have been exactly zero for
+     * {@value #STALE_INPUT_CYCLE_THRESHOLD} consecutive teleop cycles, a warning fires once. This catches the failure mode where the Windows USB data
+     * pipe goes to sleep during autonomous and fails to wake for teleop (the DS shows the device as present because the USB descriptor is cached, but
+     * actual input data is stale). The stale warning resets when the robot leaves teleop.
+     * </p>
+     */
+    public void checkControllerHealth() {
+        // Skip health checks in simulation — controllers are rarely connected and
+        // the stale-input detector would fire false warnings every teleop enable.
+        if (RobotEnvironment.isSimulation()) {
+            return;
+        }
+
+        boolean driverConnected   = DriverStation.isJoystickConnected(driverControllerPort);
+        boolean operatorConnected = DriverStation.isJoystickConnected(operatorControllerPort);
+
+        // Connection transition warnings (fire once per disconnect).
+        if (driverConnectedLastCycle && !driverConnected) {
+            RobotEnvironment.reportWarning("Driver controller (port " + driverControllerPort + ") disconnected.", false);
+        }
+        if (operatorConnectedLastCycle && !operatorConnected) {
+            RobotEnvironment.reportWarning("Operator controller (port " + operatorControllerPort + ") disconnected.", false);
+        }
+        driverConnectedLastCycle   = driverConnected;
+        operatorConnectedLastCycle = operatorConnected;
+
+        // Stale-input detection (teleop only).
+        if (RobotEnvironment.isTeleop() && !RobotEnvironment.isDisabled()) {
+            checkStaleInput(driverController, driverConnected, true);
+            checkStaleInput(operatorController, operatorConnected, false);
+        } else {
+            // Reset stale counters and warning latches outside teleop.
+            driverZeroCycleCount      = 0;
+            operatorZeroCycleCount    = 0;
+            driverStaleWarningFired   = false;
+            operatorStaleWarningFired = false;
+        }
+
+        // AdvantageKit telemetry.
+        boolean driverInputActive   = hasAnyInput(driverController);
+        boolean operatorInputActive = hasAnyInput(operatorController);
+        log.recordOutput("DriverConnected", driverConnected);
+        log.recordOutput("OperatorConnected", operatorConnected);
+        log.recordOutput("DriverInputActive", driverInputActive);
+        log.recordOutput("OperatorInputActive", operatorInputActive);
     }
 
     /**
@@ -587,6 +683,69 @@ public class TriggerBindings {
 
             return driveBaseCommandFactory.createPathfindToPoseCommand(targetPose, constraints);
         }));
+    }
+
+    /**
+     * Tracks consecutive all-zero cycles for one controller and fires a warning if the threshold is exceeded.
+     *
+     * @param controller the controller to check
+     * @param connected  whether this controller reports as connected via the DS
+     * @param isDriver   true for the driver controller, false for the operator
+     */
+    private void checkStaleInput(CommandXboxController controller, boolean connected, boolean isDriver) {
+        if (!connected) {
+            return;
+        }
+
+        boolean hasInput = hasAnyInput(controller);
+
+        if (hasInput) {
+            if (isDriver) {
+                driverZeroCycleCount    = 0;
+                driverStaleWarningFired = false;
+            } else {
+                operatorZeroCycleCount    = 0;
+                operatorStaleWarningFired = false;
+            }
+            return;
+        }
+
+        if (isDriver) {
+            driverZeroCycleCount++;
+            if (driverZeroCycleCount >= STALE_INPUT_CYCLE_THRESHOLD && !driverStaleWarningFired) {
+                RobotEnvironment.reportWarning(
+                        "Driver controller (port " + driverControllerPort
+                                + ") is connected but has sent no input for ~1 second. "
+                                + "USB data pipe may be frozen — try pressing buttons or reboot the DS laptop.",
+                        false);
+                driverStaleWarningFired = true;
+            }
+        } else {
+            operatorZeroCycleCount++;
+            if (operatorZeroCycleCount >= STALE_INPUT_CYCLE_THRESHOLD && !operatorStaleWarningFired) {
+                RobotEnvironment.reportWarning(
+                        "Operator controller (port " + operatorControllerPort
+                                + ") is connected but has sent no input for ~1 second. "
+                                + "USB data pipe may be frozen — try pressing buttons or reboot the DS laptop.",
+                        false);
+                operatorStaleWarningFired = true;
+            }
+        }
+    }
+
+    /**
+     * Returns true if any axis on the controller has a non-zero value.
+     *
+     * @param controller the controller to check
+     * @return true if at least one axis is non-zero
+     */
+    private boolean hasAnyInput(CommandXboxController controller) {
+        return controller.getLeftX() != 0.0
+                || controller.getLeftY() != 0.0
+                || controller.getRightX() != 0.0
+                || controller.getRightY() != 0.0
+                || controller.getLeftTriggerAxis() != 0.0
+                || controller.getRightTriggerAxis() != 0.0;
     }
 
 }
