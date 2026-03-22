@@ -15,7 +15,7 @@
             "height": 384.0,
             "type": "Field",
             "properties": {
-              "topic": "/AdvantageKit/RobotPoseSubsystem/RobotPose/EstimatedPose",
+              "topic": "/SmartDashboard/RobotPoseSubsystem/Field",
               "period": 0.06,
               "field_game": "Rebuilt",
               "robot_width": 0.762,

@@ -97,6 +97,11 @@ public class TriggerBindingsConfig extends AbstractConfig {
     public boolean tuningEnabled               = false;
 
     /**
+     * Driver controller configuration for d-pad pathfinding targets and constraints.
+     */
+    public DriverControllerConfig driverControllerConfig = new DriverControllerConfig();
+
+    /**
      * Reads the tunable response curve exponent for the left stick Y axis.
      *
      * @return current left stick Y response exponent (1.0 = linear, 2.0 = quadratic)

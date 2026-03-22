@@ -8,7 +8,37 @@
     "slowSpeedScale": 0.25,
     "triggerDeadband": 0.1,
     "joystickDeadband": 0.08,
-    "tuningEnabled": false
+    "tuningEnabled": false,
+    "driverControllerConfig": {
+      "dpadUp": {
+        "xMeters": 0.0,
+        "yMeters": 0.0,
+        "headingDegrees": 0.0,
+        "enabled": false
+      },
+      "dpadDown": {
+        "xMeters": 0.0,
+        "yMeters": 0.0,
+        "headingDegrees": 0.0,
+        "enabled": false
+      },
+      "dpadLeft": {
+        "xMeters": 0.0,
+        "yMeters": 0.0,
+        "headingDegrees": 0.0,
+        "enabled": false
+      },
+      "dpadRight": {
+        "xMeters": 0.0,
+        "yMeters": 0.0,
+        "headingDegrees": 0.0,
+        "enabled": false
+      },
+      "dpadMaxVelocityMetersPerSecond": 3.0,
+      "dpadMaxAccelerationMetersPerSecondSquared": 3.0,
+      "dpadMaxAngularVelocityDegreesPerSecond": 360.0,
+      "dpadMaxAngularAccelerationDegreesPerSecondSquared": 720.0
+    }
   },
   "driveBaseSubsystem": {
     "enabled": true,
@@ -309,7 +339,13 @@
       "maximumPoseDeviationMeters": 1.5,
       "maximumMultiTagAmbiguity": 0.2,
       "maximumZHeightMeters": 0.5,
-      "ignoredTagIds": [25, 21, 27, 30, 32],
+      "ignoredTagIds": [
+        25,
+        21,
+        27,
+        30,
+        32
+      ],
       "tagSwitchStdDevMultiplier": 3.0,
       "initialPoseAcceptanceCount": 3
     },

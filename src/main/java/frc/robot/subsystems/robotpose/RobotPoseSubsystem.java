@@ -110,6 +110,9 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
         fieldDisplay.setRobotPose(estimatedPose);
 
         // Publish operator-critical values to SmartDashboard for the Elastic Dashboard.
+        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedXMeters", estimatedPose.getX());
+        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedYMeters", estimatedPose.getY());
+        SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedHeadingDegrees", estimatedPose.getRotation().getDegrees());
         SmartDashboard.putBoolean("RobotPoseSubsystem/HasVisionMeasurement", hasVisionMeasurement);
         SmartDashboard.putBoolean("RobotPoseSubsystem/EnableVisionFusion", enableVisionFusion);
     }

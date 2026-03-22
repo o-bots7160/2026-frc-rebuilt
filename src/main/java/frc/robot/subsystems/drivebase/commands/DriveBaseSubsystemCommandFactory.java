@@ -6,7 +6,11 @@ import static edu.wpi.first.units.Units.Volts;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -362,5 +366,24 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
                     () -> translationSupplier.get().getY(),
                     () -> normalizedTarget);
         });
+    }
+
+    /**
+     * Builds a command that pathfinds from the robot's current pose to the given target pose using PathPlanner's AD* pathfinder.
+     * <p>
+     * The command respects obstacles defined in the PathPlanner navgrid and ends at zero velocity when the target is reached. Use this for teleop
+     * d-pad pathfinding where the driver holds a button to drive to a pre-configured field position.
+     * </p>
+     *
+     * @param targetPose  field pose to pathfind to (already alliance-corrected by the caller)
+     * @param constraints velocity and acceleration limits for the pathfinding trajectory
+     * @return command that pathfinds to the target pose and stops, or a no-op if the subsystem is disabled
+     */
+    public Command createPathfindToPoseCommand(Pose2d targetPose, PathConstraints constraints) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Pathfind skipped: drive base disabled.");
+        }
+
+        return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
 }

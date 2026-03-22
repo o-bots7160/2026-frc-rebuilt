@@ -2,10 +2,17 @@ package frc.robot.shared.bindings;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.FlippingUtil;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
 import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
@@ -262,6 +269,8 @@ public class TriggerBindings {
                                 driverController.getLeftX(),
                                 triggerBindingsConfig.getLeftStickXResponseExponent(),
                                 computeTranslationSpeedScale())));
+
+        configureDpadPathfindingBindings();
     }
 
     /**
@@ -529,6 +538,55 @@ public class TriggerBindings {
         // Second press releases the lock and resumes the default tracking command.
         operatorController.back().toggleOnTrue(
                 turretCommandFactory.createLockToZeroCommand());
+    }
+
+    /**
+     * Wires driver controller d-pad buttons to PathPlanner pathfinding commands.
+     * <p>
+     * Each d-pad direction pathfinds to a configurable field pose when held. Targets are stored in blue-alliance coordinates and flipped at runtime
+     * for red alliance. Only directions with {@code enabled = true} in the config are bound. The target pose and constraints are resolved at
+     * button-press time using deferred proxy so tunable values and alliance selection are always current.
+     * </p>
+     */
+    private void configureDpadPathfindingBindings() {
+        DriverControllerConfig driverConfig = triggerBindingsConfig.driverControllerConfig;
+
+        bindDpadDirection(driverController.povUp(), driverConfig.dpadUp, driverConfig);
+        bindDpadDirection(driverController.povDown(), driverConfig.dpadDown, driverConfig);
+        bindDpadDirection(driverController.povLeft(), driverConfig.dpadLeft, driverConfig);
+        bindDpadDirection(driverController.povRight(), driverConfig.dpadRight, driverConfig);
+    }
+
+    /**
+     * Binds a single d-pad direction trigger to a pathfinding command if the target is enabled.
+     *
+     * @param trigger      the d-pad direction trigger from the driver controller
+     * @param targetConfig config holding the target pose for this direction
+     * @param driverConfig shared driver controller config holding pathfinding constraints
+     */
+    private void bindDpadDirection(
+            edu.wpi.first.wpilibj2.command.button.Trigger trigger,
+            DpadTargetConfig targetConfig,
+            DriverControllerConfig driverConfig) {
+        if (!targetConfig.enabled) {
+            return;
+        }
+
+        trigger.whileTrue(Commands.deferredProxy(() -> {
+            Pose2d          bluePose    = targetConfig.toPose2d();
+
+            // Flip the target for the red alliance.
+            Alliance        alliance    = RobotEnvironment.getAlliance().orElse(Alliance.Blue);
+            Pose2d          targetPose  = alliance == Alliance.Red ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
+
+            PathConstraints constraints = new PathConstraints(
+                    driverConfig.getDpadMaxVelocityMetersPerSecond(),
+                    driverConfig.getDpadMaxAccelerationMetersPerSecondSquared(),
+                    Units.degreesToRadians(driverConfig.getDpadMaxAngularVelocityDegreesPerSecond()),
+                    Units.degreesToRadians(driverConfig.getDpadMaxAngularAccelerationDegreesPerSecondSquared()));
+
+            return driveBaseCommandFactory.createPathfindToPoseCommand(targetPose, constraints);
+        }));
     }
 
 }
