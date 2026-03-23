@@ -11,10 +11,10 @@
     "tuningEnabled": false,
     "driverControllerConfig": {
       "dpadUp": {
-        "xMeters": 0.0,
-        "yMeters": 0.0,
-        "headingDegrees": 0.0,
-        "enabled": false
+        "xMeters": 6.12,
+        "yMeters": 5.29,
+        "headingDegrees": -90.0,
+        "enabled": true
       },
       "dpadDown": {
         "xMeters": 0.0,
