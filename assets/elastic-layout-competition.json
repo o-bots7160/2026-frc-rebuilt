@@ -1,6 +1,6 @@
 {
-  "version": 1.0,
-  "grid_size": 128,
+  "version": 1,
+  "grid_size": 128.0,
   "tabs": [
     {
       "name": "Competition",
@@ -136,6 +136,37 @@
               "divisions": 5,
               "inverted": false,
               "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "AprilTag Seen",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/HasVisibleTags",
+              "period": 0.06,
+              "data_type": "boolean",
+              "false_color": 4294198070,
+              "false_icon": "None",
+              "true_color": 4283215696,
+              "true_icon": "None"
+            }
+          },
+          {
+            "title": "Visible Tag IDs",
+            "x": 128.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/VisibleTagIds",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
             }
           }
         ]

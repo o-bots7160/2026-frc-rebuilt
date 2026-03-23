@@ -1,6 +1,6 @@
 {
-  "version": 1.0,
-  "grid_size": 128,
+  "version": 1,
+  "grid_size": 128.0,
   "tabs": [
     {
       "name": "Competition",
@@ -177,6 +177,37 @@
               "topic": "/SmartDashboard/RobotPoseSubsystem/EstimatedHeadingDegrees",
               "period": 0.06,
               "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "AprilTag Seen",
+            "x": 384.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/HasVisibleTags",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Visible Tag IDs",
+            "x": 512.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/VisibleTagIds",
+              "period": 0.06,
+              "data_type": "string",
               "show_submit_button": false
             }
           }
@@ -568,7 +599,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0.0
+              "angle_offset": 0
             }
           },
           {

@@ -6,8 +6,11 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -78,6 +81,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /** Reusable per-cycle list to avoid allocating new lists every loop. */
     private final List<Pose3d>                  allRejectedPoses = new ArrayList<>();
 
+    /** Reusable per-cycle set that accumulates deduplicated, sorted tag IDs across all cameras. */
+    private final Set<Integer>                  allVisibleTagIds = new TreeSet<>();
+
     /** Guards the disabled-periodic log message so it prints only once per disable cycle. */
     private boolean                             disabledPeriodicLogged;
 
@@ -143,6 +149,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 log.warning("AprilTagVisionSubsystem periodic skipped: subsystem is disabled.");
                 disabledPeriodicLogged = true;
             }
+            log.recordOutput("Summary/HasVisibleTags", false);
+            log.recordOutput("Summary/VisibleTagIds", "");
             return;
         }
 
@@ -153,6 +161,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         allRobotPoses.clear();
         allAcceptedPoses.clear();
         allRejectedPoses.clear();
+        allVisibleTagIds.clear();
         for (RejectionReason reason : RejectionReason.values()) {
             rejectionCounts.put(reason, 0);
         }
@@ -164,6 +173,11 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
 
             // Update the driver alert so we can see missing cameras quickly on the DS.
             camera.disconnectedAlert().set(!camera.inputs().connected);
+
+            // Collect visible tag IDs across all cameras for dashboard display.
+            for (int tagId : camera.inputs().tagIds) {
+                allVisibleTagIds.add(tagId);
+            }
 
             // Filter and forward any valid robot pose observations.
             processCameraObservations(
@@ -352,6 +366,11 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
 
     /**
      * Records an aggregated summary of all camera observations for system-wide diagnostics.
+     * <p>
+     * Also publishes operator-critical tag visibility values via AdvantageKit so the Elastic Dashboard can show whether any AprilTag is currently
+     * visible and which tag IDs are in view. These values update during the pre-match disabled period, giving operators early confirmation that
+     * vision is working.
+     * </p>
      *
      * @param tagPoses      combined observed tag field poses from all cameras
      * @param robotPoses    combined raw robot pose estimates from all cameras
@@ -376,6 +395,11 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         log.recordVerboseOutput("Summary/RobotPoses", robotPoses.toArray(new Pose3d[0]));
         log.recordVerboseOutput("Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
         log.recordVerboseOutput("Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+
+        // Publish tag visibility via AdvantageKit for the Elastic Dashboard Competition tab.
+        log.recordOutput("Summary/HasVisibleTags", !allVisibleTagIds.isEmpty());
+        log.recordOutput("Summary/VisibleTagIds",
+                allVisibleTagIds.stream().map(String::valueOf).collect(Collectors.joining(", ")));
     }
 
 }
