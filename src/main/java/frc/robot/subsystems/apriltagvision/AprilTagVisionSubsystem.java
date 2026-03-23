@@ -1,6 +1,7 @@
 package frc.robot.subsystems.apriltagvision;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
@@ -49,6 +50,18 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             AprilTagVisionIO io,
             AprilTagVisionIOInputsAutoLogged inputs,
             Alert disconnectedAlert) {
+    }
+
+    /**
+     * Formats an array of tag IDs into a human-readable comma-separated string.
+     *
+     * @param tagIds array of AprilTag IDs
+     * @return comma-separated string of tag IDs, or empty string if none
+     */
+    private static String formatTagIds(int[] tagIds) {
+        return Arrays.stream(tagIds)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining(", "));
     }
 
     /** Immutable map of camera name to its runtime resources, built at construction time. */
@@ -113,7 +126,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         super(config);
         this.consumer              = consumer;
         this.odometryResetConsumer = odometryResetConsumer != null ? odometryResetConsumer : pose -> {
-                                  };
+                                   };
         this.fieldLayout           = config.loadLayout();
 
         PoseFilterConfig poseFilter = config.getPoseFilter();
@@ -276,13 +289,19 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             List<Pose3d> allAcceptedPoses,
             List<Pose3d> allRejectedPoses) {
 
-        List<Pose3d> tagPoses      = new ArrayList<>();
-        List<Pose3d> robotPoses    = new ArrayList<>();
-        List<Pose3d> acceptedPoses = new ArrayList<>();
-        List<Pose3d> rejectedPoses = new ArrayList<>();
+        List<Pose3d> tagPoses       = new ArrayList<>();
+        List<Pose3d> robotPoses     = new ArrayList<>();
+        List<Pose3d> acceptedPoses  = new ArrayList<>();
+        List<Pose3d> rejectedPoses  = new ArrayList<>();
+
+        // Per-camera tag ID tracking for verbose logging.
+        Set<Integer> acceptedTagIds = new TreeSet<>();
+        Set<Integer> rejectedTagIds = new TreeSet<>();
 
         // Convert the observed tag IDs into field poses for logging.
         collectTagPoses(cameraInputs.tagIds, tagPoses);
+
+        int observationIndex = 0;
 
         for (var poseObservation : cameraInputs.poseObservations) {
             // Track every raw robot pose we saw, even if we reject it later.
@@ -295,12 +314,50 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 rejectedPoses.add(poseObservation.pose());
                 RejectionReason reason = result.rejectionReason().get();
                 rejectionCounts.merge(reason, 1, Integer::sum);
+
+                // Verbose: log each rejected observation with its tag details.
+                if (isVerboseLoggingEnabled()) {
+                    String obsPrefix = "Camera/" + cameraName + "/Observations/" + observationIndex;
+                    log.recordVerboseOutput(obsPrefix + "/Status", "REJECTED");
+                    log.recordVerboseOutput(obsPrefix + "/Reason", reason.name());
+                    log.recordVerboseOutput(obsPrefix + "/TagIds", formatTagIds(poseObservation.tagIds()));
+                    log.recordVerboseOutput(obsPrefix + "/TagCount", (double) poseObservation.tagCount());
+                    log.recordVerboseOutput(obsPrefix + "/Ambiguity", poseObservation.ambiguity());
+                    log.recordVerboseOutput(obsPrefix + "/AvgTagDistanceMeters", poseObservation.averageTagDistance());
+                    log.recordVerboseOutput(obsPrefix + "/MaxTagDistanceMeters", poseObservation.maxTagDistance());
+                }
+
+                for (int tagId : poseObservation.tagIds()) {
+                    rejectedTagIds.add(tagId);
+                }
+
+                observationIndex++;
                 continue;
             }
 
             // Forward accepted measurements to the robot state estimator.
             acceptedPoses.add(poseObservation.pose());
             var measurement = result.measurement().get();
+
+            // Verbose: log each accepted observation with its tag details.
+            if (isVerboseLoggingEnabled()) {
+                String obsPrefix = "Camera/" + cameraName + "/Observations/" + observationIndex;
+                log.recordVerboseOutput(obsPrefix + "/Status", "ACCEPTED");
+                log.recordVerboseOutput(obsPrefix + "/Reason", "");
+                log.recordVerboseOutput(obsPrefix + "/TagIds", formatTagIds(poseObservation.tagIds()));
+                log.recordVerboseOutput(obsPrefix + "/TagCount", (double) poseObservation.tagCount());
+                log.recordVerboseOutput(obsPrefix + "/Ambiguity", poseObservation.ambiguity());
+                log.recordVerboseOutput(obsPrefix + "/AvgTagDistanceMeters", poseObservation.averageTagDistance());
+                log.recordVerboseOutput(obsPrefix + "/MaxTagDistanceMeters", poseObservation.maxTagDistance());
+                log.recordVerboseOutput(obsPrefix + "/LinearStdDev", measurement.standardDeviations().get(0, 0));
+                log.recordVerboseOutput(obsPrefix + "/AngularStdDev", measurement.standardDeviations().get(2, 0));
+            }
+
+            for (int tagId : poseObservation.tagIds()) {
+                acceptedTagIds.add(tagId);
+            }
+
+            observationIndex++;
 
             // On the very first accepted vision pose, hard-reset odometry so the Kalman filter
             // starts from the correct field position instead of gradually correcting from (0, 0).
@@ -317,7 +374,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         }
 
         // Log per-camera data so we can compare cameras side by side.
-        logCameraData(cameraName, tagPoses, robotPoses, acceptedPoses, rejectedPoses);
+        logCameraData(cameraName, tagPoses, robotPoses, acceptedPoses, rejectedPoses,
+                acceptedTagIds, rejectedTagIds, observationIndex);
 
         allTagPoses.addAll(tagPoses);
         allRobotPoses.addAll(robotPoses);
@@ -341,27 +399,38 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /**
      * Records per-camera pose data under a prefixed log key for side-by-side comparison.
      *
-     * @param cameraName    camera name used as the log key prefix
-     * @param tagPoses      observed tag field poses
-     * @param robotPoses    raw robot pose estimates from all observations
-     * @param acceptedPoses robot poses that passed filtering
-     * @param rejectedPoses robot poses that failed filtering
+     * @param cameraName       camera name used as the log key prefix
+     * @param tagPoses         observed tag field poses
+     * @param robotPoses       raw robot pose estimates from all observations
+     * @param acceptedPoses    robot poses that passed filtering
+     * @param rejectedPoses    robot poses that failed filtering
+     * @param acceptedTagIds   tag IDs that contributed to accepted observations
+     * @param rejectedTagIds   tag IDs that were part of rejected observations
+     * @param observationCount number of observations processed this cycle
      */
     private void logCameraData(
             String cameraName,
             List<Pose3d> tagPoses,
             List<Pose3d> robotPoses,
             List<Pose3d> acceptedPoses,
-            List<Pose3d> rejectedPoses) {
+            List<Pose3d> rejectedPoses,
+            Set<Integer> acceptedTagIds,
+            Set<Integer> rejectedTagIds,
+            int observationCount) {
         if (!isVerboseLoggingEnabled()) {
             return;
         }
         // Prefix keeps the log tree organized per camera.
         String prefix = "Camera/" + cameraName;
-        log.recordOutput(prefix + "/TagPoses", tagPoses.toArray(new Pose3d[0]));
-        log.recordOutput(prefix + "/RobotPoses", robotPoses.toArray(new Pose3d[0]));
-        log.recordOutput(prefix + "/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
-        log.recordOutput(prefix + "/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+        log.recordVerboseOutput(prefix + "/TagPoses", tagPoses.toArray(new Pose3d[0]));
+        log.recordVerboseOutput(prefix + "/RobotPoses", robotPoses.toArray(new Pose3d[0]));
+        log.recordVerboseOutput(prefix + "/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
+        log.recordVerboseOutput(prefix + "/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
+        log.recordVerboseOutput(prefix + "/AcceptedTagIds",
+                acceptedTagIds.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+        log.recordVerboseOutput(prefix + "/RejectedTagIds",
+                rejectedTagIds.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+        log.recordVerboseOutput(prefix + "/ObservationCount", (double) observationCount);
     }
 
     /**

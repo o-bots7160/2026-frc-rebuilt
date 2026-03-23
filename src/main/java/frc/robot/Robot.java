@@ -35,8 +35,8 @@ public class Robot extends LoggedRobot {
     /** Width of the official FRC competition field in meters. */
     private static final double  FIELD_WIDTH_METERS    = 8.21;
 
-    /** Distance in meters from the alliance wall to the default simulation start x-coordinate. */
-    private static final double  START_X_OFFSET_METERS = 1.5;
+    /** Distance in meters from the alliance wall to the default simulation start x-coordinate (starting line). */
+    private static final double  START_X_OFFSET_METERS = 3.6;
 
     /** Distance in meters from the field edge to the nearest station start y-coordinate. */
     private static final double  EDGE_Y_OFFSET_METERS  = 1.1;

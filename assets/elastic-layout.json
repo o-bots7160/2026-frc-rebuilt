@@ -1,6 +1,6 @@
 {
-  "version": 1.0,
-  "grid_size": 128,
+  "version": 1,
+  "grid_size": 128.0,
   "tabs": [
     {
       "name": "Competition",
@@ -615,7 +615,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0.0
+              "angle_offset": 0
             }
           },
           {
@@ -2831,32 +2831,6 @@
             }
           },
           {
-            "title": "USB1 Tags",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/usb1TagIds",
-              "period": 0.06,
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "USB2 Tags",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/usb2TagIds",
-              "period": 0.06,
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "Max Tag Distance (m)",
             "x": 512.0,
             "y": 0.0,
@@ -2979,6 +2953,121 @@
               "topic": "SmartDashboard/AprilTagVisionSubsystem/verbose",
               "period": 0.06,
               "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Visible Tags",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/VisibleTagIds",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Accepted Count",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/AcceptedCount",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Rejected Count",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RejectedCount",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "OV9281 Accepted Tags",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/AcceptedTagIds",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "OV9281 Rejected Tags",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/RejectedTagIds",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "cam219a Accepted Tags",
+            "x": 128.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/AcceptedTagIds",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "cam219a Rejected Tags",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/RejectedTagIds",
+              "period": 0.06,
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Initial Accept Window",
+            "x": 384.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/InitialAcceptanceWindow",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Odom Reset from Vision",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/OdometryResetFromVision",
+              "period": 0.06
             }
           }
         ]
