@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "grid_size": 128.0,
+  "version": 1.0,
+  "grid_size": 128,
   "tabs": [
     {
       "name": "Competition",
@@ -58,7 +58,7 @@
             "title": "Shooter Ready",
             "x": 768.0,
             "y": 0.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -73,8 +73,8 @@
           },
           {
             "title": "Shooter RPM",
-            "x": 768.0,
-            "y": 128.0,
+            "x": 1024.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Radial Gauge",
@@ -94,8 +94,8 @@
           },
           {
             "title": "Distance to Target (m)",
-            "x": 1024.0,
-            "y": 0.0,
+            "x": 768.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -123,7 +123,7 @@
           {
             "title": "Shooter Target RPM",
             "x": 1024.0,
-            "y": 128.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Number Bar",
@@ -182,9 +182,9 @@
           },
           {
             "title": "AprilTag Seen",
-            "x": 384.0,
-            "y": 512.0,
-            "width": 128.0,
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -199,8 +199,8 @@
           },
           {
             "title": "Visible Tag IDs",
-            "x": 512.0,
-            "y": 512.0,
+            "x": 768.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -209,6 +209,22 @@
               "period": 0.06,
               "data_type": "string",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Turret Ready",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/onTarget",
+              "period": 0.06,
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -599,7 +615,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0
+              "angle_offset": 0.0
             }
           },
           {

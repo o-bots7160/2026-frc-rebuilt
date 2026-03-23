@@ -47,6 +47,9 @@ public class Robot extends LoggedRobot {
     /** The central wiring hub that owns all subsystems, command factories, and bindings. */
     private final RobotContainer m_robotContainer;
 
+    /** Last simulation start pose applied, used to detect alliance/station changes while disabled. */
+    private Pose2d               m_lastSimPose;
+
     /**
      * Creates the robot and initializes logging, replay, and container wiring.
      */
@@ -122,9 +125,22 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {
     }
 
-    /** Runs each loop while the robot is disabled; no-op by default. */
+    /**
+     * Runs each loop while the robot is disabled.
+     * <p>
+     * In simulation, detects alliance or station changes and resets the robot pose so the simulated robot moves to the correct start location
+     * immediately.
+     * </p>
+     */
     @Override
     public void disabledPeriodic() {
+        if (isSimulation()) {
+            Pose2d desiredPose = getSimulationStartPose();
+            if (!desiredPose.equals(m_lastSimPose)) {
+                m_lastSimPose = desiredPose;
+                m_robotContainer.resetPose(desiredPose);
+            }
+        }
     }
 
     /** Runs once when the robot exits the disabled state; no-op by default. */
@@ -141,6 +157,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void simulationInit() {
         Pose2d startPose = getSimulationStartPose();
+        m_lastSimPose = startPose;
         m_robotContainer.resetPose(startPose);
     }
 
@@ -242,11 +259,16 @@ public class Robot extends LoggedRobot {
                 .orElse(edu.wpi.first.wpilibj.DriverStation.Alliance.Blue) == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
         int                                                    station         = stationPosition.orElse(2);
 
-        // Spread start locations by station: 1 (near edge), 2 (center), 3 (far edge).
+        // Spread start locations by station: B1/R3 at top (high Y), B3/R1 at bottom (low Y).
+        // Blue stations are numbered top-to-bottom; Red stations are mirrored.
         double                                                 yPositionMeters;
         switch (station) {
-        case 1 -> yPositionMeters = EDGE_Y_OFFSET_METERS;
-        case 3 -> yPositionMeters = FIELD_WIDTH_METERS - EDGE_Y_OFFSET_METERS;
+        case 1 -> yPositionMeters = isRedAlliance
+                ? EDGE_Y_OFFSET_METERS
+                : FIELD_WIDTH_METERS - EDGE_Y_OFFSET_METERS;
+        case 3 -> yPositionMeters = isRedAlliance
+                ? FIELD_WIDTH_METERS - EDGE_Y_OFFSET_METERS
+                : EDGE_Y_OFFSET_METERS;
         default -> yPositionMeters = FIELD_WIDTH_METERS / 2.0;
         }
 

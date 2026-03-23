@@ -58,7 +58,7 @@
             "title": "Shooter Ready",
             "x": 768.0,
             "y": 0.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -73,8 +73,8 @@
           },
           {
             "title": "Shooter RPM",
-            "x": 768.0,
-            "y": 128.0,
+            "x": 1024.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Radial Gauge",
@@ -94,8 +94,8 @@
           },
           {
             "title": "Distance to Target (m)",
-            "x": 1024.0,
-            "y": 0.0,
+            "x": 768.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -123,7 +123,7 @@
           {
             "title": "Shooter Target RPM",
             "x": 1024.0,
-            "y": 128.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Number Bar",
@@ -139,26 +139,68 @@
             }
           },
           {
-            "title": "AprilTag Seen",
+            "title": "Pose X (m)",
             "x": 0.0,
             "y": 512.0,
             "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/RobotPoseSubsystem/EstimatedXMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Pose Y (m)",
+            "x": 128.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/RobotPoseSubsystem/EstimatedYMeters",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Heading (deg)",
+            "x": 256.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/RobotPoseSubsystem/EstimatedHeadingDegrees",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "AprilTag Seen",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/HasVisibleTags",
               "period": 0.06,
               "data_type": "boolean",
-              "false_color": 4294198070,
-              "false_icon": "None",
               "true_color": 4283215696,
-              "true_icon": "None"
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
             "title": "Visible Tag IDs",
-            "x": 128.0,
-            "y": 512.0,
+            "x": 768.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -167,6 +209,22 @@
               "period": 0.06,
               "data_type": "string",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Turret Ready",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/onTarget",
+              "period": 0.06,
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
