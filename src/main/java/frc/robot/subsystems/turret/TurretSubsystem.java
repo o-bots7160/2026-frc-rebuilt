@@ -75,6 +75,29 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
     }
 
     /**
+     * Computes the turret pivot position on the field by transforming the configured component offset from robot-relative to field-relative
+     * coordinates.
+     * <p>
+     * The offset comes from {@code componentPoseConfig} (the same values used for AdvantageScope rendering), so the sim model and the aim
+     * calculations always agree on where the turret sits. This method is used by {@link #calculateFieldTargetDegrees} and by the shoot-on-the-move
+     * solver for distance and velocity calculations.
+     * </p>
+     *
+     * @param robotPose current robot pose in meters and radians
+     * @return turret pivot position on the field in meters
+     */
+    public Translation2d getTurretFieldPosition(Pose2d robotPose) {
+        double heading = robotPose.getRotation().getRadians();
+        double cosH    = Math.cos(heading);
+        double sinH    = Math.sin(heading);
+        double pivotX  = config.componentPoseConfig.componentPivotX;
+        double pivotY  = config.componentPoseConfig.componentPivotY;
+        return new Translation2d(
+                robotPose.getX() + pivotX * cosH - pivotY * sinH,
+                robotPose.getY() + pivotX * sinH + pivotY * cosH);
+    }
+
+    /**
      * Computes the turret target angle needed to face a field-relative target while compensating for robot rotation.
      * <p>
      * The returned angle is relative to the turret's own zero direction, which is defined by {@code turretZeroOffsetDegrees}. For a rear-facing
@@ -83,6 +106,10 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
      * </p>
      * <p>
      * {@code turretAngle = fieldAngleToTarget − robotHeading − turretZeroOffset}
+     * </p>
+     * <p>
+     * The angle is measured from the turret's physical pivot point (defined by {@code componentPoseConfig}) rather than from the robot center. This
+     * eliminates a small aim error that would otherwise grow at close range.
      * </p>
      * <p>
      * Rotational lead-time compensation predicts where the robot heading will be after a short look-ahead period and subtracts that predicted change
@@ -99,17 +126,13 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
             Translation2d targetFieldPositionMeters,
             double robotYawRateRadiansPerSecond) {
 
-        // Compute the vector from the robot's position to the target in field coordinates.
-        // deltaX points along field +X (toward the opposing alliance wall).
-        // deltaY points along field +Y (to the left when facing the opposing wall).
-        //
-        // Forward-facing turret example (offset = 0°):
-        //   Robot at (1, 1), target at (3, 3) → deltaX = 2, deltaY = 2
-        //
-        // Rear-facing turret example (offset = 180°):
-        //   Robot at (1, 1), target at (-1, 1) → deltaX = -2, deltaY = 0
-        double deltaX                        = targetFieldPositionMeters.getX() - robotPose.getX();
-        double deltaY                        = targetFieldPositionMeters.getY() - robotPose.getY();
+        // Compute the vector from the turret pivot to the target in field coordinates.
+        // The pivot position accounts for the turret's physical offset from robot center
+        // (componentPoseConfig), ensuring the aim angle is measured from where the ball
+        // actually launches rather than from the robot's geometric center.
+        Translation2d turretFieldPos             = getTurretFieldPosition(robotPose);
+        double deltaX                            = targetFieldPositionMeters.getX() - turretFieldPos.getX();
+        double deltaY                            = targetFieldPositionMeters.getY() - turretFieldPos.getY();
 
         // Compute the field-relative angle from the robot to the target using atan2.
         // atan2 returns an angle in radians measured counter-clockwise from the +X axis,
@@ -200,50 +223,63 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         //
         // Rear-facing turret, unreachable target (limits −90° to +90°):
         //   Robot facing east, target due east (directly in front). fieldAngle = 0, offset = π.
-        //   rawTarget = 0 − 0 − π = −π → normalized to −π by angleModulus, clamped to −π/2 (−90°).
-        //   Return: −90° — turret swings to its physical limit, getting as close to forward as it
-        //   can. The target is unreachable because the turret faces backward, so it does the best it
-        //   can by parking at the nearest limit.
-        return Units.radiansToDegrees(clampToTurretLimitsRadians(compensatedTargetRadians));
+        //   rawTarget = 0 − 0 − π = −π → normalized to −π by angleModulus.
+        //   Return: −180° — the angle is outside the turret's reachable range. setTarget will
+        //   clamp it to the nearest limit and flag targetWasClamped so isOnTarget returns false.
+        return Units.radiansToDegrees(normalizeAngleRadians(compensatedTargetRadians));
     }
 
     /**
-     * Normalizes and clamps a turret target angle to the configured setpoint limits.
+     * Sets a new turret goal after normalizing the angle into the [-180, 180] range.
      * <p>
-     * The angle is first wrapped into the [-pi, pi] range with {@link MathUtil#angleModulus(double)}, then clamped to the configured min/max setpoint
-     * radians. When the target is outside the turret's reachable range (e.g., a target in front of a rear-facing turret), the turret moves to the
-     * nearest limit, which keeps the barrel as close to the target direction as possible.
+     * The superclass clamp then detects whether the normalized angle falls outside the turret's
+     * setpoint limits and flags it so {@link #isOnTarget()} correctly returns false for unreachable targets.
+     * </p>
+     *
+     * @param targetPositionDegrees desired turret position in degrees, relative to turret zero
+     */
+    @Override
+    public void setTarget(double targetPositionDegrees) {
+        double normalizedDegrees = Units.radiansToDegrees(
+                MathUtil.angleModulus(Units.degreesToRadians(targetPositionDegrees)));
+        super.setTarget(normalizedDegrees);
+    }
+
+    /**
+     * Checks whether the turret is aimed close enough to shoot, ignoring velocity.
+     * <p>
+     * Returns false when the requested target was clamped (target is outside the turret's reachable arc).
+     * Otherwise compares the position error against {@code onTargetPositionToleranceDegrees} from the turret config.
+     * </p>
+     *
+     * @return true when the turret is within the on-target tolerance of its goal
+     */
+    public boolean isOnTarget() {
+        if (targetWasClamped) {
+            log.recordOutput("onTarget", false);
+            return false;
+        }
+
+        double positionErrorRadians = Math.abs(goalState.position - getMeasuredPosition());
+        double toleranceRadians     = Units.degreesToRadians(config.getOnTargetPositionToleranceDegrees());
+        boolean onTarget            = positionErrorRadians <= toleranceRadians;
+        log.recordOutput("onTarget", onTarget);
+        return onTarget;
+    }
+
+    /**
+     * Normalizes a turret target angle into the [-pi, pi] range.
+     * <p>
+     * Wrapping ensures equivalent angles are recognized before the superclass clamps to the
+     * configured setpoint limits. Without normalization, angles like 3pi/2 (270 degrees) would
+     * not be recognized as equivalent to -pi/2 (-90 degrees).
      * </p>
      *
      * @param targetRadians requested turret angle in radians, relative to turret zero
-     * @return closest reachable angle within the turret limits in radians
+     * @return normalized angle in the [-pi, pi] range in radians
      */
-    private double clampToTurretLimitsRadians(double targetRadians) {
-        // Read the configured turret swing limits in radians (converted from degrees in the config).
-        // For a turret with minimumSetpointDegrees = −90 and maximumSetpointDegrees = +90:
-        //   minRadians = −π/2 (−1.571 rad), maxRadians = +π/2 (+1.571 rad)
-        // This means the turret can swing 90° in either direction from its zero.
-        double minRadians = config.getMinimumSetpointRadians();
-        double maxRadians = config.getMaximumSetpointRadians();
-
-        // Wrap the raw angle into the [−π, +π] range so equivalent angles are recognized.
-        // Without normalization, angles like 3π/2 (270°) would not be recognized as equivalent
-        // to −π/2 (−90°), and the subsequent clamp would produce incorrect results.
-        //
-        // Example: raw angle = 5π/4 (225°) → normalized to −3π/4 (−135°).
-        //   Now the clamp correctly sees the angle is past the −90° limit.
-        double normalized = MathUtil.angleModulus(targetRadians);
-
-        // Clamp the normalized angle into [minRadians, maxRadians]. If the target falls outside the
-        // turret's reachable arc, the angle snaps to whichever limit is closer.
-        //
-        // Forward-facing turret example (limits −π/2 to +π/2):
-        //   normalized = π/4 (45°) → within limits, returned as-is.
-        //
-        // Rear-facing turret, target behind and to the far left:
-        //   normalized = −3π/4 (−135°) → clamped to −π/2 (−90°).
-        //   The turret parks at its left-most swing, the closest it can get to the target.
-        return MathUtil.clamp(normalized, minRadians, maxRadians);
+    private double normalizeAngleRadians(double targetRadians) {
+        return MathUtil.angleModulus(targetRadians);
     }
 
 }

@@ -77,9 +77,51 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
         return table;
     }
 
+    /**
+     * Builds an interpolation table mapping distance to time of flight from config data points.
+     *
+     * @param points array of distance-to-RPM-to-TOF mapping points from config
+     * @return populated interpolation table, or an empty table if no TOF data is available
+     */
+    private static InterpolatingDoubleTreeMap buildDistanceTofTable(DistanceRpmPoint[] points) {
+        InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
+        boolean hasData = false;
+        if (points != null) {
+            for (DistanceRpmPoint point : points) {
+                if (point.timeOfFlightSeconds > 0.0) {
+                    table.put(point.distanceMeters, point.timeOfFlightSeconds);
+                    hasData = true;
+                }
+            }
+        }
+        return hasData ? table : new InterpolatingDoubleTreeMap();
+    }
+
+    /**
+     * Returns true when at least one distance-RPM point has a positive time-of-flight value.
+     *
+     * @param points array of distance-to-RPM mapping points from config
+     * @return true if TOF data is available
+     */
+    private static boolean hasTofEntries(DistanceRpmPoint[] points) {
+        if (points == null) {
+            return false;
+        }
+        for (DistanceRpmPoint point : points) {
+            if (point.timeOfFlightSeconds > 0.0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private final InterpolatingDoubleTreeMap distanceRpmTable;
 
+    private final InterpolatingDoubleTreeMap distanceTofTable;
+
     private final boolean                    hasDistanceRpmData;
+
+    private final boolean                    hasTofData;
 
     /**
      * Operator-controlled RPM offset applied on top of the calculated target each cycle.
@@ -101,7 +143,9 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
     public ShooterSubsystem(ShooterSubsystemConfig config) {
         super(config, buildShooterMotor(config));
         distanceRpmTable   = buildDistanceRpmTable(config.distanceRpmPoints);
+        distanceTofTable   = buildDistanceTofTable(config.distanceRpmPoints);
         hasDistanceRpmData = config.distanceRpmPoints != null && config.distanceRpmPoints.length > 0;
+        hasTofData         = hasTofEntries(config.distanceRpmPoints);
         rpmOffsetRpm       = 0.0;
     }
 
@@ -171,6 +215,24 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
         double interpolatedRpm = distanceRpmTable.get(distanceMeters);
         double scaledRpm       = interpolatedRpm * config.getDistanceRpmMultiplier();
         return MathUtil.clamp(scaledRpm, 0.0, config.motionProfile.getMaximumVelocityRpm());
+    }
+
+    /**
+     * Returns the estimated time of flight for a ball to reach a target at the given distance.
+     * <p>
+     * The value is interpolated from the configured distance-RPM-TOF lookup table. When no TOF data is configured, returns a conservative linear
+     * estimate based on distance. The shoot-on-the-move solver uses this to determine how far the ball drifts during flight.
+     * </p>
+     *
+     * @param distanceMeters distance from the launcher to the target in meters
+     * @return estimated time of flight in seconds
+     */
+    public double getTimeOfFlightSeconds(double distanceMeters) {
+        if (hasTofData && !Double.isNaN(distanceMeters) && distanceMeters >= 0.0) {
+            return distanceTofTable.get(distanceMeters);
+        }
+        // Fallback: estimate ~15 m/s average ball speed if no TOF data is configured.
+        return distanceMeters / 15.0;
     }
 
     /**

@@ -39,6 +39,11 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
     protected TrapezoidProfile.State       setpointState;
 
     /**
+     * True when the most recent target was clamped to the setpoint limits, meaning the mechanism cannot reach the requested position.
+     */
+    protected boolean                      targetWasClamped;
+
+    /**
      * Creates a profiled subsystem with bounded setpoints, motion constraints, and a single motor.
      *
      * @param config Configuration values that define the allowable range, motion limits, and initial state.
@@ -116,7 +121,8 @@ public abstract class AbstractSetAndSeekSubsystem<TConfig extends AbstractSetAnd
         double clampedTargetRadians   = MathUtil.clamp(requestedTargetRadians, minimumSetpointRadians, maximumSetpointRadians);
         log.recordVerboseOutput("targetRequestedPositionDegrees", targetPositionDegrees);
         log.recordVerboseOutput("targetClampedPositionDegrees", Units.radiansToDegrees(clampedTargetRadians));
-        log.recordVerboseOutput("targetWasClamped", requestedTargetRadians != clampedTargetRadians);
+        targetWasClamped = requestedTargetRadians != clampedTargetRadians;
+        log.recordVerboseOutput("targetWasClamped", targetWasClamped);
         // Store the goal with zero velocity so the profile knows where to stop.
         goalState = new TrapezoidProfile.State(clampedTargetRadians, 0.0);
 

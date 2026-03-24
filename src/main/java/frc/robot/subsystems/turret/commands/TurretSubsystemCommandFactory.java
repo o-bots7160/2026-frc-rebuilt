@@ -1,18 +1,28 @@
 package frc.robot.subsystems.turret.commands;
 
+import java.util.function.DoubleUnaryOperator;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.commands.AbstractSetAndSeekCommandFactory;
+import frc.robot.shared.targeting.ShootOnTheMoveCalculator;
 import frc.robot.subsystems.robotpose.RobotPoseSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
+import frc.robot.subsystems.turret.config.TurretSubsystemConfig;
 
 /**
  * Generates commands that operate on the turret subsystem so RobotContainer can stay focused on wiring.
  */
 public class TurretSubsystemCommandFactory extends AbstractSetAndSeekCommandFactory<TurretSubsystem> {
+
+    /** SOTM solver instance shared across all tracking commands created by this factory. */
+    private ShootOnTheMoveCalculator sotmCalculator;
+
+    /** Reference to the most recently created tracking command, used to read compensated distance. */
+    private TrackFieldTargetCommand lastTrackingCommand;
 
     /**
      * Creates a factory for commands that share the given turret subsystem instance.
@@ -42,37 +52,83 @@ public class TurretSubsystemCommandFactory extends AbstractSetAndSeekCommandFact
     public MoveTurretToAngleCommand createMoveToAngleCommand(double targetDegrees) {
         return createMoveToAngleCommand(() -> targetDegrees);
     }
-    
+
     /**
-     * Builds a command that continuously tracks a field-relative target using the fused robot pose and compensates for robot rotation.
+     * Builds a command that continuously tracks a field-relative target with shoot-on-the-move compensation.
      *
      * @param robotPoseSubsystem                      robot pose subsystem providing the fused pose estimate
      * @param targetFieldPositionSupplier              supplier of the target position in field coordinates (meters)
      * @param robotYawRateRadiansPerSecondSupplier     supplier of the robot's yaw rate in radians per second (positive is counter-clockwise)
+     * @param fieldVelocitySupplier                    supplier of the robot's field-relative velocity for SOTM compensation
+     * @param tofLookup                                function returning estimated time of flight given a distance in meters
      * @return command that aims the turret at the supplied field target position
      */
     public TrackFieldTargetCommand createTrackFieldTargetCommand(
             RobotPoseSubsystem robotPoseSubsystem,
             Supplier<Translation2d> targetFieldPositionSupplier,
-            Supplier<Double> robotYawRateRadiansPerSecondSupplier) {
-        return new TrackFieldTargetCommand(subsystem, robotPoseSubsystem, targetFieldPositionSupplier, robotYawRateRadiansPerSecondSupplier);
+            Supplier<Double> robotYawRateRadiansPerSecondSupplier,
+            Supplier<ChassisSpeeds> fieldVelocitySupplier,
+            DoubleUnaryOperator tofLookup) {
+        TurretSubsystemConfig config = subsystem.getConfig();
+        sotmCalculator = new ShootOnTheMoveCalculator(
+                config.getSotmDragCoefficient(),
+                config.getSotmMinSpeedMetersPerSecond(),
+                config.getSotmMaxIterations(),
+                config.getSotmConvergenceToleranceSeconds());
+
+        // When SOTM is disabled, supply zero velocity so the solver returns the raw target.
+        Supplier<ChassisSpeeds> effectiveVelocity = config.isSotmEnabled()
+                ? fieldVelocitySupplier
+                : () -> new ChassisSpeeds();
+
+        lastTrackingCommand = new TrackFieldTargetCommand(
+                subsystem,
+                robotPoseSubsystem,
+                targetFieldPositionSupplier,
+                robotYawRateRadiansPerSecondSupplier,
+                effectiveVelocity,
+                tofLookup,
+                sotmCalculator);
+        return lastTrackingCommand;
     }
 
     /**
-     * Builds and sets the default turret tracking command using a field-relative target supplier with rotation compensation.
+     * Builds and sets the default turret tracking command with shoot-on-the-move compensation.
      *
      * @param robotPoseSubsystem                      robot pose subsystem providing the fused pose estimate
      * @param targetFieldPositionSupplier              supplier of the target position in field coordinates (meters)
      * @param robotYawRateRadiansPerSecondSupplier     supplier of the robot's yaw rate in radians per second (positive is counter-clockwise)
+     * @param fieldVelocitySupplier                    supplier of the robot's field-relative velocity for SOTM compensation
+     * @param tofLookup                                function returning estimated time of flight given a distance in meters
      * @return command that is also set as the turret default
      */
     public Command setDefaultTrackFieldTargetCommand(
             RobotPoseSubsystem robotPoseSubsystem,
             Supplier<Translation2d> targetFieldPositionSupplier,
-            Supplier<Double> robotYawRateRadiansPerSecondSupplier) {
-        Command command = createTrackFieldTargetCommand(robotPoseSubsystem, targetFieldPositionSupplier, robotYawRateRadiansPerSecondSupplier);
+            Supplier<Double> robotYawRateRadiansPerSecondSupplier,
+            Supplier<ChassisSpeeds> fieldVelocitySupplier,
+            DoubleUnaryOperator tofLookup) {
+        Command command = createTrackFieldTargetCommand(
+                robotPoseSubsystem,
+                targetFieldPositionSupplier,
+                robotYawRateRadiansPerSecondSupplier,
+                fieldVelocitySupplier,
+                tofLookup);
         subsystem.setDefaultCommand(command);
         return command;
+    }
+
+    /**
+     * Returns the most recent SOTM-compensated distance from the active tracking command.
+     * <p>
+     * Use this as the distance supplier for shooter RPM lookup so the flywheel speed matches the effective distance after accounting for robot
+     * motion. Falls back to 0.0 if no tracking command has been created yet.
+     * </p>
+     *
+     * @return compensated distance in meters
+     */
+    public double getCompensatedDistanceMeters() {
+        return lastTrackingCommand != null ? lastTrackingCommand.getCompensatedDistanceMeters() : 0.0;
     }
 
     /**

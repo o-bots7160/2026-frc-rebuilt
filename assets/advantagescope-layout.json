@@ -2045,6 +2045,156 @@
               "controllerUUID": "eeldvd951mylljv1fegf9max5p6ku49j",
               "renderer": null,
               "controlsHeight": 0
+            },
+            {
+              "type": 4,
+              "title": "Vision",
+              "controller": [
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/VisibleTagIds",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/HasVisibleTags",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/AcceptedCount",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RejectedCount",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/InitialAcceptanceWindow",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/OdometryResetFromVision",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/NO_TAGS",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/SINGLE_TAG_AMBIGUITY",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/MULTI_TAG_AMBIGUITY",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/OUTSIDE_FIELD",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/TOO_FAR",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/BAD_Z_HEIGHT",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/ODOMETRY_DEVIATION",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/IGNORED_TAGS",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/AcceptedTagIds",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/RejectedTagIds",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/ObservationCount",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/AcceptedTagIds",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/RejectedTagIds",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/ObservationCount",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/Status",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/Reason",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/TagIds",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/TagCount",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/Ambiguity",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/AvgTagDistanceMeters",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/MaxTagDistanceMeters",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/LinearStdDev",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/Observations/0/AngularStdDev",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/Status",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/Reason",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/TagIds",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/TagCount",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/Ambiguity",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/AvgTagDistanceMeters",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/MaxTagDistanceMeters",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/LinearStdDev",
+                "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/Observations/0/AngularStdDev"
+              ],
+              "controllerUUID": "mri1pi82sau3fgdr9vjldlvfhbja9wwf",
+              "renderer": null,
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "Vision Trends",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/AcceptedCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#4CAF50"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RejectedCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#F44336"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/NO_TAGS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#9E9E9E"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/SINGLE_TAG_AMBIGUITY",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#FF9800"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/MULTI_TAG_AMBIGUITY",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#E91E63"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/TOO_FAR",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2196F3"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/OUTSIDE_FIELD",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#795548"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/BAD_Z_HEIGHT",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#607D8B"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/ODOMETRY_DEVIATION",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#9C27B0"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/Rejected/IGNORED_TAGS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#FFEB3B"
+                    }
+                  }
+                ]
+              },
+              "controllerUUID": "o3lbejvjeb04aa4oigl9k6xxsttwfa4t",
+              "renderer": null,
+              "controlsHeight": 0
             }
           ]
         }

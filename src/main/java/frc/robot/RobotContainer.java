@@ -130,7 +130,6 @@ public class RobotContainer {
     private final FieldTargetSelector              fieldTargetSelector;
 
     /** Binds controller buttons and triggers to commands for both driver and operator. */
-    @SuppressWarnings("unused")
     private final TriggerBindings                  triggerBindings;
 
     /**
@@ -195,13 +194,16 @@ public class RobotContainer {
                     feederCommandFactory,
                     intakeCommandFactory,
                     harvesterCommandFactory,
-                    () -> robotPoseSubsystem.getDistanceToPointMeters(fieldTargetSelector.getActiveTargetPosition()));
+                    turretCommandFactory::getCompensatedDistanceMeters,
+                    turretSubsystem::isOnTarget);
 
             // Default commands
             turretCommandFactory.setDefaultTrackFieldTargetCommand(
                     robotPoseSubsystem,
                     fieldTargetSelector::getActiveTargetPosition,
-                    driveBaseSubsystem::getYawRateRadiansPerSecond);
+                    driveBaseSubsystem::getYawRateRadiansPerSecond,
+                    driveBaseSubsystem::getFieldRelativeVelocity,
+                    shooterSubsystem::getTimeOfFlightSeconds);
 
             // Register named commands for PathPlanner autos before pre-loading.
             // These must be registered before pre-loading autos so PathPlanner can resolve them.
@@ -297,6 +299,16 @@ public class RobotContainer {
         String   autoName = pathPlannerCommandFactory.getSelectedAutoName();
 
         return pathPlannerCommandFactory.createAutoCommand(alliance, autoName);
+    }
+
+    /**
+     * Runs once per robot loop to perform non-subsystem periodic checks.
+     * <p>
+     * Call from {@code Robot.robotPeriodic()} after the environment snapshot is refreshed.
+     * </p>
+     */
+    public void periodic() {
+        triggerBindings.checkControllerHealth();
     }
 
     /**

@@ -113,8 +113,11 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
      * @return composite command that waits for readiness then runs the reverse-pulse-then-forward sequence
      */
     public Command createFireWhenReadyCommand(Supplier<Boolean> shooterReadySupplier, Supplier<Boolean> turretOnTargetSupplier) {
-        return Commands.waitUntil(() -> shooterReadySupplier.get() && turretOnTargetSupplier.get())
-                .andThen(createReversePulseThenForwardCommand())
+        Supplier<Boolean> readySupplier = () -> shooterReadySupplier.get() && turretOnTargetSupplier.get();
+        return Commands.waitUntil(readySupplier::get)
+                .andThen(createReversePulseThenForwardCommand()
+                        .onlyWhile(readySupplier::get))
+                .repeatedly()
                 .withName("FeederFireWhenReady");
     }
 

@@ -297,6 +297,18 @@ public class Logger {
     }
 
     /**
+     * Records a string value to AdvantageKit only when not attached to the FMS and verbose is enabled.
+     *
+     * @param key   telemetry key suffix
+     * @param value string value to record
+     */
+    public void recordVerboseOutput(String key, String value) {
+        if (!RobotEnvironment.isFMSAttached() && verboseSupplier.getAsBoolean()) {
+            recordOutput(key, value);
+        }
+    }
+
+    /**
      * Records a boolean to AdvantageKit only when not attached to the FMS and verbose is enabled.
      *
      * @param key   telemetry key suffix

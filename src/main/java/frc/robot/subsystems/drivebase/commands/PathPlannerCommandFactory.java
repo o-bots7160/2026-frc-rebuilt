@@ -1,5 +1,7 @@
 package frc.robot.subsystems.drivebase.commands;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shared.config.RobotEnvironment;
@@ -41,10 +44,11 @@ public class PathPlannerCommandFactory {
     /** Maximum angular acceleration for the alignment path in radians per second squared. */
     private static final double                ALIGN_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 4 * Math.PI;
 
-    /** All auto names available for selection, in display order. */
-    private static final String[]              ALL_AUTO_NAMES                                            = {
-            "P1-NeutralShootOutpostShoot", "P2-RightTrenchNeutralShootOutpostShoot", "P2-Shoot", "P3-NeutralShoot",
-            "P3-NeutralShoot" };
+    /** Subdirectory under the deploy folder where PathPlanner auto files are stored. */
+    private static final String                AUTO_DIRECTORY_PATH                                       = "pathplanner/autos";
+
+    /** File extension used by PathPlanner auto files. */
+    private static final String                AUTO_FILE_EXTENSION                                       = ".auto";
 
     /**
      * Dashboard chooser that lets drivers select which autonomous routine to run.
@@ -122,14 +126,15 @@ public class PathPlannerCommandFactory {
     /**
      * Pre-loads every PathPlanner auto into the cache and populates the dashboard chooser.
      * <p>
-     * Loads all autos listed in {@link #ALL_AUTO_NAMES} so they are ready when autonomous is enabled. The first entry is set as the default option in
-     * the {@link LoggedDashboardChooser}. The chooser is published to {@code SmartDashboard/Auto Chooser}.
+     * Discovers all {@code .auto} files in the deploy directory so they are ready when autonomous is enabled. The first entry alphabetically is set
+     * as the default option in the {@link LoggedDashboardChooser}. The chooser is published to {@code SmartDashboard/Auto Chooser}.
      * </p>
      */
     private void initializeAutos() {
+        String[] autoNames = discoverAutoNames();
         autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
         boolean first = true;
-        for (String autoName : ALL_AUTO_NAMES) {
+        for (String autoName : autoNames) {
             // Populate the dashboard chooser.
             if (first) {
                 autoChooser.addDefaultOption(autoName, autoName);
@@ -151,6 +156,38 @@ public class PathPlannerCommandFactory {
                         e.getStackTrace());
             }
         }
+    }
+
+    /**
+     * Scans the deploy directory for PathPlanner auto files and returns their names.
+     * <p>
+     * Reads all {@code .auto} files from {@code pathplanner/autos/} under the deploy directory, strips the file extension, and returns the names
+     * sorted alphabetically. Reports a warning if no autos are found.
+     * </p>
+     *
+     * @return sorted array of auto names discovered on disk, or an empty array if none are found
+     */
+    private String[] discoverAutoNames() {
+        File autosDirectory = new File(Filesystem.getDeployDirectory(), AUTO_DIRECTORY_PATH);
+        if (!autosDirectory.isDirectory()) {
+            RobotEnvironment.reportWarning(
+                    "Auto directory not found at '" + autosDirectory.getAbsolutePath() + "'. No autos will be available.",
+                    false);
+            return new String[0];
+        }
+
+        File[] autoFiles = autosDirectory.listFiles((dir, name) -> name.endsWith(AUTO_FILE_EXTENSION));
+        if (autoFiles == null || autoFiles.length == 0) {
+            RobotEnvironment.reportWarning("No .auto files found in '" + autosDirectory.getAbsolutePath() + "'.", false);
+            return new String[0];
+        }
+
+        String[] names = Arrays.stream(autoFiles)
+                .map(file -> file.getName().replace(AUTO_FILE_EXTENSION, ""))
+                .sorted()
+                .toArray(String[]::new);
+
+        return names;
     }
 
     /**
