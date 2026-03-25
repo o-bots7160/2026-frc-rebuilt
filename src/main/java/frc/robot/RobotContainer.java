@@ -28,6 +28,7 @@ import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
 // import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
+import frc.robot.subsystems.gameplaystate.GameplayState;
 import frc.robot.subsystems.gameplaystate.GameplayStateSubsystem;
 import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
 import frc.robot.subsystems.harvester.HarvesterSubsystem;
@@ -140,7 +141,12 @@ public class RobotContainer {
             subsystemsConfig            = ConfigurationLoader.load(resolveSubsystemsConfigFileName(), SubsystemsConfig.class);
 
             // Subsystems (order matters: drivebase is constructed first so robot state can reference it)
-            driveBaseSubsystem          = new DriveBaseSubsystem(subsystemsConfig.driveBaseSubsystem);
+            // The shooting supplier uses a method reference because gameplayStateSubsystem is a
+            // final field that is not yet assigned at this point. The method reference binds to
+            // 'this', which resolves the field at call time rather than at lambda capture time.
+            driveBaseSubsystem          = new DriveBaseSubsystem(
+                    subsystemsConfig.driveBaseSubsystem,
+                    this::isShootingActive);
             robotPoseSubsystem          = new RobotPoseSubsystem(
                     subsystemsConfig.robotPoseSubsystem,
                     driveBaseSubsystem::getOdometryPose,
@@ -340,6 +346,21 @@ public class RobotContainer {
     private boolean isTestRobot() {
         // TODO: hardware check to see if we're using the test robot
         return false;
+    }
+
+    /**
+     * Returns whether the robot is actively shooting (FIRE_READY or AUTO_CYCLE). Used as a supplier for drive base power management so the
+     * drivetrain reduces speed while the shooter, indexer, and feeder need full battery current.
+     *
+     * @return true when the gameplay state is FIRE_READY or AUTO_CYCLE
+     */
+    private boolean isShootingActive() {
+        if (gameplayStateSubsystem == null) {
+            return false;
+        }
+
+        GameplayState state = gameplayStateSubsystem.getCurrentState();
+        return state == GameplayState.FIRE_READY || state == GameplayState.AUTO_CYCLE;
     }
 
 }

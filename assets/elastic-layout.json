@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "grid_size": 128.0,
+  "version": 1.0,
+  "grid_size": 128,
   "tabs": [
     {
       "name": "Competition",
@@ -140,8 +140,8 @@
           },
           {
             "title": "Pose X (m)",
-            "x": 0.0,
-            "y": 512.0,
+            "x": 1280.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -154,8 +154,8 @@
           },
           {
             "title": "Pose Y (m)",
-            "x": 128.0,
-            "y": 512.0,
+            "x": 1280.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -168,8 +168,8 @@
           },
           {
             "title": "Heading (deg)",
-            "x": 256.0,
-            "y": 512.0,
+            "x": 1280.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -615,7 +615,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0
+              "angle_offset": 0.0
             }
           },
           {
@@ -2965,6 +2965,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/VisibleTagIds",
               "period": 0.06,
+              "data_type": "string",
               "show_submit_button": false
             }
           },
@@ -2978,6 +2979,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/AcceptedCount",
               "period": 0.06,
+              "data_type": "double",
               "show_submit_button": false
             }
           },
@@ -2991,6 +2993,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/RejectedCount",
               "period": 0.06,
+              "data_type": "double",
               "show_submit_button": false
             }
           },
@@ -3004,6 +3007,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/AcceptedTagIds",
               "period": 0.06,
+              "data_type": "string",
               "show_submit_button": false
             }
           },
@@ -3017,6 +3021,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160OV9281/RejectedTagIds",
               "period": 0.06,
+              "data_type": "string",
               "show_submit_button": false
             }
           },
@@ -3030,6 +3035,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/AcceptedTagIds",
               "period": 0.06,
+              "data_type": "string",
               "show_submit_button": false
             }
           },
@@ -3043,6 +3049,7 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Camera/Obots7160cam20260219a/RejectedTagIds",
               "period": 0.06,
+              "data_type": "string",
               "show_submit_button": false
             }
           },
@@ -3055,7 +3062,12 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/InitialAcceptanceWindow",
-              "period": 0.06
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
@@ -3067,7 +3079,12 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/OdometryResetFromVision",
-              "period": 0.06
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]

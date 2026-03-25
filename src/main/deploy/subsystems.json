@@ -59,6 +59,12 @@
     },
     "simulationTranslationScale": 0.4,
     "simulationOmegaScale": 0.5,
+    "shootingSpeedScalePercent": 70.0,
+    "lowVoltageThresholdVolts": 12.0,
+    "lowVoltageSpeedScalePercent": 80.0,
+    "criticalVoltageThresholdVolts": 11.0,
+    "criticalVoltageSpeedScalePercent": 50.0,
+    "applyPowerManagementInAuto": false,
     "rotationToleranceDegrees": 2.0,
     "fieldFacingMarginDegrees": 15.0,
     "sysId": {

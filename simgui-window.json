@@ -6,9 +6,9 @@
       "DockNode    ID=0x00000002 Parent=0x00000004 SizeRef=50,116 Selected=0x39AD1970",
       "DockNode    ID=0x00000003 Parent=0x00000004 SizeRef=47,116 Selected=0xD58031C5",
       "DockNode      ID=0x00000005 Parent=0x00000001 SizeRef=47,116 Selected=0xC8493FD8",
-      "DockNode        ID=0x00000006 Pos=311,21 Size=960,374 Split=Y Selected=0x3E3C37F1",
-      "DockNode      ID=0x0000000B Parent=0x00000006 SizeRef=746,114 Selected=0x138219D4",
-      "DockNode      ID=0x0000000C Parent=0x00000006 SizeRef=746,118 Split=X",
+      "DockNode        ID=0x00000006 Pos=311,20 Size=960,374 Split=Y Selected=0x3E3C37F1",
+      "DockNode      ID=0x0000000B Parent=0x00000006 SizeRef=746,183 Selected=0x138219D4",
+      "DockNode      ID=0x0000000C Parent=0x00000006 SizeRef=746,189 Split=X",
       "DockNode    ID=0x00000009 Parent=0x0000000C SizeRef=96,218 Split=X",
       "DockNode  ID=0x00000007 Parent=0x00000009 SizeRef=96,218 Selected=0x6AE6D891",
       "DockNode  ID=0x00000008 Parent=0x00000009 SizeRef=94,218 Selected=0x3E3C37F1",
@@ -23,9 +23,9 @@
       "maximized": "0",
       "style": "0",
       "userScale": "2",
-      "width": "1920",
-      "xpos": "1920",
-      "ypos": "780"
+      "width": "1470",
+      "xpos": "0",
+      "ypos": "638"
     }
   },
   "Window": {
@@ -38,19 +38,19 @@
     "###Joysticks": {
       "Collapsed": "0",
       "DockId": "0x0000000B,0",
-      "Pos": "311,21",
+      "Pos": "311,20",
       "Size": "960,183"
     },
     "###Keyboard 0 Settings": {
       "Collapsed": "0",
       "DockId": "0x00000008,0",
-      "Pos": "557,206",
+      "Pos": "557,205",
       "Size": "238,189"
     },
     "###Keyboard 1 Settings": {
       "Collapsed": "0",
       "DockId": "0x0000000A,0",
-      "Pos": "797,206",
+      "Pos": "797,205",
       "Size": "474,189"
     },
     "###NetworkTables": {
@@ -60,7 +60,7 @@
     },
     "###NetworkTables Info": {
       "Collapsed": "0",
-      "Pos": "994,58",
+      "Pos": "690,47",
       "Size": "750,137"
     },
     "###Other Devices": {
@@ -71,7 +71,7 @@
     "###System Joysticks": {
       "Collapsed": "0",
       "DockId": "0x00000007,0",
-      "Pos": "311,206",
+      "Pos": "311,205",
       "Size": "244,189"
     },
     "###Timing": {

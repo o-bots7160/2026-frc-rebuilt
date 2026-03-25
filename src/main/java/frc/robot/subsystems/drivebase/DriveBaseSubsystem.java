@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
@@ -35,6 +36,12 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
  * driving and pose targeting so commands can focus on higher-level logic.
  */
 public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConfig> {
+
+    /**
+     * Smoothing constant for the exponential moving average applied to battery voltage readings. A smaller value smooths more aggressively but
+     * responds slower to real voltage changes.
+     */
+    private static final double               VOLTAGE_FILTER_ALPHA   = 0.1;
 
     /** Default center-of-rotation offset in meters; (0, 0) rotates around the robot center. */
     private final Translation2d               centerOfRotationMeters = new Translation2d();
@@ -68,12 +75,27 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     private SwerveModuleState[]               lastRequestedStates    = new SwerveModuleState[0];
 
     /**
+     * Supplier that returns true when the robot is actively shooting (FIRE_READY or AUTO_CYCLE). Used by power management to reduce drive speed so
+     * the shooter, indexer, and feeder receive full battery current.
+     */
+    private final Supplier<Boolean>           isShootingSupplier;
+
+    /**
+     * Smoothed battery voltage computed each cycle using an exponential moving average. This filters out transient spikes caused by motor inrush
+     * current so the power scale factor does not flicker.
+     */
+    private double                            smoothedBatteryVoltage = 12.0;
+
+    /**
      * Creates the drive base subsystem and wires YAGSL hardware if enabled.
      *
-     * @param config drive base configuration values and tunables
+     * @param config             drive base configuration values and tunables
+     * @param isShootingSupplier supplier that returns true when the robot is actively shooting; used for power management speed scaling
      */
-    public DriveBaseSubsystem(DriveBaseSubsystemConfig config) {
+    public DriveBaseSubsystem(DriveBaseSubsystemConfig config, Supplier<Boolean> isShootingSupplier) {
         super(config);
+
+        this.isShootingSupplier = isShootingSupplier != null ? isShootingSupplier : () -> false;
 
         // If the subsystem is disabled in config, skip all hardware setup.
         if (isSubsystemDisabled()) {
@@ -138,7 +160,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Called every robot tick to publish telemetry.
+     * Called every robot tick to update voltage smoothing and publish telemetry.
      */
     @Override
     public void periodic() {
@@ -146,6 +168,11 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             // No hardware to talk to, so skip the rest of the telemetry pipeline.
             return;
         }
+
+        // Smooth the battery voltage reading with an exponential moving average so the
+        // power scale factor does not flicker during motor inrush transients.
+        double rawVoltage = RobotController.getBatteryVoltage();
+        smoothedBatteryVoltage += VOLTAGE_FILTER_ALPHA * (rawVoltage - smoothedBatteryVoltage);
 
         // Pull the latest sensor data from the IO layer before logging.
         io.updateInputs(inputs);
@@ -156,6 +183,12 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         log.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
         log.recordVerboseOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
         log.recordVerboseOutput("Swerve/RobotRotation", getOdometryPose().getRotation());
+
+        // Power management telemetry so operators can see when speed is being limited.
+        boolean isShooting = isShootingSupplier.get();
+        log.recordOutput("PowerManagement/ScaleFactor", computePowerScaleFactor());
+        log.recordOutput("PowerManagement/BatteryVoltage", smoothedBatteryVoltage);
+        log.recordOutput("PowerManagement/IsShootingActive", isShooting);
     }
 
     /**
@@ -622,9 +655,43 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Limits translation commands to the maximum linear speed.
+     * Computes a combined speed scale factor based on shooting state and battery voltage.
      * <p>
-     * This keeps diagonal requests within the configured speed cap.
+     * Two independent factors are multiplied together: a state-based factor that reduces speed when the robot is actively shooting, and a
+     * voltage-based factor that reduces speed when the battery is sagging. The result is clamped to [0.1, 1.0] so the driver always retains some
+     * control.
+     * </p>
+     *
+     * @return combined speed scale factor between 0.1 and 1.0
+     */
+    private double computePowerScaleFactor() {
+        // State-based scaling: reduce drive speed while the shooter is running.
+        double stateFactor = 1.0;
+        boolean isShooting = isShootingSupplier.get();
+        if (isShooting) {
+            // During autonomous, only apply state-based scaling if the config allows it.
+            boolean isAuto = DriverStation.isAutonomous();
+            if (!isAuto || config.isApplyPowerManagementInAuto()) {
+                stateFactor = config.getShootingSpeedScale();
+            }
+        }
+
+        // Voltage-based scaling: reduce drive speed when the battery is sagging.
+        double voltageFactor = 1.0;
+        if (smoothedBatteryVoltage < config.getCriticalVoltageThresholdVolts()) {
+            voltageFactor = config.getCriticalVoltageSpeedScale();
+        } else if (smoothedBatteryVoltage < config.getLowVoltageThresholdVolts()) {
+            voltageFactor = config.getLowVoltageSpeedScale();
+        }
+
+        // Combine both factors and guarantee the driver always has some control.
+        return MathUtil.clamp(stateFactor * voltageFactor, 0.1, 1.0);
+    }
+
+    /**
+     * Limits translation commands to the maximum linear speed, scaled by the current power management factor.
+     * <p>
+     * This keeps diagonal requests within the configured speed cap and further reduces the cap when shooting or when battery voltage is low.
      * </p>
      *
      * @param requestedVelocity translation request in meters per second
@@ -633,7 +700,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     private Translation2d clampTranslation(Translation2d requestedVelocity) {
         // Compute the vector length so we can cap diagonal speeds correctly.
         double magnitude = requestedVelocity.getNorm();
-        double maxSpeed  = config.getMaximumLinearSpeedMetersPerSecond().get();
+        double maxSpeed  = config.getMaximumLinearSpeedMetersPerSecond().get() * computePowerScaleFactor();
 
         if (magnitude == 0.0 || magnitude <= maxSpeed) {
             // No scaling needed if we are already within the configured limit.
@@ -646,17 +713,18 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Limits rotation commands to the maximum angular speed.
+     * Limits rotation commands to the maximum angular speed, scaled by the current power management factor.
      * <p>
-     * Use this to prevent the robot from spinning faster than the configured cap.
+     * Use this to prevent the robot from spinning faster than the configured cap. The cap is further reduced when shooting or when battery voltage
+     * is low.
      * </p>
      *
      * @param omegaRadiansPerSecond desired rotation rate in radians per second
      * @return clamped rotation rate in radians per second
      */
     private double clampRotation(double omegaRadiansPerSecond) {
-        // Clamp the spin rate so we never exceed the configured maximum.
-        double maxRotationSpeed = config.getMaximumAngularSpeedRadiansPerSecond().get();
+        // Clamp the spin rate so we never exceed the configured maximum, reduced by power management.
+        double maxRotationSpeed = config.getMaximumAngularSpeedRadiansPerSecond().get() * computePowerScaleFactor();
         return MathUtil.clamp(omegaRadiansPerSecond, -maxRotationSpeed, maxRotationSpeed);
     }
 
