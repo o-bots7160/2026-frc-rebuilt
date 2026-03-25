@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Voltage;
@@ -371,12 +372,13 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
     /**
      * Builds a command that rotates the robot in place to a target heading using the heading PID controller, then finishes.
      * <p>
-     * The command drives with zero translation and PID-controlled omega until the heading error is within the configured rotation tolerance. Use this
-     * to guarantee the robot reaches a specific heading before proceeding to the next command in a sequence (e.g., before entering a trench zone).
+     * The command drives with zero translation and PID-controlled omega until the heading error stays within the configured rotation tolerance for
+     * 250 milliseconds. The debounce prevents the command from ending while the robot is still oscillating through the target. A 3-second safety
+     * timeout prevents indefinite spinning if the PID cannot converge.
      * </p>
      *
      * @param targetHeadingRadians desired field-relative heading in radians (counter-clockwise positive)
-     * @return command that rotates in place until the heading is within tolerance, or a no-op if the subsystem is disabled
+     * @return command that rotates in place until the heading has settled within tolerance, or a no-op if the subsystem is disabled
      */
     public Command createRotateToHeadingCommand(double targetHeadingRadians) {
         if (subsystem.isSubsystemDisabled()) {
@@ -385,16 +387,69 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
 
         double normalizedTarget = MathUtil.angleModulus(targetHeadingRadians);
 
-        return Commands.runOnce(() -> subsystem.resetHeadingController())
+        // Require heading within tolerance for 250ms before declaring settled.
+        Debouncer settledDebouncer = new Debouncer(0.25, Debouncer.DebounceType.kRising);
+
+        return Commands.runOnce(() -> {
+                    subsystem.resetHeadingController();
+                    settledDebouncer.calculate(false);
+                })
                 .andThen(Commands.run(
                         () -> subsystem.driveFieldRelativeWithHeading(0.0, 0.0, normalizedTarget),
                         subsystem))
                 .until(() -> {
                     double currentRadians = subsystem.getOdometryPose().getRotation().getRadians();
                     double error          = Math.abs(MathUtil.angleModulus(normalizedTarget - currentRadians));
-                    return error < subsystem.getRotationToleranceRadians();
+                    return settledDebouncer.calculate(error < subsystem.getRotationToleranceRadians());
                 })
+                .withTimeout(3.0)
                 .withName("RotateToHeading");
+    }
+
+    /**
+     * Builds a command that drives toward a target position while maintaining a fixed heading using PID control.
+     * <p>
+     * Used for trench traversal where the robot must hold a specific heading while translating through a narrow passage. The command computes
+     * field-relative velocity toward the target position and uses {@code driveFieldRelativeWithHeading} to lock the heading. Speed is
+     * proportionally reduced as the robot approaches the target to avoid overshooting.
+     * </p>
+     *
+     * @param target                   target pose in field coordinates; rotation defines the heading to maintain
+     * @param maxSpeedMetersPerSecond   maximum translation speed in meters per second
+     * @return command that drives to the target position while maintaining heading, or a no-op if the subsystem is disabled
+     */
+    public Command createDriveStraightWithHeadingCommand(Pose2d target, double maxSpeedMetersPerSecond) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Drive-straight skipped: drive base disabled.");
+        }
+
+        double headingRadians          = target.getRotation().getRadians();
+        double positionToleranceMeters = 0.3;
+
+        return Commands.run(() -> {
+                    Pose2d current  = subsystem.getOdometryPose();
+                    Translation2d delta    = target.getTranslation().minus(current.getTranslation());
+                    double         distance = delta.getNorm();
+
+                    if (distance < 0.01) {
+                        subsystem.driveFieldRelativeWithHeading(0.0, 0.0, headingRadians);
+                        return;
+                    }
+
+                    // Proportional speed: full speed when far, slowing to 0.5 m/s near the target.
+                    double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.5, distance * 2.0));
+                    double vx    = speed * delta.getX() / distance;
+                    double vy    = speed * delta.getY() / distance;
+
+                    subsystem.driveFieldRelativeWithHeading(vx, vy, headingRadians);
+                }, subsystem)
+                .until(() -> {
+                    double distance = target.getTranslation().getDistance(
+                            subsystem.getOdometryPose().getTranslation());
+                    return distance < positionToleranceMeters;
+                })
+                .withTimeout(5.0)
+                .withName("DriveStraightWithHeading");
     }
 
     /**

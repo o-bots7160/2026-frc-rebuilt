@@ -89,7 +89,9 @@ public abstract class AbstractConfig {
      * <p>
      * Call this after Jackson deserialization. For each public field of type {@link AbstractConfig} (that is not an
      * {@link AbstractSubsystemConfig}), the method sets the field's prefix to {@code parentPrefix + fieldName + "/"} and then recurses into that
-     * field. Subsystem configs are skipped because they own their own prefix based on their class name.
+     * field. Arrays of {@link AbstractConfig} are also handled: each element receives a prefix of
+     * {@code parentPrefix + fieldName + "/" + index + "/"} so that every element has unique tunable keys. Subsystem configs are skipped because they
+     * own their own prefix based on their class name.
      * </p>
      */
     public void initializeNestedDashboardPrefixes() {
@@ -100,6 +102,14 @@ public abstract class AbstractConfig {
                 if (value instanceof AbstractConfig nested && !(value instanceof AbstractSubsystemConfig)) {
                     nested.setDashboardPrefix(parentPrefix + field.getName() + "/");
                     nested.initializeNestedDashboardPrefixes();
+                } else if (value instanceof AbstractConfig[] array) {
+                    for (int i = 0; i < array.length; i++) {
+                        AbstractConfig element = array[i];
+                        if (element != null && !(element instanceof AbstractSubsystemConfig)) {
+                            element.setDashboardPrefix(parentPrefix + field.getName() + "/" + i + "/");
+                            element.initializeNestedDashboardPrefixes();
+                        }
+                    }
                 }
             } catch (IllegalAccessException e) {
                 // Skip inaccessible fields

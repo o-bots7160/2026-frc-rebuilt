@@ -301,8 +301,9 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Drives the robot field-relative with PID-controlled heading instead of manual omega.
      * <p>
-     * Translation axes come from the driver stick. The heading PID controller computes the angular velocity needed to reach the target heading,
-     * clamped to the configured maximum angular speed. This is the core API used by snap-to-heading commands.
+     * Translation axes come from the driver stick. YAGSL's {@code headingCalculate} computes the angular velocity needed to reach the target
+     * heading by running the heading PID and scaling the output by the configured maximum angular velocity. This is the core API used by
+     * snap-to-heading commands and trench traversal.
      * </p>
      *
      * @param vxMetersPerSecond    field-forward velocity in meters per second
@@ -320,12 +321,12 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
             return;
         }
 
-        // Compute the omega correction using the heading PID controller.
+        // Use YAGSL's headingCalculate which scales PID output by max angular velocity.
         double currentHeadingRadians = getOdometryPose().getRotation().getRadians();
-        double omegaRadiansPerSecond = swerveController.thetaController.calculate(
+        double omegaRadiansPerSecond = swerveController.headingCalculate(
                 currentHeadingRadians, targetHeadingRadians);
 
-        // Clamp the PID output to the configured maximum angular speed.
+        // Clamp the scaled output to the configured maximum angular speed.
         double maxOmega              = config.getMaximumAngularSpeedRadiansPerSecond().get();
         omegaRadiansPerSecond = MathUtil.clamp(omegaRadiansPerSecond, -maxOmega, maxOmega);
 

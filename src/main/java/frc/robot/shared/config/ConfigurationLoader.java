@@ -106,6 +106,12 @@ public class ConfigurationLoader {
                 org.littletonrobotics.junction.Logger.recordOutput(key, (String) value);
             } else if (value instanceof AbstractConfig) {
                 logConfigSnapshot(value.getClass(), value, key);
+            } else if (value instanceof AbstractConfig[] array) {
+                for (int i = 0; i < array.length; i++) {
+                    if (array[i] != null) {
+                        logConfigSnapshot(array[i].getClass(), array[i], key + "/" + i);
+                    }
+                }
             }
         }
     }

@@ -686,13 +686,13 @@ public class TriggerBindings {
         }
 
         trigger.whileTrue(Commands.deferredProxy(() -> {
-            Pose2d          bluePose    = targetConfig.toPose2d();
+            Pose2d           bluePose    = targetConfig.toPose2d();
 
             // Flip the target for the red alliance.
-            Alliance        alliance    = RobotEnvironment.getAlliance().orElse(Alliance.Blue);
-            Pose2d          targetPose  = alliance == Alliance.Red ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
+            Alliance         alliance    = RobotEnvironment.getAlliance().orElse(Alliance.Blue);
+            Pose2d           targetPose  = alliance == Alliance.Red ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
 
-            PathConstraints constraints = new PathConstraints(
+            PathConstraints  constraints = new PathConstraints(
                     driverConfig.getDpadMaxVelocityMetersPerSecond(),
                     driverConfig.getDpadMaxAccelerationMetersPerSecondSquared(),
                     Units.degreesToRadians(driverConfig.getDpadMaxAngularVelocityDegreesPerSecond()),
@@ -703,14 +703,17 @@ public class TriggerBindings {
             TrenchZoneConfig trenchZone  = driverConfig.findIntersectingTrenchZone(currentPose, targetPose);
 
             if (trenchZone != null) {
-                Pose2d entryPose      = trenchZone.computeEntryWaypoint(currentPose, targetPose);
-                Pose2d exitPose       = trenchZone.computeExitWaypoint(currentPose, targetPose);
-                double trenchHeading  = entryPose.getRotation().getRadians();
+                Pose2d entryPose     = trenchZone.computeEntryWaypoint(currentPose, targetPose);
+                Pose2d exitPose      = trenchZone.computeExitWaypoint(currentPose, targetPose);
+                double trenchHeading = entryPose.getRotation().getRadians();
 
                 return Commands.sequence(
+                        Commands.parallel(
+                                // gameplayStateCommandFactory.createTrenchTravelCommand(),
+                                driveBaseCommandFactory.createRotateToHeadingCommand(trenchHeading)),
                         driveBaseCommandFactory.createPathfindToPoseCommand(entryPose, constraints),
-                        driveBaseCommandFactory.createRotateToHeadingCommand(trenchHeading),
-                        driveBaseCommandFactory.createPathfindToPoseCommand(exitPose, constraints),
+                        driveBaseCommandFactory.createDriveStraightWithHeadingCommand(
+                                exitPose, driverConfig.getDpadMaxVelocityMetersPerSecond()),
                         driveBaseCommandFactory.createPathfindToPoseCommand(targetPose, constraints));
             }
 
