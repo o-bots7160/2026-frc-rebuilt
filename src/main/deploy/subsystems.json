@@ -216,13 +216,13 @@
       "dynamicTimeoutSeconds": 4.0
     },
     "motionProfile": {
-      "maximumVelocityRpm": 1100.0,
+      "maximumVelocityRpm": 1200.0,
       "maximumAccelerationRpmPerSecond": 0.0,
-      "velocityToleranceRpm": 50.0,
+      "velocityToleranceRpm": 75.0,
       "settleTimeSeconds": 0.15,
       "idleVelocityRpm": 100.0
     },
-    "forwardVelocityRpm": 1000.0,
+    "forwardVelocityRpm": 1100.0,
     "reverseVelocityRpm": 300.0,
     "reversePulseDurationSeconds": 0.1
   },
@@ -249,13 +249,13 @@
       "kA": 0.008487
     },
     "motionProfile": {
-      "maximumVelocityRpm": 1000.0,
+      "maximumVelocityRpm": 1200.0,
       "maximumAccelerationRpmPerSecond": 0.0,
-      "velocityToleranceRpm": 50.0,
+      "velocityToleranceRpm": 75.0,
       "settleTimeSeconds": 0.1,
       "idleVelocityRpm": 100.0
     },
-    "feedVelocityRpm": 400.0,
+    "feedVelocityRpm": 1000.0,
     "reverseVelocityRpm": 400.0,
     "unjamForwardDurationSeconds": 0.3,
     "unjamReverseDurationSeconds": 0.3
@@ -367,12 +367,12 @@
     "distanceRpmPoints": [
       {
         "distanceMeters": 1.7,
-        "rpm": 2200.0,
+        "rpm": 2100.0,
         "timeOfFlightSeconds": 0.3
       },
       {
         "distanceMeters": 5.0,
-        "rpm": 3350.0,
+        "rpm": 3250.0,
         "timeOfFlightSeconds": 0.8
       }
     ],
