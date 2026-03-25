@@ -41,34 +41,38 @@
       "trenchZones": [
         {
           "enabled": true,
-          "minXMeters": 3.3,
-          "maxXMeters": 5.6,
+          "minXMeters": 3.51,
+          "maxXMeters": 5.72,
           "minYMeters": 0.0,
-          "maxYMeters": 2.0,
+          "maxYMeters": 4.2,
+          "trenchCenterYMeters": 0.631,
           "bufferMeters": 0.5
         },
         {
           "enabled": true,
-          "minXMeters": 3.3,
-          "maxXMeters": 5.6,
-          "minYMeters": 6.07,
+          "minXMeters": 3.51,
+          "maxXMeters": 5.72,
+          "minYMeters": 4.2,
           "maxYMeters": 8.07,
+          "trenchCenterYMeters": 7.411,
           "bufferMeters": 0.5
         },
         {
           "enabled": true,
-          "minXMeters": 10.94,
-          "maxXMeters": 13.24,
+          "minXMeters": 10.80,
+          "maxXMeters": 13.01,
           "minYMeters": 0.0,
-          "maxYMeters": 2.0,
+          "maxYMeters": 4.2,
+          "trenchCenterYMeters": 0.631,
           "bufferMeters": 0.5
         },
         {
           "enabled": true,
-          "minXMeters": 10.94,
-          "maxXMeters": 13.24,
-          "minYMeters": 6.07,
+          "minXMeters": 10.80,
+          "maxXMeters": 13.01,
+          "minYMeters": 4.2,
           "maxYMeters": 8.07,
+          "trenchCenterYMeters": 7.411,
           "bufferMeters": 0.5
         }
       ]

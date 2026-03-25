@@ -256,7 +256,8 @@ public class RobotContainer {
                     feederCommandFactory,
                     intakeCommandFactory,
                     harvesterCommandFactory,
-                    gameplayStateCommandFactory);
+                    gameplayStateCommandFactory,
+                    robotPoseSubsystem::getEstimatedPose);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
             RobotEnvironment.reportError(message, e.getStackTrace());

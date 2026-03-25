@@ -9,9 +9,10 @@ import frc.robot.shared.config.AbstractConfig;
  * pathfinding route intersects a trench zone, intermediate waypoints are inserted at the zone entry and exit so the robot passes through with the
  * correct heading.
  * <p>
- * All coordinates are in field (blue-alliance) frame. Trenches are physical field features that exist on both halves of the field, so four zones
- * should be defined to cover both alliance sides. The heading rule is purely directional in field coordinates: 180 degrees for +X travel (back of
- * robot leads), 0 degrees for -X travel. This does not change based on alliance color.
+ * All coordinates are in field (blue-alliance) frame. Each hub has two trenches (north and south), giving four zones total. The X boundaries cover
+ * the hub width with a buffer, and the Y boundaries split at the hub center so the correct trench center Y is used for waypoints. Each zone's
+ * {@code trenchCenterYMeters} is derived from the AprilTags at the trench opening (e.g., tags 22/23 for the blue north trench at y=7.411). The
+ * heading rule is purely directional: 180 degrees for +X travel, 0 degrees for -X travel.
  * </p>
  */
 public class TrenchZoneConfig extends AbstractConfig {
@@ -82,6 +83,14 @@ public class TrenchZoneConfig extends AbstractConfig {
     public double maxYMeters = 0.0;
 
     /**
+     * Y-coordinate of the trench center in meters (field coordinates), derived from the AprilTags centered on the trench opening.
+     * <p>
+     * Both entry and exit waypoints use this Y value so the robot lines up with the center of the trench passage.
+     * </p>
+     */
+    public double trenchCenterYMeters = 4.199;
+
+    /**
      * Buffer distance in meters added outside the zone boundary when computing entry and exit waypoints.
      * <p>
      * The entry waypoint is placed this far outside the zone edge so the robot finishes its heading correction before physically entering the
@@ -135,6 +144,15 @@ public class TrenchZoneConfig extends AbstractConfig {
         return readTunableNumber("maxYMeters", maxYMeters);
     }
     /**
+     * Reads the tunable trench center Y-coordinate in meters.
+     *
+     * @return trench center Y in meters
+     */
+    public double getTrenchCenterYMeters() {
+        return readTunableNumber("trenchCenterYMeters", trenchCenterYMeters);
+    }
+
+    /**
      * Reads the tunable buffer distance in meters.
      *
      * @return buffer distance outside the zone edge in meters
@@ -166,8 +184,9 @@ public class TrenchZoneConfig extends AbstractConfig {
     /**
      * Computes the entry waypoint just outside the trench zone on the side closest to the starting position.
      * <p>
-     * The waypoint is placed at the zone's X-edge (plus buffer) on the start side, at the Y-center of the zone. The heading is set to the required
-     * trench heading based on travel direction: 180 degrees for +X travel, 0 degrees for -X travel.
+     * The waypoint is placed at the zone's X-edge (plus buffer) on the start side, at the configured trench center Y derived from the AprilTags
+     * centered on the trench opening. The heading is set to the required trench heading based on travel direction: 180 degrees for +X travel,
+     * 0 degrees for -X travel.
      * </p>
      *
      * @param start  starting pose in field coordinates
@@ -175,19 +194,20 @@ public class TrenchZoneConfig extends AbstractConfig {
      * @return entry waypoint pose with the required heading for trench traversal
      */
     public Pose2d computeEntryWaypoint(Pose2d start, Pose2d target) {
-        double     buffer        = getBufferMeters();
-        double     yCenterMeters = (getMinYMeters() + getMaxYMeters()) / 2.0;
+        double     buffer         = getBufferMeters();
+        double     centerY        = getTrenchCenterYMeters();
         boolean    travelingPlusX = target.getX() > start.getX();
-        double     entryX        = travelingPlusX ? getMinXMeters() - buffer : getMaxXMeters() + buffer;
-        Rotation2d heading       = Rotation2d.fromDegrees(travelingPlusX ? 180.0 : 0.0);
+        double     entryX         = travelingPlusX ? getMinXMeters() - buffer : getMaxXMeters() + buffer;
+        Rotation2d heading        = Rotation2d.fromDegrees(travelingPlusX ? 180.0 : 0.0);
 
-        return new Pose2d(entryX, yCenterMeters, heading);
+        return new Pose2d(entryX, centerY, heading);
     }
     /**
      * Computes the exit waypoint just outside the trench zone on the side closest to the target position.
      * <p>
-     * The waypoint is placed at the zone's X-edge (plus buffer) on the target side, at the Y-center of the zone. The heading matches the entry
-     * heading so the robot maintains a consistent orientation through the entire trench transit.
+     * The waypoint is placed at the zone's X-edge (plus buffer) on the target side, at the configured trench center Y so the robot exits aligned
+     * with the trench passage. The heading matches the entry heading so the robot maintains a consistent orientation through the entire trench
+     * transit.
      * </p>
      *
      * @param start  starting pose in field coordinates
@@ -195,13 +215,13 @@ public class TrenchZoneConfig extends AbstractConfig {
      * @return exit waypoint pose with the required heading for trench traversal
      */
     public Pose2d computeExitWaypoint(Pose2d start, Pose2d target) {
-        double     buffer        = getBufferMeters();
-        double     yCenterMeters = (getMinYMeters() + getMaxYMeters()) / 2.0;
+        double     buffer         = getBufferMeters();
+        double     centerY        = getTrenchCenterYMeters();
         boolean    travelingPlusX = target.getX() > start.getX();
-        double     exitX         = travelingPlusX ? getMaxXMeters() + buffer : getMinXMeters() - buffer;
-        Rotation2d heading       = Rotation2d.fromDegrees(travelingPlusX ? 180.0 : 0.0);
+        double     exitX          = travelingPlusX ? getMaxXMeters() + buffer : getMinXMeters() - buffer;
+        Rotation2d heading        = Rotation2d.fromDegrees(travelingPlusX ? 180.0 : 0.0);
 
-        return new Pose2d(exitX, yCenterMeters, heading);
+        return new Pose2d(exitX, centerY, heading);
     }
 
     /**

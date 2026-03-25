@@ -1,5 +1,7 @@
 package frc.robot.shared.bindings;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.path.PathConstraints;
@@ -122,6 +124,11 @@ public class TriggerBindings {
     private final GameplayStateCommandFactory      gameplayStateCommandFactory;
 
     /**
+     * Supplies the vision-fused robot pose for field-relative calculations such as trench zone detection.
+     */
+    private final Supplier<Pose2d>                 robotPoseSupplier;
+
+    /**
      * Dashboard chooser that selects which subsystem the A/B/X test buttons control. Only initialized when tuning mode is enabled.
      */
     private LoggedDashboardChooser<String>         testSubsystemChooser;
@@ -166,11 +173,11 @@ public class TriggerBindings {
      * @param turretCommandFactory        factory for creating turret commands
      * @param shooterCommandFactory       factory for creating shooter commands
      * @param indexerCommandFactory       factory for creating indexer commands
-     * @param climberCommandFactory       factory for creating climber commands
      * @param feederCommandFactory        factory for creating feeder commands
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
+     * @param robotPoseSupplier           supplies the vision-fused robot pose for field-relative calculations
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
@@ -181,7 +188,8 @@ public class TriggerBindings {
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            GameplayStateCommandFactory gameplayStateCommandFactory) {
+            GameplayStateCommandFactory gameplayStateCommandFactory,
+            Supplier<Pose2d> robotPoseSupplier) {
         this(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
@@ -192,6 +200,7 @@ public class TriggerBindings {
                 intakeCommandFactory,
                 harvesterCommandFactory,
                 gameplayStateCommandFactory,
+                robotPoseSupplier,
                 DEFAULT_DRIVE_CONTROLLER_PORT,
                 DEFAULT_OPERATOR_CONTROLLER_PORT);
     }
@@ -208,6 +217,7 @@ public class TriggerBindings {
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
+     * @param robotPoseSupplier           supplies the vision-fused robot pose for field-relative calculations
      * @param driverControllerPort        USB port for the driver controller
      * @param operatorControllerPort      USB port for the operator controller
      */
@@ -221,6 +231,7 @@ public class TriggerBindings {
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
             GameplayStateCommandFactory gameplayStateCommandFactory,
+            Supplier<Pose2d> robotPoseSupplier,
             int driverControllerPort,
             int operatorControllerPort) {
         this.driveBaseCommandFactory     = driveBaseCommandFactory;
@@ -231,6 +242,7 @@ public class TriggerBindings {
         // TODO: Re-enable climber for post-first-competition
         // this.climberCommandFactory = climberCommandFactory;
         this.feederCommandFactory        = feederCommandFactory;
+        this.robotPoseSupplier           = robotPoseSupplier;
         this.intakeCommandFactory        = intakeCommandFactory;
         this.harvesterCommandFactory     = harvesterCommandFactory;
         this.gameplayStateCommandFactory = gameplayStateCommandFactory;
@@ -687,15 +699,17 @@ public class TriggerBindings {
                     Units.degreesToRadians(driverConfig.getDpadMaxAngularAccelerationDegreesPerSecondSquared()));
 
             // Check if the path crosses a trench zone. Both poses are in field coordinates.
-            Pose2d           currentPose = driveBaseCommandFactory.getSubsystem().getOdometryPose();
+            Pose2d           currentPose = robotPoseSupplier.get();
             TrenchZoneConfig trenchZone  = driverConfig.findIntersectingTrenchZone(currentPose, targetPose);
 
             if (trenchZone != null) {
-                Pose2d entryPose = trenchZone.computeEntryWaypoint(currentPose, targetPose);
-                Pose2d exitPose  = trenchZone.computeExitWaypoint(currentPose, targetPose);
+                Pose2d entryPose      = trenchZone.computeEntryWaypoint(currentPose, targetPose);
+                Pose2d exitPose       = trenchZone.computeExitWaypoint(currentPose, targetPose);
+                double trenchHeading  = entryPose.getRotation().getRadians();
 
                 return Commands.sequence(
                         driveBaseCommandFactory.createPathfindToPoseCommand(entryPose, constraints),
+                        driveBaseCommandFactory.createRotateToHeadingCommand(trenchHeading),
                         driveBaseCommandFactory.createPathfindToPoseCommand(exitPose, constraints),
                         driveBaseCommandFactory.createPathfindToPoseCommand(targetPose, constraints));
             }

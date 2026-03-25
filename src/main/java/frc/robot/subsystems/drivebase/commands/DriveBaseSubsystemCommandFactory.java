@@ -369,6 +369,35 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
     }
 
     /**
+     * Builds a command that rotates the robot in place to a target heading using the heading PID controller, then finishes.
+     * <p>
+     * The command drives with zero translation and PID-controlled omega until the heading error is within the configured rotation tolerance. Use this
+     * to guarantee the robot reaches a specific heading before proceeding to the next command in a sequence (e.g., before entering a trench zone).
+     * </p>
+     *
+     * @param targetHeadingRadians desired field-relative heading in radians (counter-clockwise positive)
+     * @return command that rotates in place until the heading is within tolerance, or a no-op if the subsystem is disabled
+     */
+    public Command createRotateToHeadingCommand(double targetHeadingRadians) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Rotate skipped: drive base disabled.");
+        }
+
+        double normalizedTarget = MathUtil.angleModulus(targetHeadingRadians);
+
+        return Commands.runOnce(() -> subsystem.resetHeadingController())
+                .andThen(Commands.run(
+                        () -> subsystem.driveFieldRelativeWithHeading(0.0, 0.0, normalizedTarget),
+                        subsystem))
+                .until(() -> {
+                    double currentRadians = subsystem.getOdometryPose().getRotation().getRadians();
+                    double error          = Math.abs(MathUtil.angleModulus(normalizedTarget - currentRadians));
+                    return error < subsystem.getRotationToleranceRadians();
+                })
+                .withName("RotateToHeading");
+    }
+
+    /**
      * Builds a command that pathfinds from the robot's current pose to the given target pose using PathPlanner's AD* pathfinder.
      * <p>
      * The command respects obstacles defined in the PathPlanner navgrid and ends at zero velocity when the target is reached. Use this for teleop
