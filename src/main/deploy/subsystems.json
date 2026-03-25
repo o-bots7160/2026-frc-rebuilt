@@ -17,10 +17,10 @@
         "enabled": true
       },
       "dpadDown": {
-        "xMeters": 0.0,
-        "yMeters": 0.0,
-        "headingDegrees": 0.0,
-        "enabled": false
+        "xMeters": 1.0,
+        "yMeters": 1.0,
+        "headingDegrees": 180.0,
+        "enabled": true
       },
       "dpadLeft": {
         "xMeters": 0.0,
@@ -99,7 +99,7 @@
     "simulationOmegaScale": 0.5,
     "shootingSpeedScalePercent": 70.0,
     "lowVoltageThresholdVolts": 12.0,
-    "lowVoltageSpeedScalePercent": 80.0,
+    "lowVoltageSpeedScalePercent": 70.0,
     "criticalVoltageThresholdVolts": 11.0,
     "criticalVoltageSpeedScalePercent": 50.0,
     "applyPowerManagementInAuto": false,
@@ -222,7 +222,7 @@
       "settleTimeSeconds": 0.15,
       "idleVelocityRpm": 100.0
     },
-    "forwardVelocityRpm": 1100.0,
+    "forwardVelocityRpm": 1000.0,
     "reverseVelocityRpm": 300.0,
     "reversePulseDurationSeconds": 0.1
   },
@@ -313,9 +313,9 @@
       "hubPositionXMeters": 4.612,
       "hubPositionYMeters": 4.021,
       "leftZonePositionXMeters": 2.0,
-      "leftZonePositionYMeters": 6.5,
+      "leftZonePositionYMeters": 7.5,
       "rightZonePositionXMeters": 2.0,
-      "rightZonePositionYMeters": 1.7
+      "rightZonePositionYMeters": 0.7
     }
   },
   "shooterSubsystem": {
@@ -367,12 +367,12 @@
     "distanceRpmPoints": [
       {
         "distanceMeters": 1.7,
-        "rpm": 2100.0,
+        "rpm": 2300.0,
         "timeOfFlightSeconds": 0.3
       },
       {
         "distanceMeters": 5.0,
-        "rpm": 3250.0,
+        "rpm": 3275.0,
         "timeOfFlightSeconds": 0.8
       }
     ],
