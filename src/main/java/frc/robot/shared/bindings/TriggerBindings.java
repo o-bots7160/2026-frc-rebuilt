@@ -655,10 +655,15 @@ public class TriggerBindings {
 
     /**
      * Binds a single d-pad direction trigger to a pathfinding command if the target is enabled.
+     * <p>
+     * When the straight-line path from the robot's current position to the target crosses a configured trench zone, intermediate waypoints are
+     * inserted at the zone entry and exit. The robot pathfinds to the entry waypoint (arriving at the required heading), then through the trench to
+     * the exit waypoint, then onward to the final target. When no trench zone is crossed, a single pathfind command drives directly to the target.
+     * </p>
      *
      * @param trigger      the d-pad direction trigger from the driver controller
      * @param targetConfig config holding the target pose for this direction
-     * @param driverConfig shared driver controller config holding pathfinding constraints
+     * @param driverConfig shared driver controller config holding pathfinding constraints and trench zone definitions
      */
     private void bindDpadDirection(
             edu.wpi.first.wpilibj2.command.button.Trigger trigger,
@@ -680,6 +685,20 @@ public class TriggerBindings {
                     driverConfig.getDpadMaxAccelerationMetersPerSecondSquared(),
                     Units.degreesToRadians(driverConfig.getDpadMaxAngularVelocityDegreesPerSecond()),
                     Units.degreesToRadians(driverConfig.getDpadMaxAngularAccelerationDegreesPerSecondSquared()));
+
+            // Check if the path crosses a trench zone. Both poses are in field coordinates.
+            Pose2d           currentPose = driveBaseCommandFactory.getSubsystem().getOdometryPose();
+            TrenchZoneConfig trenchZone  = driverConfig.findIntersectingTrenchZone(currentPose, targetPose);
+
+            if (trenchZone != null) {
+                Pose2d entryPose = trenchZone.computeEntryWaypoint(currentPose, targetPose);
+                Pose2d exitPose  = trenchZone.computeExitWaypoint(currentPose, targetPose);
+
+                return Commands.sequence(
+                        driveBaseCommandFactory.createPathfindToPoseCommand(entryPose, constraints),
+                        driveBaseCommandFactory.createPathfindToPoseCommand(exitPose, constraints),
+                        driveBaseCommandFactory.createPathfindToPoseCommand(targetPose, constraints));
+            }
 
             return driveBaseCommandFactory.createPathfindToPoseCommand(targetPose, constraints);
         }));
