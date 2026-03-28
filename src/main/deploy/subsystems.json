@@ -20,22 +20,22 @@
         "xMeters": 1.0,
         "yMeters": 1.0,
         "headingDegrees": 180.0,
-        "enabled": true
+        "enabled": false
       },
       "dpadLeft": {
-        "xMeters": 0.0,
-        "yMeters": 0.0,
-        "headingDegrees": 0.0,
-        "enabled": false
+        "xMeters": 2.1,
+        "yMeters": 7.0,
+        "headingDegrees": 158.0,
+        "enabled": true
       },
       "dpadRight": {
-        "xMeters": 0.0,
-        "yMeters": 0.0,
-        "headingDegrees": 0.0,
-        "enabled": false
+        "xMeters": 2.1,
+        "yMeters": 1.0,
+        "headingDegrees": -138.0,
+        "enabled": true
       },
-      "dpadMaxVelocityMetersPerSecond": 3.0,
-      "dpadMaxAccelerationMetersPerSecondSquared": 3.0,
+      "dpadMaxVelocityMetersPerSecond": 5.0,
+      "dpadMaxAccelerationMetersPerSecondSquared": 5.0,
       "dpadMaxAngularVelocityDegreesPerSecond": 360.0,
       "dpadMaxAngularAccelerationDegreesPerSecondSquared": 720.0,
       "trenchZones": [
@@ -371,6 +371,11 @@
         "timeOfFlightSeconds": 0.3
       },
       {
+        "distanceMeters": 3.6,
+        "rpm": 2925.0,
+        "timeOfFlightSeconds": 0.5
+      },
+      {
         "distanceMeters": 5.0,
         "rpm": 3275.0,
         "timeOfFlightSeconds": 0.8
@@ -384,7 +389,7 @@
     "verbose": false,
     "fieldType": "ANDYMARK",
     "poseFilter": {
-      "linearStandardDeviationBaseline": 0.08,
+      "linearStandardDeviationBaseline": 0.03,
       "angularStandardDeviationBaseline": 1.0,
       "maximumAmbiguity": 0.15,
       "maximumTagDistanceMeters": 5.0,
@@ -392,8 +397,8 @@
       "maximumMultiTagAmbiguity": 0.2,
       "maximumZHeightMeters": 0.5,
       "ignoredTagIds": [
-        25,
         21,
+        25,
         27,
         30,
         32
