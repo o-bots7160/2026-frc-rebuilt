@@ -124,7 +124,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "P1",
+  "folder": "Paths",
   "idealStartingState": {
     "velocity": 1.0,
     "rotation": 180.0

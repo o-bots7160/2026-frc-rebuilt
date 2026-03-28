@@ -57,7 +57,7 @@
       },
       "nextControl": {
         "x": 5.6,
-        "y": 0.5
+        "y": 0.5000000000000001
       },
       "isLocked": false,
       "linkedName": null
@@ -120,7 +120,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "P1",
+  "folder": "Paths",
   "idealStartingState": {
     "velocity": 1.0,
     "rotation": 180.0

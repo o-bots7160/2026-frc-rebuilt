@@ -52,7 +52,7 @@
         "y": 5.0
       },
       "prevControl": {
-        "x": 9.3,
+        "x": 8.55,
         "y": 5.0
       },
       "nextControl": {
@@ -130,7 +130,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "P1",
+  "folder": "Paths",
   "idealStartingState": {
     "velocity": 1.0,
     "rotation": 180.0
