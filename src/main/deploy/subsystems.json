@@ -121,36 +121,36 @@
       "motorCanId": 50,
       "motorInverted": true,
       "smartCurrentLimitAmps": 30,
-      "motorRotationsPerMechanismRotation": 4.0,
+      "motorRotationsPerMechanismRotation": 1.3333,
       "reverseSoftLimitDegrees": 0.0,
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.01318,
+      "kP": 0.0032688,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.25003,
-      "kV": 0.082939,
-      "kA": 0.0070893
+      "kS": 0.077122,
+      "kV": 0.026245,
+      "kA": 0.0039654
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
       "stepVoltage": 7.0
     },
     "motionProfile": {
-      "maximumVelocityRpm": 1700.0,
+      "maximumVelocityRpm": 5000.0,
       "maximumAccelerationRpmPerSecond": 500.0,
       "velocityToleranceRpm": 25,
       "settleTimeSeconds": 0.15,
       "idleVelocityRpm": 100
     },
-    "forwardVelocityRpm": 1400,
+    "forwardVelocityRpm": 1800,
     "reverseVelocityRpm": 1000
   },
   "harvesterSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": false,
     "harvesterMotorConfig": {
       "useSetpointLimits": true,
@@ -269,7 +269,7 @@
       "motorInverted": true,
       "smartCurrentLimitAmps": 40,
       "motorRotationsPerMechanismRotation": 10,
-      "reverseSoftLimitDegrees": -100.0,
+      "reverseSoftLimitDegrees": -120.0,
       "forwardSoftLimitDegrees": 100.0
     },
     "pid": {
@@ -290,8 +290,8 @@
       "initialPositionDegrees": 0.0,
       "initialVelocityDegreesPerSecond": 0.0
     },
-    "minimumSetpointDegrees": -90.0,
-    "maximumSetpointDegrees": 90.0,
+    "minimumSetpointDegrees": -120.0,
+    "maximumSetpointDegrees": 100.0,
     "componentPoseConfig": {
       "componentPivotX": -0.205,
       "componentPivotY": 0.0,
@@ -313,9 +313,9 @@
       "hubPositionXMeters": 4.612,
       "hubPositionYMeters": 4.021,
       "leftZonePositionXMeters": 2.0,
-      "leftZonePositionYMeters": 7.5,
+      "leftZonePositionYMeters": 6.0,
       "rightZonePositionXMeters": 2.0,
-      "rightZonePositionYMeters": 0.7
+      "rightZonePositionYMeters": 2.2
     }
   },
   "shooterSubsystem": {

@@ -604,8 +604,8 @@ public class TriggerBindings {
     /**
      * Wires operator controller buttons to gameplay state transition commands.
      * <p>
-     * Y enters FIRE_READY, X enters HARVEST_READY, start enters CLIMB_READY, A enters EJECT, B returns to IDLE, right trigger enters TRAVEL, and left
-     * trigger enters TRENCH_TRAVEL. Triggers use {@code onTrue} so the state change persists after release.
+     * Y enters FIRE_READY, X enters HARVEST_READY, start enters CLIMB_READY, A enters EJECT, back enters IDLE, right trigger enters TRAVEL, and left
+     * trigger enters TRENCH_TRAVEL. Triggers use {@code onTrue} so the state change persists after release. B button toggle locks turret
      * </p>
      */
     private void configureOperatorBindings() {
@@ -621,8 +621,8 @@ public class TriggerBindings {
         operatorController.a().whileTrue(
                 gameplayStateCommandFactory.createEjectCommand());
 
-        // B button: return to idle.
-        operatorController.b().onTrue(
+        // Back button: return to idle.
+        operatorController.back().onTrue(
                 gameplayStateCommandFactory.createIdleCommand());
 
         // Right trigger: travel mode (stow harvester and idle all mechanisms).
@@ -641,10 +641,10 @@ public class TriggerBindings {
         operatorController.povDown().whileTrue(
                 shooterCommandFactory.createCutRpmCommand());
 
-        // Select (back) button: toggle turret lock to 0 degrees.
+        // B button: toggle turret lock to 0 degrees.
         // First press locks the turret at 0 and disables field tracking.
         // Second press releases the lock and resumes the default tracking command.
-        operatorController.back().toggleOnTrue(
+        operatorController.b().toggleOnTrue(
                 turretCommandFactory.createLockToZeroCommand());
     }
 
