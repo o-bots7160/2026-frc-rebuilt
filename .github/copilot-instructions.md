@@ -449,8 +449,8 @@ The diagram is arranged in horizontal bands, top to bottom:
 3. **Configuration** (y = 130) — yellow config box, right-aligned.
 4. **Subsystem row** (y = 200) — all subsystem nodes in a horizontal line,
    grouped by function:
-   - DRIVE & POSITIONING (x = 0–880): DriveBase, Turret, Climber.
-   - SENSING & VISION (x = 920–1800): RobotState, AprilTagVision, DriverCamera.
+   - DRIVE & POSITIONING (x = 0–880): DriveBase, Turret.
+   - SENSING & VISION (x = 920–1800): RobotState, AprilTagVision.
    - BALL PATH (x = 1820–2360): Shooter, Indexer, Feeder.
 5. **Command factory row** (y = 440–660) — purple factory nodes below their
    respective subsystems.

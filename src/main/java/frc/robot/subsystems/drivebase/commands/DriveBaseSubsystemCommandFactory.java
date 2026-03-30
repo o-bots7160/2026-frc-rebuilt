@@ -62,21 +62,6 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
     }
 
     /**
-     * Builds a field-relative manual driving command driven by the supplied control inputs.
-     *
-     * @param forwardMetersPerSecondSupplier supplier of forward (field +X) velocity in meters per second
-     * @param leftMetersPerSecondSupplier    supplier of leftward (field +Y) velocity in meters per second
-     * @param ccwRadiansPerSecondSupplier    supplier of counter-clockwise angular velocity in radians per second
-     * @return command that continues driving until interrupted
-     */
-    public MoveFieldManualCommand createMoveManualCommand(
-            DoubleSupplier forwardMetersPerSecondSupplier,
-            DoubleSupplier leftMetersPerSecondSupplier,
-            DoubleSupplier ccwRadiansPerSecondSupplier) {
-        return new MoveFieldManualCommand(subsystem, forwardMetersPerSecondSupplier, leftMetersPerSecondSupplier, ccwRadiansPerSecondSupplier);
-    }
-
-    /**
      * Builds and sets the default manual drive command using a driver controller.
      *
      * @param forwardAxis supplier providing forward stick value
@@ -280,26 +265,6 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
     }
 
     /**
-     * Builds a heading-locked manual drive command that uses the heading PID controller to track a target angle while the driver retains full
-     * translation control.
-     *
-     * @param forwardMetersPerSecondSupplier supplier of forward (field +X) velocity in meters per second
-     * @param leftMetersPerSecondSupplier    supplier of leftward (field +Y) velocity in meters per second
-     * @param targetHeadingRadiansSupplier   supplier of the desired field-relative heading in radians
-     * @return command that continues driving with heading lock until interrupted
-     */
-    public MoveFieldManualWithHeadingCommand createMoveManualWithHeadingCommand(
-            DoubleSupplier forwardMetersPerSecondSupplier,
-            DoubleSupplier leftMetersPerSecondSupplier,
-            DoubleSupplier targetHeadingRadiansSupplier) {
-        return new MoveFieldManualWithHeadingCommand(
-                subsystem,
-                forwardMetersPerSecondSupplier,
-                leftMetersPerSecondSupplier,
-                targetHeadingRadiansSupplier);
-    }
-
-    /**
      * Creates a command that spins the robot 180 degrees from its heading at the moment the button is pressed. The target heading is captured once
      * via deferred proxy and held constant while the button is held. The driver retains full translation control during the spin.
      *
@@ -376,108 +341,6 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
     }
 
     /**
-     * Builds a command that rotates the robot in place to a target heading using the heading PID controller, then finishes.
-     * <p>
-     * The command drives with zero translation and PID-controlled omega until the heading error stays within the configured rotation tolerance for
-     * 250 milliseconds. The debounce prevents the command from ending while the robot is still oscillating through the target. A 3-second safety
-     * timeout prevents indefinite spinning if the PID cannot converge.
-     * </p>
-     *
-     * @param targetHeadingRadians desired field-relative heading in radians (counter-clockwise positive)
-     * @return command that rotates in place until the heading has settled within tolerance, or a no-op if the subsystem is disabled
-     */
-    public Command createRotateToHeadingCommand(double targetHeadingRadians) {
-        if (subsystem.isSubsystemDisabled()) {
-            return Commands.print("Rotate skipped: drive base disabled.");
-        }
-
-        double    normalizedTarget = MathUtil.angleModulus(targetHeadingRadians);
-
-        // Require heading within tolerance for 250ms before declaring settled.
-        Debouncer settledDebouncer = new Debouncer(0.25, Debouncer.DebounceType.kRising);
-
-        return Commands.runOnce(() -> {
-            subsystem.resetHeadingController();
-            settledDebouncer.calculate(false);
-        })
-                .andThen(Commands.run(
-                        () -> subsystem.driveFieldRelativeWithHeading(0.0, 0.0, normalizedTarget),
-                        subsystem))
-                .until(() -> {
-                    double currentRadians = subsystem.getFusedPose().getRotation().getRadians();
-                    double error  = Math.abs(MathUtil.angleModulus(normalizedTarget - currentRadians));
-                    return settledDebouncer.calculate(error < subsystem.getRotationToleranceRadians());
-                })
-                .withTimeout(3.0)
-                .withName("RotateToHeading");
-    }
-
-    /**
-     * Builds a command that drives toward a target position while maintaining a fixed heading using PID control.
-     * <p>
-     * Used for trench traversal where the robot must hold a specific heading while translating through a narrow passage. The command computes
-     * field-relative velocity toward the target position and uses {@code driveFieldRelativeWithHeading} to lock the heading. Speed is proportionally
-     * reduced as the robot approaches the target to avoid overshooting.
-     * </p>
-     *
-     * @param target                  target pose in field coordinates; rotation defines the heading to maintain
-     * @param maxSpeedMetersPerSecond maximum translation speed in meters per second
-     * @return command that drives to the target position while maintaining heading, or a no-op if the subsystem is disabled
-     */
-    public Command createDriveStraightWithHeadingCommand(Pose2d target, double maxSpeedMetersPerSecond) {
-        if (subsystem.isSubsystemDisabled()) {
-            return Commands.print("Drive-straight skipped: drive base disabled.");
-        }
-
-        double headingRadians          = target.getRotation().getRadians();
-        double positionToleranceMeters = 0.3;
-
-        return Commands.run(() -> {
-            Pose2d        current  = subsystem.getFusedPose();
-            Translation2d delta    = target.getTranslation().minus(current.getTranslation());
-            double        distance = delta.getNorm();
-
-            if (distance < 0.01) {
-                subsystem.driveFieldRelativeWithHeading(0.0, 0.0, headingRadians);
-                return;
-            }
-
-            // Proportional speed: full speed when far, slowing to 0.5 m/s near the target.
-            double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.5, distance * 2.0));
-            double vx    = speed * delta.getX() / distance;
-            double vy    = speed * delta.getY() / distance;
-
-            subsystem.driveFieldRelativeWithHeading(vx, vy, headingRadians);
-        }, subsystem)
-                .until(() -> {
-                    double distance = target.getTranslation().getDistance(
-                            subsystem.getFusedPose().getTranslation());
-                    return distance < positionToleranceMeters;
-                })
-                .withTimeout(5.0)
-                .withName("DriveStraightWithHeading");
-    }
-
-    /**
-     * Builds a command that pathfinds from the robot's current pose to the given target pose using PathPlanner's AD* pathfinder.
-     * <p>
-     * The command respects obstacles defined in the PathPlanner navgrid and ends at zero velocity when the target is reached. Use this for teleop
-     * d-pad pathfinding where the driver holds a button to drive to a pre-configured field position.
-     * </p>
-     *
-     * @param targetPose  field pose to pathfind to (already alliance-corrected by the caller)
-     * @param constraints velocity and acceleration limits for the pathfinding trajectory
-     * @return command that pathfinds to the target pose and stops, or a no-op if the subsystem is disabled
-     */
-    public Command createPathfindToPoseCommand(Pose2d targetPose, PathConstraints constraints) {
-        if (subsystem.isSubsystemDisabled()) {
-            return Commands.print("Pathfind skipped: drive base disabled.");
-        }
-
-        return AutoBuilder.pathfindToPose(targetPose, constraints);
-    }
-
-    /**
      * Builds a command that pathfinds to a d-pad target with trench zone awareness.
      * <p>
      * The target is stored in blue-alliance coordinates and flipped at runtime for the red alliance. When the straight-line path from the robot's
@@ -528,5 +391,142 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
 
             return createPathfindToPoseCommand(targetPose, constraints);
         });
+    }
+
+    /**
+     * Builds a field-relative manual driving command driven by the supplied control inputs.
+     *
+     * @param forwardMetersPerSecondSupplier supplier of forward (field +X) velocity in meters per second
+     * @param leftMetersPerSecondSupplier    supplier of leftward (field +Y) velocity in meters per second
+     * @param ccwRadiansPerSecondSupplier    supplier of counter-clockwise angular velocity in radians per second
+     * @return command that continues driving until interrupted
+     */
+    private MoveFieldManualCommand createMoveManualCommand(
+            DoubleSupplier forwardMetersPerSecondSupplier,
+            DoubleSupplier leftMetersPerSecondSupplier,
+            DoubleSupplier ccwRadiansPerSecondSupplier) {
+        return new MoveFieldManualCommand(subsystem, forwardMetersPerSecondSupplier, leftMetersPerSecondSupplier, ccwRadiansPerSecondSupplier);
+    }
+
+    /**
+     * Builds a heading-locked manual drive command that uses the heading PID controller to track a target angle while the driver retains full
+     * translation control.
+     *
+     * @param forwardMetersPerSecondSupplier supplier of forward (field +X) velocity in meters per second
+     * @param leftMetersPerSecondSupplier    supplier of leftward (field +Y) velocity in meters per second
+     * @param targetHeadingRadiansSupplier   supplier of the desired field-relative heading in radians
+     * @return command that continues driving with heading lock until interrupted
+     */
+    private MoveFieldManualWithHeadingCommand createMoveManualWithHeadingCommand(
+            DoubleSupplier forwardMetersPerSecondSupplier,
+            DoubleSupplier leftMetersPerSecondSupplier,
+            DoubleSupplier targetHeadingRadiansSupplier) {
+        return new MoveFieldManualWithHeadingCommand(
+                subsystem,
+                forwardMetersPerSecondSupplier,
+                leftMetersPerSecondSupplier,
+                targetHeadingRadiansSupplier);
+    }
+
+    /**
+     * Builds a command that rotates the robot in place to a target heading using the heading PID controller, then finishes.
+     * <p>
+     * The command drives with zero translation and PID-controlled omega until the heading error stays within the configured rotation tolerance for
+     * 250 milliseconds. The debounce prevents the command from ending while the robot is still oscillating through the target. A 3-second safety
+     * timeout prevents indefinite spinning if the PID cannot converge.
+     * </p>
+     *
+     * @param targetHeadingRadians desired field-relative heading in radians (counter-clockwise positive)
+     * @return command that rotates in place until the heading has settled within tolerance, or a no-op if the subsystem is disabled
+     */
+    private Command createRotateToHeadingCommand(double targetHeadingRadians) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Rotate skipped: drive base disabled.");
+        }
+
+        double    normalizedTarget = MathUtil.angleModulus(targetHeadingRadians);
+
+        // Require heading within tolerance for 250ms before declaring settled.
+        Debouncer settledDebouncer = new Debouncer(0.25, Debouncer.DebounceType.kRising);
+
+        return Commands.runOnce(() -> {
+            subsystem.resetHeadingController();
+            settledDebouncer.calculate(false);
+        })
+                .andThen(Commands.run(
+                        () -> subsystem.driveFieldRelativeWithHeading(0.0, 0.0, normalizedTarget),
+                        subsystem))
+                .until(() -> {
+                    double currentRadians = subsystem.getFusedPose().getRotation().getRadians();
+                    double error  = Math.abs(MathUtil.angleModulus(normalizedTarget - currentRadians));
+                    return settledDebouncer.calculate(error < subsystem.getRotationToleranceRadians());
+                })
+                .withTimeout(3.0)
+                .withName("RotateToHeading");
+    }
+
+    /**
+     * Builds a command that drives toward a target position while maintaining a fixed heading using PID control.
+     * <p>
+     * Used for trench traversal where the robot must hold a specific heading while translating through a narrow passage. The command computes
+     * field-relative velocity toward the target position and uses {@code driveFieldRelativeWithHeading} to lock the heading. Speed is proportionally
+     * reduced as the robot approaches the target to avoid overshooting.
+     * </p>
+     *
+     * @param target                  target pose in field coordinates; rotation defines the heading to maintain
+     * @param maxSpeedMetersPerSecond maximum translation speed in meters per second
+     * @return command that drives to the target position while maintaining heading, or a no-op if the subsystem is disabled
+     */
+    private Command createDriveStraightWithHeadingCommand(Pose2d target, double maxSpeedMetersPerSecond) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Drive-straight skipped: drive base disabled.");
+        }
+
+        double headingRadians          = target.getRotation().getRadians();
+        double positionToleranceMeters = 0.3;
+
+        return Commands.run(() -> {
+            Pose2d        current  = subsystem.getFusedPose();
+            Translation2d delta    = target.getTranslation().minus(current.getTranslation());
+            double        distance = delta.getNorm();
+
+            if (distance < 0.01) {
+                subsystem.driveFieldRelativeWithHeading(0.0, 0.0, headingRadians);
+                return;
+            }
+
+            // Proportional speed: full speed when far, slowing to 0.5 m/s near the target.
+            double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.5, distance * 2.0));
+            double vx    = speed * delta.getX() / distance;
+            double vy    = speed * delta.getY() / distance;
+
+            subsystem.driveFieldRelativeWithHeading(vx, vy, headingRadians);
+        }, subsystem)
+                .until(() -> {
+                    double distance = target.getTranslation().getDistance(
+                            subsystem.getFusedPose().getTranslation());
+                    return distance < positionToleranceMeters;
+                })
+                .withTimeout(5.0)
+                .withName("DriveStraightWithHeading");
+    }
+
+    /**
+     * Builds a command that pathfinds from the robot's current pose to the given target pose using PathPlanner's AD* pathfinder.
+     * <p>
+     * The command respects obstacles defined in the PathPlanner navgrid and ends at zero velocity when the target is reached. Use this for teleop
+     * d-pad pathfinding where the driver holds a button to drive to a pre-configured field position.
+     * </p>
+     *
+     * @param targetPose  field pose to pathfind to (already alliance-corrected by the caller)
+     * @param constraints velocity and acceleration limits for the pathfinding trajectory
+     * @return command that pathfinds to the target pose and stops, or a no-op if the subsystem is disabled
+     */
+    private Command createPathfindToPoseCommand(Pose2d targetPose, PathConstraints constraints) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Pathfind skipped: drive base disabled.");
+        }
+
+        return AutoBuilder.pathfindToPose(targetPose, constraints);
     }
 }

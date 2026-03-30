@@ -5,12 +5,12 @@
 The Gameplay State subsystem tracks the robot's high-level operating mode during
 a match. Rather than owning hardware, it maintains a single
 [GameplayState](GameplayState.java) enum value that describes what the robot
-should be doing right now — collecting Fuel, aiming to shoot, climbing, etc.
+should be doing right now — collecting Fuel, aiming to shoot, etc.
 
 When the state changes, the companion
 [GameplayStateCommandFactory](commands/GameplayStateCommandFactory.java)
 composes a parallel command group that coordinates every mechanism subsystem
-(shooter, turret, harvester, indexer, feeder, intake, climber) into the correct
+(shooter, turret, harvester, indexer, feeder, intake) into the correct
 configuration. This keeps the operator interface simple: one button press
 selects a state, and the factory handles all the details.
 
@@ -27,7 +27,6 @@ subsystems:
 | `HARVEST_READY` | Harvester deployed, intake and feeder running, indexer idle, shooter at idle RPM. |
 | `FIRE_READY`    | Shooter spun up, turret tracking the scoring target, indexer feeds when ready.    |
 | `AUTO_CYCLE`    | Simultaneous harvest and fire — collects Fuel while the shooter stays spun up.    |
-| `CLIMB_READY`   | Climber extends, non-climb mechanisms stow or stop.                               |
 | `EJECT`         | Ball-path mechanisms reverse to clear a jam.                                      |
 
 ### Transition sources
@@ -37,7 +36,6 @@ reviewers can see **what** triggered the transition:
 
 - `"operator"` — a driver pressed a button bound to a transition command.
 - `"fms"` — the FMS match phase changed (e.g., autonomous started).
-- `"timer"` — endgame threshold reached and auto-transition is enabled.
 - `"auto"` — an autonomous routine requested the state.
 - `"init"` — the subsystem's initial state at construction.
 
@@ -51,15 +49,12 @@ FMS match phase each cycle:
 2. **Teleop starts** → transitions to `IDLE` so the operator takes control.
 3. **Robot disabled** → transitions to `IDLE`.
 
-### Endgame suggestion and auto-climb
+### Endgame suggestion
 
 The subsystem monitors match time remaining during teleop:
 
 - When match time drops below `endgameThresholdSeconds` (default 30 s), the
   `endgameSuggested` flag is set so dashboards can alert the driver.
-- If `endgameAutoTransitionEnabled` is also true, the subsystem automatically
-  transitions to `CLIMB_READY`. This is disabled by default to avoid surprising
-  the operator.
 
 ### How commands drive the state
 
@@ -80,11 +75,10 @@ connected to the FMS.
 
 ### Key tunables
 
-| Setting                        | Type    | Default | Purpose                                               |
-| ------------------------------ | ------- | ------- | ----------------------------------------------------- |
-| `endgameThresholdSeconds`      | double  | 30.0    | Seconds remaining in teleop before endgame suggestion |
-| `autoTransitionEnabled`        | boolean | true    | Auto-transition on FMS phase changes                  |
-| `endgameAutoTransitionEnabled` | boolean | false   | Auto-transition to CLIMB_READY at endgame threshold   |
+| Setting                   | Type    | Default | Purpose                                               |
+| ------------------------- | ------- | ------- | ----------------------------------------------------- |
+| `endgameThresholdSeconds` | double  | 30.0    | Seconds remaining in teleop before endgame suggestion |
+| `autoTransitionEnabled`   | boolean | true    | Auto-transition on FMS phase changes                  |
 
 ## Code structure
 

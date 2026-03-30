@@ -17,15 +17,9 @@ import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.SubsystemsConfig;
 import frc.robot.shared.field.FieldTargetSelector;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionSubsystem;
-// TODO: Re-enable climber for post-first-competition
-// import frc.robot.subsystems.climber.ClimberSubsystem;
-// import frc.robot.subsystems.climber.commands.ClimberSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
 import frc.robot.subsystems.drivebase.commands.PathPlannerCommandFactory;
-// TODO: Re-enable driver camera for post-first-competition
-// import frc.robot.subsystems.drivercameravision.DriverCameraSubsystem;
-// import frc.robot.subsystems.drivercameravision.commands.DriverCameraSubsystemCommandFactory;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.commands.FeederSubsystemCommandFactory;
 import frc.robot.subsystems.gameplaystate.GameplayState;
@@ -71,15 +65,6 @@ public class RobotContainer {
     @SuppressWarnings("unused")
     private final AprilTagVisionSubsystem          aprilTagVisionSubsystem;
 
-    // TODO: Re-enable driver camera for post-first-competition
-    // /** Driver camera subsystem that manages camera stream modes for the operator. */
-    // @SuppressWarnings("unused")
-    // private final DriverCameraSubsystem driverCameraSubsystem;
-
-    // TODO: Re-enable climber for post-first-competition
-    // /** Climber subsystem for end-game climbing. */
-    // private final ClimberSubsystem climberSubsystem;
-
     /** Feeder subsystem that transports game pieces into the indexer. */
     private final FeederSubsystem                  feederSubsystem;
 
@@ -106,14 +91,6 @@ public class RobotContainer {
 
     /** Factory that builds indexer hold, unjam, and feed commands. */
     private final IndexerSubsystemCommandFactory   indexerCommandFactory;
-
-    // TODO: Re-enable driver camera for post-first-competition
-    // /** Factory that builds driver camera stream-toggle commands. */
-    // private final DriverCameraSubsystemCommandFactory driverCameraCommandFactory;
-
-    // TODO: Re-enable climber for post-first-competition
-    // /** Factory that builds climber positioning commands. */
-    // private final ClimberSubsystemCommandFactory climberCommandFactory;
 
     /** Factory that builds feeder transport commands. */
     private final FeederSubsystemCommandFactory    feederCommandFactory;
@@ -162,10 +139,6 @@ public class RobotContainer {
                     robotPoseSubsystem::resetPose,
                     // Pose supplier is used for simulation cameras only; use raw odometry to avoid feedback loops.
                     driveBaseSubsystem::getFusedPose);
-            // TODO: Re-enable driver camera for post-first-competition
-            // driverCameraSubsystem = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
-            // TODO: Re-enable climber for post-first-competition
-            // climberSubsystem = new ClimberSubsystem(subsystemsConfig.climberSubsystem);
             feederSubsystem             = new FeederSubsystem(subsystemsConfig.feederSubsystem);
             intakeSubsystem             = new IntakeSubsystem(subsystemsConfig.intakeSubsystem);
             harvesterSubsystem          = new HarvesterSubsystem(subsystemsConfig.harvesterSubsystem);
@@ -186,10 +159,6 @@ public class RobotContainer {
             turretCommandFactory        = new TurretSubsystemCommandFactory(turretSubsystem);
             shooterCommandFactory       = new ShooterSubsystemCommandFactory(shooterSubsystem);
             indexerCommandFactory       = new IndexerSubsystemCommandFactory(indexerSubsystem);
-            // TODO: Re-enable driver camera for post-first-competition
-            // driverCameraCommandFactory = new DriverCameraSubsystemCommandFactory(driverCameraSubsystem);
-            // TODO: Re-enable climber for post-first-competition
-            // climberCommandFactory = new ClimberSubsystemCommandFactory(climberSubsystem);
             feederCommandFactory        = new FeederSubsystemCommandFactory(feederSubsystem);
             intakeCommandFactory        = new IntakeSubsystemCommandFactory(intakeSubsystem);
             harvesterCommandFactory     = new HarvesterSubsystemCommandFactory(harvesterSubsystem);
@@ -239,8 +208,6 @@ public class RobotContainer {
             // Dashboard commands (clickable buttons in Elastic Dashboard)
             SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());
             SmartDashboard.putData("HarvesterSubsystem/ResetEncoder", harvesterCommandFactory.createResetEncoderCommand());
-            // TODO: Re-enable climber for post-first-competition
-            // SmartDashboard.putData("ClimberSubsystem/ResetEncoder", climberCommandFactory.createResetEncoderCommand());
             SmartDashboard.putData("ResetAllEncoders", Commands.parallel(
                     turretCommandFactory.createResetEncoderCommand(),
                     harvesterCommandFactory.createResetEncoderCommand())

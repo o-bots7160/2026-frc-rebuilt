@@ -12,10 +12,9 @@ import frc.robot.shared.config.AbstractSubsystemConfig;
 public class GameplayStateSubsystemConfig extends AbstractSubsystemConfig {
 
     /**
-     * Match time threshold in seconds below which the subsystem suggests transitioning to {@code CLIMB_READY}.
+     * Match time threshold in seconds below which the subsystem sets the endgame suggestion flag for dashboard alerts.
      * <p>
-     * Only evaluated during teleop when {@link #endgameAutoTransitionEnabled} is true. A value of 30.0 means the suggestion fires when approximately
-     * 30 seconds remain in the teleop period.
+     * Only evaluated during teleop. A value of 30.0 means the suggestion fires when approximately 30 seconds remain in the teleop period.
      * </p>
      */
     public double  endgameThresholdSeconds        = 30.0;
@@ -30,17 +29,9 @@ public class GameplayStateSubsystemConfig extends AbstractSubsystemConfig {
     public boolean autoTransitionEnabled          = true;
 
     /**
-     * Enables automatic transition to {@code CLIMB_READY} when match time drops below the configured threshold.
-     * <p>
-     * Defaults to false to avoid surprising the operator. When false, the subsystem logs a telemetry suggestion but does not force the transition.
-     * </p>
-     */
-    public boolean endgameAutoTransitionEnabled   = false;
-
-    /**
      * Returns the endgame match time threshold in seconds.
      *
-     * @return seconds remaining in teleop below which the subsystem may transition to CLIMB_READY
+     * @return seconds remaining in teleop below which the endgame suggestion flag is set
      */
     public double getEndgameThresholdSeconds() {
         return readTunableNumber("endgameThresholdSeconds", endgameThresholdSeconds);
@@ -53,14 +44,5 @@ public class GameplayStateSubsystemConfig extends AbstractSubsystemConfig {
      */
     public boolean getAutoTransitionEnabled() {
         return readTunableBoolean("autoTransitionEnabled", autoTransitionEnabled);
-    }
-
-    /**
-     * Returns whether automatic endgame transition to CLIMB_READY is enabled.
-     *
-     * @return true when the subsystem should auto-transition to CLIMB_READY at the endgame threshold
-     */
-    public boolean getEndgameAutoTransitionEnabled() {
-        return readTunableBoolean("endgameAutoTransitionEnabled", endgameAutoTransitionEnabled);
     }
 }

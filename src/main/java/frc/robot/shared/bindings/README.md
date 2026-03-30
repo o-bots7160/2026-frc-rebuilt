@@ -41,7 +41,6 @@ The operator controller manages gameplay state transitions:
 | ------------- | ----------------------------- |
 | Right trigger | Enter **FIRE_READY** state    |
 | Left trigger  | Enter **HARVEST_READY** state |
-| Start button  | Enter **CLIMB_READY** state   |
 | B button      | **EJECT** (active while held) |
 | Y button      | Return to **IDLE**            |
 

@@ -83,13 +83,6 @@ public class TriggerBindings {
      */
     private final ShooterSubsystemCommandFactory   shooterCommandFactory;
 
-    // TODO: Re-enable climber for post-first-competition
-    // /**
-    // * Factory that creates climber commands tied to driver buttons.
-    // */
-    // @SuppressWarnings("unused")
-    // private final ClimberSubsystemCommandFactory climberCommandFactory;
-
     /**
      * Factory that creates indexer commands tied to driver buttons.
      */
@@ -221,8 +214,6 @@ public class TriggerBindings {
         this.turretCommandFactory        = turretCommandFactory;
         this.shooterCommandFactory       = shooterCommandFactory;
         this.indexerCommandFactory       = indexerCommandFactory;
-        // TODO: Re-enable climber for post-first-competition
-        // this.climberCommandFactory = climberCommandFactory;
         this.feederCommandFactory        = feederCommandFactory;
         this.intakeCommandFactory        = intakeCommandFactory;
         this.harvesterCommandFactory     = harvesterCommandFactory;
@@ -585,8 +576,8 @@ public class TriggerBindings {
     /**
      * Wires operator controller buttons to gameplay state transition commands.
      * <p>
-     * Y enters FIRE_READY, X enters HARVEST_READY, start enters CLIMB_READY, A enters EJECT, back enters IDLE, right trigger enters TRAVEL, and left
-     * trigger enters TRENCH_TRAVEL. Triggers use {@code onTrue} so the state change persists after release. B button toggle locks turret
+     * Y enters FIRE_READY, X enters HARVEST_READY, A enters EJECT, back enters IDLE, right trigger enters TRAVEL, and left trigger enters
+     * TRENCH_TRAVEL. Triggers use {@code onTrue} so the state change persists after release. B button toggle locks turret
      * </p>
      */
     private void configureOperatorBindings() {

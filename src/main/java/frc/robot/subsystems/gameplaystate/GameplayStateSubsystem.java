@@ -134,9 +134,9 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
     }
 
     /**
-     * Returns true when the endgame threshold has been reached, regardless of whether auto-transition is enabled.
+     * Returns true when the endgame threshold has been reached.
      * <p>
-     * Use this as a dashboard indicator or driver alert even when automatic CLIMB_READY transition is disabled.
+     * Use this as a dashboard indicator or driver alert.
      * </p>
      *
      * @return true when match time is below the configured endgame threshold during teleop
@@ -189,10 +189,6 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
         double threshold = config.getEndgameThresholdSeconds();
         if (matchTime <= threshold) {
             endgameSuggested = true;
-
-            if (config.getEndgameAutoTransitionEnabled() && currentState != GameplayState.CLIMB_READY) {
-                requestState(GameplayState.CLIMB_READY, "timer");
-            }
         } else {
             endgameSuggested = false;
         }
@@ -220,7 +216,6 @@ public class GameplayStateSubsystem extends AbstractSubsystem<GameplayStateSubsy
         inputs.isDisabled                   = RobotEnvironment.isDisabled();
         inputs.matchTimeSeconds             = RobotEnvironment.getMatchTimeSeconds();
         inputs.autoTransitionEnabled        = config.getAutoTransitionEnabled();
-        inputs.endgameAutoTransitionEnabled = config.getEndgameAutoTransitionEnabled();
         inputs.endgameSuggested             = endgameSuggested;
         inputs.distanceToTargetMeters       = distanceToTargetMetersSupplier.get();
         inputs.activeTargetName             = activeTargetNameSupplier.get();

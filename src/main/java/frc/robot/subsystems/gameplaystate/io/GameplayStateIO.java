@@ -53,12 +53,7 @@ public interface GameplayStateIO {
         public boolean autoTransitionEnabled         = true;
 
         /**
-         * True when auto-transition to CLIMB_READY at endgame is enabled.
-         */
-        public boolean endgameAutoTransitionEnabled  = false;
-
-        /**
-         * True when the endgame threshold has been reached but auto-transition is disabled.
+         * True when the endgame threshold has been reached.
          */
         public boolean endgameSuggested              = false;
 

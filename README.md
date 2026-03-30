@@ -127,9 +127,8 @@ node scripts/persist-tuned-values.mjs --team 7160 --subsystem turretSubsystem
 Use the top-level keys from `subsystems.json`:
 
 `driveBaseSubsystem`, `turretSubsystem`, `shooterSubsystem`, `indexerSubsystem`,
-`robotPoseSubsystem`, `aprilTagVisionSubsystem`, `driverCameraSubsystem`,
-`climberSubsystem`, `feederSubsystem`, `intakeSubsystem`, `harvesterSubsystem`,
-`triggerBindings`
+`robotPoseSubsystem`, `aprilTagVisionSubsystem`, `feederSubsystem`,
+`intakeSubsystem`, `harvesterSubsystem`, `triggerBindings`
 
 ### How it works
 

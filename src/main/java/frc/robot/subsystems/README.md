@@ -97,20 +97,18 @@ base class provides.
 Each mechanism has its own README with an overview, how-it-works guide,
 configuration reference, and code-structure table. Click through for details.
 
-| Mechanism                                            | Description                                                  | Status      |
-| ---------------------------------------------------- | ------------------------------------------------------------ | ----------- |
-| [AprilTag Vision](apriltagvision/README.md)          | Estimates robot pose from AprilTag camera data               | Implemented |
-| [Climber](climber/README.md)                         | Raises the robot onto tower rungs for endgame points         | Planned     |
-| [Drivebase](drivebase/README.md)                     | Swerve drivetrain for field movement and autonomous paths    | Implemented |
-| [Driver Camera Vision](drivercameravision/README.md) | Provides a driver-facing camera feed for operator visibility | Implemented |
-| [Feeder](feeder/README.md)                           | Transports FUEL from the intake into the indexer lane        | Planned     |
-| [Gameplay State](gameplaystate/README.md)            | Tracks the current game phase and scoring mode               | Implemented |
-| [Harvester](harvester/README.md)                     | Collects game pieces from the field using rollers            | Planned     |
-| [Indexer](indexer/README.md)                         | Gates FUEL release into the shooter for timed shots          | Planned     |
-| [Intake](intake/README.md)                           | Collects FUEL from the field and passes it to the feeder     | Planned     |
-| [Robot Pose](robotpose/README.md)                    | Single authoritative source of robot pose on the field       | Implemented |
-| [Shooter](shooter/README.md)                         | Spins flywheels to launch FUEL at scoring targets            | Planned     |
-| [Turret](turret/README.md)                           | Single-axis rotating mount for aiming the shooter            | Implemented |
+| Mechanism                                   | Description                                               | Status      |
+| ------------------------------------------- | --------------------------------------------------------- | ----------- |
+| [AprilTag Vision](apriltagvision/README.md) | Estimates robot pose from AprilTag camera data            | Implemented |
+| [Drivebase](drivebase/README.md)            | Swerve drivetrain for field movement and autonomous paths | Implemented |
+| [Feeder](feeder/README.md)                  | Transports FUEL from the intake into the indexer lane     | Planned     |
+| [Gameplay State](gameplaystate/README.md)   | Tracks the current game phase and scoring mode            | Implemented |
+| [Harvester](harvester/README.md)            | Collects game pieces from the field using rollers         | Planned     |
+| [Indexer](indexer/README.md)                | Gates FUEL release into the shooter for timed shots       | Planned     |
+| [Intake](intake/README.md)                  | Collects FUEL from the field and passes it to the feeder  | Planned     |
+| [Robot Pose](robotpose/README.md)           | Single authoritative source of robot pose on the field    | Implemented |
+| [Shooter](shooter/README.md)                | Spins flywheels to launch FUEL at scoring targets         | Planned     |
+| [Turret](turret/README.md)                  | Single-axis rotating mount for aiming the shooter         | Implemented |
 
 ## Adding a new subsystem
 

@@ -35,6 +35,8 @@ public class AbstractVelocityCommand<TSubsystem extends AbstractVelocitySubsyste
 
     @Override
     public void end(boolean interrupted) {
+        subsystem.stop();
+
         if (interrupted) {
             log.warning("Ending " + getName() + " due to interruption");
         } else {

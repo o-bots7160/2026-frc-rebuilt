@@ -57,55 +57,11 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
     }
 
     /**
-     * Builds a command that spins the belt forward at the configured transport velocity and holds that speed indefinitely.
-     * <p>
-     * Use this with {@code whileTrue} so the belt transports Fuel while a button is held and returns to idle when released.
-     * </p>
-     *
-     * @return command that transports Fuel forward and holds velocity until interrupted
-     */
-    public Command createForwardAndHoldCommand() {
-        return Commands.runOnce(subsystem::setForwardVelocity, subsystem)
-                .andThen(Commands.run(subsystem::seekVelocity, subsystem));
-    }
-
-    /**
-     * Builds a command that briefly reverses the belt to unstick Fuel, then switches to forward transport and holds.
-     * <p>
-     * A short reverse pulse at the configured clearing RPM dislodges Fuel that may be jammed in the feeder. After the pulse duration elapses, the
-     * belt switches to the configured forward velocity and holds indefinitely. The pulse duration is tunable via
-     * {@link frc.robot.subsystems.feeder.config.FeederSubsystemConfig#getReversePulseDurationSeconds()}.
-     * </p>
-     *
-     * @return command that pulses reverse, then transports Fuel forward until interrupted
-     */
-    public Command createReversePulseThenForwardCommand() {
-        return Commands.runOnce(subsystem::setReverseVelocity, subsystem)
-                .andThen(Commands.run(subsystem::seekVelocity, subsystem)
-                        .withTimeout(subsystem.getConfig().getReversePulseDurationSeconds()))
-                .andThen(createForwardAndHoldCommand())
-                .withName("FeederReversePulseThenForward");
-    }
-
-    /**
-     * Builds a command that spins the belt in reverse at the configured clearing velocity and holds that speed indefinitely.
-     * <p>
-     * Use this with {@code whileTrue} so the belt clears Fuel while a button is held and returns to idle when released.
-     * </p>
-     *
-     * @return command that clears Fuel backward and holds velocity until interrupted
-     */
-    public Command createReverseAndHoldCommand() {
-        return Commands.runOnce(subsystem::setReverseVelocity, subsystem)
-                .andThen(Commands.run(subsystem::seekVelocity, subsystem));
-    }
-
-    /**
      * Builds a composite command that waits until the shooter and turret are both ready, then runs the reverse-pulse-then-forward sequence.
      * <p>
-     * The command blocks while either readiness supplier returns false. Once both report true, it executes
-     * {@link #createReversePulseThenForwardCommand()} to briefly reverse the belt (dislodging jammed Fuel) and then transport forward. This keeps the
-     * feeder decoupled from the shooter and turret subsystems — readiness is checked through suppliers wired in {@code RobotContainer}.
+     * The command blocks while either readiness supplier returns false. Once both report true, it runs a short reverse pulse (dislodging jammed Fuel)
+     * and then transports forward. This keeps the feeder decoupled from the shooter and turret subsystems — readiness is checked through suppliers
+     * wired in {@code RobotContainer}.
      * </p>
      *
      * @param shooterReadySupplier   supplier that returns true when the shooter flywheel is at the target RPM
@@ -127,6 +83,16 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
     }
 
     /**
+     * Builds a command that spins the belt forward at the configured transport velocity and holds that speed indefinitely.
+     *
+     * @return command that transports Fuel forward and holds velocity until interrupted
+     */
+    private Command createForwardAndHoldCommand() {
+        return Commands.runOnce(subsystem::setForwardVelocity, subsystem)
+                .andThen(Commands.run(subsystem::seekVelocity, subsystem));
+    }
+
+    /**
      * Builds a short reverse pulse command that sets the belt to reverse velocity and seeks for the configured pulse duration.
      * <p>
      * The pulse always runs to completion and is not gated by readiness suppliers. This prevents the belt from getting stuck in reverse when
@@ -135,24 +101,10 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
      *
      * @return command that reverses the belt for the configured pulse duration
      */
-    public Command createReversePulseCommand() {
+    private Command createReversePulseCommand() {
         return Commands.runOnce(subsystem::setReverseVelocity, subsystem)
                 .andThen(Commands.run(subsystem::seekVelocity, subsystem)
                         .withTimeout(subsystem.getConfig().getReversePulseDurationSeconds()))
                 .withName("FeederReversePulse");
-    }
-
-    /**
-     * Builds a command that continuously reads a target RPM from a supplier and seeks that velocity every cycle.
-     * <p>
-     * Unlike fixed-target commands which lock the target at command start, this command re-evaluates the supplier each cycle. Use this when the
-     * target is backed by a tunable value that operators may adjust while the command is running.
-     * </p>
-     *
-     * @param targetRpmSupplier provider for the target belt RPM; evaluated every execute cycle
-     * @return command that continuously tracks the supplied RPM until interrupted
-     */
-    public Command createContinuousTransportCommand(Supplier<Double> targetRpmSupplier) {
-        return createContinuousVelocityCommand(targetRpmSupplier);
     }
 }

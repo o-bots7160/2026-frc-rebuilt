@@ -37,11 +37,6 @@ public enum GameplayState {
     AUTO_CYCLE("Auto Cycle"),
 
     /**
-     * End-game climbing configuration. Climber extends, non-climb mechanisms stow or stop to reduce power draw and avoid interference.
-     */
-    CLIMB_READY("Climb Ready"),
-
-    /**
      * Reverses the ball path to clear a jam. Intake, feeder, and indexer run in reverse. Shooter stops. Harvester stays in its current position.
      */
     EJECT("Eject"),

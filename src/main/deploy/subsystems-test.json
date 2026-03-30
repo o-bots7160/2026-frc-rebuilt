@@ -398,63 +398,15 @@
       }
     }
   },
-  "driverCameraSubsystem": {
-    "enabled": false,
-    "verbose": false,
-    "cameraName": "limelight",
-    "pipelineIndex": 0,
-    "defaultStream": 2
-  },
   "robotPoseSubsystem": {
     "enabled": false,
     "verbose": false,
     "enableVisionFusion": true
   },
-  "climberSubsystem": {
-    "enabled": false,
-    "verbose": true,
-    "climberMotorConfig": {
-      "useSetpointLimits": true,
-      "motorCanId": 62,
-      "motorInverted": false,
-      "smartCurrentLimitAmps": 40,
-      "motorRotationsPerMechanismRotation": 1.0,
-      "reverseSoftLimitDegrees": 0.0,
-      "forwardSoftLimitDegrees": 360.0
-    },
-    "climberSensorConfig": {
-      "leftSensorCanId": 60,
-      "rightSensorCanId": 61,
-      "alignmentToleranceMillimeters": 25.0,
-      "maximumDetectionDistanceMillimeters": 300.0,
-      "sampleTimeMilliseconds": 24.0
-    },
-    "pid": {
-      "kP": 0.0,
-      "kI": 0.0,
-      "kD": 0.0
-    },
-    "feedforward": {
-      "kS": 0.0,
-      "kV": 0.0,
-      "kA": 0.0
-    },
-    "motionProfile": {
-      "maximumVelocityDegreesPerSecond": 0.0,
-      "maximumAccelerationDegreesPerSecondSquared": 0.0,
-      "positionToleranceDegrees": 5.0,
-      "velocityToleranceDegreesPerSecond": 10.0,
-      "initialPositionDegrees": 0.0,
-      "initialVelocityDegreesPerSecond": 0.0
-    },
-    "minimumSetpointDegrees": 0.0,
-    "maximumSetpointDegrees": 360.0
-  },
   "gameplayStateSubsystem": {
     "enabled": true,
     "verbose": false,
     "endgameThresholdSeconds": 30.0,
-    "autoTransitionEnabled": false,
-    "endgameAutoTransitionEnabled": false
+    "autoTransitionEnabled": false
   }
 }

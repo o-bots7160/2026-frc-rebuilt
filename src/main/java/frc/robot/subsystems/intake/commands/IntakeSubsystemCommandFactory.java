@@ -68,31 +68,4 @@ public class IntakeSubsystemCommandFactory extends AbstractVelocityCommandFactor
         return Commands.runOnce(subsystem::setForwardVelocity, subsystem)
                 .andThen(Commands.run(subsystem::seekVelocity, subsystem));
     }
-
-    /**
-     * Builds a command that spins the rollers in reverse at the configured eject velocity and holds that speed indefinitely.
-     * <p>
-     * Use this with {@code whileTrue} so the rollers eject Fuel while a button is held and return to idle when released.
-     * </p>
-     *
-     * @return command that ejects Fuel backward and holds velocity until interrupted
-     */
-    public Command createEjectAndHoldCommand() {
-        return Commands.runOnce(subsystem::setReverseVelocity, subsystem)
-                .andThen(Commands.run(subsystem::seekVelocity, subsystem));
-    }
-
-    /**
-     * Builds a command that continuously reads a target RPM from a supplier and seeks that velocity every cycle.
-     * <p>
-     * Unlike fixed-target commands which lock the target at command start, this command re-evaluates the supplier each cycle. Use this when the
-     * target is backed by a tunable value that operators may adjust while the command is running.
-     * </p>
-     *
-     * @param targetRpmSupplier provider for the target roller RPM; evaluated every execute cycle
-     * @return command that continuously tracks the supplied RPM until interrupted
-     */
-    public Command createContinuousIntakeCommand(Supplier<Double> targetRpmSupplier) {
-        return createContinuousVelocityCommand(targetRpmSupplier);
-    }
 }

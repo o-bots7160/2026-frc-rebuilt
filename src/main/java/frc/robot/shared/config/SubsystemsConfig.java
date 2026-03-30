@@ -2,9 +2,7 @@ package frc.robot.shared.config;
 
 import frc.robot.shared.bindings.TriggerBindingsConfig;
 import frc.robot.subsystems.apriltagvision.config.AprilTagVisionSubsystemConfig;
-import frc.robot.subsystems.climber.config.ClimberSubsystemConfig;
 import frc.robot.subsystems.drivebase.config.DriveBaseSubsystemConfig;
-import frc.robot.subsystems.drivercameravision.config.DriverCameraSubsystemConfig;
 import frc.robot.subsystems.feeder.config.FeederSubsystemConfig;
 import frc.robot.subsystems.gameplaystate.config.GameplayStateSubsystemConfig;
 import frc.robot.subsystems.harvester.config.HarvesterSubsystemConfig;
@@ -66,19 +64,9 @@ public class SubsystemsConfig {
     public AprilTagVisionSubsystemConfig aprilTagVisionSubsystem  = new AprilTagVisionSubsystemConfig();
 
     /**
-     * Driver camera configuration bundle.
-     */
-    public DriverCameraSubsystemConfig   driverCameraSubsystem    = new DriverCameraSubsystemConfig();
-
-    /**
      * Robot pose configuration bundle.
      */
     public RobotPoseSubsystemConfig      robotPoseSubsystem       = new RobotPoseSubsystemConfig();
-
-    /**
-     * Climber configuration bundle.
-     */
-    public ClimberSubsystemConfig        climberSubsystem         = new ClimberSubsystemConfig();
 
     /**
      * Gameplay state configuration bundle for state management and auto-transitions.
