@@ -142,7 +142,7 @@ checks catch the most common violations.
           config,
           fieldLayout,
           robotStateSubsystem::addVisionMeasurement,
-          driveBaseSubsystem::getOdometryPose);
+          driveBaseSubsystem::getFusedPose);
   ```
 - Bad (tightly coupled):
   ```java

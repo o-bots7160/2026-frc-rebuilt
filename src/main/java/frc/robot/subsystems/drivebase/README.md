@@ -53,9 +53,11 @@ which follows the [AdvantageKit IO](../../GLOSSARY.md#io-inputoutput) pattern.
 [Kalman filter](../../GLOSSARY.md#kalman-filter) that fuses odometry with vision
 corrections forwarded by the [robot state subsystem](../robotstate/README.md).
 
-The drivebase exposes `getOdometryPose()` for consumers that need the raw
-odometry estimate and `addVisionMeasurement()` so the robot state subsystem can
-inject camera-based corrections.
+The drivebase exposes `getFusedPose()` for drivebase-internal use (commands,
+AutoBuilder, heading PID). External subsystems should use
+`RobotPoseSubsystem.getEstimatedPose()` for consistency.
+`addVisionMeasurement()` lets the robot pose subsystem inject camera-based
+corrections into YAGSL's pose estimator.
 
 ### Autonomous path following
 

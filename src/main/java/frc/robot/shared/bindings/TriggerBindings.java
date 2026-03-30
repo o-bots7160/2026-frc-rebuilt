@@ -1,17 +1,9 @@
 package frc.robot.shared.bindings;
 
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.util.FlippingUtil;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -124,11 +116,6 @@ public class TriggerBindings {
     private final GameplayStateCommandFactory      gameplayStateCommandFactory;
 
     /**
-     * Supplies the vision-fused robot pose for field-relative calculations such as trench zone detection.
-     */
-    private final Supplier<Pose2d>                 robotPoseSupplier;
-
-    /**
      * Dashboard chooser that selects which subsystem the A/B/X test buttons control. Only initialized when tuning mode is enabled.
      */
     private LoggedDashboardChooser<String>         testSubsystemChooser;
@@ -177,7 +164,6 @@ public class TriggerBindings {
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
-     * @param robotPoseSupplier           supplies the vision-fused robot pose for field-relative calculations
      */
     public TriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
@@ -188,8 +174,7 @@ public class TriggerBindings {
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            GameplayStateCommandFactory gameplayStateCommandFactory,
-            Supplier<Pose2d> robotPoseSupplier) {
+            GameplayStateCommandFactory gameplayStateCommandFactory) {
         this(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
@@ -200,7 +185,6 @@ public class TriggerBindings {
                 intakeCommandFactory,
                 harvesterCommandFactory,
                 gameplayStateCommandFactory,
-                robotPoseSupplier,
                 DEFAULT_DRIVE_CONTROLLER_PORT,
                 DEFAULT_OPERATOR_CONTROLLER_PORT);
     }
@@ -217,7 +201,6 @@ public class TriggerBindings {
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
-     * @param robotPoseSupplier           supplies the vision-fused robot pose for field-relative calculations
      * @param driverControllerPort        USB port for the driver controller
      * @param operatorControllerPort      USB port for the operator controller
      */
@@ -231,7 +214,6 @@ public class TriggerBindings {
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
             GameplayStateCommandFactory gameplayStateCommandFactory,
-            Supplier<Pose2d> robotPoseSupplier,
             int driverControllerPort,
             int operatorControllerPort) {
         this.driveBaseCommandFactory     = driveBaseCommandFactory;
@@ -242,7 +224,6 @@ public class TriggerBindings {
         // TODO: Re-enable climber for post-first-competition
         // this.climberCommandFactory = climberCommandFactory;
         this.feederCommandFactory        = feederCommandFactory;
-        this.robotPoseSupplier           = robotPoseSupplier;
         this.intakeCommandFactory        = intakeCommandFactory;
         this.harvesterCommandFactory     = harvesterCommandFactory;
         this.gameplayStateCommandFactory = gameplayStateCommandFactory;
@@ -651,9 +632,8 @@ public class TriggerBindings {
     /**
      * Wires driver controller d-pad buttons to PathPlanner pathfinding commands.
      * <p>
-     * Each d-pad direction pathfinds to a configurable field pose when held. Targets are stored in blue-alliance coordinates and flipped at runtime
-     * for red alliance. Only directions with {@code enabled = true} in the config are bound. The target pose and constraints are resolved at
-     * button-press time using deferred proxy so tunable values and alliance selection are always current.
+     * Each d-pad direction pathfinds to a configurable field pose when held. Only directions with {@code enabled = true} in the config are bound.
+     * Alliance flipping, trench zone detection, and constraint resolution are handled by the drive base command factory.
      * </p>
      */
     private void configureDpadPathfindingBindings() {
@@ -667,11 +647,6 @@ public class TriggerBindings {
 
     /**
      * Binds a single d-pad direction trigger to a pathfinding command if the target is enabled.
-     * <p>
-     * When the straight-line path from the robot's current position to the target crosses a configured trench zone, intermediate waypoints are
-     * inserted at the zone entry and exit. The robot pathfinds to the entry waypoint (arriving at the required heading), then through the trench to
-     * the exit waypoint, then onward to the final target. When no trench zone is crossed, a single pathfind command drives directly to the target.
-     * </p>
      *
      * @param trigger      the d-pad direction trigger from the driver controller
      * @param targetConfig config holding the target pose for this direction
@@ -685,40 +660,8 @@ public class TriggerBindings {
             return;
         }
 
-        trigger.whileTrue(Commands.deferredProxy(() -> {
-            Pose2d           bluePose    = targetConfig.toPose2d();
-
-            // Flip the target for the red alliance.
-            Alliance         alliance    = RobotEnvironment.getAlliance().orElse(Alliance.Blue);
-            Pose2d           targetPose  = alliance == Alliance.Red ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
-
-            PathConstraints  constraints = new PathConstraints(
-                    driverConfig.getDpadMaxVelocityMetersPerSecond(),
-                    driverConfig.getDpadMaxAccelerationMetersPerSecondSquared(),
-                    Units.degreesToRadians(driverConfig.getDpadMaxAngularVelocityDegreesPerSecond()),
-                    Units.degreesToRadians(driverConfig.getDpadMaxAngularAccelerationDegreesPerSecondSquared()));
-
-            // Check if the path crosses a trench zone. Both poses are in field coordinates.
-            Pose2d           currentPose = robotPoseSupplier.get();
-            TrenchZoneConfig trenchZone  = driverConfig.findIntersectingTrenchZone(currentPose, targetPose);
-
-            if (trenchZone != null) {
-                Pose2d entryPose     = trenchZone.computeEntryWaypoint(currentPose, targetPose);
-                Pose2d exitPose      = trenchZone.computeExitWaypoint(currentPose, targetPose);
-                double trenchHeading = entryPose.getRotation().getRadians();
-
-                return Commands.sequence(
-                        Commands.parallel(
-                                // gameplayStateCommandFactory.createTrenchTravelCommand(),
-                                driveBaseCommandFactory.createRotateToHeadingCommand(trenchHeading)),
-                        driveBaseCommandFactory.createPathfindToPoseCommand(entryPose, constraints),
-                        driveBaseCommandFactory.createDriveStraightWithHeadingCommand(
-                                exitPose, driverConfig.getDpadMaxVelocityMetersPerSecond()),
-                        driveBaseCommandFactory.createPathfindToPoseCommand(targetPose, constraints));
-            }
-
-            return driveBaseCommandFactory.createPathfindToPoseCommand(targetPose, constraints);
-        }));
+        trigger.whileTrue(driveBaseCommandFactory.createDpadPathfindCommand(
+                targetConfig, driverConfig));
     }
 
     /**

@@ -149,7 +149,7 @@ public class RobotContainer {
                     this::isShootingActive);
             robotPoseSubsystem          = new RobotPoseSubsystem(
                     subsystemsConfig.robotPoseSubsystem,
-                    driveBaseSubsystem::getOdometryPose,
+                    driveBaseSubsystem::getFusedPose,
                     driveBaseSubsystem::getOdometryOnlyPose,
                     driveBaseSubsystem::addVisionMeasurement,
                     driveBaseSubsystem::resetPose);
@@ -161,7 +161,7 @@ public class RobotContainer {
                     robotPoseSubsystem::addVisionMeasurement,
                     robotPoseSubsystem::resetPose,
                     // Pose supplier is used for simulation cameras only; use raw odometry to avoid feedback loops.
-                    driveBaseSubsystem::getOdometryPose);
+                    driveBaseSubsystem::getFusedPose);
             // TODO: Re-enable driver camera for post-first-competition
             // driverCameraSubsystem = new DriverCameraSubsystem(subsystemsConfig.driverCameraSubsystem);
             // TODO: Re-enable climber for post-first-competition
@@ -256,8 +256,7 @@ public class RobotContainer {
                     feederCommandFactory,
                     intakeCommandFactory,
                     harvesterCommandFactory,
-                    gameplayStateCommandFactory,
-                    robotPoseSubsystem::getEstimatedPose);
+                    gameplayStateCommandFactory);
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
             RobotEnvironment.reportError(message, e.getStackTrace());
@@ -350,8 +349,8 @@ public class RobotContainer {
     }
 
     /**
-     * Returns whether the robot is actively shooting (FIRE_READY or AUTO_CYCLE). Used as a supplier for drive base power management so the
-     * drivetrain reduces speed while the shooter, indexer, and feeder need full battery current.
+     * Returns whether the robot is actively shooting (FIRE_READY or AUTO_CYCLE). Used as a supplier for drive base power management so the drivetrain
+     * reduces speed while the shooter, indexer, and feeder need full battery current.
      *
      * @return true when the gameplay state is FIRE_READY or AUTO_CYCLE
      */

@@ -122,7 +122,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         // Configure AutoBuilder last.
         AutoBuilder.configure(
                 // Robot pose supplier.
-                this::getOdometryPose,
+                this::getFusedPose,
                 // Method to reset odometry (will be called if your auto has a starting pose).
                 this::resetPose,
                 // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE.
@@ -182,7 +182,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         log.recordVerboseOutput("SwerveStates/Target", lastRequestedStates);
         log.recordOutput("SwerveChassisSpeeds/Measured", inputs.chassisSpeeds);
         log.recordVerboseOutput("SwerveChassisSpeeds/Desired", lastRequestedSpeeds);
-        log.recordVerboseOutput("Swerve/RobotRotation", getOdometryPose().getRotation());
+        log.recordVerboseOutput("Swerve/RobotRotation", getFusedPose().getRotation());
 
         // Power management telemetry so operators can see when speed is being limited.
         boolean isShooting = isShootingSupplier.get();
@@ -192,14 +192,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     }
 
     /**
-     * Returns the current odometry pose of the robot.
+     * Returns the vision-fused pose from YAGSL's internal pose estimator (odometry + vision corrections).
      * <p>
-     * Use {@link frc.robot.subsystems.robotpose.RobotPoseSubsystem} for the fused field pose.
+     * This method is intended for drivebase-internal use: commands in this subsystem's factory, PathPlanner's AutoBuilder, and the heading PID
+     * controller. External subsystems and commands should use {@link frc.robot.subsystems.robotpose.RobotPoseSubsystem#getEstimatedPose()} for
+     * consistency, since RobotPoseSubsystem is the single source-of-truth pose supplier for cross-subsystem logic.
      * </p>
      *
-     * @return current odometry pose in meters and radians
+     * @return current vision-fused pose in meters and radians
      */
-    public Pose2d getOdometryPose() {
+    public Pose2d getFusedPose() {
         if (swerveDrive == null) {
             // Return a safe default when the swerve drive has not been initialized.
             return new Pose2d();
@@ -301,9 +303,9 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Drives the robot field-relative with PID-controlled heading instead of manual omega.
      * <p>
-     * Translation axes come from the driver stick. YAGSL's {@code headingCalculate} computes the angular velocity needed to reach the target
-     * heading by running the heading PID and scaling the output by the configured maximum angular velocity. This is the core API used by
-     * snap-to-heading commands and trench traversal.
+     * Translation axes come from the driver stick. YAGSL's {@code headingCalculate} computes the angular velocity needed to reach the target heading
+     * by running the heading PID and scaling the output by the configured maximum angular velocity. This is the core API used by snap-to-heading
+     * commands and trench traversal.
      * </p>
      *
      * @param vxMetersPerSecond    field-forward velocity in meters per second
@@ -322,7 +324,7 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
         }
 
         // Use YAGSL's headingCalculate which scales PID output by max angular velocity.
-        double currentHeadingRadians = getOdometryPose().getRotation().getRadians();
+        double currentHeadingRadians = getFusedPose().getRotation().getRadians();
         double omegaRadiansPerSecond = swerveController.headingCalculate(
                 currentHeadingRadians, targetHeadingRadians);
 
@@ -667,8 +669,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      */
     private double computePowerScaleFactor() {
         // State-based scaling: reduce drive speed while the shooter is running.
-        double stateFactor = 1.0;
-        boolean isShooting = isShootingSupplier.get();
+        double  stateFactor = 1.0;
+        boolean isShooting  = isShootingSupplier.get();
         if (isShooting) {
             // During autonomous, only apply state-based scaling if the config allows it.
             boolean isAuto = DriverStation.isAutonomous();
@@ -716,8 +718,8 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
     /**
      * Limits rotation commands to the maximum angular speed, scaled by the current power management factor.
      * <p>
-     * Use this to prevent the robot from spinning faster than the configured cap. The cap is further reduced when shooting or when battery voltage
-     * is low.
+     * Use this to prevent the robot from spinning faster than the configured cap. The cap is further reduced when shooting or when battery voltage is
+     * low.
      * </p>
      *
      * @param omegaRadiansPerSecond desired rotation rate in radians per second
