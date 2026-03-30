@@ -115,10 +115,31 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
     public Command createFireWhenReadyCommand(Supplier<Boolean> shooterReadySupplier, Supplier<Boolean> turretOnTargetSupplier) {
         Supplier<Boolean> readySupplier = () -> shooterReadySupplier.get() && turretOnTargetSupplier.get();
         return Commands.waitUntil(readySupplier::get)
-                .andThen(createReversePulseThenForwardCommand()
-                        .onlyWhile(readySupplier::get))
+                .andThen(
+                        // Run the reverse pulse to completion so the belt always transitions
+                        // to a forward target before readiness can interrupt the sequence.
+                        createReversePulseCommand(),
+                        createForwardAndHoldCommand()
+                                .onlyWhile(readySupplier::get))
                 .repeatedly()
+                .finallyDo(() -> subsystem.stop())
                 .withName("FeederFireWhenReady");
+    }
+
+    /**
+     * Builds a short reverse pulse command that sets the belt to reverse velocity and seeks for the configured pulse duration.
+     * <p>
+     * The pulse always runs to completion and is not gated by readiness suppliers. This prevents the belt from getting stuck in reverse when
+     * readiness flickers during the pulse window.
+     * </p>
+     *
+     * @return command that reverses the belt for the configured pulse duration
+     */
+    public Command createReversePulseCommand() {
+        return Commands.runOnce(subsystem::setReverseVelocity, subsystem)
+                .andThen(Commands.run(subsystem::seekVelocity, subsystem)
+                        .withTimeout(subsystem.getConfig().getReversePulseDurationSeconds()))
+                .withName("FeederReversePulse");
     }
 
     /**

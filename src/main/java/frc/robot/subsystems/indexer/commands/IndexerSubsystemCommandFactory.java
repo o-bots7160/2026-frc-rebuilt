@@ -148,6 +148,7 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
                 .andThen(createFeedAndHoldCommand()
                         .onlyWhile(readySupplier::get))
                 .repeatedly()
+                .finallyDo(() -> subsystem.stop())
                 .withName("FireWhenReady");
     }
 }

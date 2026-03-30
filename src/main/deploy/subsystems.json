@@ -341,9 +341,9 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.004,
+      "kP": 0.006,
       "kI": 0.0,
-      "kD": 0.0
+      "kD": 0.0003
     },
     "feedforward": {
       "kS": 0.16876,
@@ -359,7 +359,7 @@
     },
     "motionProfile": {
       "maximumVelocityRpm": 4000.0,
-      "maximumAccelerationRpmPerSecond": 8000.0,
+      "maximumAccelerationRpmPerSecond": 6000.0,
       "velocityToleranceRpm": 100.0,
       "settleTimeSeconds": 0.25,
       "idleVelocityRpm": 1000.0
