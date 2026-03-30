@@ -53,4 +53,17 @@ public class IndexerSubsystem extends AbstractVelocitySubsystem<IndexerSubsystem
         setTargetVelocityRpm(config.getFeedVelocityRpm());
     }
 
+    /**
+     * Returns true when the indexer is being commanded to feed forward toward the shooter.
+     * <p>
+     * This checks whether the current velocity setpoint is positive (forward direction), indicating the system intends to push a ball into the
+     * shooter. Used by the ball flight simulator to detect when a ball enters the shooter.
+     * </p>
+     *
+     * @return true when the indexer's setpoint velocity is positive (feeding forward)
+     */
+    public boolean isFeeding() {
+        return getMeasuredVelocityRpm() > 0.0;
+    }
+
 }

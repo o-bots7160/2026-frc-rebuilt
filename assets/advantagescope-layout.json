@@ -190,6 +190,13 @@
                       "model": "2026 CA26",
                       "color": "#0000ff"
                     }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/BallFlightSimulator/balls",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
                   }
                 ],
                 "game": "FRC:2026 Field"

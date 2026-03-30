@@ -16,6 +16,7 @@ import frc.robot.shared.config.ConfigurationLoader;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.SubsystemsConfig;
 import frc.robot.shared.field.FieldTargetSelector;
+import frc.robot.shared.targeting.BallFlightSimulator;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionSubsystem;
 import frc.robot.subsystems.drivebase.DriveBaseSubsystem;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
@@ -109,6 +110,9 @@ public class RobotContainer {
 
     /** Binds controller buttons and triggers to commands for both driver and operator. */
     private final TriggerBindings                  triggerBindings;
+
+    /** Sim-only ball flight visualizer; null on a real robot. */
+    private final BallFlightSimulator              ballFlightSimulator;
 
     /**
      * Builds the robot container and wires subsystems, command factories, and bindings.
@@ -213,6 +217,28 @@ public class RobotContainer {
                     harvesterCommandFactory.createResetEncoderCommand())
                     .withName("Reset All Encoders"));
 
+            // Sim-only ball flight visualization
+            if (RobotEnvironment.isSimulation()) {
+                // Use lenient readiness checks for sim since sim motors may not reach full
+                // target velocity. Check measured RPM > idle instead of isAtShootingVelocity().
+                double idleRpm = subsystemsConfig.shooterSubsystem.motionProfile.idleVelocityRpm;
+                ballFlightSimulator = new BallFlightSimulator(
+                        robotPoseSubsystem::getEstimatedPose,
+                        turretSubsystem::getMeasuredPositionDegrees,
+                        shooterSubsystem::getMeasuredVelocityRpm,
+                        () -> shooterSubsystem.getMeasuredVelocityRpm() > idleRpm,
+                        indexerSubsystem::isFeeding,
+                        driveBaseSubsystem::getFieldRelativeVelocity,
+                        subsystemsConfig.turretSubsystem.getTurretZeroOffsetDegrees(),
+                        subsystemsConfig.turretSubsystem.componentPoseConfig.componentPivotX,
+                        subsystemsConfig.turretSubsystem.componentPoseConfig.componentPivotY,
+                        subsystemsConfig.turretSubsystem.componentPoseConfig.componentPivotZ,
+                        subsystemsConfig.turretSubsystem.sotmDragCoefficient,
+                        subsystemsConfig.shooterSubsystem.distanceRpmPoints);
+            } else {
+                ballFlightSimulator = null;
+            }
+
             // Input bindings
             triggerBindings = new TriggerBindings(
                     driveBaseCommandFactory,
@@ -282,6 +308,10 @@ public class RobotContainer {
      */
     public void periodic() {
         triggerBindings.checkControllerHealth();
+
+        if (ballFlightSimulator != null) {
+            ballFlightSimulator.periodic();
+        }
     }
 
     /**
