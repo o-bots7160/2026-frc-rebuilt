@@ -78,30 +78,12 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
     }
 
     /**
-     * Returns the reverse soft limit in degrees.
-     *
-     * @return reverse soft limit in degrees
-     */
-    public double getReverseSoftLimitDegrees() {
-        return reverseSoftLimitDegrees;
-    }
-
-    /**
      * Returns the reverse soft limit in radians.
      *
      * @return reverse soft limit in radians
      */
     public double getReverseSoftLimitRadians() {
         return Units.degreesToRadians(reverseSoftLimitDegrees);
-    }
-
-    /**
-     * Returns the forward soft limit in degrees.
-     *
-     * @return forward soft limit in degrees
-     */
-    public double getForwardSoftLimitDegrees() {
-        return forwardSoftLimitDegrees;
     }
 
     /**

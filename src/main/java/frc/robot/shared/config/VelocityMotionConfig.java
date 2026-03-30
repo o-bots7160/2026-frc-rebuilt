@@ -89,15 +89,6 @@ public class VelocityMotionConfig extends AbstractConfig {
     }
 
     /**
-     * Returns the acceptable velocity error for the at-target check.
-     *
-     * @return velocity tolerance in RPM
-     */
-    public double getVelocityToleranceRpm() {
-        return readTunableNumber("velocityToleranceRpm", velocityToleranceRpm);
-    }
-
-    /**
      * Returns the acceptable velocity error in radians per second.
      *
      * @return velocity tolerance in radians per second
@@ -131,5 +122,14 @@ public class VelocityMotionConfig extends AbstractConfig {
      */
     public double getIdleVelocityRadiansPerSecond() {
         return rpmToRadiansPerSecond(getIdleVelocityRpm());
+    }
+
+    /**
+     * Returns the acceptable velocity error for the at-target check.
+     *
+     * @return velocity tolerance in RPM
+     */
+    private double getVelocityToleranceRpm() {
+        return readTunableNumber("velocityToleranceRpm", velocityToleranceRpm);
     }
 }

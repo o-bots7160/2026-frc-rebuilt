@@ -68,30 +68,12 @@ public class SetAndSeekMotionConfig extends AbstractConfig {
     }
 
     /**
-     * Returns the allowed position error used to decide when the mechanism is at its goal.
-     *
-     * @return position tolerance in degrees
-     */
-    public double getPositionToleranceDegrees() {
-        return readTunableDegrees("positionToleranceDegrees", positionToleranceDegrees);
-    }
-
-    /**
      * Returns the allowed position error in radians.
      *
      * @return position tolerance in radians
      */
     public double getPositionToleranceRadians() {
         return readTunableDegreesAsRadians("positionToleranceDegrees", positionToleranceDegrees);
-    }
-
-    /**
-     * Returns the allowed velocity error used to decide when the mechanism is at its goal.
-     *
-     * @return velocity tolerance in degrees per second
-     */
-    public double getVelocityToleranceDegreesPerSecond() {
-        return readTunableDegrees("velocityToleranceDegreesPerSecond", velocityToleranceDegreesPerSecond);
     }
 
     /**
@@ -104,30 +86,12 @@ public class SetAndSeekMotionConfig extends AbstractConfig {
     }
 
     /**
-     * Returns the initial position that seeds the profile state on startup.
-     *
-     * @return starting position in degrees
-     */
-    public double getInitialPositionDegrees() {
-        return readTunableDegrees("initialPositionDegrees", initialPositionDegrees);
-    }
-
-    /**
      * Returns the initial position in radians.
      *
      * @return starting position in radians
      */
     public double getInitialPositionRadians() {
         return readTunableDegreesAsRadians("initialPositionDegrees", initialPositionDegrees);
-    }
-
-    /**
-     * Returns the initial velocity that seeds the profile state on startup.
-     *
-     * @return starting velocity in degrees per second
-     */
-    public double getInitialVelocityDegreesPerSecond() {
-        return readTunableDegrees("initialVelocityDegreesPerSecond", initialVelocityDegreesPerSecond);
     }
 
     /**

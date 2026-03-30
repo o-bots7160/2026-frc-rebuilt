@@ -1641,7 +1641,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/readyToFire",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ShooterSubsystem/isReady",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {

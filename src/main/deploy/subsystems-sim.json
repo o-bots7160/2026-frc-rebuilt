@@ -245,9 +245,7 @@
       "idleVelocityRpm": 100.0
     },
     "feedVelocityRpm": 500.0,
-    "reverseVelocityRpm": 200.0,
-    "unjamForwardDurationSeconds": 0.3,
-    "unjamReverseDurationSeconds": 0.3
+    "reverseVelocityRpm": 200.0
   },
   "turretSubsystem": {
     "enabled": true,

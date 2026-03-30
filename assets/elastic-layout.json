@@ -2108,32 +2108,6 @@
               "data_type": "double",
               "show_submit_button": true
             }
-          },
-          {
-            "title": "Unjam Fwd (s)",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/unjamForwardDurationSeconds",
-              "period": 0.06,
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Unjam Rev (s)",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/IndexerSubsystem/unjamReverseDurationSeconds",
-              "period": 0.06,
-              "show_submit_button": true
-            }
           }
         ]
       }
@@ -2393,39 +2367,6 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": true
-            }
-          },
-          {
-            "title": "Settle (s)",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "SmartDashboard/TurretSubsystem/settleTimeSeconds",
-              "period": 0.06,
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Position °",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Radial Gauge",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/TurretSubsystem/currentPositionDegrees",
-              "period": 0.06,
-              "start_angle": -140.0,
-              "end_angle": 140.0,
-              "min_value": -90.0,
-              "max_value": 90.0,
-              "number_of_labels": 8,
-              "wrap_value": false,
-              "show_pointer": true,
-              "show_ticks": true
             }
           },
           {

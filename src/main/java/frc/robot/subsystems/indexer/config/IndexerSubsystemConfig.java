@@ -6,7 +6,7 @@ import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
  * Configuration bundle for the indexer subsystem. All RPM values represent roller (mechanism) speed after gear reduction, not motor shaft speed.
  * <p>
  * Velocity limits, PID gains, feedforward gains, and settle time are inherited from {@link AbstractVelocitySubsystemConfig}. Indexer-specific fields
- * cover the default feed speed, reverse speed for clearing, and unjam pulse timing.
+ * cover the default feed speed and reverse speed for clearing.
  * </p>
  */
 public class IndexerSubsystemConfig extends AbstractVelocitySubsystemConfig {
@@ -19,12 +19,6 @@ public class IndexerSubsystemConfig extends AbstractVelocitySubsystemConfig {
 
     /** Reverse velocity used for clearing jams or backing Fuel toward the feeder, in RPM. Stored as a positive value; the subsystem negates it. */
     public double             reverseVelocityRpm;
-
-    /** Duration of each forward pulse during unjam cycling, in seconds. */
-    public double             unjamForwardDurationSeconds;
-
-    /** Duration of each reverse pulse during unjam cycling, in seconds. */
-    public double             unjamReverseDurationSeconds;
 
     /**
      * Returns the default feed velocity, tuned via SmartDashboard.
@@ -42,23 +36,5 @@ public class IndexerSubsystemConfig extends AbstractVelocitySubsystemConfig {
      */
     public double getReverseVelocityRpm() {
         return readTunableNumber("reverseVelocityRpm", reverseVelocityRpm);
-    }
-
-    /**
-     * Returns the forward pulse duration for the unjam cycle, tuned via SmartDashboard.
-     *
-     * @return forward pulse duration in seconds
-     */
-    public double getUnjamForwardDurationSeconds() {
-        return readTunableNumber("unjamForwardDurationSeconds", unjamForwardDurationSeconds);
-    }
-
-    /**
-     * Returns the reverse pulse duration for the unjam cycle, tuned via SmartDashboard.
-     *
-     * @return reverse pulse duration in seconds
-     */
-    public double getUnjamReverseDurationSeconds() {
-        return readTunableNumber("unjamReverseDurationSeconds", unjamReverseDurationSeconds);
     }
 }

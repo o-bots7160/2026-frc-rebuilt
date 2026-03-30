@@ -55,15 +55,6 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
     }
 
     /**
-     * Returns the horizontal offset angle in degrees, tuned via SmartDashboard.
-     *
-     * @return offset in degrees added to the encoder position to obtain the angle from horizontal
-     */
-    public double getHorizontalOffsetDegrees() {
-        return readTunableDegrees("horizontalOffsetDegrees", horizontalOffsetDegrees);
-    }
-
-    /**
      * Returns the horizontal offset angle in radians.
      *
      * @return offset in radians added to the encoder position to obtain the angle from horizontal
