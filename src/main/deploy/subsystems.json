@@ -121,19 +121,19 @@
       "motorCanId": 50,
       "motorInverted": true,
       "smartCurrentLimitAmps": 30,
-      "motorRotationsPerMechanismRotation": 1.3333,
+      "motorRotationsPerMechanismRotation": 5.3333,
       "reverseSoftLimitDegrees": 0.0,
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0032688,
+      "kP": 0.027639,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.077122,
-      "kV": 0.026245,
-      "kA": 0.0039654
+      "kS": 0.1806,
+      "kV": 0.10992,
+      "kA": 0.010808
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
@@ -146,20 +146,20 @@
       "settleTimeSeconds": 0.15,
       "idleVelocityRpm": 100
     },
-    "forwardVelocityRpm": 1800,
+    "forwardVelocityRpm": 2200,
     "reverseVelocityRpm": 1000
   },
   "harvesterSubsystem": {
-    "enabled": false,
+    "enabled": true,
     "verbose": false,
     "harvesterMotorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 51,
       "motorInverted": true,
-      "smartCurrentLimitAmps": 40,
+      "smartCurrentLimitAmps": 20,
       "motorRotationsPerMechanismRotation": 69.44,
       "reverseSoftLimitDegrees": 0.0,
-      "forwardSoftLimitDegrees": 135.0
+      "forwardSoftLimitDegrees": 180.0
     },
     "pid": {
       "kP": 2.0,
@@ -177,12 +177,12 @@
       "maximumAccelerationDegreesPerSecondSquared": 45.0,
       "positionToleranceDegrees": 2.0,
       "velocityToleranceDegreesPerSecond": 5.0,
-      "initialPositionDegrees": 145.0,
+      "initialPositionDegrees": 165.0,
       "initialVelocityDegreesPerSecond": 0.0
     },
     "minimumSetpointDegrees": 0.0,
-    "maximumSetpointDegrees": 145.0,
-    "stowedPositionDegrees": 145.0,
+    "maximumSetpointDegrees": 165.0,
+    "stowedPositionDegrees": 165.0,
     "deployedPositionDegrees": 0.0,
     "horizontalOffsetDegrees": 0.0
   },
@@ -259,7 +259,7 @@
     "reverseVelocityRpm": 400.0
   },
   "turretSubsystem": {
-    "enabled": true,
+    "enabled": false,
     "verbose": false,
     "turretMotorConfig": {
       "useSetpointLimits": true,
