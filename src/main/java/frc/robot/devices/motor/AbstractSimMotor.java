@@ -127,7 +127,11 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     }
 
     /**
-     * Overwrites both the real encoder and the simulation model position.
+     * Overwrites the real encoder, the SparkMaxSim, and the physics model position.
+     * <p>
+     * All three position stores must stay in sync. Without updating the DCMotorSim, the physics model starts from a stale position and soft-limit
+     * clamping prevents it from ever reaching the encoder's reported value; the motor appears frozen in telemetry.
+     * </p>
      *
      * @param positionRadians new encoder position in mechanism radians
      */
@@ -138,6 +142,9 @@ public abstract class AbstractSimMotor extends AbstractMotor {
         // conversion factors are applied Java-side rather than firmware-side.
         double motorRotations = positionRadians / computeMechanismRadiansPerMotorRotation(gearRatio);
         sparkMaxSim.setPosition(motorRotations);
+
+        // Keep the physics model in sync so stepSimulation() starts from the correct position.
+        motorSim.setState(VecBuilder.fill(positionRadians, motorSim.getAngularVelocityRadPerSec()));
     }
 
     /**
