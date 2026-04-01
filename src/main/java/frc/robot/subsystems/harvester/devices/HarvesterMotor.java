@@ -4,7 +4,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.devices.motor.AbstractMotor;
-import frc.robot.subsystems.harvester.config.HarvesterMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * SparkMax-backed harvester arm motor with baked-in limits, gearing, and telemetry.
@@ -24,20 +24,20 @@ public class HarvesterMotor extends AbstractMotor {
      * @param config harvester motor configuration containing CAN ID, gear ratio, inversion, and motion bounds (degrees)
      * @return configured harvester motor wrapper
      */
-    public static HarvesterMotor create(HarvesterMotorConfig config) {
+    public static HarvesterMotor create(MotorConfig config) {
         HarvesterMotor motor = new HarvesterMotor(config);
         motor.init();
         return motor;
     }
 
-    private final HarvesterMotorConfig config;
+    private final MotorConfig config;
 
     /**
      * Builds a harvester motor wrapper using values from the harvester motor config.
      *
      * @param config harvester motor configuration containing CAN ID, gear ratio, inversion, and motion bounds (degrees)
      */
-    private HarvesterMotor(HarvesterMotorConfig config) {
+    private HarvesterMotor(MotorConfig config) {
         super("HarvesterMotor", config);
         this.config = config;
     }

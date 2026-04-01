@@ -6,7 +6,7 @@ import edu.wpi.first.math.util.Units;
  * Configuration bundle for velocity motion profile parameters used by velocity-controlled subsystems.
  * <p>
  * All RPM values represent mechanism (flywheel, roller, belt) speed after gear reduction, not motor shaft speed. The gear ratio is applied at the
- * motor encoder conversion layer in {@link AbstractMotorConfig}, so subsystem code never deals with motor-side rotations.
+ * motor encoder conversion layer in {@link MotorConfig}, so subsystem code never deals with motor-side rotations.
  * </p>
  */
 public class VelocityMotionConfig extends AbstractConfig {

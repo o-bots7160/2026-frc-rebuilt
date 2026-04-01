@@ -9,8 +9,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.devices.motor.Motor;
-import frc.robot.shared.config.AbstractMotorConfig;
 import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
+import frc.robot.shared.config.MotorConfig;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.VelocityMotionConfig;
 
@@ -67,7 +67,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
      * @param simFactory     factory function that creates the sim motor from a motor config and velocity/acceleration suppliers
      * @return configured motor, or null when the subsystem is disabled
      */
-    protected static <TMotorConfig extends AbstractMotorConfig> Motor buildVelocityMotor(
+    protected static <TMotorConfig extends MotorConfig> Motor buildVelocityMotor(
             AbstractVelocitySubsystemConfig config,
             TMotorConfig motorConfig,
             Function<TMotorConfig, Motor> realFactory,

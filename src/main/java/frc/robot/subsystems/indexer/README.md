@@ -22,8 +22,8 @@ The public API uses **RPM** (revolutions per minute) for all velocity values.
 Internally, the subsystem converts to **radians per second** for WPILib math
 (PID controllers, feedforward, trapezoidal profiles). RPM always refers to the
 **mechanism speed**, not the motor shaft speed. The gear ratio in
-`IndexerMotorConfig.motorRotationsPerMechanismRotation` handles the conversion
-between the two.
+`MotorConfig.motorRotationsPerMechanismRotation` handles the conversion between
+the two.
 
 ### Key behaviors
 
@@ -84,7 +84,7 @@ Settings live in `subsystems.json` under `indexerSubsystem`:
 | `commands/UnjamCommand.java`                   | Alternates forward and reverse to free a jammed piece              |
 | `commands/IdleIndexerCommand.java`             | Default command holding idle RPM                                   |
 | `config/IndexerSubsystemConfig.java`           | Configuration bundle extending `AbstractVelocitySubsystemConfig`   |
-| `config/IndexerMotorConfig.java`               | Motor-level config (CAN ID, inversion, current limits)             |
+| `shared/config/MotorConfig.java`               | Motor-level config (CAN ID, inversion, current limits) (inherited) |
 | `devices/IndexerMotor.java`                    | Real-hardware motor wrapper for SparkMax                           |
 | `devices/IndexerSimMotor.java`                 | Simulation motor wrapper                                           |
 

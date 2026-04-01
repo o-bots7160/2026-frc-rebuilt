@@ -4,8 +4,8 @@ package frc.robot.shared.config;
  * Configuration values for subsystems that follow a trapezoidal motion profile.
  * <p>
  * Motion profile parameters (velocity, acceleration, tolerances, initial state) are organized into a nested {@link SetAndSeekMotionConfig} bundle.
- * Setpoint limits remain at the subsystem level because they set the clamping range for incoming targets. PID and feedforward gains are inherited
- * from {@link AbstractMotorSubsystemConfig}.
+ * Setpoint limits are read from the motor configuration's soft limits so there is a single source of truth for the mechanism's safe travel range.
+ * PID and feedforward gains are inherited from {@link AbstractMotorSubsystemConfig}.
  * </p>
  */
 public abstract class AbstractSetAndSeekSubsystemConfig extends AbstractMotorSubsystemConfig {
@@ -13,45 +13,39 @@ public abstract class AbstractSetAndSeekSubsystemConfig extends AbstractMotorSub
     /** Trapezoidal motion profile parameters for this set-and-seek subsystem. */
     public SetAndSeekMotionConfig motionProfile = new SetAndSeekMotionConfig();
 
-    /** Minimum allowed setpoint for the profile, in degrees. */
-    public double                 minimumSetpointDegrees;
-
-    /** Maximum allowed setpoint for the profile, in degrees. */
-    public double                 maximumSetpointDegrees;
-
     /**
-     * Returns the minimum setpoint, tuned via SmartDashboard, to clamp incoming targets.
+     * Returns the minimum setpoint derived from the motor's reverse soft limit.
      *
-     * @return minimum allowed setpoint (degrees)
+     * @return minimum allowed setpoint in degrees
      */
     public double getMinimumSetpointDegrees() {
-        return readTunableDegrees("minimumSetpointDegrees", minimumSetpointDegrees);
+        return motorConfig.getReverseSoftLimitDegrees();
     }
 
     /**
-     * Returns the minimum setpoint in radians.
+     * Returns the minimum setpoint derived from the motor's reverse soft limit.
      *
-     * @return minimum allowed setpoint (radians)
+     * @return minimum allowed setpoint in radians
      */
     public double getMinimumSetpointRadians() {
-        return readTunableDegreesAsRadians("minimumSetpointDegrees", minimumSetpointDegrees);
+        return motorConfig.getReverseSoftLimitRadians();
     }
 
     /**
-     * Returns the maximum setpoint, tuned via SmartDashboard, to clamp incoming targets.
+     * Returns the maximum setpoint derived from the motor's forward soft limit.
      *
-     * @return maximum allowed setpoint (degrees)
+     * @return maximum allowed setpoint in degrees
      */
     public double getMaximumSetpointDegrees() {
-        return readTunableDegrees("maximumSetpointDegrees", maximumSetpointDegrees);
+        return motorConfig.getForwardSoftLimitDegrees();
     }
 
     /**
-     * Returns the maximum setpoint in radians.
+     * Returns the maximum setpoint derived from the motor's forward soft limit.
      *
-     * @return maximum allowed setpoint (radians)
+     * @return maximum allowed setpoint in radians
      */
     public double getMaximumSetpointRadians() {
-        return readTunableDegreesAsRadians("maximumSetpointDegrees", maximumSetpointDegrees);
+        return motorConfig.getForwardSoftLimitRadians();
     }
 }

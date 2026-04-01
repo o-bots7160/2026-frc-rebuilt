@@ -116,7 +116,7 @@
   "intakeSubsystem": {
     "enabled": false,
     "verbose": true,
-    "intakeMotorConfig": {
+    "motorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 50,
       "motorInverted": false,
@@ -148,7 +148,7 @@
   "harvesterSubsystem": {
     "enabled": false,
     "verbose": true,
-    "harvesterMotorConfig": {
+    "motorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 51,
       "motorInverted": false,
@@ -176,16 +176,15 @@
       "initialPositionDegrees": 90.0,
       "initialVelocityDegreesPerSecond": 0.0
     },
-    "minimumSetpointDegrees": 0.0,
-    "maximumSetpointDegrees": 90.0,
     "stowedPositionDegrees": 90.0,
     "deployedPositionDegrees": 0.0,
-    "horizontalOffsetDegrees": 0.0
+    "horizontalOffsetDegrees": 0.0,
+    "deployedHoldToleranceDegrees": 5.0
   },
   "feederSubsystem": {
     "enabled": false,
     "verbose": true,
-    "feederMotorConfig": {
+    "motorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 52,
       "motorInverted": false,
@@ -218,7 +217,7 @@
   "indexerSubsystem": {
     "enabled": false,
     "verbose": true,
-    "indexerMotorConfig": {
+    "motorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 53,
       "motorInverted": false,
@@ -250,7 +249,7 @@
   "turretSubsystem": {
     "enabled": false,
     "verbose": true,
-    "turretMotorConfig": {
+    "motorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 56,
       "motorInverted": true,
@@ -277,8 +276,6 @@
       "initialPositionDegrees": 0.0,
       "initialVelocityDegreesPerSecond": 0.0
     },
-    "minimumSetpointDegrees": -180.0,
-    "maximumSetpointDegrees": 180.0,
     "componentPoseConfig": {
       "componentPivotX": -0.205,
       "componentPivotY": 0.0,
@@ -309,7 +306,7 @@
     "enabled": false,
     "verbose": true,
     "followerEnabled": false,
-    "shooterMotorConfig": {
+    "motorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 54,
       "motorInverted": true,
@@ -318,7 +315,7 @@
       "reverseSoftLimitDegrees": 0.0,
       "forwardSoftLimitDegrees": 0.0
     },
-    "shooterFollowerMotorConfig": {
+    "followerMotorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 55,
       "motorInverted": false,

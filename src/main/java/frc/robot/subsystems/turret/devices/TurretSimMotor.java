@@ -3,7 +3,7 @@ package frc.robot.subsystems.turret.devices;
 import java.util.function.Supplier;
 
 import frc.robot.devices.motor.AbstractSimMotor;
-import frc.robot.subsystems.turret.config.TurretMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Simulation-only turret motor wrapper configured from the turret subsystem config.
@@ -26,7 +26,7 @@ public class TurretSimMotor extends AbstractSimMotor {
      * @return configured simulated turret motor wrapper
      */
     public static TurretSimMotor create(
-            TurretMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         return new TurretSimMotor(motorConfig, maximumVelocitySupplier, maximumAccelerationSupplier);
@@ -44,7 +44,7 @@ public class TurretSimMotor extends AbstractSimMotor {
      * @param maximumAccelerationSupplier supplier yielding the maximum profile acceleration in degrees per second squared
      */
     private TurretSimMotor(
-            TurretMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         super(

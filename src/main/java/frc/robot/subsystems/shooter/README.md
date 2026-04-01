@@ -20,9 +20,9 @@ and a [PID](../../GLOSSARY.md#pid) controller corrects for disturbances when the
 
 The competition robot uses two motors: a **primary** motor whose encoder
 provides position and velocity feedback, and a **follower** motor that mirrors
-the same voltage commands. Each motor has its own `ShooterMotorConfig` block in
-the JSON config, so they can have independent CAN IDs, inversion flags, and
-current limits.
+the same voltage commands. Each motor has its own `MotorConfig` block in the
+JSON config, so they can have independent CAN IDs, inversion flags, and current
+limits.
 
 At the code level, both motors are wrapped in a
 [`CompositeMotor`](../../devices/motor/CompositeMotor.java) adapter that
@@ -31,7 +31,7 @@ implements the standard `Motor` interface. The subsystem hierarchy
 motors exist — it sees a single `Motor`.
 
 On robots with only one shooter motor (e.g., the test robot), set
-`shooterFollowerMotorConfig.enabled = false` in `subsystems-test.json` and the
+`followerMotorConfig.enabled = false` in `subsystems-test.json` and the
 subsystem falls back to using the primary motor alone.
 
 ### Units convention
@@ -40,8 +40,8 @@ The public API uses **RPM** (revolutions per minute) for all velocity values.
 Internally, the subsystem converts to **radians per second** for WPILib math
 (PID controllers, feedforward, trapezoidal profiles). RPM always refers to the
 **mechanism (flywheel) speed**, not the motor shaft speed. The gear ratio in
-`ShooterMotorConfig.motorRotationsPerMechanismRotation` handles the conversion
-between the two.
+`MotorConfig.motorRotationsPerMechanismRotation` handles the conversion between
+the two.
 
 ### Key behaviors
 
@@ -85,22 +85,22 @@ Settings live in `subsystems.json` under `shooterSubsystem`:
 | `kS`, `kV`, `kA`                  | volts   | Feedforward gains                                       |
 | `kP`, `kI`, `kD`                  | —       | PID velocity controller gains                           |
 
-Motor-level settings live in `shooterMotorConfig` (primary) and
-`shooterFollowerMotorConfig` (follower) blocks. Set the follower's `enabled` to
-`false` on robots with a single shooter motor.
+Motor-level settings live in `motorConfig` (primary) and `followerMotorConfig`
+(follower) blocks. Set the follower's `enabled` to `false` on robots with a
+single shooter motor.
 
 ## Code structure
 
-| File                                           | Purpose                                                          |
-| ---------------------------------------------- | ---------------------------------------------------------------- |
-| `ShooterSubsystem.java`                        | Concrete subsystem managing flywheel velocity and ready-to-fire  |
-| `commands/ShooterSubsystemCommandFactory.java` | Factory for spin-up, idle, stop, and SysId commands              |
-| `commands/SpinUpShooterCommand.java`           | Command that drives the flywheel to a target RPM                 |
-| `commands/IdleShooterCommand.java`             | Default command holding idle RPM                                 |
-| `config/ShooterSubsystemConfig.java`           | Configuration bundle extending `AbstractVelocitySubsystemConfig` |
-| `config/ShooterMotorConfig.java`               | Motor-level config (CAN ID, inversion, current limits)           |
-| `devices/ShooterMotor.java`                    | Real-hardware motor wrapper for SparkMax                         |
-| `devices/ShooterSimMotor.java`                 | Simulation motor wrapper                                         |
+| File                                           | Purpose                                                            |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| `ShooterSubsystem.java`                        | Concrete subsystem managing flywheel velocity and ready-to-fire    |
+| `commands/ShooterSubsystemCommandFactory.java` | Factory for spin-up, idle, stop, and SysId commands                |
+| `commands/SpinUpShooterCommand.java`           | Command that drives the flywheel to a target RPM                   |
+| `commands/IdleShooterCommand.java`             | Default command holding idle RPM                                   |
+| `config/ShooterSubsystemConfig.java`           | Configuration bundle extending `AbstractVelocitySubsystemConfig`   |
+| `shared/config/MotorConfig.java`               | Motor-level config (CAN ID, inversion, current limits) (inherited) |
+| `devices/ShooterMotor.java`                    | Real-hardware motor wrapper for SparkMax                           |
+| `devices/ShooterSimMotor.java`                 | Simulation motor wrapper                                           |
 
 ## Status / TODO
 

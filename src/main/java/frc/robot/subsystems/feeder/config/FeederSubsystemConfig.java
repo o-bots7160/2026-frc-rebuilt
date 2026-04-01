@@ -11,9 +11,6 @@ import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
  */
 public class FeederSubsystemConfig extends AbstractVelocitySubsystemConfig {
 
-    /** Motor configuration bundle for the feeder belt motor. */
-    public FeederMotorConfig feederMotorConfig = new FeederMotorConfig();
-
     /** Default forward velocity used for transporting Fuel toward the indexer, in RPM. */
     public double            forwardVelocityRpm;
 

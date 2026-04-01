@@ -25,7 +25,7 @@ field. When no command is active, the default idle command holds the rollers at
 | --------------------------------------------- | ------------------------------------------------- |
 | `IntakeSubsystem.java`                        | Velocity subsystem with forward/reverse helpers   |
 | `config/IntakeSubsystemConfig.java`           | Forward/reverse RPM, PID, tolerance, and tunables |
-| `config/IntakeMotorConfig.java`               | CAN ID, gear ratio, current limit                 |
+| `shared/config/MotorConfig.java`              | CAN ID, gear ratio, current limit (inherited)     |
 | `devices/IntakeMotor.java`                    | SparkMax velocity motor wrapper                   |
 | `devices/IntakeSimMotor.java`                 | Simulation velocity motor for testing             |
 | `commands/IdleIntakeCommand.java`             | Default command — holds idle RPM (0)              |

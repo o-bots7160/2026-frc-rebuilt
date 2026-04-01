@@ -3,7 +3,7 @@ package frc.robot.subsystems.intake.devices;
 import java.util.function.Supplier;
 
 import frc.robot.devices.motor.AbstractVelocitySimMotor;
-import frc.robot.subsystems.intake.config.IntakeMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Simulation-only intake motor wrapper configured from the intake subsystem config.
@@ -12,7 +12,7 @@ import frc.robot.subsystems.intake.config.IntakeMotorConfig;
  * by the subsystem to ensure gearing matches the real device.
  * </p>
  */
-public class IntakeSimMotor extends AbstractVelocitySimMotor<IntakeMotorConfig> {
+public class IntakeSimMotor extends AbstractVelocitySimMotor<MotorConfig> {
 
     /**
      * Creates a simulated intake motor wrapper using the supplied configuration values.
@@ -26,7 +26,7 @@ public class IntakeSimMotor extends AbstractVelocitySimMotor<IntakeMotorConfig> 
      * @return configured simulated intake motor wrapper
      */
     public static IntakeSimMotor create(
-            IntakeMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         return new IntakeSimMotor(motorConfig, maximumVelocitySupplier, maximumAccelerationSupplier);
@@ -40,7 +40,7 @@ public class IntakeSimMotor extends AbstractVelocitySimMotor<IntakeMotorConfig> 
      * @param maximumAccelerationSupplier supplier yielding the maximum mechanism acceleration in degrees per second squared
      */
     private IntakeSimMotor(
-            IntakeMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         super(

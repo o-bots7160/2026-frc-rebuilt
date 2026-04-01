@@ -3,7 +3,7 @@ package frc.robot.devices.motor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import frc.robot.shared.config.AbstractMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * SparkMax-backed motor for velocity-controlled mechanisms (flywheels, rollers, belts) with baked-in gearing and coast-mode idle.
@@ -15,7 +15,7 @@ import frc.robot.shared.config.AbstractMotorConfig;
  *
  * @param <TConfig> concrete motor config type
  */
-public abstract class AbstractVelocityMotor<TConfig extends AbstractMotorConfig> extends AbstractMotor {
+public abstract class AbstractVelocityMotor<TConfig extends MotorConfig> extends AbstractMotor {
 
     private final TConfig config;
 

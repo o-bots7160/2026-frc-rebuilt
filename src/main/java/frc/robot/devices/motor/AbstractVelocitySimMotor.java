@@ -2,7 +2,7 @@ package frc.robot.devices.motor;
 
 import java.util.function.Supplier;
 
-import frc.robot.shared.config.AbstractMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Simulation-only motor wrapper for velocity-controlled mechanisms.
@@ -13,7 +13,7 @@ import frc.robot.shared.config.AbstractMotorConfig;
  *
  * @param <TConfig> concrete motor config type
  */
-public abstract class AbstractVelocitySimMotor<TConfig extends AbstractMotorConfig> extends AbstractSimMotor {
+public abstract class AbstractVelocitySimMotor<TConfig extends MotorConfig> extends AbstractSimMotor {
 
     /**
      * Creates a simulated velocity motor using the supplied configuration values.

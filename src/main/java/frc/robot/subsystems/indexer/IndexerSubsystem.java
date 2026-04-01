@@ -25,7 +25,7 @@ public class IndexerSubsystem extends AbstractVelocitySubsystem<IndexerSubsystem
      * @param config indexer configuration bundle loaded from JSON; velocities are expressed in RPM
      */
     public IndexerSubsystem(IndexerSubsystemConfig config) {
-        super(config, buildVelocityMotor(config, config.indexerMotorConfig, IndexerMotor::create, IndexerSimMotor::create));
+        super(config, buildVelocityMotor(config, config.motorConfig, IndexerMotor::create, IndexerSimMotor::create));
     }
 
     /**

@@ -3,7 +3,7 @@ package frc.robot.subsystems.feeder.devices;
 import java.util.function.Supplier;
 
 import frc.robot.devices.motor.AbstractVelocitySimMotor;
-import frc.robot.subsystems.feeder.config.FeederMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Simulation-only feeder motor wrapper configured from the feeder subsystem config.
@@ -12,7 +12,7 @@ import frc.robot.subsystems.feeder.config.FeederMotorConfig;
  * by the subsystem to ensure gearing matches the real device.
  * </p>
  */
-public class FeederSimMotor extends AbstractVelocitySimMotor<FeederMotorConfig> {
+public class FeederSimMotor extends AbstractVelocitySimMotor<MotorConfig> {
 
     /**
      * Creates a simulated feeder motor wrapper using the supplied configuration values.
@@ -26,7 +26,7 @@ public class FeederSimMotor extends AbstractVelocitySimMotor<FeederMotorConfig> 
      * @return configured simulated feeder motor wrapper
      */
     public static FeederSimMotor create(
-            FeederMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         return new FeederSimMotor(motorConfig, maximumVelocitySupplier, maximumAccelerationSupplier);
@@ -40,7 +40,7 @@ public class FeederSimMotor extends AbstractVelocitySimMotor<FeederMotorConfig> 
      * @param maximumAccelerationSupplier supplier yielding the maximum mechanism acceleration in degrees per second squared
      */
     private FeederSimMotor(
-            FeederMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         super(

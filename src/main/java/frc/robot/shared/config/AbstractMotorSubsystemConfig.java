@@ -18,4 +18,7 @@ public abstract class AbstractMotorSubsystemConfig extends AbstractSubsystemConf
 
     /** SysId routine parameters for this motor subsystem. */
     public SysIdRoutineConfig sysId      = new SysIdRoutineConfig();
+
+    /** Motor configuration bundle for this subsystem's primary motor. */
+    public MotorConfig motorConfig = new MotorConfig();
 }

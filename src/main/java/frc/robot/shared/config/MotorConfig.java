@@ -9,7 +9,7 @@ import edu.wpi.first.math.util.Units;
  * redeploy.
  * </p>
  */
-public abstract class AbstractMotorConfig extends AbstractConfig {
+public class MotorConfig extends AbstractConfig {
 
     /** CAN device ID of the motor controller. */
     public int     motorCanId;
@@ -75,6 +75,24 @@ public abstract class AbstractMotorConfig extends AbstractConfig {
      */
     public boolean getUseSetpointLimits() {
         return useSetpointLimits;
+    }
+
+    /**
+     * Returns the reverse soft limit in degrees.
+     *
+     * @return reverse soft limit in degrees
+     */
+    public double getReverseSoftLimitDegrees() {
+        return reverseSoftLimitDegrees;
+    }
+
+    /**
+     * Returns the forward soft limit in degrees.
+     *
+     * @return forward soft limit in degrees
+     */
+    public double getForwardSoftLimitDegrees() {
+        return forwardSoftLimitDegrees;
     }
 
     /**

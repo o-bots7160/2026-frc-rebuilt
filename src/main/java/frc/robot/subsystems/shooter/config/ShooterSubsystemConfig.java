@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter.config;
 
 import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Configuration bundle for the shooter subsystem. All RPM values represent flywheel (mechanism) speed after gear reduction, not motor shaft speed.
@@ -11,16 +12,13 @@ import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
  */
 public class ShooterSubsystemConfig extends AbstractVelocitySubsystemConfig {
 
-    /** Motor configuration bundle for the primary shooter flywheel motor. */
-    public ShooterMotorConfig shooterMotorConfig         = new ShooterMotorConfig();
-
     /**
      * Motor configuration bundle for the follower shooter flywheel motor.
      * <p>
      * The follower can have independent inversion, current limits, and CAN ID. Enable or disable the follower via the {@link #followerEnabled} flag.
      * </p>
      */
-    public ShooterMotorConfig shooterFollowerMotorConfig = new ShooterMotorConfig();
+    public MotorConfig followerMotorConfig = new MotorConfig();
 
     /**
      * Enables or disables the follower motor.

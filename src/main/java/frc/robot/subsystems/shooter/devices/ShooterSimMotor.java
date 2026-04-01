@@ -3,7 +3,7 @@ package frc.robot.subsystems.shooter.devices;
 import java.util.function.Supplier;
 
 import frc.robot.devices.motor.AbstractVelocitySimMotor;
-import frc.robot.subsystems.shooter.config.ShooterMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Simulation-only shooter motor wrapper configured from the shooter subsystem config.
@@ -12,7 +12,7 @@ import frc.robot.subsystems.shooter.config.ShooterMotorConfig;
  * used by the subsystem to ensure gearing matches the real device.
  * </p>
  */
-public class ShooterSimMotor extends AbstractVelocitySimMotor<ShooterMotorConfig> {
+public class ShooterSimMotor extends AbstractVelocitySimMotor<MotorConfig> {
 
     /**
      * Creates a simulated shooter motor wrapper using the supplied configuration values.
@@ -26,7 +26,7 @@ public class ShooterSimMotor extends AbstractVelocitySimMotor<ShooterMotorConfig
      * @return configured simulated shooter motor wrapper
      */
     public static ShooterSimMotor create(
-            ShooterMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         return new ShooterSimMotor(motorConfig, maximumVelocitySupplier, maximumAccelerationSupplier);
@@ -40,7 +40,7 @@ public class ShooterSimMotor extends AbstractVelocitySimMotor<ShooterMotorConfig
      * @param maximumAccelerationSupplier supplier yielding the maximum mechanism acceleration in degrees per second squared
      */
     private ShooterSimMotor(
-            ShooterMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         super(

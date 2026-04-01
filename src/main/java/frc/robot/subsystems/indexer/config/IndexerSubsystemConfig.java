@@ -11,9 +11,6 @@ import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
  */
 public class IndexerSubsystemConfig extends AbstractVelocitySubsystemConfig {
 
-    /** Motor configuration bundle for the indexer roller motor. */
-    public IndexerMotorConfig indexerMotorConfig = new IndexerMotorConfig();
-
     /** Default forward velocity used for feeding Fuel into the shooter, in RPM. */
     public double             feedVelocityRpm;
 

@@ -10,7 +10,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.shared.config.AbstractMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 import frc.robot.shared.logging.Logger;
 
 /**
@@ -104,7 +104,7 @@ public abstract class AbstractMotor implements Motor {
      * @param name   friendly name for logging and dashboard keys
      * @param config motor configuration bundle providing CAN ID, inversion, and bounds
      */
-    protected AbstractMotor(String name, AbstractMotorConfig config) {
+    protected AbstractMotor(String name, MotorConfig config) {
         this(name, config, MotorType.kBrushless);
     }
 
@@ -117,7 +117,7 @@ public abstract class AbstractMotor implements Motor {
      */
     protected AbstractMotor(
             String name,
-            AbstractMotorConfig config,
+            MotorConfig config,
             MotorType motorType) {
         this.name                                       = name;
         this.log                                        = Logger.getInstance(this.getClass());

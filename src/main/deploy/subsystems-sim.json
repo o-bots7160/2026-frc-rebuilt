@@ -80,7 +80,7 @@
   },
   "driveBaseSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "swerveConfigDirectory": "swerve-sim",
     "maximumLinearSpeedFeetPerSecond": 25.1,
     "maximumAngularSpeedDegreesPerSecond": 800,
@@ -115,8 +115,8 @@
   },
   "intakeSubsystem": {
     "enabled": true,
-    "verbose": false,
-    "intakeMotorConfig": {
+    "verbose": true,
+    "motorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 50,
       "motorInverted": false,
@@ -147,45 +147,44 @@
   },
   "harvesterSubsystem": {
     "enabled": true,
-    "verbose": false,
-    "harvesterMotorConfig": {
+    "verbose": true,
+    "motorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 51,
-      "motorInverted": false,
-      "smartCurrentLimitAmps": 40,
+      "motorInverted": true,
+      "smartCurrentLimitAmps": 20,
       "motorRotationsPerMechanismRotation": 69.44,
-      "reverseSoftLimitDegrees": 0,
-      "forwardSoftLimitDegrees": 90
+      "reverseSoftLimitDegrees": 0.0,
+      "forwardSoftLimitDegrees": 165.0
     },
     "pid": {
-      "kP": 14,
-      "kI": 0,
+      "kP": 2.0,
+      "kI": 0.0,
       "kD": 0.1
     },
     "feedforward": {
-      "kS": 0,
-      "kV": 0.959,
-      "kA": 45.87,
-      "kG": 0
+      "kS": 0.25,
+      "kV": 3.5,
+      "kA": 0.05,
+      "kG": 0.35
     },
     "motionProfile": {
-      "maximumVelocityDegreesPerSecond": 100,
-      "maximumAccelerationDegreesPerSecondSquared": 45,
-      "positionToleranceDegrees": 2,
-      "velocityToleranceDegreesPerSecond": 5,
-      "initialPositionDegrees": 135,
-      "initialVelocityDegreesPerSecond": 0
+      "maximumVelocityDegreesPerSecond": 100.0,
+      "maximumAccelerationDegreesPerSecondSquared": 45.0,
+      "positionToleranceDegrees": 2.0,
+      "velocityToleranceDegreesPerSecond": 5.0,
+      "initialPositionDegrees": 165.0,
+      "initialVelocityDegreesPerSecond": 0.0
     },
-    "minimumSetpointDegrees": 0,
-    "maximumSetpointDegrees": 90,
-    "stowedPositionDegrees": 135,
-    "deployedPositionDegrees": 0,
-    "horizontalOffsetDegrees": 0
+    "stowedPositionDegrees": 165.0,
+    "deployedPositionDegrees": 0.0,
+    "horizontalOffsetDegrees": 0.0,
+    "deployedHoldToleranceDegrees": 5.0
   },
   "feederSubsystem": {
     "enabled": true,
-    "verbose": false,
-    "feederMotorConfig": {
+    "verbose": true,
+    "motorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 52,
       "motorInverted": false,
@@ -217,8 +216,8 @@
   },
   "indexerSubsystem": {
     "enabled": true,
-    "verbose": false,
-    "indexerMotorConfig": {
+    "verbose": true,
+    "motorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 53,
       "motorInverted": true,
@@ -249,8 +248,8 @@
   },
   "turretSubsystem": {
     "enabled": true,
-    "verbose": false,
-    "turretMotorConfig": {
+    "verbose": true,
+    "motorConfig": {
       "useSetpointLimits": true,
       "motorCanId": 56,
       "motorInverted": true,
@@ -277,8 +276,6 @@
       "initialPositionDegrees": 0.0,
       "initialVelocityDegreesPerSecond": 0.0
     },
-    "minimumSetpointDegrees": -120.0,
-    "maximumSetpointDegrees": 100.0,
     "componentPoseConfig": {
       "componentPivotX": -0.205,
       "componentPivotY": 0.0,
@@ -307,9 +304,9 @@
   },
   "shooterSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "followerEnabled": true,
-    "shooterMotorConfig": {
+    "motorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 54,
       "motorInverted": true,
@@ -318,7 +315,7 @@
       "reverseSoftLimitDegrees": 0,
       "forwardSoftLimitDegrees": 0
     },
-    "shooterFollowerMotorConfig": {
+    "followerMotorConfig": {
       "useSetpointLimits": false,
       "motorCanId": 55,
       "motorInverted": false,
@@ -401,12 +398,12 @@
   },
   "robotPoseSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "enableVisionFusion": true
   },
   "gameplayStateSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "endgameThresholdSeconds": 30.0,
     "autoTransitionEnabled": true
   }

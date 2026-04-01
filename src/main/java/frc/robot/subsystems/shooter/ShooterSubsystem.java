@@ -43,7 +43,7 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
 
         Motor primary = buildVelocityMotor(
                 config,
-                config.shooterMotorConfig,
+                config.motorConfig,
                 ShooterMotor::create,
                 ShooterSimMotor::create);
 
@@ -54,7 +54,7 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
 
         Motor follower = buildVelocityMotor(
                 config,
-                config.shooterFollowerMotorConfig,
+                config.followerMotorConfig,
                 ShooterMotor::create,
                 ShooterSimMotor::create);
 

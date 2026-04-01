@@ -183,6 +183,7 @@ public class RobotContainer {
                     driveBaseSubsystem::getYawRateRadiansPerSecond,
                     driveBaseSubsystem::getFieldRelativeVelocity,
                     shooterSubsystem::getTimeOfFlightSeconds);
+            harvesterCommandFactory.setDefaultHoldDeployedPositionCommand();
 
             // Register named commands for PathPlanner autos before pre-loading.
             // These must be registered before pre-loading autos so PathPlanner can resolve them.

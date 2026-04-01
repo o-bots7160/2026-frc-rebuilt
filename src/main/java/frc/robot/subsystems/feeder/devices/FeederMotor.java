@@ -1,7 +1,7 @@
 package frc.robot.subsystems.feeder.devices;
 
 import frc.robot.devices.motor.AbstractVelocityMotor;
-import frc.robot.subsystems.feeder.config.FeederMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * SparkMax-backed feeder belt motor configured from the feeder subsystem config.
@@ -10,7 +10,7 @@ import frc.robot.subsystems.feeder.config.FeederMotorConfig;
  * both directions, so soft limits are typically not used.
  * </p>
  */
-public class FeederMotor extends AbstractVelocityMotor<FeederMotorConfig> {
+public class FeederMotor extends AbstractVelocityMotor<MotorConfig> {
 
     /**
      * Creates a feeder motor wrapper using values from the feeder motor config.
@@ -21,7 +21,7 @@ public class FeederMotor extends AbstractVelocityMotor<FeederMotorConfig> {
      * @param config feeder motor configuration containing CAN ID, gear ratio, inversion, and current limits
      * @return configured feeder motor wrapper
      */
-    public static FeederMotor create(FeederMotorConfig config) {
+    public static FeederMotor create(MotorConfig config) {
         FeederMotor motor = new FeederMotor(config);
         motor.init();
         return motor;
@@ -32,7 +32,7 @@ public class FeederMotor extends AbstractVelocityMotor<FeederMotorConfig> {
      *
      * @param config feeder motor configuration containing CAN ID, gear ratio, inversion, and current limits
      */
-    private FeederMotor(FeederMotorConfig config) {
+    private FeederMotor(MotorConfig config) {
         super("FeederMotor", config);
     }
 }

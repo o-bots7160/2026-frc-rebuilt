@@ -1,7 +1,7 @@
 package frc.robot.subsystems.shooter.devices;
 
 import frc.robot.devices.motor.AbstractVelocityMotor;
-import frc.robot.subsystems.shooter.config.ShooterMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * SparkMax-backed shooter flywheel motor configured from the shooter subsystem config.
@@ -10,7 +10,7 @@ import frc.robot.subsystems.shooter.config.ShooterMotorConfig;
  * so soft limits are typically not used.
  * </p>
  */
-public class ShooterMotor extends AbstractVelocityMotor<ShooterMotorConfig> {
+public class ShooterMotor extends AbstractVelocityMotor<MotorConfig> {
 
     /**
      * Creates a shooter motor wrapper using values from the shooter motor config.
@@ -21,7 +21,7 @@ public class ShooterMotor extends AbstractVelocityMotor<ShooterMotorConfig> {
      * @param config shooter motor configuration containing CAN ID, gear ratio, inversion, and current limits
      * @return configured shooter motor wrapper
      */
-    public static ShooterMotor create(ShooterMotorConfig config) {
+    public static ShooterMotor create(MotorConfig config) {
         ShooterMotor motor = new ShooterMotor(config);
         motor.init();
         return motor;
@@ -32,7 +32,7 @@ public class ShooterMotor extends AbstractVelocityMotor<ShooterMotorConfig> {
      *
      * @param config shooter motor configuration containing CAN ID, gear ratio, inversion, and current limits
      */
-    private ShooterMotor(ShooterMotorConfig config) {
+    private ShooterMotor(MotorConfig config) {
         super("ShooterMotor", config);
     }
 }

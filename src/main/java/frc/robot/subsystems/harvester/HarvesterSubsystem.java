@@ -2,6 +2,7 @@ package frc.robot.subsystems.harvester;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import frc.robot.devices.motor.Motor;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractSetAndSeekSubsystem;
@@ -37,9 +38,9 @@ public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSub
         }
 
         return RobotEnvironment.isReal()
-                ? HarvesterMotor.create(config.harvesterMotorConfig)
+                ? HarvesterMotor.create(config.motorConfig)
                 : HarvesterSimMotor.create(
-                        config.harvesterMotorConfig,
+                        config.motorConfig,
                         config.motionProfile::getMaximumVelocityDegreesPerSecond,
                         config.motionProfile::getMaximumAccelerationDegreesPerSecondSquared);
     }
@@ -97,6 +98,18 @@ public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSub
             return;
         }
         setTarget(config.getStowedPositionDegrees());
+    }
+
+    /**
+     * Reports whether the arm's current goal is the deployed position. The hold command uses this to decide whether to monitor for drift or
+     * idle passively.
+     *
+     * @return true when the profile goal is within one degree of the configured deployed angle
+     */
+    public boolean isInDeployedMode() {
+        double goalDegrees    = Units.radiansToDegrees(goalState.position);
+        double deployedTarget = config.getDeployedPositionDegrees();
+        return Math.abs(goalDegrees - deployedTarget) < 1.0;
     }
 
     /**

@@ -24,7 +24,7 @@ public class FeederSubsystem extends AbstractVelocitySubsystem<FeederSubsystemCo
      * @param config feeder configuration bundle loaded from JSON; velocities are expressed in RPM
      */
     public FeederSubsystem(FeederSubsystemConfig config) {
-        super(config, buildVelocityMotor(config, config.feederMotorConfig, FeederMotor::create, FeederSimMotor::create));
+        super(config, buildVelocityMotor(config, config.motorConfig, FeederMotor::create, FeederSimMotor::create));
     }
 
     /**

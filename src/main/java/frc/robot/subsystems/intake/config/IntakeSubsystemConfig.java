@@ -11,9 +11,6 @@ import frc.robot.shared.config.AbstractVelocitySubsystemConfig;
  */
 public class IntakeSubsystemConfig extends AbstractVelocitySubsystemConfig {
 
-    /** Motor configuration bundle for the intake roller motor. */
-    public IntakeMotorConfig intakeMotorConfig = new IntakeMotorConfig();
-
     /** Default forward velocity used for pulling Fuel from the field into the feeder, in RPM. */
     public double            forwardVelocityRpm;
 

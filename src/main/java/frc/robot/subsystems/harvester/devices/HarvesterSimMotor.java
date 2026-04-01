@@ -3,7 +3,7 @@ package frc.robot.subsystems.harvester.devices;
 import java.util.function.Supplier;
 
 import frc.robot.devices.motor.AbstractSimMotor;
-import frc.robot.subsystems.harvester.config.HarvesterMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Simulation-only harvester arm motor wrapper configured from the harvester subsystem config.
@@ -26,7 +26,7 @@ public class HarvesterSimMotor extends AbstractSimMotor {
      * @return configured simulated harvester motor wrapper
      */
     public static HarvesterSimMotor create(
-            HarvesterMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         return new HarvesterSimMotor(motorConfig, maximumVelocitySupplier, maximumAccelerationSupplier);
@@ -44,7 +44,7 @@ public class HarvesterSimMotor extends AbstractSimMotor {
      * @param maximumAccelerationSupplier supplier yielding the maximum profile acceleration in degrees per second squared
      */
     private HarvesterSimMotor(
-            HarvesterMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         super(

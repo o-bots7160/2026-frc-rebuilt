@@ -86,7 +86,7 @@ AbstractConfig                           shared/config/
  ├─ AbstractSetAndSeekSubsystemConfig    shared/config/
  │   └─ TurretSubsystemConfig           subsystems/<mechanism>/config/
  └─ AbstractMotorConfig                  shared/config/
-     └─ TurretMotorConfig               subsystems/<mechanism>/config/
+     └─ MotorConfig                     shared/config/
 ```
 
 See the [shared framework README](../shared/README.md) for details on what each

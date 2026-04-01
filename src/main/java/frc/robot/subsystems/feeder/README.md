@@ -36,7 +36,7 @@ shaft speed.
 | --------------------------------- | ----------- | --------------------------------------------------------- |
 | `enabled`                         | —           | Master enable flag                                        |
 | `verbose`                         | —           | Enables detailed telemetry logging                        |
-| `feederMotorConfig.motorCanId`    | —           | CAN ID for the belt motor controller                      |
+| `motorConfig.motorCanId`          | —           | CAN ID for the belt motor controller                      |
 | `maximumVelocityRpm`              | RPM         | Velocity clamp applied to all targets                     |
 | `maximumAccelerationRpmPerSecond` | RPM/s       | Trapezoidal ramp rate (0 = direct PID)                    |
 | `velocityToleranceRpm`            | RPM         | Acceptable error for at-target checks                     |
@@ -49,16 +49,16 @@ shaft speed.
 
 ## Code structure
 
-| File                                          | Purpose                                                  |
-| --------------------------------------------- | -------------------------------------------------------- |
-| `FeederSubsystem.java`                        | Velocity subsystem with forward/reverse convenience APIs |
-| `commands/IdleFeederCommand.java`             | Default command that holds the belt at the idle RPM      |
-| `commands/ReverseFeederCommand.java`          | Command that spins the belt backward to clear Fuel       |
-| `commands/FeederSubsystemCommandFactory.java` | Factory for idle, reverse, forward-hold, and SysId cmds  |
-| `config/FeederSubsystemConfig.java`           | Configuration and tunables for the feeder                |
-| `config/FeederMotorConfig.java`               | Motor-specific configuration (CAN ID, gearing, etc.)     |
-| `devices/FeederMotor.java`                    | SparkMax motor wrapper for real hardware                 |
-| `devices/FeederSimMotor.java`                 | Simulation motor wrapper for sim testing                 |
+| File                                          | Purpose                                                    |
+| --------------------------------------------- | ---------------------------------------------------------- |
+| `FeederSubsystem.java`                        | Velocity subsystem with forward/reverse convenience APIs   |
+| `commands/IdleFeederCommand.java`             | Default command that holds the belt at the idle RPM        |
+| `commands/ReverseFeederCommand.java`          | Command that spins the belt backward to clear Fuel         |
+| `commands/FeederSubsystemCommandFactory.java` | Factory for idle, reverse, forward-hold, and SysId cmds    |
+| `config/FeederSubsystemConfig.java`           | Configuration and tunables for the feeder                  |
+| `shared/config/MotorConfig.java`              | Motor-specific configuration (CAN ID, gearing) (inherited) |
+| `devices/FeederMotor.java`                    | SparkMax motor wrapper for real hardware                   |
+| `devices/FeederSimMotor.java`                 | Simulation motor wrapper for sim testing                   |
 
 ## Status / TODO
 

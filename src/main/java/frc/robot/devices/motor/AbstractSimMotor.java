@@ -14,7 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import frc.robot.shared.config.AbstractMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Abstract simulation-only motor wrapper that mirrors {@link AbstractMotor} behavior while using REV simulation helpers.
@@ -35,7 +35,7 @@ public abstract class AbstractSimMotor extends AbstractMotor {
 
     private static final double       kEpsilon                          = 1e-6;
 
-    private final AbstractMotorConfig config;
+    private final MotorConfig config;
 
     private final SparkMaxSim         sparkMaxSim;
 
@@ -67,7 +67,7 @@ public abstract class AbstractSimMotor extends AbstractMotor {
      */
     protected AbstractSimMotor(
             String name,
-            AbstractMotorConfig config,
+            MotorConfig config,
             Supplier<Double> maximumVelocityDegreesPerSecondSupplier,
             Supplier<Double> maximumAccelerationDegreesPerSecondSqSupplier) {
         this(
@@ -92,7 +92,7 @@ public abstract class AbstractSimMotor extends AbstractMotor {
      */
     protected AbstractSimMotor(
             String name,
-            AbstractMotorConfig config,
+            MotorConfig config,
             Supplier<Double> maximumVelocityDegreesPerSecondSupplier,
             Supplier<Double> maximumAccelerationDegreesPerSecondSqSupplier,
             DCMotor motorModel) {

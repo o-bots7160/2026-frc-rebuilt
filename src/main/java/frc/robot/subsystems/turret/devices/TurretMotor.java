@@ -4,7 +4,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.devices.motor.AbstractMotor;
-import frc.robot.subsystems.turret.config.TurretMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * SparkMax-backed turret motor with baked-in limits, gearing, and telemetry.
@@ -24,20 +24,20 @@ public class TurretMotor extends AbstractMotor {
      * @param config turret motor configuration containing CAN ID, gear ratio, inversion, and motion bounds (degrees)
      * @return configured turret motor wrapper
      */
-    public static TurretMotor create(TurretMotorConfig config) {
+    public static TurretMotor create(MotorConfig config) {
         TurretMotor motor = new TurretMotor(config);
         motor.init();
         return motor;
     }
 
-    private final TurretMotorConfig config;
+    private final MotorConfig config;
 
     /**
      * Builds a turret motor wrapper using values from the turret motor config.
      *
      * @param config turret motor configuration containing CAN ID, gear ratio, inversion, and motion bounds (degrees)
      */
-    private TurretMotor(TurretMotorConfig config) {
+    private TurretMotor(MotorConfig config) {
         super("TurretMotor", config);
         this.config = config;
     }

@@ -332,7 +332,7 @@ function deepSet(obj, path, value) {
  *
  * Examples:
  *   turretSubsystem   → TurretSubsystem
- *   turretMotorConfig  → TurretMotor
+ *   motorConfig         → Motor
  *   shooterSubsystem   → ShooterSubsystem
  */
 function deriveSystem2Prefix(jsonFieldName) {

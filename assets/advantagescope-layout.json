@@ -33,7 +33,7 @@
             "/AdvantageKit/RealOutputs/TurretMotor",
             "/AdvantageKit/RealOutputs/TurretMotor/TurretMotor",
             "/SmartDashboard/SubsystemsConfig/turretSubsystem",
-            "/SmartDashboard/SubsystemsConfig/turretSubsystem/turretMotorConfig",
+            "/SmartDashboard/SubsystemsConfig/turretSubsystem/motorConfig",
             "/SmartDashboard/SubsystemsConfig/driveBaseSubsystem",
             "/AdvantageKit/TurretSubsystem/motor",
             "/AdvantageKit/RealOutputs/Pose/Estimated",

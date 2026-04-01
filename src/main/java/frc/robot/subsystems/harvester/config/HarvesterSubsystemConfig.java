@@ -17,9 +17,6 @@ import frc.robot.shared.config.AbstractSetAndSeekSubsystemConfig;
  */
 public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig {
 
-    /** Motor configuration bundle for the harvester arm motor. */
-    public HarvesterMotorConfig harvesterMotorConfig = new HarvesterMotorConfig();
-
     /** Arm angle when stowed upright inside the robot perimeter, in degrees. This is the match-start and default position. */
     public double               stowedPositionDegrees;
 
@@ -35,6 +32,12 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
      * </p>
      */
     public double               horizontalOffsetDegrees;
+
+    /**
+     * Maximum allowed drift from the deployed position before the hold command re-engages, in degrees. A ball pushing the arm upward beyond this
+     * threshold triggers a profiled return to the deployed angle.
+     */
+    public double               deployedHoldToleranceDegrees;
 
     /**
      * Returns the stowed arm position, tuned via SmartDashboard.
@@ -61,5 +64,14 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
      */
     public double getHorizontalOffsetRadians() {
         return readTunableDegreesAsRadians("horizontalOffsetDegrees", horizontalOffsetDegrees);
+    }
+
+    /**
+     * Returns the maximum drift from deployed position before re-engaging the motor, tuned via SmartDashboard.
+     *
+     * @return hold tolerance in degrees
+     */
+    public double getDeployedHoldToleranceDegrees() {
+        return readTunableDegrees("deployedHoldToleranceDegrees", deployedHoldToleranceDegrees);
     }
 }

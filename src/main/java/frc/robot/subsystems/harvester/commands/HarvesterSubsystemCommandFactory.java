@@ -71,4 +71,28 @@ public class HarvesterSubsystemCommandFactory extends AbstractSetAndSeekCommandF
         subsystem.setDefaultCommand(command);
         return command;
     }
+
+    /**
+     * Builds a hold command that monitors the deployed position and re-engages the motor when the arm is pushed away by incoming Fuel.
+     *
+     * @return command that holds the deployed position when active and idles otherwise
+     */
+    public HoldHarvesterDeployedPositionCommand createHoldDeployedPositionCommand() {
+        return new HoldHarvesterDeployedPositionCommand(subsystem);
+    }
+
+    /**
+     * Builds a hold command and sets it as the default command for the harvester subsystem.
+     * <p>
+     * When no other command is scheduled, the arm will monitor for drift from the deployed position and re-engage the motor to correct it. When the
+     * arm is not deployed, the command idles passively.
+     * </p>
+     *
+     * @return the hold command that was set as the default
+     */
+    public Command setDefaultHoldDeployedPositionCommand() {
+        Command command = createHoldDeployedPositionCommand();
+        subsystem.setDefaultCommand(command);
+        return command;
+    }
 }

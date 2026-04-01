@@ -1,7 +1,7 @@
 package frc.robot.subsystems.indexer.devices;
 
 import frc.robot.devices.motor.AbstractVelocityMotor;
-import frc.robot.subsystems.indexer.config.IndexerMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * SparkMax-backed indexer motor configured from the indexer subsystem config.
@@ -10,7 +10,7 @@ import frc.robot.subsystems.indexer.config.IndexerMotorConfig;
  * both directions, so soft limits are typically not used.
  * </p>
  */
-public class IndexerMotor extends AbstractVelocityMotor<IndexerMotorConfig> {
+public class IndexerMotor extends AbstractVelocityMotor<MotorConfig> {
 
     /**
      * Creates an indexer motor wrapper using values from the indexer motor config.
@@ -21,7 +21,7 @@ public class IndexerMotor extends AbstractVelocityMotor<IndexerMotorConfig> {
      * @param config indexer motor configuration containing CAN ID, gear ratio, inversion, and current limits
      * @return configured indexer motor wrapper
      */
-    public static IndexerMotor create(IndexerMotorConfig config) {
+    public static IndexerMotor create(MotorConfig config) {
         IndexerMotor motor = new IndexerMotor(config);
         motor.init();
         return motor;
@@ -32,7 +32,7 @@ public class IndexerMotor extends AbstractVelocityMotor<IndexerMotorConfig> {
      *
      * @param config indexer motor configuration containing CAN ID, gear ratio, inversion, and current limits
      */
-    private IndexerMotor(IndexerMotorConfig config) {
+    private IndexerMotor(MotorConfig config) {
         super("IndexerMotor", config);
     }
 }

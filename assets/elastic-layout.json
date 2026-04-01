@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "grid_size": 128.0,
+  "version": 1.0,
+  "grid_size": 128,
   "tabs": [
     {
       "name": "Competition",
@@ -615,7 +615,7 @@
               "period": 0.06,
               "show_robot_rotation": true,
               "show_desired_states": true,
-              "angle_offset": 0
+              "angle_offset": 0.0
             }
           },
           {
@@ -1018,7 +1018,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/motorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1035,7 +1035,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/intakeMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/Config/intakeSubsystem/motorConfig/motorCanId",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -1115,7 +1115,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/motorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1132,7 +1132,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/harvesterMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/Config/harvesterSubsystem/motorConfig/motorCanId",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -1383,7 +1383,7 @@
               "start_angle": -140.0,
               "end_angle": 140.0,
               "min_value": 0.0,
-              "max_value": 135.0,
+              "max_value": 180.0,
               "number_of_labels": 8,
               "wrap_value": false,
               "show_pointer": true,
@@ -1720,7 +1720,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/motorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1737,7 +1737,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/feederMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/Config/feederSubsystem/motorConfig/motorCanId",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -2045,7 +2045,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/motorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -2062,7 +2062,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/indexerMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/Config/indexerSubsystem/motorConfig/motorCanId",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -2142,7 +2142,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/motorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -2159,7 +2159,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/turretMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/Config/turretSubsystem/motorConfig/motorCanId",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -2473,7 +2473,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/shooterMotorConfig/motorInverted",
+              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/motorConfig/motorInverted",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -2490,7 +2490,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/shooterMotorConfig/motorCanId",
+              "topic": "/AdvantageKit/RealOutputs/Config/shooterSubsystem/motorConfig/motorCanId",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false

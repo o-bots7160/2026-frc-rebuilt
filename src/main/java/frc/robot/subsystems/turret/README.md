@@ -108,9 +108,9 @@ ratio = 5 × (152 / 16) = 47.5
 ```
 
 That ratio is stored in `subsystems.json` as
-`turretSubsystem.turretMotorConfig.motorRotationsPerMechanismRotation`. The
-motor wrapper converts it to **radians per motor rotation** so the encoder
-reports true turret radians.
+`turretSubsystem.motorConfig.motorRotationsPerMechanismRotation`. The motor
+wrapper converts it to **radians per motor rotation** so the encoder reports
+true turret radians.
 
 If the turret moves twice as far as expected, the gear ratio is usually off by a
 factor of two. Check every gear stage and tooth count to confirm the real ratio.
@@ -139,7 +139,7 @@ SmartDashboard without redeploying.
 
 Motor-specific settings ([CAN](../../GLOSSARY.md#can-bus) ID, inversion, current
 limits, [gear ratio](../../GLOSSARY.md#gear-ratio)) live under
-`turretSubsystem.turretMotorConfig`.
+`turretSubsystem.motorConfig`.
 
 ### Tuning checklist
 
@@ -162,7 +162,7 @@ limits, [gear ratio](../../GLOSSARY.md#gear-ratio)) live under
 | `commands/TrackFieldTargetCommand.java`       | Continuous field-relative tracking command                                                          |
 | `commands/TurretSubsystemCommandFactory.java` | Factory that builds commands for `RobotContainer` wiring                                            |
 | `config/TurretSubsystemConfig.java`           | Extends `AbstractSetAndSeekSubsystemConfig`; adds turret-specific fields                            |
-| `config/TurretMotorConfig.java`               | Motor-level config (CAN ID, gear ratio, current limits)                                             |
+| `shared/config/MotorConfig.java`              | Motor-level config (CAN ID, gear ratio, current limits) (inherited)                                 |
 | `devices/TurretMotor.java`                    | Real hardware motor wrapper — extends `AbstractMotor`                                               |
 | `devices/TurretSimMotor.java`                 | Simulation motor wrapper — extends `AbstractSimMotor`                                               |
 

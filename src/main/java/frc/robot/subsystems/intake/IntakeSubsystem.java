@@ -24,7 +24,7 @@ public class IntakeSubsystem extends AbstractVelocitySubsystem<IntakeSubsystemCo
      * @param config intake configuration bundle loaded from JSON; velocities are expressed in RPM
      */
     public IntakeSubsystem(IntakeSubsystemConfig config) {
-        super(config, buildVelocityMotor(config, config.intakeMotorConfig, IntakeMotor::create, IntakeSimMotor::create));
+        super(config, buildVelocityMotor(config, config.motorConfig, IntakeMotor::create, IntakeSimMotor::create));
     }
 
     /**

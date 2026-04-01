@@ -30,9 +30,9 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
         }
 
         return RobotEnvironment.isReal()
-                ? TurretMotor.create(config.turretMotorConfig)
+                ? TurretMotor.create(config.motorConfig)
                 : TurretSimMotor.create(
-                        config.turretMotorConfig,
+                        config.motorConfig,
                         config.motionProfile::getMaximumVelocityDegreesPerSecond,
                         config.motionProfile::getMaximumAccelerationDegreesPerSecondSquared);
     }

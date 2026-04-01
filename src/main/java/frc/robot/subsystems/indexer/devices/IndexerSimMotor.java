@@ -3,7 +3,7 @@ package frc.robot.subsystems.indexer.devices;
 import java.util.function.Supplier;
 
 import frc.robot.devices.motor.AbstractVelocitySimMotor;
-import frc.robot.subsystems.indexer.config.IndexerMotorConfig;
+import frc.robot.shared.config.MotorConfig;
 
 /**
  * Simulation-only indexer motor wrapper configured from the indexer subsystem config.
@@ -12,7 +12,7 @@ import frc.robot.subsystems.indexer.config.IndexerMotorConfig;
  * by the subsystem to ensure gearing matches the real device.
  * </p>
  */
-public class IndexerSimMotor extends AbstractVelocitySimMotor<IndexerMotorConfig> {
+public class IndexerSimMotor extends AbstractVelocitySimMotor<MotorConfig> {
 
     /**
      * Creates a simulated indexer motor wrapper using the supplied configuration values.
@@ -26,7 +26,7 @@ public class IndexerSimMotor extends AbstractVelocitySimMotor<IndexerMotorConfig
      * @return configured simulated indexer motor wrapper
      */
     public static IndexerSimMotor create(
-            IndexerMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         return new IndexerSimMotor(motorConfig, maximumVelocitySupplier, maximumAccelerationSupplier);
@@ -40,7 +40,7 @@ public class IndexerSimMotor extends AbstractVelocitySimMotor<IndexerMotorConfig
      * @param maximumAccelerationSupplier supplier yielding the maximum mechanism acceleration in degrees per second squared
      */
     private IndexerSimMotor(
-            IndexerMotorConfig motorConfig,
+            MotorConfig motorConfig,
             Supplier<Double> maximumVelocitySupplier,
             Supplier<Double> maximumAccelerationSupplier) {
         super(
