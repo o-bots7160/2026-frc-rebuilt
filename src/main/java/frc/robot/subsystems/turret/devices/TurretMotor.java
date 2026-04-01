@@ -47,8 +47,7 @@ public class TurretMotor extends AbstractMotor {
         sparkConfig
             .inverted(config.getMotorInverted())
             .smartCurrentLimit(config.getSmartCurrentLimitAmps())
-                .idleMode(IdleMode.kBrake)
-                .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
+                .idleMode(IdleMode.kBrake);
 
         // Encoder conversion factors are applied in Java (AbstractMotor.getPositionRadians /
         // getVelocityRadiansPerSecond) rather than through SparkMax firmware for reliability

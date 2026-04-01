@@ -154,8 +154,7 @@ public abstract class AbstractSimMotor extends AbstractMotor {
     protected SparkMaxConfig configureMotor(SparkMaxConfig sparkConfig) {
         sparkConfig
                 .inverted(config.getMotorInverted())
-                .smartCurrentLimit(config.getSmartCurrentLimitAmps())
-                .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
+                .smartCurrentLimit(config.getSmartCurrentLimitAmps());
         return sparkConfig;
     }
 

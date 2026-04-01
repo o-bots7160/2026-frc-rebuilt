@@ -35,8 +35,7 @@ public abstract class AbstractVelocityMotor<TConfig extends AbstractMotorConfig>
         sparkConfig
                 .inverted(config.getMotorInverted())
                 .smartCurrentLimit(config.getSmartCurrentLimitAmps())
-                .idleMode(IdleMode.kCoast)
-                .voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
+                .idleMode(IdleMode.kCoast);
 
         // Encoder conversion factors are applied in Java (AbstractMotor.getPositionRadians /
         // getVelocityRadiansPerSecond) rather than through SparkMax firmware for reliability

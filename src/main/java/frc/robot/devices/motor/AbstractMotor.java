@@ -22,8 +22,16 @@ import frc.robot.shared.logging.Logger;
  */
 public abstract class AbstractMotor implements Motor {
 
-    /** Default voltage compensation target applied to the controller. */
-    protected static final double DEFAULT_VOLTAGE_COMPENSATION = 12.0;
+    /**
+     * Nominal voltage used for reference calculations.
+     * <p>
+     * Firmware-level voltage compensation is intentionally disabled on all motors because WPILib's
+     * {@code MotorController.setVoltage()} already scales duty cycle by the measured battery voltage.
+     * Enabling both creates double compensation that causes systematic overshoot when the battery sags
+     * below 12 V.
+     * </p>
+     */
+    protected static final double NOMINAL_VOLTAGE = 12.0;
 
     /**
      * Converts a gear ratio in motor rotations per mechanism rotation into mechanism radians per motor rotation.
@@ -125,8 +133,8 @@ public abstract class AbstractMotor implements Motor {
         log.verbose("Creating SparkMax motor " + name + " (device ID " + deviceId + ")");
 
         // Create the base config that will be customized by subclasses later.
+        // Firmware voltage compensation is intentionally omitted — WPILib's setVoltage() handles it.
         SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
-        sparkMaxConfig.voltageCompensation(DEFAULT_VOLTAGE_COMPENSATION);
         this.baseConfig = sparkMaxConfig;
         // Compute unit conversion factors once so telemetry is fast.
         applyConversionFactors();
