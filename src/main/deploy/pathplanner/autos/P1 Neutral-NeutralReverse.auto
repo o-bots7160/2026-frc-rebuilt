@@ -38,6 +38,25 @@
                 "data": {
                   "name": "SetStateFireReady"
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SetStateTravel"
+                      }
+                    }
+                  ]
+                }
               }
             ]
           }
@@ -47,15 +66,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "SetStateHarvestReady"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "p1 neutral reverse"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateHarvestReady"
                 }
               }
             ]
