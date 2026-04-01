@@ -159,7 +159,7 @@
       "smartCurrentLimitAmps": 20,
       "motorRotationsPerMechanismRotation": 69.44,
       "reverseSoftLimitDegrees": 0.0,
-      "forwardSoftLimitDegrees": 165.0
+      "forwardSoftLimitDegrees": 160.0
     },
     "pid": {
       "kP": 2.0,
@@ -177,10 +177,10 @@
       "maximumAccelerationDegreesPerSecondSquared": 45.0,
       "positionToleranceDegrees": 2.0,
       "velocityToleranceDegreesPerSecond": 5.0,
-      "initialPositionDegrees": 165.0,
+      "initialPositionDegrees": 160.0,
       "initialVelocityDegreesPerSecond": 0.0
     },
-    "stowedPositionDegrees": 165.0,
+    "stowedPositionDegrees": 160.0,
     "deployedPositionDegrees": 0.0,
     "horizontalOffsetDegrees": 0.0,
     "deployedHoldToleranceDegrees": 5.0
@@ -258,7 +258,7 @@
     "reverseVelocityRpm": 400.0
   },
   "turretSubsystem": {
-    "enabled": false,
+    "enabled": true,
     "verbose": false,
     "motorConfig": {
       "useSetpointLimits": true,
@@ -336,13 +336,13 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.006,
+      "kP": 0.004,
       "kI": 0.0,
-      "kD": 0.0003
+      "kD": 0.00
     },
     "feedforward": {
       "kS": 0.16876,
-      "kV": 0.019,
+      "kV": 0.021,
       "kA": 0.0040569
     },
     "sysId": {
@@ -362,17 +362,17 @@
     "distanceRpmPoints": [
       {
         "distanceMeters": 1.7,
-        "rpm": 2300.0,
+        "rpm": 2500.0,
         "timeOfFlightSeconds": 0.3
       },
       {
         "distanceMeters": 3.6,
-        "rpm": 2925.0,
+        "rpm": 3125.0,
         "timeOfFlightSeconds": 0.5
       },
       {
         "distanceMeters": 5.0,
-        "rpm": 3275.0,
+        "rpm": 3475.0,
         "timeOfFlightSeconds": 0.8
       }
     ],
@@ -408,7 +408,7 @@
         "z": 0.49,
         "roll": 0.0,
         "pitch": 0.174533,
-        "yaw": 2.9670597
+        "yaw": 3.14159265
       },
       "Obots7160OV9281": {
         "x": -0.051,
