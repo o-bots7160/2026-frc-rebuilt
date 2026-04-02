@@ -1,5 +1,6 @@
 package frc.robot.subsystems.robotpose;
 
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -84,6 +85,7 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
 
         refreshTunables();
         SmartDashboard.putData("RobotPoseSubsystem/Field", fieldDisplay);
+        SmartDashboard.putString("RobotPoseSubsystem/EstimatedPose", formatPoseForDashboard(estimatedPose));
     }
 
     /**
@@ -113,6 +115,7 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
         SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedXMeters", estimatedPose.getX());
         SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedYMeters", estimatedPose.getY());
         SmartDashboard.putNumber("RobotPoseSubsystem/EstimatedHeadingDegrees", estimatedPose.getRotation().getDegrees());
+        SmartDashboard.putString("RobotPoseSubsystem/EstimatedPose", formatPoseForDashboard(estimatedPose));
         SmartDashboard.putBoolean("RobotPoseSubsystem/HasVisionMeasurement", hasVisionMeasurement);
         SmartDashboard.putBoolean("RobotPoseSubsystem/EnableVisionFusion", enableVisionFusion);
     }
@@ -233,5 +236,14 @@ public class RobotPoseSubsystem extends AbstractSubsystem<RobotPoseSubsystemConf
 
     private void refreshTunables() {
         enableVisionFusion = config.getEnableVisionFusion();
+    }
+
+    private String formatPoseForDashboard(Pose2d pose) {
+        return String.format(
+                Locale.US,
+                "x=%.3f m, y=%.3f m, heading=%.1f deg",
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees());
     }
 }

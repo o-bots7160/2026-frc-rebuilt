@@ -110,6 +110,7 @@ The subsystem publishes the following values each cycle:
 | `RobotPoseSubsystem/EstimatedXMeters`        | Fused X position in meters                  |
 | `RobotPoseSubsystem/EstimatedYMeters`        | Fused Y position in meters                  |
 | `RobotPoseSubsystem/EstimatedHeadingDegrees` | Fused heading in degrees                    |
+| `RobotPoseSubsystem/EstimatedPose`           | Human-readable fused pose string            |
 | `RobotPoseSubsystem/HasVisionMeasurement`    | True after first vision measurement arrives |
 | `RobotPoseSubsystem/EnableVisionFusion`      | Current state of the vision fusion toggle   |
 | `RobotPoseSubsystem/Field`                   | Field2d widget for dashboard visualization  |
