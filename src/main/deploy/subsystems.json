@@ -182,6 +182,7 @@
     },
     "stowedPositionDegrees": 160.0,
     "deployedPositionDegrees": 0.0,
+    "sweepPositionDegrees": 100.0,
     "horizontalOffsetDegrees": 0.0,
     "deployedHoldToleranceDegrees": 5.0
   },
@@ -429,6 +430,7 @@
     "enabled": true,
     "verbose": false,
     "endgameThresholdSeconds": 30.0,
-    "autoTransitionEnabled": true
+    "autoTransitionEnabled": true,
+    "fireReadySweepDelaySeconds": 10.0
   }
 }

@@ -101,6 +101,21 @@ public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSub
     }
 
     /**
+     * Commands the arm to the sweep position to push Fuel from the back of the hopper toward the shooting array.
+     * <p>
+     * The motion profile ramps the arm smoothly from its current position to the configured sweep angle. This is used during extended firing
+     * sequences when the front of the hopper is empty and remaining Fuel needs to be pushed forward.
+     * </p>
+     */
+    public void sweepArm() {
+        if (isSubsystemDisabled()) {
+            logDisabled("sweepArm");
+            return;
+        }
+        setTarget(config.getSweepPositionDegrees());
+    }
+
+    /**
      * Reports whether the arm's current goal is the deployed position. The hold command uses this to decide whether to monitor for drift or
      * idle passively.
      *

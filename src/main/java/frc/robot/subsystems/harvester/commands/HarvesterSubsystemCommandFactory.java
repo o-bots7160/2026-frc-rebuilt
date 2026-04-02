@@ -59,6 +59,15 @@ public class HarvesterSubsystemCommandFactory extends AbstractSetAndSeekCommandF
     }
 
     /**
+     * Builds a command that raises the arm to the sweep position to push Fuel toward the shooting array.
+     *
+     * @return command that moves the arm to the sweep angle
+     */
+    public MoveHarvesterToPositionCommand createSweepCommand() {
+        return createMoveToPositionCommand(subsystem.getConfig()::getSweepPositionDegrees);
+    }
+
+    /**
      * Builds a stow command and sets it as the default command for the harvester subsystem.
      * <p>
      * When no other command is scheduled, the arm will seek the stowed position so it stays inside the robot perimeter.

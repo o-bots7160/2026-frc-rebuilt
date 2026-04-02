@@ -11,6 +11,8 @@ which live in the `intake/` subsystem.
 | Stowed   | Arm upright inside the robot perimeter (match-start)   |
 | Deployed | Arm lowered outside the frame to collect Fuel from the |
 |          | floor                                                  |
+| Sweep    | Arm raised (~100°) to push Fuel from the back of the   |
+|          | hopper toward the shooting array                       |
 
 ## Key classes
 

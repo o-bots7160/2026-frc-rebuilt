@@ -84,9 +84,12 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @return parallel command group that idles all mechanisms
      */
     public Command createIdleCommand() {
+        // Publish the IDLE state, then return all ball-path mechanisms to rest in parallel.
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.IDLE, "command"))
                 .andThen(Commands.parallel(
+                        // Spin the shooter down to its configured idle RPM.
                         shooterCommandFactory.createIdleCommand(),
+                        // Stop the indexer and feeder rollers.
                         indexerCommandFactory.createStopCommand(),
                         feederCommandFactory.createStopCommand()))
                 .withName("GameplayState-Idle");
@@ -99,8 +102,12 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @return parallel command group that prepares the robot for Fuel collection
      */
     public Command createHarvestReadyCommand() {
+        // Publish the HARVEST_READY state, deploy the arm, then start the intake.
+        // Sequential (not parallel) so the arm clears the frame before rollers spin.
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.HARVEST_READY, "command"))
+                // Lower the harvester arm outside the frame perimeter.
                 .andThen(harvesterCommandFactory.createDeployCommand())
+                // Spin the intake and feeder to pull Fuel into the hopper.
                 .andThen(intakeCommandFactory.createIntakeAndHoldCommand())
                 .withName("GameplayState-HarvestReady");
     }
@@ -118,15 +125,33 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @return parallel command group that prepares the robot to score
      */
     public Command createFireReadyCommand() {
+        // Publish the FIRE_READY state, then run four parallel branches:
+        //   1. Spin the shooter to a distance-based RPM.
+        //   2. Gate the indexer — it waits for shooter + turret ready, then feeds.
+        //   3. Gate the feeder — same readiness check, reverse-pulse then forward.
+        //   4. After a configurable delay, sweep the harvester arm to push
+        //      remaining Fuel from the back of the hopper toward the shooter.
+        //
+        // The sweep branch uses .asProxy() so the harvester subsystem is NOT
+        // locked for the duration of fire ready. During the wait period the
+        // harvester's default command keeps running normally. If the operator
+        // releases the fire trigger before the delay elapses, the sweep never
+        // starts and finallyDo() transitions cleanly back to IDLE.
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.FIRE_READY, "command"))
                 .andThen(Commands.parallel(
+                        // Spin the shooter flywheel based on distance to the scoring target.
                         shooterCommandFactory.createDistanceBasedSpinCommand(distanceToTargetMetersSupplier),
+                        // Feed Fuel forward once the shooter and turret are both ready.
                         indexerCommandFactory.createFireWhenReadyCommand(
                                 shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
                                 turretReadySupplier),
                         feederCommandFactory.createFireWhenReadyCommand(
                                 shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
-                                turretReadySupplier)))
+                                turretReadySupplier),
+                        // Delayed sweep: wait, then raise the harvester arm to push hopper Fuel forward.
+                        Commands.waitSeconds(subsystem.getConfig().getFireReadySweepDelaySeconds())
+                                .andThen(harvesterCommandFactory.createSweepCommand().asProxy())))
+                // Cleanup: transition back to IDLE regardless of how fire ready ends.
                 .finallyDo(() -> {
                     subsystem.requestState(GameplayState.IDLE, "fire-end");
                     CommandScheduler.getInstance().schedule(createIdleCommand().asProxy());
@@ -144,12 +169,17 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @return parallel command group that ejects all Fuel from the robot
      */
     public Command createEjectCommand() {
+        // Publish the EJECT state, then reverse all ball-path mechanisms in parallel
+        // to push Fuel out of the robot. The harvester deploys so ejected Fuel exits cleanly.
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.EJECT, "command"))
                 .andThen(Commands.parallel(
+                        // Stop the shooter so Fuel is not launched.
                         shooterCommandFactory.createStopCommand(),
+                        // Reverse the indexer, feeder, and intake to expel Fuel.
                         indexerCommandFactory.createReverseCommand(),
                         feederCommandFactory.createReverseCommand(),
                         intakeCommandFactory.createEjectCommand(),
+                        // Deploy the harvester arm so Fuel can exit the frame.
                         harvesterCommandFactory.createDeployCommand()))
                 .withName("GameplayState-Eject");
     }
@@ -164,12 +194,16 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @return parallel command group that stows the harvester and idles all other mechanisms
      */
     public Command createTravelCommand() {
+        // Publish the TRAVEL state, then stow the harvester and stop the intake
+        // so the robot can traverse the field safely within the frame perimeter.
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.TRAVEL, "command"))
                 .andThen(Commands.parallel(
+                        // Raise the harvester arm inside the frame perimeter.
                         harvesterCommandFactory.createStowCommand(),
                         // shooterCommandFactory.createIdleCommand(),
                         // indexerCommandFactory.createStopCommand(),
                         // feederCommandFactory.createStopCommand(),
+                        // Stop the intake rollers.
                         intakeCommandFactory.createStopCommand()))
                 .withName("GameplayState-Travel");
     }
@@ -185,12 +219,17 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @return parallel command group that deploys the harvester and idles all other mechanisms
      */
     public Command createTrenchTravelCommand() {
+        // Publish the TRENCH_TRAVEL state, then deploy the harvester for a low
+        // profile and stop the intake. Identical to TRAVEL except the arm is
+        // lowered so the robot clears trench-height obstacles.
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.TRENCH_TRAVEL, "command"))
                 .andThen(Commands.parallel(
+                        // Lower the harvester arm for trench clearance.
                         harvesterCommandFactory.createDeployCommand(),
                         // shooterCommandFactory.createIdleCommand(),
                         // indexerCommandFactory.createStopCommand(),
                         // feederCommandFactory.createStopCommand(),
+                        // Stop the intake rollers.
                         intakeCommandFactory.createStopCommand()))
                 .withName("GameplayState-TrenchTravel");
     }

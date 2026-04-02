@@ -23,6 +23,9 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
     /** Arm angle when deployed downward outside the robot perimeter to collect Fuel, in degrees. */
     public double               deployedPositionDegrees;
 
+    /** Arm angle raised to push Fuel from the back of the hopper toward the shooting array, in degrees. */
+    public double               sweepPositionDegrees;
+
     /**
      * Angle offset from the encoder's zero position to the arm's horizontal reference, in degrees.
      * <p>
@@ -55,6 +58,15 @@ public class HarvesterSubsystemConfig extends AbstractSetAndSeekSubsystemConfig 
      */
     public double getDeployedPositionDegrees() {
         return readTunableDegrees("deployedPositionDegrees", deployedPositionDegrees);
+    }
+
+    /**
+     * Returns the sweep arm position, tuned via SmartDashboard.
+     *
+     * @return sweep position in degrees (arm raised to push Fuel toward the shooting array)
+     */
+    public double getSweepPositionDegrees() {
+        return readTunableDegrees("sweepPositionDegrees", sweepPositionDegrees);
     }
 
     /**

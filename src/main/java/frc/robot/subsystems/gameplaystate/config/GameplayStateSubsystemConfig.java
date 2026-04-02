@@ -29,6 +29,16 @@ public class GameplayStateSubsystemConfig extends AbstractSubsystemConfig {
     public boolean autoTransitionEnabled          = true;
 
     /**
+     * Delay in seconds before the harvester arm sweeps Fuel toward the shooting array during fire ready.
+     * <p>
+     * When the robot enters the FIRE_READY state, it begins shooting immediately. After this delay elapses, the harvester raises to its sweep
+     * position to push remaining Fuel forward from the back of the hopper. A value of 10.0 means the sweep starts 10 seconds into the firing
+     * sequence.
+     * </p>
+     */
+    public double  fireReadySweepDelaySeconds     = 10.0;
+
+    /**
      * Returns the endgame match time threshold in seconds.
      *
      * @return seconds remaining in teleop below which the endgame suggestion flag is set
@@ -44,5 +54,18 @@ public class GameplayStateSubsystemConfig extends AbstractSubsystemConfig {
      */
     public boolean getAutoTransitionEnabled() {
         return readTunableBoolean("autoTransitionEnabled", autoTransitionEnabled);
+    }
+
+    /**
+     * Returns the delay in seconds before the harvester sweeps Fuel forward during fire ready.
+     * <p>
+     * After this many seconds of firing, the harvester arm raises to the sweep position to push remaining Fuel from the back of the hopper toward
+     * the shooting array. Tunable at runtime so operators can adjust based on hopper fill level and shot cadence.
+     * </p>
+     *
+     * @return delay in seconds before the harvester sweep activates during fire ready
+     */
+    public double getFireReadySweepDelaySeconds() {
+        return readTunableNumber("fireReadySweepDelaySeconds", fireReadySweepDelaySeconds);
     }
 }
