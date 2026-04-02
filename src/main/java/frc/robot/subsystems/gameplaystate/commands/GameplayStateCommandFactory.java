@@ -150,7 +150,8 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                                 turretReadySupplier),
                         // Delayed sweep: wait, then raise the harvester arm to push hopper Fuel forward.
                         Commands.waitSeconds(subsystem.getConfig().getFireReadySweepDelaySeconds())
-                                .andThen(harvesterCommandFactory.createSweepCommand().asProxy())))
+                                .andThen(harvesterCommandFactory.createSweepCommand().asProxy())
+                                .andThen(harvesterCommandFactory.createDeployCommand().asProxy())))
                 // Cleanup: transition back to IDLE regardless of how fire ready ends.
                 .finallyDo(() -> {
                     subsystem.requestState(GameplayState.IDLE, "fire-end");

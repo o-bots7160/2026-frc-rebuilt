@@ -67,50 +67,16 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
      */
     public Command createFireWhenReadyCommand(Supplier<Boolean> shooterReadySupplier, Supplier<Boolean> turretOnTargetSupplier) {
         Supplier<Boolean> readySupplier = () -> shooterReadySupplier.get() && turretOnTargetSupplier.get();
-        return Commands.waitUntil(readySupplier::get)
-                .andThen(createFeedAndHoldCommand()
-                        .onlyWhile(readySupplier::get))
-                .repeatedly()
+        return Commands.run(() -> {
+                    if (readySupplier.get()) {
+                        subsystem.setTargetVelocityRpm(subsystem.getConfig().getFeedVelocityRpm());
+                    } else {
+                        subsystem.setTargetVelocityRpm(subsystem.getConfig().motionProfile.getIdleVelocityRpm());
+                    }
+                    subsystem.seekVelocity();
+                }, subsystem)
                 .finallyDo(() -> subsystem.stop())
                 .withName("FireWhenReady");
     }
 
-    /**
-     * Builds a feed command that reads its target RPM from a supplier.
-     *
-     * @param targetRpmSupplier provider for the target feed RPM; evaluated on initialize
-     * @return command that feeds Fuel into the shooter at the supplied RPM
-     */
-    private FeedCommand createFeedCommand(Supplier<Double> targetRpmSupplier) {
-        return new FeedCommand(subsystem, targetRpmSupplier);
-    }
-
-    /**
-     * Builds a feed command that drives the roller at a fixed RPM.
-     *
-     * @param targetRpm fixed target feed RPM (positive for forward into shooter)
-     * @return command that feeds Fuel into the shooter at the fixed RPM
-     */
-    private FeedCommand createFeedCommand(double targetRpm) {
-        return new FeedCommand(subsystem, targetRpm);
-    }
-
-    /**
-     * Builds a feed command using the configured default feed velocity.
-     *
-     * @return command that feeds Fuel into the shooter at the default RPM
-     */
-    private FeedCommand createFeedCommand() {
-        return new FeedCommand(subsystem, subsystem.getConfig().getFeedVelocityRpm());
-    }
-
-    /**
-     * Builds a command that feeds Fuel forward at the configured feed velocity and holds that speed indefinitely.
-     *
-     * @return command that feeds and holds velocity until interrupted
-     */
-    private Command createFeedAndHoldCommand() {
-        return createFeedCommand()
-                .andThen(Commands.run(subsystem::seekVelocity, subsystem));
-    }
 }

@@ -75,21 +75,20 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
                         // Run the reverse pulse to completion so the belt always transitions
                         // to a forward target before readiness can interrupt the sequence.
                         createReversePulseCommand(),
-                        createForwardAndHoldCommand()
-                                .onlyWhile(readySupplier::get))
-                .repeatedly()
+                        // Hold the forward velocity indefinitely. The idle target is set
+                        // inline each cycle so the motor is always actively driven, avoiding
+                        // coast gaps that occurred when waitUntil left the motor uncontrolled.
+                        Commands.run(() -> {
+                            if (readySupplier.get()) {
+                                subsystem.setForwardVelocity();
+                            } else {
+                                subsystem.setTargetVelocityRpm(
+                                        subsystem.getConfig().motionProfile.getIdleVelocityRpm());
+                            }
+                            subsystem.seekVelocity();
+                        }, subsystem))
                 .finallyDo(() -> subsystem.stop())
                 .withName("FeederFireWhenReady");
-    }
-
-    /**
-     * Builds a command that spins the belt forward at the configured transport velocity and holds that speed indefinitely.
-     *
-     * @return command that transports Fuel forward and holds velocity until interrupted
-     */
-    private Command createForwardAndHoldCommand() {
-        return Commands.runOnce(subsystem::setForwardVelocity, subsystem)
-                .andThen(Commands.run(subsystem::seekVelocity, subsystem));
     }
 
     /**
