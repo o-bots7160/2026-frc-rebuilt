@@ -381,12 +381,12 @@ public class TriggerBindings {
 
         // X button: run full SysId sweep for the dashboard-selected subsystem.
         // Press X to start; press X again to cancel early.
-        driverController.x().whileTrue(
+        driverController.x().onTrue(
                 Commands.deferredProxy(this::createSelectedSysIdCommand));
 
         // Y button: run drive base angle and drive SysId characterization in sequence.
         // Press Y to start; press Y again to cancel early.
-        driverController.y().whileTrue(
+        driverController.y().onTrue(
                 driveBaseCommandFactory.createAngleSysIdCommand()
                         .andThen(driveBaseCommandFactory.createDriveSysIdCommand()));
 
@@ -586,7 +586,7 @@ public class TriggerBindings {
                 gameplayStateCommandFactory.createFireReadyCommand());
 
         // X button: harvest fuel.
-        operatorController.x().onTrue(
+        operatorController.x().whileTrue(
                 gameplayStateCommandFactory.createHarvestReadyCommand());
 
         // A button: eject all fuel.

@@ -59,7 +59,7 @@
         },
         {
           "enabled": true,
-          "minXMeters": 10.80,
+          "minXMeters": 10.8,
           "maxXMeters": 13.01,
           "minYMeters": 0.0,
           "maxYMeters": 4.2,
@@ -68,7 +68,7 @@
         },
         {
           "enabled": true,
-          "minXMeters": 10.80,
+          "minXMeters": 10.8,
           "maxXMeters": 13.01,
           "minYMeters": 4.2,
           "maxYMeters": 8.07,
@@ -126,18 +126,21 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.027639,
+      "kP": 0.0073016,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.1806,
-      "kV": 0.10992,
-      "kA": 0.010808
+      "kS": 0.19778,
+      "kV": 0.10969,
+      "kA": 0.010579
     },
     "sysId": {
-      "rampRateVoltsPerSecond": 0.25,
-      "stepVoltage": 7.0
+      "rampRateVoltsPerSecond": 0.5,
+      "stepVoltage": 7.0,
+      "delaySeconds": 5.0,
+      "quasistaticTimeoutSeconds": 26.0,
+      "dynamicTimeoutSeconds": 4.0
     },
     "motionProfile": {
       "maximumVelocityRpm": 5000.0,
@@ -199,21 +202,21 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.018884,
+      "kP": 0.0081048,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.40455,
-      "kV": 0.080416,
-      "kA": 0.0087119
+      "kS": 0.31879,
+      "kV": 0.080213,
+      "kA": 0.0081048
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
       "stepVoltage": 5.0,
-      "delaySeconds": 10.0,
-      "quasistaticTimeoutSeconds": 28.0,
-      "dynamicTimeoutSeconds": 4.0
+      "delaySeconds": 5.0,
+      "quasistaticTimeoutSeconds": 50.0,
+      "dynamicTimeoutSeconds": 6.0
     },
     "motionProfile": {
       "maximumVelocityRpm": 1200.0,
@@ -239,17 +242,24 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0081756,
+      "kP": 0.0032436,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.31704,
-      "kV": 0.31704,
-      "kA": 0.008487
+      "kS": 0.26689,
+      "kV": 0.080845,
+      "kA": 0.0067605
+    },
+    "sysId": {
+      "rampRateVoltsPerSecond": 0.5,
+      "stepVoltage": 7.0,
+      "delaySeconds": 5.0,
+      "quasistaticTimeoutSeconds": 26.0,
+      "dynamicTimeoutSeconds": 4.0
     },
     "motionProfile": {
-      "maximumVelocityRpm": 1200.0,
+      "maximumVelocityRpm": 1400.0,
       "maximumAccelerationRpmPerSecond": 0.0,
       "velocityToleranceRpm": 75.0,
       "settleTimeSeconds": 0.1,
@@ -337,14 +347,14 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.004,
+      "kP": 0.0010071,
       "kI": 0.0,
-      "kD": 0.00
+      "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.16876,
-      "kV": 0.021,
-      "kA": 0.0040569
+      "kS": 0.40617,
+      "kV": 0.020231,
+      "kA": 0.0036468
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
