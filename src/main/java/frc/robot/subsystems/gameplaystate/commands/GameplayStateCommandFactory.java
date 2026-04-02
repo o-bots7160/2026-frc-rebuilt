@@ -126,11 +126,11 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      */
     public Command createFireReadyCommand() {
         // Publish the FIRE_READY state, then run four parallel branches:
-        //   1. Spin the shooter to a distance-based RPM.
-        //   2. Gate the indexer — it waits for shooter + turret ready, then feeds.
-        //   3. Gate the feeder — same readiness check, reverse-pulse then forward.
-        //   4. After a configurable delay, sweep the harvester arm to push
-        //      remaining Fuel from the back of the hopper toward the shooter.
+        // 1. Spin the shooter to a distance-based RPM.
+        // 2. Gate the indexer — it waits for shooter + turret ready, then feeds.
+        // 3. Gate the feeder — same readiness check, reverse-pulse then forward.
+        // 4. After a configurable delay, sweep the harvester arm to push
+        // remaining Fuel from the back of the hopper toward the shooter.
         //
         // The sweep branch uses .asProxy() so the harvester subsystem is NOT
         // locked for the duration of fire ready. During the wait period the
@@ -150,6 +150,7 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                                 turretReadySupplier),
                         // Delayed sweep: wait, then raise the harvester arm to push hopper Fuel forward.
                         Commands.waitSeconds(subsystem.getConfig().getFireReadySweepDelaySeconds())
+                                .andThen(intakeCommandFactory.createIdleCommand().asProxy())
                                 .andThen(harvesterCommandFactory.createSweepCommand().asProxy())
                                 .andThen(harvesterCommandFactory.createDeployCommand().asProxy())))
                 // Cleanup: transition back to IDLE regardless of how fire ready ends.

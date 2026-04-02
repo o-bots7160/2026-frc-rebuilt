@@ -392,7 +392,7 @@
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "fieldType": "ANDYMARK",
     "poseFilter": {
       "linearStandardDeviationBaseline": 0.03,
@@ -441,6 +441,6 @@
     "verbose": false,
     "endgameThresholdSeconds": 30.0,
     "autoTransitionEnabled": true,
-    "fireReadySweepDelaySeconds": 10.0
+    "fireReadySweepDelaySeconds": 6.0
   }
 }
