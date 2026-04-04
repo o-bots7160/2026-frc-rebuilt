@@ -139,6 +139,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
                 config.pid.getkI(),
                 config.pid.getkD(),
                 kDt);
+        applyAntiWindup(config);
 
         targetVelocityRadPerSec           = 0.0;
         setpointVelocityRadPerSec         = 0.0;
@@ -428,6 +429,30 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
                 config.pid.getkP(),
                 config.pid.getkI(),
                 config.pid.getkD());
+        applyAntiWindup(config);
         rebuildVelocityProfile();
+    }
+
+    /**
+     * Applies IZone and integrator range limits from config to the PID controller.
+     * <p>
+     * When {@code iZone} is greater than zero, the integral accumulator resets whenever the error exceeds the threshold, preventing windup during
+     * large transients. When {@code integratorRangeMax} is greater than zero, the integral output is clamped to the specified voltage range.
+     * </p>
+     *
+     * @param config configuration bundle supplying anti-windup parameters
+     */
+    private void applyAntiWindup(TConfig config) {
+        double iZone = config.pid.getIZone();
+        if (iZone > 0.0) {
+            controller.setIZone(iZone);
+        } else {
+            controller.setIZone(Double.POSITIVE_INFINITY);
+        }
+
+        double integratorRangeMax = config.pid.getIntegratorRangeMax();
+        if (integratorRangeMax > 0.0) {
+            controller.setIntegratorRange(-integratorRangeMax, integratorRangeMax);
+        }
     }
 }

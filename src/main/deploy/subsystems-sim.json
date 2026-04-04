@@ -328,7 +328,9 @@
     "pid": {
       "kP": 0.18,
       "kI": 0,
-      "kD": 0
+      "kD": 0,
+      "iZone": 0,
+      "integratorRangeMax": 2.0
     },
     "feedforward": {
       "kS": 0.01,
