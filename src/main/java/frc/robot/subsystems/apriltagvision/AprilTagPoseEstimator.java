@@ -230,9 +230,10 @@ public class AprilTagPoseEstimator {
             }
         }
 
-        // Single-tag measurements can be ambiguous; reject if too uncertain.
+        // PhotonVision reports negative ambiguity for invalid single-tag ambiguity, so reject it
+        // the same way we reject over-threshold ambiguity.
         if (observation.tagCount() == 1
-                && observation.ambiguity() > params.maxAmbiguity()) {
+                && (observation.ambiguity() < 0.0 || observation.ambiguity() > params.maxAmbiguity())) {
             return Optional.of(RejectionReason.SINGLE_TAG_AMBIGUITY);
         }
 
