@@ -105,8 +105,12 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         // Publish the HARVEST_READY state, deploy the arm, then start the intake.
         // Sequential (not parallel) so the arm clears the frame before rollers spin.
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.HARVEST_READY, "command"))
-                // Lower the harvester arm outside the frame perimeter.
-                .andThen(harvesterCommandFactory.createDeployCommand())
+                // Deploy the harvester arm while idling the intake. The deploy command
+                // is the deadline — when the arm settles (or immediately if already
+                // deployed), the idle intake is interrupted and intake-and-hold begins.
+                .andThen(Commands.deadline(
+                        harvesterCommandFactory.createDeployCommand(),
+                        intakeCommandFactory.createIdleCommand()))
                 // Spin the intake and feeder to pull Fuel into the hopper.
                 .andThen(intakeCommandFactory.createIntakeAndHoldCommand())
                 .withName("GameplayState-HarvestReady");
@@ -148,11 +152,20 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                         feederCommandFactory.createFireWhenReadyCommand(
                                 shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
                                 turretReadySupplier),
-                        // Delayed sweep: wait, then raise the harvester arm to push hopper Fuel forward.
+                        // Delayed sweep: wait, then sweep the harvester arm while the intake
+                        // pulls Fuel forward. The sweep command is the deadline — when it
+                        // finishes, the intake-and-hold is interrupted, then both mechanisms
+                        // return to their resting states (idle intake, deploy harvester).
                         Commands.waitSeconds(subsystem.getConfig().getFireReadySweepDelaySeconds())
-                                .andThen(intakeCommandFactory.createIdleCommand().asProxy())
-                                .andThen(harvesterCommandFactory.createSweepCommand().asProxy())
-                                .andThen(harvesterCommandFactory.createDeployCommand().asProxy())))
+                                .andThen(Commands.deadline(
+                                        harvesterCommandFactory.createSweepCommand().asProxy(),
+                                        intakeCommandFactory.createIntakeAndHoldCommand().asProxy()))
+                                // Idle the intake and deploy the harvester in parallel. The deploy
+                                // command is the deadline — when the arm settles, the idle intake
+                                // is interrupted and the sweep branch ends.
+                                .andThen(Commands.deadline(
+                                        harvesterCommandFactory.createDeployCommand().asProxy(),
+                                        intakeCommandFactory.createIdleCommand().asProxy()))))
                 // Cleanup: transition back to IDLE regardless of how fire ready ends.
                 .finallyDo(() -> {
                     subsystem.requestState(GameplayState.IDLE, "fire-end");
@@ -202,9 +215,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 .andThen(Commands.parallel(
                         // Raise the harvester arm inside the frame perimeter.
                         harvesterCommandFactory.createStowCommand(),
-                        // shooterCommandFactory.createIdleCommand(),
-                        // indexerCommandFactory.createStopCommand(),
-                        // feederCommandFactory.createStopCommand(),
                         // Stop the intake rollers.
                         intakeCommandFactory.createStopCommand()))
                 .withName("GameplayState-Travel");
@@ -228,9 +238,6 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                 .andThen(Commands.parallel(
                         // Lower the harvester arm for trench clearance.
                         harvesterCommandFactory.createDeployCommand(),
-                        // shooterCommandFactory.createIdleCommand(),
-                        // indexerCommandFactory.createStopCommand(),
-                        // feederCommandFactory.createStopCommand(),
                         // Stop the intake rollers.
                         intakeCommandFactory.createStopCommand()))
                 .withName("GameplayState-TrenchTravel");
