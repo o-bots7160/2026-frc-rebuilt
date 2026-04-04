@@ -80,7 +80,7 @@
   },
   "driveBaseSubsystem": {
     "enabled": true,
-    "verbose": false,
+    "verbose": true,
     "swerveConfigDirectory": "swerve",
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
@@ -347,7 +347,7 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.01,
+      "kP": 0.017,
       "kI": 0.0,
       "kD": 0.0,
       "iZone": 0.0,
