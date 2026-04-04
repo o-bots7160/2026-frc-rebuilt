@@ -80,7 +80,7 @@
   },
   "driveBaseSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "swerveConfigDirectory": "swerve",
     "maximumLinearSpeedFeetPerSecond": 17.2,
     "maximumAngularSpeedDegreesPerSecond": 540.0,
@@ -176,8 +176,8 @@
       "kG": 0.35
     },
     "motionProfile": {
-      "maximumVelocityDegreesPerSecond": 120.0,
-      "maximumAccelerationDegreesPerSecondSquared": 80.0,
+      "maximumVelocityDegreesPerSecond": 140.0,
+      "maximumAccelerationDegreesPerSecondSquared": 100.0,
       "positionToleranceDegrees": 2.0,
       "velocityToleranceDegreesPerSecond": 5.0,
       "initialPositionDegrees": 160.0,
@@ -394,7 +394,7 @@
   },
   "aprilTagVisionSubsystem": {
     "enabled": true,
-    "verbose": true,
+    "verbose": false,
     "fieldType": "ANDYMARK",
     "poseFilter": {
       "linearStandardDeviationBaseline": 0.03,

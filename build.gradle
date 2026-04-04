@@ -101,6 +101,23 @@ deploy {
     }
 }
 
+// Print clear timestamps so the team knows exactly when a deploy started and finished.
+tasks.named('deploy') {
+    def timeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss a z")
+    timeFormat.timeZone = TimeZone.getTimeZone("America/New_York")
+
+    doFirst {
+        println "\n=========================================="
+        println " DEPLOY STARTED: ${timeFormat.format(new Date())}"
+        println "==========================================\n"
+    }
+    doLast {
+        println "\n=========================================="
+        println " DEPLOY COMPLETED: ${timeFormat.format(new Date())}"
+        println "==========================================\n"
+    }
+}
+
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
 // Set to true to use debug for all targets including JNI, which will drastically impact
