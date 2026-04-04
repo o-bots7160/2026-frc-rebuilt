@@ -586,7 +586,7 @@ public class TriggerBindings {
                 gameplayStateCommandFactory.createFireReadyCommand());
 
         // X button: harvest fuel.
-        operatorController.x().whileTrue(
+        operatorController.x().onTrue(
                 gameplayStateCommandFactory.createHarvestReadyCommand());
 
         // A button: eject all fuel.

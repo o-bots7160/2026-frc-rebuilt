@@ -102,17 +102,14 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
      * @return parallel command group that prepares the robot for Fuel collection
      */
     public Command createHarvestReadyCommand() {
-        // Publish the HARVEST_READY state, deploy the arm, then start the intake.
-        // Sequential (not parallel) so the arm clears the frame before rollers spin.
+        // Publish the HARVEST_READY state, then deploy the arm and spin the intake
+        // in parallel so both actions begin immediately.
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.HARVEST_READY, "command"))
-                // Deploy the harvester arm while idling the intake. The deploy command
-                // is the deadline — when the arm settles (or immediately if already
-                // deployed), the idle intake is interrupted and intake-and-hold begins.
-                .andThen(Commands.deadline(
+                .andThen(Commands.parallel(
+                        // Deploy the harvester arm.
                         harvesterCommandFactory.createDeployCommand(),
-                        intakeCommandFactory.createIdleCommand()))
-                // Spin the intake and feeder to pull Fuel into the hopper.
-                .andThen(intakeCommandFactory.createIntakeAndHoldCommand())
+                        // Spin the intake and feeder to pull Fuel into the hopper.
+                        intakeCommandFactory.createIntakeAndHoldCommand()))
                 .withName("GameplayState-HarvestReady");
     }
 

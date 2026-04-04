@@ -176,8 +176,8 @@
       "kG": 0.35
     },
     "motionProfile": {
-      "maximumVelocityDegreesPerSecond": 100.0,
-      "maximumAccelerationDegreesPerSecondSquared": 45.0,
+      "maximumVelocityDegreesPerSecond": 120.0,
+      "maximumAccelerationDegreesPerSecondSquared": 80.0,
       "positionToleranceDegrees": 2.0,
       "velocityToleranceDegreesPerSecond": 5.0,
       "initialPositionDegrees": 160.0,
@@ -225,7 +225,7 @@
       "settleTimeSeconds": 0.15,
       "idleVelocityRpm": 100.0
     },
-    "forwardVelocityRpm": 1000.0,
+    "forwardVelocityRpm": 1100.0,
     "reverseVelocityRpm": 300.0,
     "reversePulseDurationSeconds": 0.1
   },
@@ -265,7 +265,7 @@
       "settleTimeSeconds": 0.1,
       "idleVelocityRpm": 100.0
     },
-    "feedVelocityRpm": 1000.0,
+    "feedVelocityRpm": 1200.0,
     "reverseVelocityRpm": 400.0
   },
   "turretSubsystem": {
