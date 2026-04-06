@@ -81,6 +81,16 @@ public class PoseFilterConfig extends AbstractConfig {
     public double maximumAmbiguity = 0.15;
 
     /**
+     * Duration in seconds that {@code HasVisibleTags} stays true after the last tag is seen.
+     * <p>
+     * Camera frames arrive at the camera's own FPS, which may not align with the 50 Hz robot loop. On cycles where no new frames are available,
+     * the tag-ID set is empty and the visibility boolean would flicker. This hold-off keeps the boolean stable for the configured duration after
+     * tags were last observed, preventing misleading flicker on the dashboard.
+     * </p>
+     */
+    public double tagVisibilityHoldOffSeconds = 0.25;
+
+    /**
      * Returns the maximum average tag distance threshold.
      *
      * @return maximum tag distance in meters
@@ -168,5 +178,14 @@ public class PoseFilterConfig extends AbstractConfig {
      */
     public double getMaximumAmbiguity() {
         return readTunableNumber("maximumAmbiguity", maximumAmbiguity);
+    }
+
+    /**
+     * Returns the hold-off duration that keeps {@code HasVisibleTags} true after tags disappear.
+     *
+     * @return hold-off duration in seconds
+     */
+    public double getTagVisibilityHoldOffSeconds() {
+        return readTunableNumber("tagVisibilityHoldOffSeconds", tagVisibilityHoldOffSeconds);
     }
 }

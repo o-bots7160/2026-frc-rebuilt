@@ -237,10 +237,10 @@
         "containers": [
           {
             "title": "Field",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 768.0,
-            "height": 384.0,
+            "x": 0.0,
+            "y": 128.0,
+            "width": 512.0,
+            "height": 256.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/RobotPoseSubsystem/Field",
@@ -260,8 +260,8 @@
             "title": "AprilTag Seen",
             "x": 0.0,
             "y": 0.0,
-            "width": 512.0,
-            "height": 256.0,
+            "width": 256.0,
+            "height": 128.0,
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/AprilTagVisionSubsystem/Summary/HasVisibleTags",
@@ -275,9 +275,9 @@
           },
           {
             "title": "Visible Tag IDs",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 512.0,
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -285,6 +285,32 @@
               "period": 0.06,
               "data_type": "string",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "photonvision_Port_1182_Output_MJPEG_Server",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "photonvision_Port_1184_Output_MJPEG_Server",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/photonvision_Port_1184_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0
             }
           }
         ]

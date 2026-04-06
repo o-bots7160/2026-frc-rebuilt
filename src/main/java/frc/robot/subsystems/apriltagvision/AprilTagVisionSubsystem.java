@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.shared.subsystems.AbstractSubsystem;
 import frc.robot.shared.subsystems.VisionMeasurementConsumer;
 import frc.robot.subsystems.apriltagvision.AprilTagPoseEstimator.RejectionReason;
@@ -97,6 +98,18 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /** Reusable per-cycle set that accumulates deduplicated, sorted tag IDs across all cameras. */
     private final Set<Integer>                  allVisibleTagIds = new TreeSet<>();
 
+    /** Supplier for the tag visibility hold-off duration, read from the tunable pose filter config. */
+    private final java.util.function.DoubleSupplier tagVisibilityHoldOffSupplier;
+
+    /**
+     * FPGA timestamp of the most recent cycle in which at least one tag was visible.
+     * <p>
+     * Used together with the hold-off duration to smooth the {@code HasVisibleTags} boolean so
+     * it does not flicker when camera frames and robot loop cycles are misaligned.
+     * </p>
+     */
+    private double                              lastTagVisibleTimestamp;
+
     /** Guards the disabled-periodic log message so it prints only once per disable cycle. */
     private boolean                             disabledPeriodicLogged;
 
@@ -145,6 +158,8 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                         poseFilter.getTagSwitchStdDevMultiplier(),
                         poseFilter.getInitialPoseAcceptanceCount()),
                 poseSupplier);
+
+        this.tagVisibilityHoldOffSupplier = poseFilter::getTagVisibilityHoldOffSeconds;
 
         this.cameras       = createCameras(config, fieldLayout, poseSupplier,
                 poseFilter.getMaximumTagDistanceMeters());
@@ -504,8 +519,19 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         log.recordVerboseOutput("Summary/RobotPosesAccepted", acceptedPoses.toArray(new Pose3d[0]));
         log.recordVerboseOutput("Summary/RobotPosesRejected", rejectedPoses.toArray(new Pose3d[0]));
 
-        // Publish tag visibility via AdvantageKit for the Elastic Dashboard Competition tab.
-        log.recordOutput("Summary/HasVisibleTags", !allVisibleTagIds.isEmpty());
+        // Update the last-seen timestamp when tags are visible this cycle.
+        boolean tagsVisibleThisCycle = !allVisibleTagIds.isEmpty();
+        if (tagsVisibleThisCycle) {
+            lastTagVisibleTimestamp = Timer.getFPGATimestamp();
+        }
+
+        // Apply hold-off so the boolean stays true for a short window after the last tag
+        // disappears, preventing flicker caused by camera/robot-loop frame-rate mismatch.
+        double holdOffSeconds = tagVisibilityHoldOffSupplier.getAsDouble();
+        boolean hasVisibleTags = tagsVisibleThisCycle
+                || (Timer.getFPGATimestamp() - lastTagVisibleTimestamp) < holdOffSeconds;
+
+        log.recordOutput("Summary/HasVisibleTags", hasVisibleTags);
         log.recordOutput("Summary/VisibleTagIds",
                 allVisibleTagIds.stream().map(String::valueOf).collect(Collectors.joining(", ")));
     }
