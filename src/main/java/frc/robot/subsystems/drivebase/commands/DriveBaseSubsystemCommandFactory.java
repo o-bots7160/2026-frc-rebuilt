@@ -500,8 +500,10 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
                         return;
                     }
 
-                    // Proportional speed: full speed when far, slowing to 0.8 m/s near the target.
-                    double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.8, distance * 2.5));
+                    // Squared ramp: decelerates aggressively in the final meter to avoid
+                    // overshooting into walls. Floor of 0.4 m/s keeps the robot creeping
+                    // rather than coasting on inertia.
+                    double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.4, distance * distance * 4.0));
                     double vx    = speed * delta.getX() / distance;
                     double vy    = speed * delta.getY() / distance;
 
@@ -546,8 +548,10 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
                 return;
             }
 
-            // Proportional speed: full speed when far, slowing to 0.8 m/s near the target.
-            double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.8, distance * 3.0));
+            // Squared ramp: decelerates aggressively in the final meter to avoid
+            // overshooting into walls. Floor of 0.4 m/s keeps the robot creeping
+            // rather than coasting on inertia.
+            double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.4, distance * distance * 4.0));
             double vx    = speed * delta.getX() / distance;
             double vy    = speed * delta.getY() / distance;
 
