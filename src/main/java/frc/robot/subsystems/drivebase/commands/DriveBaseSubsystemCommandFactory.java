@@ -345,7 +345,8 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
      * <p>
      * The target is stored in blue-alliance coordinates and flipped at runtime for the red alliance. When the straight-line path from the robot's
      * current position to the target crosses a configured trench zone, intermediate waypoints are inserted at the zone entry and exit so the robot
-     * drives through the trench with the correct heading. When no trench zone is crossed, a single pathfind command drives directly to the target.
+     * drives through the trench with the correct heading. The robot begins translating and rotating simultaneously toward the trench entry to
+     * eliminate the delay of a stop-and-rotate step. When no trench zone is crossed, a single pathfind command drives directly to the target.
      * </p>
      *
      * @param targetConfig config holding the target pose for this d-pad direction (blue-alliance coordinates)
@@ -381,9 +382,11 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
                 Pose2d exitPose      = trenchZone.computeExitWaypoint(currentPose, targetPose);
                 double trenchHeading = entryPose.getRotation().getRadians();
 
+                // Drive toward the entry while simultaneously aligning to the trench heading,
+                // then traverse the trench and pathfind to the final target.
                 return Commands.sequence(
-                        createRotateToHeadingCommand(trenchHeading),
-                        createPathfindToPoseCommand(entryPose, constraints),
+                        createDriveTowardPoseWithHeadingCommand(
+                                entryPose, trenchHeading, driverConfig.getDpadMaxVelocityMetersPerSecond()),
                         createDriveStraightWithHeadingCommand(
                                 exitPose, driverConfig.getDpadMaxVelocityMetersPerSecond()),
                         createPathfindToPoseCommand(targetPose, constraints));
@@ -432,7 +435,7 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
      * Builds a command that rotates the robot in place to a target heading using the heading PID controller, then finishes.
      * <p>
      * The command drives with zero translation and PID-controlled omega until the heading error stays within the configured rotation tolerance for
-     * 250 milliseconds. The debounce prevents the command from ending while the robot is still oscillating through the target. A 3-second safety
+     * 100 milliseconds. The debounce prevents the command from ending while the robot is still oscillating through the target. A 2-second safety
      * timeout prevents indefinite spinning if the PID cannot converge.
      * </p>
      *
@@ -446,8 +449,8 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
 
         double    normalizedTarget = MathUtil.angleModulus(targetHeadingRadians);
 
-        // Require heading within tolerance for 250ms before declaring settled.
-        Debouncer settledDebouncer = new Debouncer(0.25, Debouncer.DebounceType.kRising);
+        // Require heading within tolerance for 100ms before declaring settled.
+        Debouncer settledDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kRising);
 
         return Commands.runOnce(() -> {
             subsystem.resetHeadingController();
@@ -461,8 +464,56 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
                     double error  = Math.abs(MathUtil.angleModulus(normalizedTarget - currentRadians));
                     return settledDebouncer.calculate(error < subsystem.getRotationToleranceRadians());
                 })
-                .withTimeout(3.0)
+                .withTimeout(2.0)
                 .withName("RotateToHeading");
+    }
+
+    /**
+     * Builds a command that drives toward a target position while simultaneously rotating to a desired heading.
+     * <p>
+     * Unlike the rotate-then-pathfind approach, this command begins translating and rotating at the same time, eliminating the stop-and-spin delay.
+     * Field-relative velocity is computed toward the target position and {@code driveFieldRelativeWithHeading} locks the heading via PID. Speed is
+     * proportionally reduced as the robot approaches the target to avoid overshooting.
+     * </p>
+     *
+     * @param target                  target pose in field coordinates; position defines where to drive
+     * @param targetHeadingRadians    desired field-relative heading in radians (counter-clockwise positive)
+     * @param maxSpeedMetersPerSecond maximum translation speed in meters per second
+     * @return command that drives to the target while rotating to the heading, or a no-op if the subsystem is disabled
+     */
+    private Command createDriveTowardPoseWithHeadingCommand(Pose2d target, double targetHeadingRadians, double maxSpeedMetersPerSecond) {
+        if (subsystem.isSubsystemDisabled()) {
+            return Commands.print("Drive-toward skipped: drive base disabled.");
+        }
+
+        double normalizedHeading       = MathUtil.angleModulus(targetHeadingRadians);
+        double positionToleranceMeters = 0.3;
+
+        return Commands.runOnce(() -> subsystem.resetHeadingController())
+                .andThen(Commands.run(() -> {
+                    Pose2d        current  = subsystem.getFusedPose();
+                    Translation2d delta    = target.getTranslation().minus(current.getTranslation());
+                    double        distance = delta.getNorm();
+
+                    if (distance < 0.01) {
+                        subsystem.driveFieldRelativeWithHeading(0.0, 0.0, normalizedHeading);
+                        return;
+                    }
+
+                    // Proportional speed: full speed when far, slowing to 0.8 m/s near the target.
+                    double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.8, distance * 2.5));
+                    double vx    = speed * delta.getX() / distance;
+                    double vy    = speed * delta.getY() / distance;
+
+                    subsystem.driveFieldRelativeWithHeading(vx, vy, normalizedHeading);
+                }, subsystem))
+                .until(() -> {
+                    double distance = target.getTranslation().getDistance(
+                            subsystem.getFusedPose().getTranslation());
+                    return distance < positionToleranceMeters;
+                })
+                .withTimeout(5.0)
+                .withName("DriveTowardPoseWithHeading");
     }
 
     /**
@@ -495,8 +546,8 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
                 return;
             }
 
-            // Proportional speed: full speed when far, slowing to 0.5 m/s near the target.
-            double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.5, distance * 2.0));
+            // Proportional speed: full speed when far, slowing to 0.8 m/s near the target.
+            double speed = Math.min(maxSpeedMetersPerSecond, Math.max(0.8, distance * 3.0));
             double vx    = speed * delta.getX() / distance;
             double vy    = speed * delta.getY() / distance;
 
