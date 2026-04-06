@@ -19,6 +19,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -103,6 +104,9 @@ public class Robot extends LoggedRobot {
 
         if (isSimulation()) {
             RobotEnvironment.silenceJoystickConnectionWarning(true);
+        } else {
+            // Web Server for Elastic Dashboard
+            WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
         }
     }
 
@@ -120,10 +124,18 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
     }
 
-    /** Runs once when the robot enters the disabled state; no-op by default. */
+    /**
+     * Runs once when the robot enters the disabled state.
+     * <p>
+     * On real hardware, activates initial pose calibration so the vision system continuously updates the robot pose without the odometry deviation
+     * filter. This lets operators reposition the robot on the field while watching the dashboard pose converge before a match starts.
+     * </p>
+     */
     @Override
     public void disabledInit() {
-        
+        if (isReal()) {
+            m_robotContainer.beginInitialPoseCalibration();
+        }
     }
 
     /**
@@ -144,9 +156,18 @@ public class Robot extends LoggedRobot {
         }
     }
 
-    /** Runs once when the robot exits the disabled state; no-op by default. */
+    /**
+     * Runs once when the robot exits the disabled state.
+     * <p>
+     * On real hardware, deactivates initial pose calibration so normal vision filtering (including odometry deviation checking) resumes for
+     * match-time operation.
+     * </p>
+     */
     @Override
     public void disabledExit() {
+        if (isReal()) {
+            m_robotContainer.endInitialPoseCalibration();
+        }
     }
 
     /**

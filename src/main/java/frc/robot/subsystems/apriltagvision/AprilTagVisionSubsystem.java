@@ -153,6 +153,41 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     }
 
     /**
+     * Activates initial pose calibration mode for the disabled period.
+     * <p>
+     * While active, every geometrically valid vision observation is accepted regardless of how far it deviates from the current odometry estimate.
+     * The first accepted calibration pose also hard-resets odometry so the Kalman filter immediately tracks the camera-derived position. This lets
+     * operators reposition the robot on the field while disabled and watch the pose converge on the dashboard before a match starts.
+     * </p>
+     */
+    public void beginInitialPoseCalibration() {
+        if (isSubsystemDisabled()) {
+            logDisabled("beginInitialPoseCalibration");
+            return;
+        }
+
+        poseEstimator.setPoseCalibrationActive(true);
+        hasResetOdometryFromVision = false;
+        log.info("Initial pose calibration started: odometry deviation filter bypassed.");
+    }
+
+    /**
+     * Deactivates initial pose calibration mode when leaving the disabled period.
+     * <p>
+     * Normal filtering (including the odometry deviation check) resumes so match-time observations are held to the standard confidence thresholds.
+     * </p>
+     */
+    public void endInitialPoseCalibration() {
+        if (isSubsystemDisabled()) {
+            logDisabled("endInitialPoseCalibration");
+            return;
+        }
+
+        poseEstimator.setPoseCalibrationActive(false);
+        log.info("Initial pose calibration ended: normal filtering restored.");
+    }
+
+    /**
      * Pulls the latest frames from each camera, filters pose observations, and forwards accepted measurements to the robot state estimator.
      */
     @Override
@@ -308,7 +343,10 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             robotPoses.add(poseObservation.pose());
 
             // Let the estimator decide if this observation is trustworthy.
-            var result = poseEstimator.estimate(poseObservation, cameraName);
+            // During pose calibration, use the dedicated calibration path that bypasses the odometry deviation filter.
+            var result = poseEstimator.isPoseCalibrationActive()
+                    ? poseEstimator.estimateForCalibration(poseObservation, cameraName)
+                    : poseEstimator.estimate(poseObservation, cameraName);
             if (result.rejectionReason().isPresent()) {
                 // Store rejected poses so we can diagnose filtering issues.
                 rejectedPoses.add(poseObservation.pose());
@@ -455,6 +493,7 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         log.recordOutput("Summary/AcceptedCount", acceptedPoses.size());
         log.recordOutput("Summary/RejectedCount", rejectedPoses.size());
         log.recordOutput("Summary/InitialAcceptanceWindow", poseEstimator.isWithinInitialAcceptanceWindow());
+        log.recordOutput("Summary/PoseCalibrationActive", poseEstimator.isPoseCalibrationActive());
         log.recordOutput("Summary/OdometryResetFromVision", hasResetOdometryFromVision);
         for (var entry : rejectionCounts.entrySet()) {
             log.recordOutput("Summary/Rejected/" + entry.getKey().name(), entry.getValue());

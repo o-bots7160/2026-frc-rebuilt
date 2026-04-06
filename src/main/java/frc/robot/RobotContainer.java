@@ -282,6 +282,28 @@ public class RobotContainer {
     }
 
     /**
+     * Activates initial pose calibration mode for the disabled period.
+     * <p>
+     * While active, every geometrically valid vision observation is accepted regardless of odometry deviation. The first accepted pose also
+     * hard-resets odometry so the Kalman filter tracks the camera-derived position immediately. Call this in {@code disabledInit()} on real hardware
+     * so operators can reposition the robot on the field and watch the dashboard pose converge before a match.
+     * </p>
+     */
+    public void beginInitialPoseCalibration() {
+        aprilTagVisionSubsystem.beginInitialPoseCalibration();
+    }
+
+    /**
+     * Deactivates initial pose calibration mode when the robot leaves the disabled state.
+     * <p>
+     * Normal filtering (including odometry deviation checking) resumes so match-time observations are held to standard confidence thresholds.
+     * </p>
+     */
+    public void endInitialPoseCalibration() {
+        aprilTagVisionSubsystem.endInitialPoseCalibration();
+    }
+
+    /**
      * Returns the command to run during autonomous mode.
      * <p>
      * Update this method to swap between auto routines.

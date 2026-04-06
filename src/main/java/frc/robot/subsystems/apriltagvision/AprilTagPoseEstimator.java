@@ -143,6 +143,15 @@ public class AprilTagPoseEstimator {
     private int                             acceptedMeasurementCount;
 
     /**
+     * When true, the odometry deviation filter is bypassed so every geometrically valid observation is accepted.
+     * <p>
+     * Activated during the disabled period on real hardware so the pose estimator continuously tracks vision while operators
+     * position the robot on the field. All other safety filters (ambiguity, field bounds, Z height, tag distance) remain active.
+     * </p>
+     */
+    private boolean                         poseCalibrationActive;
+
+    /**
      * Creates a new AprilTagPoseEstimator.
      *
      * @param params               configuration parameters for filtering and uncertainty
@@ -171,6 +180,50 @@ public class AprilTagPoseEstimator {
     }
 
     /**
+     * Returns whether pose calibration mode is currently active.
+     *
+     * @return true when the odometry deviation filter is bypassed for continuous calibration
+     */
+    public boolean isPoseCalibrationActive() {
+        return poseCalibrationActive;
+    }
+
+    /**
+     * Enables or disables pose calibration mode.
+     * <p>
+     * When enabled, the odometry deviation filter is bypassed so every geometrically valid vision observation is accepted. All other safety filters
+     * (ambiguity, field bounds, Z height, tag distance) remain active. Enable this while the robot is disabled so operators can continuously
+     * calibrate the pose by repositioning the robot on the field.
+     * </p>
+     *
+     * @param active true to bypass the odometry deviation filter, false to restore normal filtering
+     */
+    public void setPoseCalibrationActive(boolean active) {
+        this.poseCalibrationActive = active;
+    }
+
+    /**
+     * Processes a pose observation for initial pose calibration, bypassing the odometry deviation filter.
+     * <p>
+     * Use this method during the disabled period to accept all geometrically valid observations regardless of how far they deviate from the current
+     * odometry estimate. This lets operators reposition the robot on the field and see the pose converge in real time. All other safety filters
+     * (ambiguity, field bounds, Z height, tag distance) remain active so physically impossible poses are still rejected.
+     * </p>
+     *
+     * @param observation the raw pose observation from vision
+     * @param cameraName  the name of the camera that produced this observation
+     * @return estimation result containing the measurement or rejection reason
+     */
+    public EstimationResult estimateForCalibration(PoseObservation observation, String cameraName) {
+        Optional<RejectionReason> rejection = checkRejection(observation, true);
+        if (rejection.isPresent()) {
+            return EstimationResult.rejected(rejection.get());
+        }
+
+        return buildAcceptedResult(observation, cameraName);
+    }
+
+    /**
      * Processes a pose observation and returns an estimation result.
      * <p>
      * Standard deviations are scaled by distance squared divided by tag count, using meters for distance. When the set of observed tag IDs changes
@@ -183,12 +236,26 @@ public class AprilTagPoseEstimator {
      * @return estimation result containing the measurement or rejection reason
      */
     public EstimationResult estimate(PoseObservation observation, String cameraName) {
-        // Run rejection filters first.
-        Optional<RejectionReason> rejection = checkRejection(observation);
+        Optional<RejectionReason> rejection = checkRejection(observation, false);
         if (rejection.isPresent()) {
             return EstimationResult.rejected(rejection.get());
         }
 
+        acceptedMeasurementCount++;
+        return buildAcceptedResult(observation, cameraName);
+    }
+
+    /**
+     * Builds an accepted estimation result from a pose observation that has already passed rejection filters.
+     * <p>
+     * Computes distance-scaled standard deviations and applies tag-switch dampening so the Kalman filter weights the measurement appropriately.
+     * </p>
+     *
+     * @param observation the pose observation that passed filtering
+     * @param cameraName  the camera that produced the observation, used for tag-switch tracking
+     * @return accepted estimation result with computed standard deviations
+     */
+    private EstimationResult buildAcceptedResult(PoseObservation observation, String cameraName) {
         // Farther tags and fewer tags mean less confidence, so scale up the uncertainty.
         double factor              = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
         double linearStdDev        = params.linearStdDevBaseline() * factor;
@@ -201,8 +268,6 @@ public class AprilTagPoseEstimator {
         linearStdDev  *= tagSwitchMultiplier;
         angularStdDev *= tagSwitchMultiplier;
 
-        // Package the pose, timestamp, and uncertainty so the estimator can fuse it.
-        acceptedMeasurementCount++;
         return EstimationResult.accepted(new VisionMeasurement(
                 observation.pose().toPose2d(),
                 observation.timestamp(),
@@ -211,11 +276,17 @@ public class AprilTagPoseEstimator {
 
     /**
      * Checks whether a pose observation should be rejected and returns the reason.
+     * <p>
+     * When {@code skipOdometryDeviation} is true, the odometry deviation filter is omitted so the estimator can accept poses regardless of how far
+     * they are from the current odometry estimate. This is used during disabled-period pose calibration. All other safety filters (tag count,
+     * ambiguity, field bounds, Z height, tag distance) always run.
+     * </p>
      *
-     * @param observation the pose observation to evaluate
+     * @param observation            the pose observation to evaluate
+     * @param skipOdometryDeviation  true to bypass the odometry deviation check (calibration mode)
      * @return the rejection reason, or empty if the observation passes all checks
      */
-    private Optional<RejectionReason> checkRejection(PoseObservation observation) {
+    private Optional<RejectionReason> checkRejection(PoseObservation observation, boolean skipOdometryDeviation) {
         // If we see no tags, there is no useful pose to trust.
         if (observation.tagCount() == 0) {
             return Optional.of(RejectionReason.NO_TAGS);
@@ -263,16 +334,18 @@ public class AprilTagPoseEstimator {
         }
 
         // Reject poses that deviate too far from odometry.
-        // Skip this check during the initial acceptance window so the estimator can lock onto a real field position
-        // before odometry has converged.
-        boolean withinInitialAcceptanceWindow = params.initialPoseAcceptanceCount() > 0
-                && acceptedMeasurementCount < params.initialPoseAcceptanceCount();
-        if (!withinInitialAcceptanceWindow) {
-            Pose2d odometryPose = odometryPoseSupplier.get();
-            Pose2d visionPose2d = pose.toPose2d();
-            double deviation    = odometryPose.getTranslation().getDistance(visionPose2d.getTranslation());
-            if (deviation > params.maxPoseDeviationMeters()) {
-                return Optional.of(RejectionReason.ODOMETRY_DEVIATION);
+        // Skip this check during calibration mode, or during the initial acceptance window so the estimator can lock
+        // onto a real field position before odometry has converged.
+        if (!skipOdometryDeviation) {
+            boolean withinInitialAcceptanceWindow = params.initialPoseAcceptanceCount() > 0
+                    && acceptedMeasurementCount < params.initialPoseAcceptanceCount();
+            if (!withinInitialAcceptanceWindow) {
+                Pose2d odometryPose = odometryPoseSupplier.get();
+                Pose2d visionPose2d = pose.toPose2d();
+                double deviation    = odometryPose.getTranslation().getDistance(visionPose2d.getTranslation());
+                if (deviation > params.maxPoseDeviationMeters()) {
+                    return Optional.of(RejectionReason.ODOMETRY_DEVIATION);
+                }
             }
         }
 
