@@ -104,7 +104,7 @@ public class Robot extends LoggedRobot {
 
         if (isSimulation()) {
             RobotEnvironment.silenceJoystickConnectionWarning(true);
-        } else {
+        } else if (!RobotEnvironment.isFMSAttached()) {
             // Web Server for Elastic Dashboard
             WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
         }
@@ -229,7 +229,7 @@ public class Robot extends LoggedRobot {
         if (isSimulation()) {
             Pose2d startPose = getSimulationStartPose();
             m_robotContainer.resetPose(startPose);
-        } else {//if (!RobotEnvironment.isFMSAttached()) {
+        } else {// if (!RobotEnvironment.isFMSAttached()) {
             m_robotContainer.resetPoseFromVision();
         }
 
