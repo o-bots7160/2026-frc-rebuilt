@@ -36,7 +36,7 @@ public class GameplayStateSubsystemConfig extends AbstractSubsystemConfig {
      * sequence.
      * </p>
      */
-    public double  fireReadySweepDelaySeconds     = 10.0;
+    public double  fireReadySweepDelaySeconds     = 7.0;
 
     /**
      * Returns the endgame match time threshold in seconds.
