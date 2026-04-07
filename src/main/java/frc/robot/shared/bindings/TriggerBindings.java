@@ -350,6 +350,11 @@ public class TriggerBindings {
                                 triggerBindingsConfig.getLeftStickXResponseExponent(),
                                 computeTranslationSpeedScale())));
 
+        // Back button: lock wheels in X formation as a defensive stance.
+        // One-shot command — the lock fires once and normal driving resumes with stick input.
+        driverController.back().onTrue(
+                driveBaseCommandFactory.createWheelLockCommand());
+
         configureDpadPathfindingBindings();
     }
 
