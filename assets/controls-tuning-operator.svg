@@ -469,28 +469,28 @@
   <g id="text11468" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st2" transform="translate(2075.9 1220.1)"><tspan x="0" y="0">Turret Lock Toggle</tspan></text>
+        <text class="st2" transform="translate(2075.9 1220.1)"><tspan x="0" y="0">SysId: Drive FR</tspan></text>
       </g>
     </g>
   </g>
   <g id="text11472" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st2" transform="translate(2156.7 1840.4)"><tspan x="0" y="0">Eject Fuel</tspan></text>
+        <text class="st2" transform="translate(2156.7 1840.4)"><tspan x="0" y="0">SysId: Drive FL</tspan></text>
       </g>
     </g>
   </g>
   <g id="text11464" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st2" transform="translate(2075.9 1098)"><tspan x="0" y="0">Fire Fuel</tspan></text>
+        <text class="st2" transform="translate(2075.9 1098)"><tspan x="0" y="0">SysId: Drive BR</tspan></text>
       </g>
     </g>
   </g>
   <g id="text11476" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st2" transform="translate(2153.8 1965.8)"><tspan x="0" y="0">Harvest Fuel</tspan></text>
+        <text class="st2" transform="translate(2153.8 1965.8)"><tspan x="0" y="0">SysId: Drive BL</tspan></text>
       </g>
     </g>
   </g>
@@ -500,11 +500,11 @@
   <path id="path8378" class="st22" d="M1545.9,1449.6l177.5,502.3h420.3" inkscape:connector-curvature="0" sodipodi:nodetypes="ccc"/>
   <path class="st31" d="M0,0"/>
   <g>
-    <path id="path21050" class="st21" d="M165.8,1917.6l-8-8,8,28,8-28-8,8Z" inkscape:connector-curvature="0"/>
+    <path id="path21050" class="st29" d="M165.8,1917.6l-8-8,8,28,8-28-8,8Z" inkscape:connector-curvature="0"/>
     <g id="text10606" class="st4">
       <g class="st4">
         <g class="st4">
-          <text class="st2" transform="translate(204.5 1936.4)"><tspan x="0" y="0">Cut RPM</tspan></text>
+          <text class="st3" transform="translate(204.5 1936.4)"><tspan x="0" y="0">(Unassigned)</tspan></text>
         </g>
       </g>
     </g>
@@ -522,11 +522,11 @@
   </g>
   <path class="st33" d="M0,0"/>
   <g>
-    <path id="path21053" class="st21" d="M165.8,1865.9l8,8-8-28-8,28,8-8Z" inkscape:connector-curvature="0"/>
+    <path id="path21053" class="st29" d="M165.8,1865.9l8,8-8-28-8,28,8-8Z" inkscape:connector-curvature="0"/>
     <g id="text11014" class="st4">
       <g class="st4">
         <g class="st4">
-          <text class="st2" transform="translate(204.5 1872.7)"><tspan x="0" y="0">Boost RPM</tspan></text>
+          <text class="st3" transform="translate(204.5 1872.7)"><tspan x="0" y="0">(Unassigned)</tspan></text>
         </g>
       </g>
     </g>
@@ -543,21 +543,21 @@
   <g id="text1315" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st2" transform="translate(959.3 1060.5)"><tspan x="0" y="0">Idle</tspan></text>
+        <text class="st3" transform="translate(959.3 1060.5)"><tspan x="0" y="0">(Unassigned)</tspan></text>
       </g>
     </g>
   </g>
   <g id="text1323" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st3" transform="translate(278 845.1)"><tspan x="0" y="0">(Unassigned)</tspan></text>
+        <text class="st2" transform="translate(278 845.1)"><tspan x="0" y="0">SysId: Angle FL</tspan></text>
       </g>
     </g>
   </g>
   <g id="text1327" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st3" transform="translate(2009.5 845.1)"><tspan x="0" y="0">(Unassigned)</tspan></text>
+        <text class="st2" transform="translate(2009.5 845.1)"><tspan x="0" y="0">SysId: Angle FR</tspan></text>
       </g>
     </g>
   </g>
@@ -565,8 +565,8 @@
   <path id="path8443" class="st24" d="M1168.1,1597.9c-8.4-2.8-12.9-11.9-10-20.3,2.8-8.4,11.9-12.9,20.3-10s12.9,11.9,10,20.3c-2.8,8.4-11.9,12.9-20.3,10Z" inkscape:connector-curvature="0"/>
   <path class="st24" d="M0,0"/>
   <path id="path8666" class="st24" d="M1337.1,1597.9c-8.4,2.8-17.5-1.7-20.3-10-2.8-8.4,1.7-17.5,10-20.3,8.4-2.8,17.5,1.7,20.3,10,2.8,8.4-1.7,17.5-10,20.3Z" inkscape:connector-curvature="0"/>
-  <path id="path8802" class="st31" d="M980.8,655.3l-121.3,177.7h-219" inkscape:connector-curvature="0" sodipodi:nodetypes="ccc"/>
-  <path id="path8806" class="st31" d="M1665.4,654.8l121.7,178.2h219.6" inkscape:connector-curvature="0" sodipodi:nodetypes="ccc"/>
+  <path id="path8802" class="st22" d="M980.8,655.3l-121.3,177.7h-219" inkscape:connector-curvature="0" sodipodi:nodetypes="ccc"/>
+  <path id="path8806" class="st22" d="M1665.4,654.8l121.7,178.2h219.6" inkscape:connector-curvature="0" sodipodi:nodetypes="ccc"/>
   <path class="st31" d="M0,0"/>
   <path class="st31" d="M0,0"/>
   <g>
@@ -639,24 +639,24 @@
   <g id="text11484" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st1" transform="translate(1046.9 201.2)"><tspan x="0" y="0">Operator</tspan></text>
+        <text class="st1" transform="translate(830 201.2)"><tspan x="0" y="0">Operator (Tuning)</tspan></text>
       </g>
     </g>
   </g>
-  <path id="path11450" class="st22" d="M1213.3,1321.7l-58.3-237.1" inkscape:connector-curvature="0"/>
+  <path id="path11450" class="st31" d="M1213.3,1321.7l-58.3-237.1" inkscape:connector-curvature="0"/>
   <path id="path8804" class="st22" d="M980.8,457.5l-121.3-177.7h-219" inkscape:connector-curvature="0" sodipodi:nodetypes="ccc"/>
   <path id="path8808" class="st22" d="M1671.5,454.8l119.5-175h215.7" inkscape:connector-curvature="0" sodipodi:nodetypes="ccc"/>
   <g id="text8812" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st2" transform="translate(2015.6 290.6)"><tspan x="0" y="0">Travel Mode</tspan></text>
+        <text class="st2" transform="translate(2015.6 290.6)"><tspan x="0" y="0">SysId: Angle BR</tspan></text>
       </g>
     </g>
   </g>
   <g id="text8816" class="st4">
     <g class="st4">
       <g class="st4">
-        <text class="st2" transform="translate(173 290.6)"><tspan x="0" y="0">Trench Travel Mode</tspan></text>
+        <text class="st2" transform="translate(173 290.6)"><tspan x="0" y="0">SysId: Angle BL</tspan></text>
       </g>
     </g>
   </g>

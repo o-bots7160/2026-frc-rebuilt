@@ -1,9 +1,16 @@
 # Trigger Bindings
 
 This package maps physical controller inputs to robot commands so
-`RobotContainer` stays lean. All bindings live in `TriggerBindings`; tunable
-parameters (response curves, speed scales, deadbands) live in
-`TriggerBindingsConfig`.
+`RobotContainer` stays lean. Bindings are split into a class hierarchy:
+
+- `AbstractTriggerBindings` — shared infrastructure (controllers, command
+  factories, config, controller health monitoring, input utilities).
+- `CompetitionTriggerBindings` — production gameplay bindings for matches.
+- `TuningTriggerBindings` — subsystem test and SysId characterization bindings.
+
+`RobotContainer` checks `TriggerBindingsConfig.getTuningEnabled()` at startup to
+instantiate the appropriate subclass. Tunable parameters (response curves, speed
+scales, deadbands) live in `TriggerBindingsConfig`.
 
 ## Controllers
 
@@ -20,11 +27,22 @@ The robot uses two Logitech F310 controllers (XInput mode) connected via USB:
 
 The driver controller handles field-relative driving and speed management:
 
-- **Left stick** — translation (Y = forward/back, X = strafe).
-- **Right stick X** — rotation (omega).
-- **Right trigger** — sprint (100 % max speed).
-- **Left trigger** — slow/precision mode (40 % max speed).
-- No trigger held — normal speed (80 % max speed).
+| Input         | Action                                     |
+| ------------- | ------------------------------------------ |
+| A button      | _Unassigned_                               |
+| B button      | _Unassigned_                               |
+| X button      | Spin 180° (hold to maintain heading lock)  |
+| Y button      | Snap to nearest field-facing orientation   |
+| Right bumper  | Travel mode                                |
+| Left bumper   | Trench travel mode                         |
+| Right trigger | Sprint (100 % max speed)                   |
+| Left trigger  | Slow/precision mode (40 % max speed)       |
+| No trigger    | Normal speed (80 % max speed)              |
+| Back button   | Wheel lock (X-formation)                   |
+| Start button  | _Unassigned_                               |
+| D-pad         | Pathfind to configurable field poses       |
+| Left stick    | Translation (Y = forward/back, X = strafe) |
+| Right stick X | Rotation (omega)                           |
 
 Each axis passes through a configurable response curve
 (`leftStickYResponseExponent`, `leftStickXResponseExponent`,
@@ -37,35 +55,85 @@ applied.
 
 The operator controller manages gameplay state transitions:
 
-| Input         | Action                        |
-| ------------- | ----------------------------- |
-| Right trigger | Enter **FIRE_READY** state    |
-| Left trigger  | Enter **HARVEST_READY** state |
-| B button      | **EJECT** (active while held) |
-| Y button      | Return to **IDLE**            |
-
-Triggers use `onTrue` so the state change persists after the button is released.
-The B button uses `whileTrue` because ejecting should stop as soon as the
-operator lets go.
+| Input         | Action                                         |
+| ------------- | ---------------------------------------------- |
+| A button      | **EJECT** (active while held)                  |
+| B button      | Toggle **turret lock** to 0°                   |
+| X button      | Enter **HARVEST_READY** state                  |
+| Y button      | Enter **FIRE_READY** state (active while held) |
+| Right bumper  | _Unassigned_                                   |
+| Left bumper   | _Unassigned_                                   |
+| Right trigger | Enter **TRAVEL** state                         |
+| Left trigger  | Enter **TRENCH_TRAVEL** state                  |
+| Back button   | Return to **IDLE**                             |
+| Start button  | _Unassigned_                                   |
+| D-pad up      | **Boost** shooter RPM (while held)             |
+| D-pad down    | **Cut** shooter RPM (while held)               |
+| D-pad left    | _Unassigned_                                   |
+| D-pad right   | _Unassigned_                                   |
+| Left stick    | _Unassigned_                                   |
+| Right stick   | _Unassigned_                                   |
 
 ## Tuning mode
 
-When `tuningEnabled` is set to `true` in `TriggerBindingsConfig`, the driver
-controller switches to subsystem test mode:
+When `tuningEnabled` is set to `true` in `TriggerBindingsConfig`,
+`RobotContainer` instantiates `TuningTriggerBindings` instead of
+`CompetitionTriggerBindings`. In this mode the driver controller switches to
+subsystem test mode:
 
-- A dashboard chooser (`TriggerBindings/TestSubsystem`) selects which subsystem
-  is under test (Shooter, Indexer, Feeder, Intake, Turret, or Harvester).
-- **A button** — reverse / move to minimum setpoint.
-- **B button** — forward / move to maximum setpoint.
-- **X button** — run a full SysId characterization sweep (~60 seconds).
+### Tuning driver controller layout
+
+![Tuning driver controller layout](../../../../../../../assets/controls-tuning-driver.svg)
+
+A dashboard chooser (`TriggerBindings/TestSubsystem`) selects which subsystem is
+under test (Shooter, Indexer, Feeder, Intake, Turret, or Harvester).
+
+| Input         | Action                                            |
+| ------------- | ------------------------------------------------- |
+| A button      | Reverse / move to minimum setpoint                |
+| B button      | Forward / move to maximum setpoint                |
+| X button      | Run a full SysId characterization sweep (~60 s)   |
+| Y button      | Run drive base angle then drive SysId in sequence |
+| Right bumper  | _Unassigned_                                      |
+| Left bumper   | _Unassigned_                                      |
+| Right trigger | _Unassigned_                                      |
+| Left trigger  | _Unassigned_                                      |
+| Back button   | _Unassigned_                                      |
+| Start button  | _Unassigned_                                      |
+| D-pad         | _Unassigned_                                      |
+| Left stick    | _Unassigned_                                      |
+| Right stick   | _Unassigned_                                      |
+
+### Tuning operator controller layout
+
+![Tuning operator controller layout](../../../../../../../assets/controls-tuning-operator.svg)
+
+The operator controller provides per-module drive base characterization:
+
+| Input         | Action                         |
+| ------------- | ------------------------------ |
+| A button      | SysId: drive motor front-left  |
+| B button      | SysId: drive motor front-right |
+| X button      | SysId: drive motor back-left   |
+| Y button      | SysId: drive motor back-right  |
+| Left bumper   | SysId: angle motor front-left  |
+| Right bumper  | SysId: angle motor front-right |
+| Left trigger  | SysId: angle motor back-left   |
+| Right trigger | SysId: angle motor back-right  |
+| Back button   | _Unassigned_                   |
+| Start button  | _Unassigned_                   |
+| D-pad         | _Unassigned_                   |
+| Left stick    | _Unassigned_                   |
+| Right stick   | _Unassigned_                   |
 
 Default commands are not registered in tuning mode so mechanisms stay wherever
 the test commands leave them.
 
 ## Controller health monitoring
 
-`TriggerBindings.checkControllerHealth()` runs once per robot loop (wired
-through `RobotContainer.periodic()`). It performs two checks per controller:
+`AbstractTriggerBindings.checkControllerHealth()` runs once per robot loop
+(wired through `RobotContainer.periodic()`). It performs two checks per
+controller:
 
 1. **Connection check** — Uses `DriverStation.isJoystickConnected()` and fires a
    `DriverStation.reportWarning()` once when a controller transitions from
@@ -179,7 +247,11 @@ unplugged and reconnected during a match.
 
 ## Key classes
 
-| Class                   | Purpose                                             |
-| ----------------------- | --------------------------------------------------- |
-| `TriggerBindings`       | Wires controller buttons/axes to commands           |
-| `TriggerBindingsConfig` | Tunable parameters for response curves, speed tiers |
+| Class                        | Purpose                                                          |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `AbstractTriggerBindings`    | Base class: controllers, factories, health monitoring, utilities |
+| `CompetitionTriggerBindings` | Production gameplay bindings for driver and operator             |
+| `TuningTriggerBindings`      | Subsystem test and SysId characterization bindings               |
+| `TriggerBindingsConfig`      | Tunable parameters for response curves, speed tiers              |
+| `DriverControllerConfig`     | D-pad pathfinding targets and constraints                        |
+| `DpadTargetConfig`           | Single d-pad direction target pose configuration                 |
