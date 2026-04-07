@@ -51,7 +51,7 @@ which follows the [AdvantageKit IO](../../GLOSSARY.md#io-inputoutput) pattern.
 [pose](../../GLOSSARY.md#pose) on the field. YAGSL's internal
 `SwerveDrivePoseEstimator` runs the
 [Kalman filter](../../GLOSSARY.md#kalman-filter) that fuses odometry with vision
-corrections forwarded by the [robot state subsystem](../robotstate/README.md).
+corrections forwarded by the [robot pose subsystem](../robotpose/README.md).
 
 The drivebase exposes `getFusedPose()` for drivebase-internal use (commands,
 AutoBuilder, heading PID). External subsystems should use
@@ -480,15 +480,16 @@ checkout.
 
 ## Code structure
 
-| File                                             | Purpose                                                                                                   |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `DriveBaseSubsystem.java`                        | Owns odometry, field-relative driving, holonomic pose chasing, joystick scaling, and AdvantageKit logging |
-| `commands/MoveFieldManualCommand.java`           | Applies field-relative chassis speeds from joystick input                                                 |
-| `commands/DriveBaseSubsystemCommandFactory.java` | Wires driver axes, sets the default manual command, and exposes SysId commands via YAGSL                  |
-| `commands/PathPlannerCommandFactory.java`        | Builds autonomous path-following commands from deployed `.auto` files                                     |
-| `config/DriveBaseSubsystemConfig.java`           | Tunables for max speed, PID gains, tolerances, and joystick sensitivity                                   |
-| `io/DriveBaseIO.java`                            | AdvantageKit IO interface — defines logged inputs for pose, gyro, and module states                       |
-| `io/DriveBaseIOYagsl.java`                       | YAGSL hardware implementation — pulls data from the active `SwerveDrive`                                  |
+| File                                              | Purpose                                                                                                   |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `DriveBaseSubsystem.java`                         | Owns odometry, field-relative driving, holonomic pose chasing, joystick scaling, and AdvantageKit logging |
+| `commands/MoveFieldManualCommand.java`            | Applies field-relative chassis speeds from joystick input                                                 |
+| `commands/MoveFieldManualWithHeadingCommand.java` | Field-relative driving with explicit heading-lock target                                                  |
+| `commands/DriveBaseSubsystemCommandFactory.java`  | Wires driver axes, sets the default manual command, and exposes SysId commands via YAGSL                  |
+| `commands/PathPlannerCommandFactory.java`         | Builds autonomous path-following commands from deployed `.auto` files                                     |
+| `config/DriveBaseSubsystemConfig.java`            | Tunables for max speed, PID gains, tolerances, and joystick sensitivity                                   |
+| `io/DriveBaseIO.java`                             | AdvantageKit IO interface — defines logged inputs for pose, gyro, and module states                       |
+| `io/DriveBaseIOYagsl.java`                        | YAGSL hardware implementation — pulls data from the active `SwerveDrive`                                  |
 
 ## Status / TODO
 

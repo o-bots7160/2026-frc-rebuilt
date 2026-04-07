@@ -83,10 +83,13 @@ AbstractSubsystemCommandFactory          shared/commands/
      └─ TurretSubsystemCommandFactory   subsystems/<mechanism>/commands/
 
 AbstractConfig                           shared/config/
- ├─ AbstractSetAndSeekSubsystemConfig    shared/config/
- │   └─ TurretSubsystemConfig           subsystems/<mechanism>/config/
- └─ AbstractMotorConfig                  shared/config/
-     └─ MotorConfig                     shared/config/
+ ├─ AbstractSubsystemConfig              shared/config/
+ │   └─ AbstractMotorSubsystemConfig     shared/config/
+ │       ├─ AbstractSetAndSeekSubsystemConfig  shared/config/
+ │       │   └─ TurretSubsystemConfig    subsystems/<mechanism>/config/
+ │       └─ AbstractVelocitySubsystemConfig    shared/config/
+ │           └─ ShooterSubsystemConfig   subsystems/<mechanism>/config/
+ └─ MotorConfig                          shared/config/
 ```
 
 See the [shared framework README](../shared/README.md) for details on what each
@@ -101,13 +104,13 @@ configuration reference, and code-structure table. Click through for details.
 | ------------------------------------------- | --------------------------------------------------------- | ----------- |
 | [AprilTag Vision](apriltagvision/README.md) | Estimates robot pose from AprilTag camera data            | Implemented |
 | [Drivebase](drivebase/README.md)            | Swerve drivetrain for field movement and autonomous paths | Implemented |
-| [Feeder](feeder/README.md)                  | Transports FUEL from the intake into the indexer lane     | Planned     |
+| [Feeder](feeder/README.md)                  | Transports FUEL from the intake into the indexer lane     | Implemented |
 | [Gameplay State](gameplaystate/README.md)   | Tracks the current game phase and scoring mode            | Implemented |
-| [Harvester](harvester/README.md)            | Collects game pieces from the field using rollers         | Planned     |
-| [Indexer](indexer/README.md)                | Gates FUEL release into the shooter for timed shots       | Planned     |
-| [Intake](intake/README.md)                  | Collects FUEL from the field and passes it to the feeder  | Planned     |
+| [Harvester](harvester/README.md)            | Collects game pieces from the field using rollers         | Implemented |
+| [Indexer](indexer/README.md)                | Gates FUEL release into the shooter for timed shots       | Implemented |
+| [Intake](intake/README.md)                  | Collects FUEL from the field and passes it to the feeder  | Implemented |
 | [Robot Pose](robotpose/README.md)           | Single authoritative source of robot pose on the field    | Implemented |
-| [Shooter](shooter/README.md)                | Spins flywheels to launch FUEL at scoring targets         | Planned     |
+| [Shooter](shooter/README.md)                | Spins flywheels to launch FUEL at scoring targets         | Implemented |
 | [Turret](turret/README.md)                  | Single-axis rotating mount for aiming the shooter         | Implemented |
 
 ## Adding a new subsystem

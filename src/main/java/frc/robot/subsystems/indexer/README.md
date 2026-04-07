@@ -29,16 +29,11 @@ the two.
 
 - **Feed** — `FeedCommand` spins the roller at `feedVelocityRpm` to push a piece
   into the [shooter](../shooter/README.md) flywheels.
-- **Hold** — `HoldCommand` keeps the roller stopped (0 RPM) while a piece is
-  staged, preventing it from entering the shooter until conditions are met.
 - **Fire-when-ready** — `createFireWhenReadyCommand()` accepts suppliers for
   shooter readiness and turret aim. It waits until both signals are true, then
   feeds. This is the primary autonomous and teleop firing path.
 - **Reverse** — `ReverseIndexerCommand` spins backward at `reverseVelocityRpm`
   to clear a stuck piece.
-- **Unjam** — `UnjamCommand` alternates between forward and reverse at
-  configurable durations (`unjamForwardDurationSeconds` /
-  `unjamReverseDurationSeconds`) to free a jammed piece.
 - **Idle** — when no command is active, the default `IdleIndexerCommand` holds
   the roller at 0 RPM so the motor is not free-spinning.
 
@@ -67,8 +62,6 @@ Settings live in `subsystems.json` under `indexerSubsystem`:
 | `idleVelocityRpm`                 | RPM     | Default idle speed (normally 0)                   |
 | `feedVelocityRpm`                 | RPM     | Forward speed for feeding into shooter            |
 | `reverseVelocityRpm`              | RPM     | Reverse speed for clearing jams                   |
-| `unjamForwardDurationSeconds`     | seconds | Forward phase duration in the unjam cycle         |
-| `unjamReverseDurationSeconds`     | seconds | Reverse phase duration in the unjam cycle         |
 | `kS`, `kV`, `kA`                  | volts   | Feedforward gains                                 |
 | `kP`, `kI`, `kD`                  | —       | PID velocity controller gains                     |
 
@@ -77,11 +70,9 @@ Settings live in `subsystems.json` under `indexerSubsystem`:
 | File                                           | Purpose                                                            |
 | ---------------------------------------------- | ------------------------------------------------------------------ |
 | `IndexerSubsystem.java`                        | Concrete subsystem managing roller velocity and ready-to-feed flag |
-| `commands/IndexerSubsystemCommandFactory.java` | Factory for feed, hold, reverse, unjam, fire-when-ready, and idle  |
+| `commands/IndexerSubsystemCommandFactory.java` | Factory for feed, reverse, fire-when-ready, and idle commands      |
 | `commands/FeedCommand.java`                    | Drives the roller at feed RPM                                      |
-| `commands/HoldCommand.java`                    | Holds the roller at 0 RPM while a piece is staged                  |
 | `commands/ReverseIndexerCommand.java`          | Drives the roller in reverse at a configurable RPM                 |
-| `commands/UnjamCommand.java`                   | Alternates forward and reverse to free a jammed piece              |
 | `commands/IdleIndexerCommand.java`             | Default command holding idle RPM                                   |
 | `config/IndexerSubsystemConfig.java`           | Configuration bundle extending `AbstractVelocitySubsystemConfig`   |
 | `shared/config/MotorConfig.java`               | Motor-level config (CAN ID, inversion, current limits) (inherited) |
@@ -95,7 +86,6 @@ Settings live in `subsystems.json` under `indexerSubsystem`:
 - Subsystem, commands, config, and device wrappers implemented.
 - Wired in `RobotContainer` and added to `subsystems.json`.
 - Operator left-bumper binding for feed-and-hold.
-- Operator D-pad down binding for unjam.
 - Operator D-pad left binding for reverse.
 - Fire-when-ready composite command available via factory.
 
@@ -105,3 +95,5 @@ Settings live in `subsystems.json` under `indexerSubsystem`:
 - Update CAN ID in `subsystems.json` once hardware is assigned.
 - Add piece-detection sensor logic for accurate shot counting.
 - Add Elastic and AdvantageScope dashboard tabs for tuning.
+- Add a hold command (0 RPM staging while a piece waits for the shooter).
+- Add an unjam command (alternating forward/reverse to free stuck pieces).

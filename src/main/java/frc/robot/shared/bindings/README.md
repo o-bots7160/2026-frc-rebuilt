@@ -255,3 +255,4 @@ unplugged and reconnected during a match.
 | `TriggerBindingsConfig`      | Tunable parameters for response curves, speed tiers              |
 | `DriverControllerConfig`     | D-pad pathfinding targets and constraints                        |
 | `DpadTargetConfig`           | Single d-pad direction target pose configuration                 |
+| `TrenchZoneConfig`           | Trench travel speed and zone boundary configuration              |

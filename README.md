@@ -128,7 +128,8 @@ Use the top-level keys from `subsystems.json`:
 
 `driveBaseSubsystem`, `turretSubsystem`, `shooterSubsystem`, `indexerSubsystem`,
 `robotPoseSubsystem`, `aprilTagVisionSubsystem`, `feederSubsystem`,
-`intakeSubsystem`, `harvesterSubsystem`, `triggerBindings`
+`intakeSubsystem`, `harvesterSubsystem`, `gameplayStateSubsystem`,
+`triggerBindings`
 
 ### How it works
 
