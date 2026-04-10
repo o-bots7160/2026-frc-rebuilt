@@ -202,14 +202,14 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0081048,
+      "kP": 0.012916,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.31879,
-      "kV": 0.080213,
-      "kA": 0.0081048
+      "kS": 0.33034,
+      "kV": 0.080558,
+      "kA": 0.015631
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
@@ -242,14 +242,14 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0032436,
+      "kP": 0.0039669,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.26689,
-      "kV": 0.080845,
-      "kA": 0.0067605
+      "kS": 0.26747,
+      "kV": 0.080936,
+      "kA": 0.0061398
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.5,
@@ -347,7 +347,7 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.017,
+      "kP": 0.019,
       "kI": 0.0,
       "kD": 0.0,
       "iZone": 0.0,
