@@ -395,7 +395,7 @@
   "aprilTagVisionSubsystem": {
     "enabled": true,
     "verbose": false,
-    "fieldType": "WELDED",
+    "fieldType": "ANDYMARK",
     "poseFilter": {
       "linearStandardDeviationBaseline": 0.03,
       "angularStandardDeviationBaseline": 1.0,
