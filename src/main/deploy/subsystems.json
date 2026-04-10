@@ -405,6 +405,10 @@
       "maximumMultiTagAmbiguity": 0.2,
       "maximumZHeightMeters": 0.5,
       "ignoredTagIds": [
+        3,
+        8,
+        9,
+        11,
         21,
         25,
         27,
