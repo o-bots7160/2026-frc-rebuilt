@@ -238,25 +238,25 @@
       "motorCanId": 53,
       "motorInverted": true,
       "smartCurrentLimitAmps": 30,
-      "motorRotationsPerMechanismRotation": 4.0,
+      "motorRotationsPerMechanismRotation": 3.75,
       "reverseSoftLimitDegrees": 0.0,
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0039669,
+      "kP": 0.0019892,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.26747,
-      "kV": 0.080936,
-      "kA": 0.0061398
+      "kS": 0.31249,
+      "kV": 0.077319,
+      "kA": 0.007452
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.5,
       "stepVoltage": 7.0,
       "delaySeconds": 5.0,
-      "quasistaticTimeoutSeconds": 26.0,
+      "quasistaticTimeoutSeconds": 28.0,
       "dynamicTimeoutSeconds": 4.0
     },
     "motionProfile": {
@@ -266,7 +266,7 @@
       "settleTimeSeconds": 0.1,
       "idleVelocityRpm": 100.0
     },
-    "feedVelocityRpm": 1200.0,
+    "feedVelocityRpm": 1300.0,
     "reverseVelocityRpm": 400.0
   },
   "turretSubsystem": {
