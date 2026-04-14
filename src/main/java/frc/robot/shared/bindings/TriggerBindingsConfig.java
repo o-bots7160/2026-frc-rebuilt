@@ -20,7 +20,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * movements give fine control, while full deflection still reaches max speed.
      * </p>
      */
-    public double  leftStickYResponseExponent  = 2.0;
+    public double                 leftStickYResponseExponent    = 2.0;
 
     /**
      * Response curve exponent for the left stick X axis (left/right translation).
@@ -28,7 +28,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * Applied before the speed scale so it sets the baseline feel. Typically matches the Y axis exponent for consistent translation response.
      * </p>
      */
-    public double  leftStickXResponseExponent  = 2.0;
+    public double                 leftStickXResponseExponent    = 2.0;
 
     /**
      * Response curve exponent for the right stick X axis (rotation/omega).
@@ -37,7 +37,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * without reducing max turn rate.
      * </p>
      */
-    public double  rightStickXResponseExponent = 2.0;
+    public double                 rightStickXResponseExponent   = 2.0;
 
     /**
      * Fraction of maximum linear speed used during normal driving (no trigger held).
@@ -46,7 +46,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * lives in most of the time.
      * </p>
      */
-    public double  normalSpeedScale            = 0.8;
+    public double                 normalSpeedScale              = 0.8;
 
     /**
      * Fraction of maximum linear speed used when the right trigger (sprint) is held.
@@ -55,7 +55,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * video game.
      * </p>
      */
-    public double  sprintSpeedScale            = 1.0;
+    public double                 sprintSpeedScale              = 1.0;
 
     /**
      * Fraction of maximum linear speed used when the left trigger (precision/slow) is held.
@@ -64,7 +64,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * slow-speed maneuvering.
      * </p>
      */
-    public double  slowSpeedScale              = 0.4;
+    public double                 slowSpeedScale                = 0.4;
 
     /**
      * Minimum trigger axis value required to consider a trigger "pressed."
@@ -72,7 +72,7 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * Values below this threshold are ignored to prevent accidental activation from controller noise or resting position drift.
      * </p>
      */
-    public double  triggerDeadband             = 0.1;
+    public double                 triggerDeadband               = 0.1;
 
     /**
      * Joystick deadband for driver stick inputs.
@@ -81,7 +81,21 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * deflection). Applied before the response curve so that stick noise is eliminated before the power function can amplify it.
      * </p>
      */
-    public double  joystickDeadband            = 0.08;
+    public double                 joystickDeadband              = 0.08;
+
+    /**
+     * Falling-edge debounce duration applied to digital button triggers (ABXY, bumpers, d-pad, back).
+     * <p>
+     * When a button is pressed, the trigger fires immediately. When the button is released (or blips to false due to controller noise), the trigger
+     * waits this many seconds before transitioning to false. This prevents momentary false readings from interrupting {@code whileTrue()} commands or
+     * double-toggling {@code toggleOnTrue()} bindings. A value of 0.05 (50 ms, roughly 2-3 robot cycles at 50 Hz) catches typical single-cycle blips
+     * without adding perceptible input lag.
+     * </p>
+     * <p>
+     * Because trigger bindings are wired once at construction, a code restart is required after changing this value.
+     * </p>
+     */
+    public double                 buttonDebounceDurationSeconds = 0.05;
 
     /**
      * Enables tuning mode for trigger bindings.
@@ -94,12 +108,12 @@ public class TriggerBindingsConfig extends AbstractConfig {
      * Because WPILib trigger bindings are wired once at construction, a code restart is required after changing this value.
      * </p>
      */
-    public boolean tuningEnabled               = false;
+    public boolean                tuningEnabled                 = false;
 
     /**
      * Driver controller configuration for d-pad pathfinding targets and constraints.
      */
-    public DriverControllerConfig driverControllerConfig = new DriverControllerConfig();
+    public DriverControllerConfig driverControllerConfig        = new DriverControllerConfig();
 
     /**
      * Reads the tunable response curve exponent for the left stick Y axis.
@@ -171,6 +185,18 @@ public class TriggerBindingsConfig extends AbstractConfig {
      */
     public double getJoystickDeadband() {
         return readTunableNumber("joystickDeadband", joystickDeadband);
+    }
+
+    /**
+     * Reads the tunable falling-edge debounce duration for digital button triggers.
+     * <p>
+     * Because bindings are wired at construction, changes only take effect after a code restart.
+     * </p>
+     *
+     * @return debounce duration in seconds (e.g., 0.05 for 50 ms)
+     */
+    public double getButtonDebounceDurationSeconds() {
+        return readTunableNumber("buttonDebounceDurationSeconds", buttonDebounceDurationSeconds);
     }
 
     /**

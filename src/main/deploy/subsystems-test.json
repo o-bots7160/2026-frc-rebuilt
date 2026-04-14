@@ -8,6 +8,7 @@
     "slowSpeedScale": 0.4,
     "triggerDeadband": 0.1,
     "joystickDeadband": 0.08,
+    "buttonDebounceDurationSeconds": 0.05,
     "tuningEnabled": true,
     "driverControllerConfig": {
       "dpadUp": {
@@ -59,7 +60,7 @@
         },
         {
           "enabled": true,
-          "minXMeters": 10.80,
+          "minXMeters": 10.8,
           "maxXMeters": 13.01,
           "minYMeters": 0.0,
           "maxYMeters": 4.2,
@@ -68,7 +69,7 @@
         },
         {
           "enabled": true,
-          "minXMeters": 10.80,
+          "minXMeters": 10.8,
           "maxXMeters": 13.01,
           "minYMeters": 4.2,
           "maxYMeters": 8.07,

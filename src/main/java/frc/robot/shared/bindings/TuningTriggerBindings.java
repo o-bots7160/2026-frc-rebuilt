@@ -121,16 +121,16 @@ public class TuningTriggerBindings extends AbstractTriggerBindings {
      */
     private void configureSubsystemTestButtons() {
         // A button: reverse (velocity) or move to minimum setpoint (set-and-seek).
-        driverController.a().whileTrue(
+        debounce(driverController.a()).whileTrue(
                 Commands.deferredProxy(this::createSelectedReverseCommand));
 
         // B button: forward (velocity) or move to maximum setpoint (set-and-seek).
-        driverController.b().whileTrue(
+        debounce(driverController.b()).whileTrue(
                 Commands.deferredProxy(this::createSelectedForwardCommand));
 
         // X button: run full SysId sweep for the dashboard-selected subsystem.
         // Press X to start; press X again to cancel early.
-        driverController.x().onTrue(
+        debounce(driverController.x()).onTrue(
                 Commands.deferredProxy(this::createSelectedSysIdCommand));
     }
 
@@ -140,7 +140,7 @@ public class TuningTriggerBindings extends AbstractTriggerBindings {
     private void configureDriveBaseSysIdButton() {
         // Y button: run drive base angle and drive SysId characterization in sequence.
         // Press Y to start; press Y again to cancel early.
-        driverController.y().onTrue(
+        debounce(driverController.y()).onTrue(
                 driveBaseCommandFactory.createAngleSysIdCommand()
                         .andThen(driveBaseCommandFactory.createDriveSysIdCommand()));
     }
@@ -150,13 +150,13 @@ public class TuningTriggerBindings extends AbstractTriggerBindings {
      */
     private void configurePerModuleDriveSysId() {
         // Drive motors: A = front-left, B = front-right, X = back-left, Y = back-right.
-        operatorController.a().whileTrue(
+        debounce(operatorController.a()).whileTrue(
                 driveBaseCommandFactory.createDriveSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_FRONT_LEFT));
-        operatorController.b().whileTrue(
+        debounce(operatorController.b()).whileTrue(
                 driveBaseCommandFactory.createDriveSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_FRONT_RIGHT));
-        operatorController.x().whileTrue(
+        debounce(operatorController.x()).whileTrue(
                 driveBaseCommandFactory.createDriveSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_BACK_LEFT));
-        operatorController.y().whileTrue(
+        debounce(operatorController.y()).whileTrue(
                 driveBaseCommandFactory.createDriveSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_BACK_RIGHT));
     }
 
@@ -165,9 +165,9 @@ public class TuningTriggerBindings extends AbstractTriggerBindings {
      */
     private void configurePerModuleAngleSysId() {
         // Angle motors: LB = front-left, RB = front-right, LT = back-left, RT = back-right.
-        operatorController.leftBumper().whileTrue(
+        debounce(operatorController.leftBumper()).whileTrue(
                 driveBaseCommandFactory.createAngleSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_FRONT_LEFT));
-        operatorController.rightBumper().whileTrue(
+        debounce(operatorController.rightBumper()).whileTrue(
                 driveBaseCommandFactory.createAngleSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_FRONT_RIGHT));
         operatorController.leftTrigger().whileTrue(
                 driveBaseCommandFactory.createAngleSysIdCommandForModule(DriveBaseSubsystemCommandFactory.MODULE_BACK_LEFT));

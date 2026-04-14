@@ -8,6 +8,7 @@
     "slowSpeedScale": 0.4,
     "triggerDeadband": 0.1,
     "joystickDeadband": 0.08,
+    "buttonDebounceDurationSeconds": 0.05,
     "tuningEnabled": false,
     "driverControllerConfig": {
       "dpadUp": {

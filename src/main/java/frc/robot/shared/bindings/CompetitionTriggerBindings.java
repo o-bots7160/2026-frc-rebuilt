@@ -11,8 +11,7 @@ import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
 /**
  * Competition binding strategy that wires driver and operator controllers to gameplay commands. The driver controls field-relative driving, speed
- * tiers, heading snaps, wheel lock, and d-pad pathfinding. The operator manages gameplay state transitions, shooter RPM adjustments, and turret
- * lock.
+ * tiers, heading snaps, wheel lock, and d-pad pathfinding. The operator manages gameplay state transitions, shooter RPM adjustments, and turret lock.
  */
 public class CompetitionTriggerBindings extends AbstractTriggerBindings {
 
@@ -105,11 +104,11 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
      */
     private void configureGameplayStateShortcuts() {
         // Right bumper: travel mode (stow harvester and idle all mechanisms).
-        driverController.rightBumper().onTrue(
+        debounce(driverController.rightBumper()).onTrue(
                 gameplayStateCommandFactory.createTravelCommand());
 
         // Left bumper: trench travel mode (deploy harvester for low-profile field traversal).
-        driverController.leftBumper().onTrue(
+        debounce(driverController.leftBumper()).onTrue(
                 gameplayStateCommandFactory.createTrenchTravelCommand());
     }
 
@@ -119,7 +118,7 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
     private void configureHeadingCommands() {
         // X button: spin 180 degrees from current heading. Hold to maintain heading lock;
         // release to return to normal manual rotation control.
-        driverController.x().whileTrue(
+        debounce(driverController.x()).whileTrue(
                 driveBaseCommandFactory.createSpin180Command(
                         () -> applyResponseCurve(
                                 driverController.getLeftY(),
@@ -133,7 +132,7 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
         // Y button: snap to nearest field-facing orientation (0 or 180 degrees field-relative).
         // If already at the nearest orientation, snaps to the opposite one instead.
         // Hold to maintain heading lock; release to return to normal manual rotation control.
-        driverController.y().whileTrue(
+        debounce(driverController.y()).whileTrue(
                 driveBaseCommandFactory.createSnapToFieldFacingCommand(
                         () -> applyResponseCurve(
                                 driverController.getLeftY(),
@@ -151,7 +150,7 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
     private void configureWheelLockCommand() {
         // Back button: lock wheels in X formation as a defensive stance.
         // One-shot command — the lock fires once and normal driving resumes with stick input.
-        driverController.back().onTrue(
+        debounce(driverController.back()).onTrue(
                 driveBaseCommandFactory.createWheelLockCommand());
     }
 
@@ -165,10 +164,10 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
     private void configureDpadPathfindingBindings() {
         DriverControllerConfig driverConfig = triggerBindingsConfig.driverControllerConfig;
 
-        bindDpadDirection(driverController.povUp(), driverConfig.dpadUp, driverConfig);
-        bindDpadDirection(driverController.povDown(), driverConfig.dpadDown, driverConfig);
-        bindDpadDirection(driverController.povLeft(), driverConfig.dpadLeft, driverConfig);
-        bindDpadDirection(driverController.povRight(), driverConfig.dpadRight, driverConfig);
+        bindDpadDirection(debounce(driverController.povUp()), driverConfig.dpadUp, driverConfig);
+        bindDpadDirection(debounce(driverController.povDown()), driverConfig.dpadDown, driverConfig);
+        bindDpadDirection(debounce(driverController.povLeft()), driverConfig.dpadLeft, driverConfig);
+        bindDpadDirection(debounce(driverController.povRight()), driverConfig.dpadRight, driverConfig);
     }
 
     /**
@@ -195,19 +194,19 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
      */
     private void configureOperatorGameplayStateBindings() {
         // Y button: fire fuel.
-        operatorController.y().whileTrue(
+        debounce(operatorController.y()).whileTrue(
                 gameplayStateCommandFactory.createFireReadyCommand());
 
         // X button: harvest fuel.
-        operatorController.x().onTrue(
+        debounce(operatorController.x()).onTrue(
                 gameplayStateCommandFactory.createHarvestReadyCommand());
 
         // A button: eject all fuel.
-        operatorController.a().whileTrue(
+        debounce(operatorController.a()).whileTrue(
                 gameplayStateCommandFactory.createEjectCommand());
 
         // Back button: return to idle.
-        operatorController.back().onTrue(
+        debounce(operatorController.back()).onTrue(
                 gameplayStateCommandFactory.createIdleCommand());
 
         // Right trigger: travel mode (stow harvester and idle all mechanisms).
@@ -224,11 +223,11 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
      */
     private void configureOperatorShooterAdjustments() {
         // D-pad up: boost shooter RPM by the configured adjustment amount while held.
-        operatorController.povUp().whileTrue(
+        debounce(operatorController.povUp()).whileTrue(
                 shooterCommandFactory.createBoostRpmCommand());
 
         // D-pad down: cut shooter RPM by the configured adjustment amount while held.
-        operatorController.povDown().whileTrue(
+        debounce(operatorController.povDown()).whileTrue(
                 shooterCommandFactory.createCutRpmCommand());
     }
 
@@ -239,7 +238,7 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
         // B button: toggle turret lock to 0 degrees.
         // First press locks the turret at 0 and disables field tracking.
         // Second press releases the lock and resumes the default tracking command.
-        operatorController.b().toggleOnTrue(
+        debounce(operatorController.b()).toggleOnTrue(
                 turretCommandFactory.createLockToZeroCommand());
     }
 }

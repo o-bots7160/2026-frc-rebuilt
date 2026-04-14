@@ -1,8 +1,10 @@
 package frc.robot.shared.bindings;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.logging.Logger;
 import frc.robot.subsystems.drivebase.commands.DriveBaseSubsystemCommandFactory;
@@ -260,6 +262,21 @@ public abstract class AbstractTriggerBindings {
         log.recordOutput("OperatorConnected", operatorConnected);
         log.recordOutput("DriverInputActive", driverInputActive);
         log.recordOutput("OperatorInputActive", operatorInputActive);
+    }
+
+    /**
+     * Applies a falling-edge debounce to a button trigger so brief false blips do not interrupt commands.
+     * <p>
+     * The trigger fires immediately when the button is pressed. When the button is released (or momentarily reads false due to controller noise), the
+     * debounced trigger waits for the configured duration before actually transitioning to false. This protects {@code whileTrue()} commands from
+     * being cancelled by single-cycle false readings and prevents {@code toggleOnTrue()} bindings from double-toggling.
+     * </p>
+     *
+     * @param trigger the raw button trigger from a {@link CommandXboxController}
+     * @return a new trigger with falling-edge debounce applied
+     */
+    protected Trigger debounce(Trigger trigger) {
+        return trigger.debounce(triggerBindingsConfig.getButtonDebounceDurationSeconds(), Debouncer.DebounceType.kFalling);
     }
 
     /**
