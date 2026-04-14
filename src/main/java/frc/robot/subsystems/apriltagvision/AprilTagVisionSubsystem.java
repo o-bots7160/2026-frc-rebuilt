@@ -60,6 +60,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
      * @return comma-separated string of tag IDs, or empty string if none
      */
     private static String formatTagIds(int[] tagIds) {
+        if (tagIds == null) {
+            return "";
+        }
         return Arrays.stream(tagIds)
                 .mapToObj(String::valueOf)
                 .collect(Collectors.joining(", "));
@@ -380,8 +383,10 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                     log.recordVerboseOutput(obsPrefix + "/MaxTagDistanceMeters", poseObservation.maxTagDistance());
                 }
 
-                for (int tagId : poseObservation.tagIds()) {
-                    rejectedTagIds.add(tagId);
+                if (poseObservation.tagIds() != null) {
+                    for (int tagId : poseObservation.tagIds()) {
+                        rejectedTagIds.add(tagId);
+                    }
                 }
 
                 observationIndex++;
@@ -406,8 +411,10 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 log.recordVerboseOutput(obsPrefix + "/AngularStdDev", measurement.standardDeviations().get(2, 0));
             }
 
-            for (int tagId : poseObservation.tagIds()) {
-                acceptedTagIds.add(tagId);
+            if (poseObservation.tagIds() != null) {
+                for (int tagId : poseObservation.tagIds()) {
+                    acceptedTagIds.add(tagId);
+                }
             }
 
             observationIndex++;

@@ -38,6 +38,10 @@ public final class RobotEnvironment {
 
     private static OptionalInt                    locationCached          = OptionalInt.empty();
 
+    /** True when running an AdvantageKit log replay (REPLAY_LOG env var is set). */
+    private static final boolean                  REPLAY_MODE             = System.getenv("REPLAY_LOG") != null
+            && !System.getenv("REPLAY_LOG").isBlank();
+
     private static boolean                        fmsAttachedCached       = false;
 
     private static boolean                        autonomousCached        = false;
@@ -74,6 +78,9 @@ public final class RobotEnvironment {
      * @return true when connected to the official field management system
      */
     public static boolean isFMSAttached() {
+        if (REPLAY_MODE) {
+            return false;
+        }
         return fmsAttachedCached;
     }
 

@@ -364,6 +364,11 @@ public class AprilTagPoseEstimator {
      * @return multiplier to apply to standard deviations (1.0 = no dampening)
      */
     private double computeTagSwitchMultiplier(PoseObservation observation, String cameraName) {
+        // tagIds may be null during log replay if the field type is unsupported by AdvantageKit.
+        if (observation.tagIds() == null) {
+            return 1.0;
+        }
+
         Set<Integer> currentTagIds  = Arrays.stream(observation.tagIds())
                 .boxed()
                 .collect(Collectors.toSet());
