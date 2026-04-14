@@ -205,6 +205,10 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
         debounce(operatorController.a()).whileTrue(
                 gameplayStateCommandFactory.createEjectCommand());
 
+        // Start button: open fire (diagnostic, bypasses readiness checks).
+        debounce(operatorController.start()).whileTrue(
+                gameplayStateCommandFactory.createOpenFireCommand());
+
         // Back button: return to idle.
         debounce(operatorController.back()).onTrue(
                 gameplayStateCommandFactory.createIdleCommand());

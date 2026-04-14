@@ -79,4 +79,22 @@ public class IndexerSubsystemCommandFactory extends AbstractVelocityCommandFacto
                 .withName("FireWhenReady");
     }
 
+    /**
+     * Builds a diagnostic command that unconditionally feeds Fuel into the shooter at the configured feed velocity every cycle.
+     * <p>
+     * Unlike {@link #createFireWhenReadyCommand}, this command does not gate on shooter or turret readiness. It is intended for verifying that the
+     * indexer motor drives Fuel forward independently of the smart readiness detection.
+     * </p>
+     *
+     * @return command that feeds forward unconditionally until interrupted
+     */
+    public Command createOpenFireFeedCommand() {
+        return Commands.run(() -> {
+                    subsystem.setTargetVelocityRpm(subsystem.getConfig().getFeedVelocityRpm());
+                    subsystem.seekVelocity();
+                }, subsystem)
+                .finallyDo(() -> subsystem.stop())
+                .withName("IndexerOpenFireFeed");
+    }
+
 }
