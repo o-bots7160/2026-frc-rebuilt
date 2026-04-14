@@ -197,20 +197,20 @@
       "useSetpointLimits": false,
       "motorCanId": 52,
       "motorInverted": true,
-      "smartCurrentLimitAmps": 30,
-      "motorRotationsPerMechanismRotation": 4.0,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 5.0,
       "reverseSoftLimitDegrees": 0.0,
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.012916,
+      "kP": 0.03341,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.33034,
-      "kV": 0.080558,
-      "kA": 0.015631
+      "kS": 0.22831,
+      "kV": 0.098791,
+      "kA": 0.014678
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
@@ -243,7 +243,7 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0019892,
+      "kP": 0.00256,
       "kI": 0.0,
       "kD": 0.0
     },
@@ -317,7 +317,7 @@
       "fieldWidthMeters": 8.21,
       "allianceZoneBoundaryXMeters": 4.574,
       "fieldCenterDividerYMeters": 4.021,
-      "hubPositionXMeters": 4.612,
+      "hubPositionXMeters": 4.682,
       "hubPositionYMeters": 4.021,
       "leftZonePositionXMeters": 2.0,
       "leftZonePositionYMeters": 6.0,
@@ -348,7 +348,7 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.019,
+      "kP": 0.022,
       "kI": 0.0,
       "kD": 0.0,
       "iZone": 0.0,
@@ -448,6 +448,6 @@
     "verbose": false,
     "endgameThresholdSeconds": 30.0,
     "autoTransitionEnabled": true,
-    "fireReadySweepDelaySeconds": 6.0
+    "fireReadySweepDelaySeconds": 8.0
   }
 }
