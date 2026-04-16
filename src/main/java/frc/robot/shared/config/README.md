@@ -21,11 +21,11 @@ bases in this package, inheriting the tunable-value system and the enabled flag.
 
 ```
 AbstractConfig
-├── AbstractMotorConfig
-├── AbstractMotorSubsystemConfig
-│   ├── AbstractSetAndSeekSubsystemConfig
-│   └── AbstractVelocitySubsystemConfig
-├── FieldLayoutConfig
+├── AbstractSubsystemConfig
+│   └── AbstractMotorSubsystemConfig
+│       ├── AbstractSetAndSeekSubsystemConfig
+│       └── AbstractVelocitySubsystemConfig
+├── MotorConfig
 └── (concrete subsystem configs)
 ```
 
@@ -34,12 +34,17 @@ AbstractConfig
 | File                                     | Role                                                              |
 | ---------------------------------------- | ----------------------------------------------------------------- |
 | `AbstractConfig.java`                    | Base config with `enabled`, `verbose`, and tunable helpers        |
-| `AbstractMotorConfig.java`               | Motor CAN ID, gearing, current limits, and soft limits            |
+| `AbstractSubsystemConfig.java`           | Extends `AbstractConfig` with subsystem-scoped tunable helpers    |
 | `AbstractMotorSubsystemConfig.java`      | PID and feedforward gains shared by motor subsystems              |
 | `AbstractSetAndSeekSubsystemConfig.java` | Trapezoidal profile constraints, setpoint limits, tolerances      |
 | `AbstractVelocitySubsystemConfig.java`   | Max RPM, acceleration, idle RPM, and velocity tolerance           |
+| `MotorConfig.java`                       | Motor CAN ID, gearing, current limits, and soft limits            |
+| `FeedforwardConfig.java`                 | Feedforward gain bundle (kS, kV, kA)                              |
+| `PidConfig.java`                         | PID gain bundle (kP, kI, kD)                                      |
+| `SetAndSeekMotionConfig.java`            | Position motion profile parameters (velocity, acceleration, etc.) |
+| `VelocityMotionConfig.java`              | Velocity motion profile parameters (max RPM, accel, tolerance)    |
+| `SysIdRoutineConfig.java`                | SysId characterization timing and voltage parameters              |
 | `ConfigurationLoader.java`               | Loads JSON configs from deploy and records to AdvantageKit        |
-| `FieldLayoutConfig.java`                 | Selects the AprilTag field layout (welded, AndyMark, shop)        |
 | `Pose2dDeserializer.java`                | Jackson deserializer for `Pose2d` (x, y meters; rotation degrees) |
 | `RobotEnvironment.java`                  | Cached per-cycle DriverStation state (alliance, mode, FMS)        |
 | `SubsystemsConfig.java`                  | Root config bundle with one field per subsystem config            |

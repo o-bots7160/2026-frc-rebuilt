@@ -6,7 +6,7 @@ The AprilTag Vision subsystem gives the robot field awareness. It uses cameras
 to detect [AprilTags](../../GLOSSARY.md#apriltag) — black-and-white square
 markers placed at known locations on the FRC field — and computes
 [pose](../../GLOSSARY.md#pose) estimates that tell the robot where it is. These
-estimates are forwarded to the [Robot State subsystem](../robotstate/README.md),
+estimates are forwarded to the [Robot Pose subsystem](../robotpose/README.md),
 which fuses them with [odometry](../../GLOSSARY.md#odometry) to keep the robot's
 field position accurate for aiming, shooting, and autonomous paths.
 
@@ -29,7 +29,7 @@ field position accurate for aiming, shooting, and autonomous paths.
    ambiguous, and calculates a [confidence](../../GLOSSARY.md#confidence) value
    (standard deviations) based on tag distance and count.
 5. Accepted measurements are forwarded to the
-   [Robot State subsystem](../robotstate/README.md) through a
+   [Robot Pose subsystem](../robotpose/README.md) through a
    `VisionMeasurementConsumer` callback wired in `RobotContainer`.
 
 ### Why confidence matters

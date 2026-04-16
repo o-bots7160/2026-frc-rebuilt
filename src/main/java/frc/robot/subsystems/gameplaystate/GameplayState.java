@@ -31,6 +31,13 @@ public enum GameplayState {
     FIRE_READY("Fire Ready"),
 
     /**
+     * Diagnostic firing mode that bypasses shooter-velocity and turret-on-target readiness checks. The shooter still uses distance-based RPM, but
+     * the indexer and feeder begin feeding immediately. Use this to verify the feeder-to-shooter motor pipeline independently of the smart readiness
+     * detection.
+     */
+    OPEN_FIRE("Open Fire"),
+
+    /**
      * Combined harvest and fire mode for maximum autonomous throughput. Turret tracks the target while the intake collects Fuel simultaneously. All
      * ball-path subsystems run forward and the shooter stays spun up.
      */

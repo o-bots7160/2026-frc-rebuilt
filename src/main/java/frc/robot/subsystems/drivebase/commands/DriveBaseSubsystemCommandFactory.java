@@ -397,6 +397,23 @@ public class DriveBaseSubsystemCommandFactory extends AbstractSubsystemCommandFa
     }
 
     /**
+     * Builds a one-shot command that locks the swerve modules into an X formation as a defensive stance.
+     * <p>
+     * The command calls {@link DriveBaseSubsystem#stop()}, which zeros drive speeds and commands
+     * each module to point diagonally outward (X pattern). Because the command requires the drive
+     * base subsystem, it briefly interrupts the default manual drive command. Once the lock fires,
+     * the command finishes immediately and the default drive command re-schedules, so normal
+     * driving resumes as soon as the driver moves the sticks.
+     * </p>
+     *
+     * @return instant command that locks wheels in X formation
+     */
+    public Command createWheelLockCommand() {
+        return Commands.runOnce(subsystem::stop, subsystem)
+                .withName("WheelLock");
+    }
+
+    /**
      * Builds a field-relative manual driving command driven by the supplied control inputs.
      *
      * @param forwardMetersPerSecondSupplier supplier of forward (field +X) velocity in meters per second

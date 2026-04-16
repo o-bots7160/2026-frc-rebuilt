@@ -164,6 +164,14 @@ The combination of a robot's position on the field (X and Y in meters) and its
 heading (rotation angle). Together, these three values fully describe where the
 robot is and which direction it is facing.
 
+## Pose estimator
+
+A filter (typically a [Kalman filter](#kalman-filter)) that fuses multiple pose
+sources — such as wheel [odometry](#odometry) and [AprilTag](#apriltag) vision
+measurements — into a single, more accurate [pose](#pose) estimate. In our code,
+YAGSL's `SwerveDrivePoseEstimator` fills this role inside the drivebase, and the
+[Robot Pose subsystem](subsystems/robotpose/README.md) exposes the fused result.
+
 ## Profiled PID
 
 A [PID](#pid) controller whose setpoint is not a single fixed target but a

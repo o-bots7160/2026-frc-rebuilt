@@ -3,11 +3,12 @@
     "leftStickYResponseExponent": 2.0,
     "leftStickXResponseExponent": 2.0,
     "rightStickXResponseExponent": 2.0,
-    "normalSpeedScale": 0.5,
+    "normalSpeedScale": 0.65,
     "sprintSpeedScale": 0.75,
     "slowSpeedScale": 0.25,
     "triggerDeadband": 0.1,
     "joystickDeadband": 0.08,
+    "buttonDebounceDurationSeconds": 0.05,
     "tuningEnabled": false,
     "driverControllerConfig": {
       "dpadUp": {
@@ -98,9 +99,9 @@
     "simulationTranslationScale": 0.4,
     "simulationOmegaScale": 0.5,
     "shootingSpeedScalePercent": 70.0,
-    "lowVoltageThresholdVolts": 12.0,
+    "lowVoltageThresholdVolts": 10.0,
     "lowVoltageSpeedScalePercent": 70.0,
-    "criticalVoltageThresholdVolts": 11.0,
+    "criticalVoltageThresholdVolts": 8.0,
     "criticalVoltageSpeedScalePercent": 50.0,
     "applyPowerManagementInAuto": false,
     "rotationToleranceDegrees": 2.0,
@@ -176,8 +177,8 @@
       "kG": 0.35
     },
     "motionProfile": {
-      "maximumVelocityDegreesPerSecond": 140.0,
-      "maximumAccelerationDegreesPerSecondSquared": 100.0,
+      "maximumVelocityDegreesPerSecond": 200.0,
+      "maximumAccelerationDegreesPerSecondSquared": 250.0,
       "positionToleranceDegrees": 2.0,
       "velocityToleranceDegreesPerSecond": 5.0,
       "initialPositionDegrees": 160.0,
@@ -196,20 +197,20 @@
       "useSetpointLimits": false,
       "motorCanId": 52,
       "motorInverted": true,
-      "smartCurrentLimitAmps": 30,
-      "motorRotationsPerMechanismRotation": 4.0,
+      "smartCurrentLimitAmps": 40,
+      "motorRotationsPerMechanismRotation": 5.0,
       "reverseSoftLimitDegrees": 0.0,
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0081048,
+      "kP": 0.03341,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.31879,
-      "kV": 0.080213,
-      "kA": 0.0081048
+      "kS": 0.22831,
+      "kV": 0.098791,
+      "kA": 0.014678
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.25,
@@ -237,25 +238,25 @@
       "motorCanId": 53,
       "motorInverted": true,
       "smartCurrentLimitAmps": 30,
-      "motorRotationsPerMechanismRotation": 4.0,
+      "motorRotationsPerMechanismRotation": 3.75,
       "reverseSoftLimitDegrees": 0.0,
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.0032436,
+      "kP": 0.00256,
       "kI": 0.0,
       "kD": 0.0
     },
     "feedforward": {
-      "kS": 0.26689,
-      "kV": 0.080845,
-      "kA": 0.0067605
+      "kS": 0.31249,
+      "kV": 0.077319,
+      "kA": 0.007452
     },
     "sysId": {
       "rampRateVoltsPerSecond": 0.5,
       "stepVoltage": 7.0,
       "delaySeconds": 5.0,
-      "quasistaticTimeoutSeconds": 26.0,
+      "quasistaticTimeoutSeconds": 28.0,
       "dynamicTimeoutSeconds": 4.0
     },
     "motionProfile": {
@@ -265,7 +266,7 @@
       "settleTimeSeconds": 0.1,
       "idleVelocityRpm": 100.0
     },
-    "feedVelocityRpm": 1200.0,
+    "feedVelocityRpm": 1300.0,
     "reverseVelocityRpm": 400.0
   },
   "turretSubsystem": {
@@ -316,7 +317,7 @@
       "fieldWidthMeters": 8.21,
       "allianceZoneBoundaryXMeters": 4.574,
       "fieldCenterDividerYMeters": 4.021,
-      "hubPositionXMeters": 4.612,
+      "hubPositionXMeters": 4.682,
       "hubPositionYMeters": 4.021,
       "leftZonePositionXMeters": 2.0,
       "leftZonePositionYMeters": 6.0,
@@ -347,7 +348,7 @@
       "forwardSoftLimitDegrees": 0.0
     },
     "pid": {
-      "kP": 0.017,
+      "kP": 0.022,
       "kI": 0.0,
       "kD": 0.0,
       "iZone": 0.0,
@@ -405,6 +406,10 @@
       "maximumMultiTagAmbiguity": 0.2,
       "maximumZHeightMeters": 0.5,
       "ignoredTagIds": [
+        3,
+        8,
+        9,
+        11,
         21,
         25,
         27,
@@ -420,16 +425,16 @@
         "y": 0.23,
         "z": 0.49,
         "roll": 0.0,
-        "pitch": 0.174533,
+        "pitch": -0.174533,
         "yaw": 3.14159265
       },
       "Obots7160OV9281": {
-        "x": -0.051,
-        "y": -0.23,
-        "z": 0.49,
-        "roll": 3.14159265,
-        "pitch": 0.0,
-        "yaw": 4.71239
+        "x": -0.095,
+        "y": -0.278,
+        "z": 0.505,
+        "roll": 0.0,
+        "pitch": -0.174533,
+        "yaw": 4.45059
       }
     }
   },
@@ -443,6 +448,6 @@
     "verbose": false,
     "endgameThresholdSeconds": 30.0,
     "autoTransitionEnabled": true,
-    "fireReadySweepDelaySeconds": 6.0
+    "fireReadySweepDelaySeconds": 8.0
   }
 }

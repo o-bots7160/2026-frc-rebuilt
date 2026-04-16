@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.shared.bindings.TriggerBindings;
+import frc.robot.shared.bindings.AbstractTriggerBindings;
+import frc.robot.shared.bindings.CompetitionTriggerBindings;
+import frc.robot.shared.bindings.TuningTriggerBindings;
 import frc.robot.shared.config.ConfigurationLoader;
 import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.config.SubsystemsConfig;
@@ -109,7 +111,7 @@ public class RobotContainer {
     private final FieldTargetSelector              fieldTargetSelector;
 
     /** Binds controller buttons and triggers to commands for both driver and operator. */
-    private final TriggerBindings                  triggerBindings;
+    private final AbstractTriggerBindings           triggerBindings;
 
     /** Sim-only ball flight visualizer; null on a real robot. */
     private final BallFlightSimulator              ballFlightSimulator;
@@ -240,17 +242,30 @@ public class RobotContainer {
                 ballFlightSimulator = null;
             }
 
-            // Input bindings
-            triggerBindings = new TriggerBindings(
-                    driveBaseCommandFactory,
-                    subsystemsConfig.triggerBindings,
-                    turretCommandFactory,
-                    shooterCommandFactory,
-                    indexerCommandFactory,
-                    feederCommandFactory,
-                    intakeCommandFactory,
-                    harvesterCommandFactory,
-                    gameplayStateCommandFactory);
+            // Input bindings — competition or tuning mode based on config.
+            if (subsystemsConfig.triggerBindings.getTuningEnabled()) {
+                triggerBindings = new TuningTriggerBindings(
+                        driveBaseCommandFactory,
+                        subsystemsConfig.triggerBindings,
+                        turretCommandFactory,
+                        shooterCommandFactory,
+                        indexerCommandFactory,
+                        feederCommandFactory,
+                        intakeCommandFactory,
+                        harvesterCommandFactory,
+                        gameplayStateCommandFactory);
+            } else {
+                triggerBindings = new CompetitionTriggerBindings(
+                        driveBaseCommandFactory,
+                        subsystemsConfig.triggerBindings,
+                        turretCommandFactory,
+                        shooterCommandFactory,
+                        indexerCommandFactory,
+                        feederCommandFactory,
+                        intakeCommandFactory,
+                        harvesterCommandFactory,
+                        gameplayStateCommandFactory);
+            }
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";
             RobotEnvironment.reportError(message, e.getStackTrace());

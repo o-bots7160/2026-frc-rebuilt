@@ -95,7 +95,6 @@ single shooter motor.
 | ---------------------------------------------- | ------------------------------------------------------------------ |
 | `ShooterSubsystem.java`                        | Concrete subsystem managing flywheel velocity and ready-to-fire    |
 | `commands/ShooterSubsystemCommandFactory.java` | Factory for spin-up, idle, stop, and SysId commands                |
-| `commands/SpinUpShooterCommand.java`           | Command that drives the flywheel to a target RPM                   |
 | `commands/IdleShooterCommand.java`             | Default command holding idle RPM                                   |
 | `config/ShooterSubsystemConfig.java`           | Configuration bundle extending `AbstractVelocitySubsystemConfig`   |
 | `shared/config/MotorConfig.java`               | Motor-level config (CAN ID, inversion, current limits) (inherited) |

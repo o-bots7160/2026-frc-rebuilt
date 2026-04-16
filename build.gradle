@@ -132,6 +132,85 @@ task(replayWatch, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
+// Replay an AdvantageKit .wpilog file headless (no sim GUI or driver station).
+// Usage:
+//   ./gradlew replayLog                              (interactive file picker)
+//   ./gradlew replayLog -PreplayLogFile=logs/my.wpilog   (skip menu)
+tasks.register("replayLog") {
+    group = "advantagekit"
+    description = "Select and replay an AdvantageKit log file from logs/."
+
+    // Build the jar and extract native JNI libraries, but do NOT depend on
+    // simulateJavaRelease itself — that is a JavaExec task and would launch the sim.
+    dependsOn "jar", "extractReleaseNative"
+
+    doLast {
+        // Resolve the log file — either from a Gradle property or an interactive menu.
+        def logFile = null
+
+        if (project.hasProperty("replayLogFile")) {
+            logFile = file(project.property("replayLogFile"))
+            if (!logFile.exists() || !logFile.name.endsWith(".wpilog")) {
+                throw new GradleException("Replay log not found or not a .wpilog file: ${logFile.absolutePath}")
+            }
+        } else {
+            def logDir = file("logs")
+            if (!logDir.exists()) {
+                throw new GradleException("No logs/ directory found in the project root.")
+            }
+
+            def logs = logDir.listFiles()
+                    .findAll { it.isFile() && it.name.endsWith(".wpilog") && !it.name.endsWith("_sim.wpilog") }
+                    .sort { it.name }
+
+            if (logs.isEmpty()) {
+                throw new GradleException("No .wpilog files found in logs/.")
+            }
+
+            println "\n=========================================="
+            println " Available AdvantageKit log files"
+            println "==========================================\n"
+            logs.eachWithIndex { f, i ->
+                printf "  [%2d]  %s  (%,.1f MB)%n", i + 1, f.name, f.length() / (1024.0 * 1024.0)
+            }
+            println ""
+
+            ant.input(message: "Enter file number (1-${logs.size()})", addproperty: "replayLogSelection")
+            def selection = ant.properties.replayLogSelection
+
+            def index
+            try {
+                index = selection.trim().toInteger() - 1
+            } catch (NumberFormatException ignored) {
+                throw new GradleException("Invalid selection: '${selection}'. Expected a number between 1 and ${logs.size()}.")
+            }
+            if (index < 0 || index >= logs.size()) {
+                throw new GradleException("Selection ${index + 1} is out of range (1-${logs.size()}).")
+            }
+
+            logFile = logs[index]
+        }
+
+        println "\n Replaying: ${logFile.name}"
+        println " Output:    ${logFile.name.replace('.wpilog', '_sim.wpilog')}\n"
+
+        // Launch the robot with REPLAY_LOG set and no HALSIM_EXTENSIONS (headless).
+        // Set up the native library path directly rather than copying from simulateJavaRelease,
+        // because GradleRIO configures that task's JVM args lazily.
+        def jniPath = file("build/jni/release").absolutePath
+
+        project.javaexec {
+            mainClass = ROBOT_MAIN_CLASS
+            classpath = sourceSets.main.runtimeClasspath
+            jvmArgs "-Djava.library.path=${jniPath}"
+
+            environment "DYLD_LIBRARY_PATH", jniPath
+            environment "LD_LIBRARY_PATH", jniPath
+            environment "REPLAY_LOG", logFile.absolutePath
+        }
+    }
+}
+
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {

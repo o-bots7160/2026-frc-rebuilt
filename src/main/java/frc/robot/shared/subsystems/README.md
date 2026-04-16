@@ -29,7 +29,7 @@ AbstractSubsystem<TConfig>
 
 ### Set-and-seek
 
-For mechanisms that move to a target position (turret, climber, harvester):
+For mechanisms that move to a target position (turret, harvester):
 
 1. `setTarget(degrees)` → clamps to config limits, logs, and stores the goal.
 2. `seekTarget()` → steps the trapezoidal profile and applies feedforward + PID

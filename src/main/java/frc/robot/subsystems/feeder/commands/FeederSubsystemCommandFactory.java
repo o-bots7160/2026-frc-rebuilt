@@ -92,6 +92,26 @@ public class FeederSubsystemCommandFactory extends AbstractVelocityCommandFactor
     }
 
     /**
+     * Builds a diagnostic command that runs the reverse-pulse-then-forward sequence unconditionally.
+     * <p>
+     * Unlike {@link #createFireWhenReadyCommand}, this command does not wait for shooter or turret readiness before starting. It runs the reverse
+     * pulse to dislodge potential jams, then holds forward velocity indefinitely. Use this to verify the feeder motor pipeline independently of the
+     * smart readiness detection.
+     * </p>
+     *
+     * @return command that reverse-pulses then feeds forward unconditionally until interrupted
+     */
+    public Command createOpenFireFeedCommand() {
+        return createReversePulseCommand()
+                .andThen(Commands.run(() -> {
+                    subsystem.setForwardVelocity();
+                    subsystem.seekVelocity();
+                }, subsystem))
+                .finallyDo(() -> subsystem.stop())
+                .withName("FeederOpenFireFeed");
+    }
+
+    /**
      * Builds a short reverse pulse command that sets the belt to reverse velocity and seeks for the configured pulse duration.
      * <p>
      * The pulse always runs to completion and is not gated by readiness suppliers. This prevents the belt from getting stuck in reverse when

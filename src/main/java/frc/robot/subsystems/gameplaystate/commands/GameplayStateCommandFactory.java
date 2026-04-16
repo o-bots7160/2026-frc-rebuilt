@@ -138,16 +138,29 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
         // harvester's default command keeps running normally. If the operator
         // releases the fire trigger before the delay elapses, the sweep never
         // starts and finallyDo() transitions cleanly back to IDLE.
+
+        // Latch the shooter velocity readiness so that once the flywheel reaches
+        // shooting speed it stays "ready" for the remainder of this command,
+        // preventing transient velocity dips from interrupting the feed sequence.
+        // The latch resets in finallyDo() when the command ends.
+        boolean[]         shooterVelocityLatch = { false };
+        Supplier<Boolean> latchedShooterReady  = () -> {
+                                                   if (!shooterVelocityLatch[0]) {
+                                                       shooterVelocityLatch[0] = shooterCommandFactory.getSubsystem().isAtShootingVelocity();
+                                                   }
+                                                   return shooterVelocityLatch[0];
+                                               };
+
         return Commands.runOnce(() -> subsystem.requestState(GameplayState.FIRE_READY, "command"))
                 .andThen(Commands.parallel(
                         // Spin the shooter flywheel based on distance to the scoring target.
                         shooterCommandFactory.createDistanceBasedSpinCommand(distanceToTargetMetersSupplier),
                         // Feed Fuel forward once the shooter and turret are both ready.
                         indexerCommandFactory.createFireWhenReadyCommand(
-                                shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
+                                latchedShooterReady,
                                 turretReadySupplier),
                         feederCommandFactory.createFireWhenReadyCommand(
-                                shooterCommandFactory.getSubsystem()::isAtShootingVelocity,
+                                latchedShooterReady,
                                 turretReadySupplier),
                         // Delayed sweep: wait, then sweep the harvester arm while the intake
                         // pulls Fuel forward. The sweep command is the deadline — when it
@@ -165,10 +178,37 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                                         intakeCommandFactory.createIdleCommand().asProxy()))))
                 // Cleanup: transition back to IDLE regardless of how fire ready ends.
                 .finallyDo(() -> {
+                    shooterVelocityLatch[0] = false;
                     subsystem.requestState(GameplayState.IDLE, "fire-end");
                     CommandScheduler.getInstance().schedule(createIdleCommand().asProxy());
                 })
                 .withName("GameplayState-FireReady");
+    }
+
+    /**
+     * Builds the OPEN_FIRE state command group: a diagnostic firing mode that bypasses all readiness checks.
+     * <p>
+     * The shooter still spins to a distance-based RPM, but the indexer and feeder begin feeding immediately without waiting for the shooter flywheel
+     * or turret to report ready. The harvester sweep is omitted so the command focuses purely on the feeder-to-shooter motor pipeline. Use this to
+     * diagnose whether the ball-path motors work as expected independently of the smart readiness detection.
+     * </p>
+     *
+     * @return parallel command group that fires unconditionally for diagnostic purposes
+     */
+    public Command createOpenFireCommand() {
+        return Commands.runOnce(() -> subsystem.requestState(GameplayState.OPEN_FIRE, "command"))
+                .andThen(Commands.parallel(
+                        // Spin the shooter flywheel based on distance to the scoring target.
+                        shooterCommandFactory.createDistanceBasedSpinCommand(distanceToTargetMetersSupplier),
+                        // Feed Fuel forward immediately — no readiness gating.
+                        indexerCommandFactory.createOpenFireFeedCommand(),
+                        feederCommandFactory.createOpenFireFeedCommand()))
+                // Cleanup: transition back to IDLE regardless of how open fire ends.
+                .finallyDo(() -> {
+                    subsystem.requestState(GameplayState.IDLE, "open-fire-end");
+                    CommandScheduler.getInstance().schedule(createIdleCommand().asProxy());
+                })
+                .withName("GameplayState-OpenFire");
     }
 
     /**
