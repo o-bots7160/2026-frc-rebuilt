@@ -3,9 +3,9 @@
     "leftStickYResponseExponent": 2.0,
     "leftStickXResponseExponent": 2.0,
     "rightStickXResponseExponent": 2.0,
-    "normalSpeedScale": 0.65,
-    "sprintSpeedScale": 0.75,
-    "slowSpeedScale": 0.25,
+    "normalSpeedScale": 0.85,
+    "sprintSpeedScale": 1.00,
+    "slowSpeedScale": 0.45,
     "triggerDeadband": 0.1,
     "joystickDeadband": 0.08,
     "buttonDebounceDurationSeconds": 0.05,
@@ -396,7 +396,7 @@
   "aprilTagVisionSubsystem": {
     "enabled": true,
     "verbose": false,
-    "fieldType": "ANDYMARK",
+    "fieldType": "WELDED",
     "poseFilter": {
       "linearStandardDeviationBaseline": 0.03,
       "angularStandardDeviationBaseline": 1.0,
