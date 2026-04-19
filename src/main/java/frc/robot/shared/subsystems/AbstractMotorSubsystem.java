@@ -133,20 +133,28 @@ public abstract class AbstractMotorSubsystem<TConfig extends AbstractMotorSubsys
 
     /**
      * Returns the current measured position of the mechanism in radians.
+     * <p>
+     * Reads from {@code motorInputs} rather than directly from the motor so that AdvantageKit
+     * replay correctly supplies logged values instead of zeros from a disabled motor.
+     * </p>
      *
      * @return measured position in radians
      */
     public double getMeasuredPositionRadians() {
-        return motor.getPositionRadians();
+        return motorInputs.positionRadians;
     }
 
     /**
      * Returns the current measured velocity of the mechanism in radians per second.
+     * <p>
+     * Reads from {@code motorInputs} rather than directly from the motor so that AdvantageKit
+     * replay correctly supplies logged values instead of zeros from a disabled motor.
+     * </p>
      *
      * @return measured velocity in radians per second
      */
     public double getMeasuredVelocityRadiansPerSecond() {
-        return motor.getVelocityRadiansPerSecond();
+        return motorInputs.velocityRadPerSec;
     }
 
     /**

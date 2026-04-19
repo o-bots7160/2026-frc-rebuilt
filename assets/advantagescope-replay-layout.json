@@ -24,7 +24,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "2026 KitBot"
+                      "model": "2026 CA26"
                     },
                     "children": [
                       {
@@ -37,13 +37,20 @@
                     ]
                   },
                   {
+                    "type": "component",
+                    "logKey": "/ReplayOutputs/TurretSubsystem/componentPoses/0",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
                     "type": "ghost",
                     "logKey": "/RobotPoseSubsystem/RobotPose/OdometryOnlyPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
                       "color": "#0000ff",
-                      "model": "2026 KitBot"
+                      "model": "2026 CA26"
                     }
                   },
                   {
@@ -53,7 +60,7 @@
                     "visible": true,
                     "options": {
                       "color": "#00ff00",
-                      "model": "2026 KitBot"
+                      "model": "2026 CA26"
                     }
                   },
                   {
