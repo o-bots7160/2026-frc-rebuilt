@@ -33,7 +33,7 @@ public class HarvesterSubsystem extends AbstractSetAndSeekSubsystem<HarvesterSub
      * @return configured motor wrapper, or null when the subsystem is disabled (parent substitutes a {@code DisabledMotor})
      */
     private static Motor buildMotor(HarvesterSubsystemConfig config) {
-        if (!config.enabled) {
+        if (!config.enabled || RobotEnvironment.isReplay()) {
             return null;
         }
 
