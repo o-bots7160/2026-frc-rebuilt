@@ -228,11 +228,16 @@ public class GameplayStateCommandFactory extends AbstractSubsystemCommandFactory
                         // Stop the shooter so Fuel is not launched.
                         shooterCommandFactory.createStopCommand(),
                         // Reverse the indexer, feeder, and intake to expel Fuel.
-                        indexerCommandFactory.createReverseCommand(),
-                        feederCommandFactory.createReverseCommand(),
-                        intakeCommandFactory.createEjectCommand(),
+                        indexerCommandFactory.createReverseAndHoldCommand(
+                                () -> -indexerCommandFactory.getSubsystem().getConfig().getReverseVelocityRpm()),
+                        feederCommandFactory.createReverseAndHoldCommand(
+                                () -> -feederCommandFactory.getSubsystem().getConfig().getReverseVelocityRpm()),
+                        intakeCommandFactory.createReverseAndHoldCommand(
+                                () -> -intakeCommandFactory.getSubsystem().getConfig().getReverseVelocityRpm()),
                         // Deploy the harvester arm so Fuel can exit the frame.
                         harvesterCommandFactory.createDeployCommand()))
+                // Keep running until interrupted so the eject persists while the button is held.
+                .andThen(Commands.idle())
                 .withName("GameplayState-Eject");
     }
 

@@ -151,7 +151,7 @@
       "idleVelocityRpm": 100
     },
     "forwardVelocityRpm": 2200,
-    "reverseVelocityRpm": 1000
+    "reverseVelocityRpm": 2200
   },
   "harvesterSubsystem": {
     "enabled": true,

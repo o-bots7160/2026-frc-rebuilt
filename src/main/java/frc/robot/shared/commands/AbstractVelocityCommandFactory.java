@@ -136,6 +136,23 @@ public abstract class AbstractVelocityCommandFactory<TSubsystem extends Abstract
     }
 
     /**
+     * Builds a command that sets the mechanism to a reverse velocity and continuously seeks that speed until interrupted.
+     * <p>
+     * The target RPM is set once on initialization and then {@code seekVelocity} runs every cycle to maintain the speed. The command never
+     * self-finishes, so it persists until the binding releases (e.g., button released) or another command interrupts it. Use this for eject or
+     * evacuation behaviors where the motor must keep spinning in reverse for the entire duration a button is held.
+     * </p>
+     *
+     * @param targetRpmSupplier provider for the target RPM (typically negative for reverse); evaluated once on initialize
+     * @return command that holds the mechanism at the supplied reverse velocity until interrupted
+     */
+    public Command createReverseAndHoldCommand(Supplier<Double> targetRpmSupplier) {
+        return Commands.runOnce(() -> subsystem.setTargetVelocityRpm(targetRpmSupplier.get()), subsystem)
+                .andThen(Commands.run(subsystem::seekVelocity, subsystem))
+                .finallyDo(interrupted -> subsystem.stop());
+    }
+
+    /**
      * Sets the idle command as the default command for this velocity subsystem.
      * <p>
      * Call this once during {@code RobotContainer} construction so the subsystem returns to its idle behavior whenever no other command is scheduled.
