@@ -15,7 +15,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 6.0
+                        "waitTime": 7.5
                       }
                     },
                     {
@@ -40,7 +40,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "p3 neutral long"
+                        "pathName": "OP Left Intake"
                       }
                     }
                   ]
@@ -50,9 +50,41 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "SetStateFireReady"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "OP Left Rotate"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateFireReady"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "OP Left Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetStateHarvestReady"
+                }
+              }
+            ]
           }
         }
       ]
