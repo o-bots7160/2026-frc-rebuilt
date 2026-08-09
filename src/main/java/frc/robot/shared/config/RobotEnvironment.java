@@ -103,6 +103,19 @@ public final class RobotEnvironment {
     }
 
     /**
+     * Reports whether the code is running an AdvantageKit log replay.
+     * <p>
+     * During replay the HAL simulation extensions are not loaded, so any code that creates real or simulated hardware
+     * (e.g., YAGSL swerve modules with vendor motor controllers) must be skipped to avoid native crashes.
+     * </p>
+     *
+     * @return true when the {@code REPLAY_LOG} environment variable is set
+     */
+    public static boolean isReplay() {
+        return REPLAY_MODE;
+    }
+
+    /**
      * Returns the current alliance color, resolved from the FMS or dashboard override.
      * <p>
      * When the FMS is attached its alliance always wins. When the FMS is absent the dashboard {@code Alliance Chooser} is consulted: selecting "Blue"

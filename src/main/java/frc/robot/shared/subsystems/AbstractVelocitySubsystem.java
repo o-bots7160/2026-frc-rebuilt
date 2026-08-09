@@ -72,7 +72,7 @@ public abstract class AbstractVelocitySubsystem<TConfig extends AbstractVelocity
             TMotorConfig motorConfig,
             Function<TMotorConfig, Motor> realFactory,
             TriFunction<TMotorConfig, Supplier<Double>, Supplier<Double>, Motor> simFactory) {
-        if (!config.enabled) {
+        if (!config.enabled || RobotEnvironment.isReplay()) {
             return null;
         }
 

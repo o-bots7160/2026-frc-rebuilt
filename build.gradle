@@ -195,6 +195,7 @@ tasks.register("replayLog") {
         println " Output:    ${logFile.name.replace('.wpilog', '_sim.wpilog')}\n"
 
         // Launch the robot with REPLAY_LOG set and no HALSIM_EXTENSIONS (headless).
+        // AdvantageKit requires all HAL sim extensions to be disabled during replay.
         // Set up the native library path directly rather than copying from simulateJavaRelease,
         // because GradleRIO configures that task's JVM args lazily.
         def jniPath = file("build/jni/release").absolutePath

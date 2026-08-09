@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.devices.motor.CompositeMotor;
 import frc.robot.devices.motor.Motor;
+import frc.robot.shared.config.RobotEnvironment;
 import frc.robot.shared.subsystems.AbstractVelocitySubsystem;
 import frc.robot.subsystems.shooter.config.DistanceRpmPoint;
 import frc.robot.subsystems.shooter.config.ShooterSubsystemConfig;
@@ -37,7 +38,7 @@ public class ShooterSubsystem extends AbstractVelocitySubsystem<ShooterSubsystem
      * @return configured motor (composite or single), or null when the subsystem is disabled
      */
     private static Motor buildShooterMotor(ShooterSubsystemConfig config) {
-        if (!config.enabled) {
+        if (!config.enabled || RobotEnvironment.isReplay()) {
             return null;
         }
 

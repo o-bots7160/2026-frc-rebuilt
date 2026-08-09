@@ -565,6 +565,16 @@ public class DriveBaseSubsystem extends AbstractSubsystem<DriveBaseSubsystemConf
      * </p>
      */
     private void configureSwerveDrive() {
+        // During AdvantageKit replay, HAL sim extensions are disabled. YAGSL creates
+        // vendor motor controllers (SparkFlex, TalonFX, etc.) whose native JNI code
+        // crashes without a HAL backend. Skip hardware init entirely — replay only
+        // needs the logged data, not live swerve modules.
+        if (RobotEnvironment.isReplay()) {
+            enabled = false;
+            log.info("Replay mode detected; skipping swerve drive hardware initialization.");
+            return;
+        }
+
         try {
             File configDirectory = new File(Filesystem.getDeployDirectory(), config.getSwerveConfigDirectory());
 
