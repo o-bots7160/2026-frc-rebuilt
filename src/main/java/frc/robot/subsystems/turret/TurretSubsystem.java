@@ -57,16 +57,15 @@ public class TurretSubsystem extends AbstractSetAndSeekSubsystem<TurretSubsystem
     }
 
     /**
-     * Publishes the simulated turret's 3D pose for AdvantageScope animation.
+     * Publishes the turret's 3D component pose every cycle for AdvantageScope animation.
      * <p>
-     * The pose combines the configured pivot offset with a Z-axis (yaw) rotation matching the measured turret angle, adjusted by the turret zero
-     * offset so 0° points backward in simulation. This ensures the simulated model matches the real robot's orientation when the turret is
-     * rear-facing.
+     * The pose combines the configured pivot offset with a Z-axis (yaw) rotation matching the measured turret angle. Publishing in
+     * {@code periodic()} ensures the data is recorded in wpilog files on the real robot, making it available during log replay.
      * </p>
      */
     @Override
-    public void simulationPeriodic() {
-        super.simulationPeriodic();
+    public void periodic() {
+        super.periodic();
         double poseDegrees         = getMeasuredPositionDegrees();
         Pose3d turretComponentPose = new Pose3d(
                 config.componentPoseConfig.toTranslation3d(),
