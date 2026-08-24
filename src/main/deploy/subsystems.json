@@ -417,7 +417,11 @@
         32
       ],
       "tagSwitchStdDevMultiplier": 3.0,
-      "initialPoseAcceptanceCount": 3
+      "initialPoseAcceptanceCount": 3,
+      "recoveryMinimumTagCount": 2,
+      "recoveryRequiredConsecutiveFrames": 3,
+      "recoveryMaximumFrameTranslationMeters": 0.25,
+      "recoveryMaximumFrameRotationDegrees": 10.0
     },
     "cameras": {
       "Obots7160cam20260219a": {

@@ -119,6 +119,15 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
     /** Tracks whether odometry has been hard-reset from the first accepted vision pose at startup. */
     private boolean                             hasResetOdometryFromVision;
 
+    /** Largest vision-to-estimator translation difference observed during the current cycle. */
+    private double                              maximumOdometryDeviationMeters;
+
+    /** Largest consistent recovery sequence observed during the current cycle. */
+    private int                                 maximumRecoveryCandidateCount;
+
+    /** True when at least one measurement used the odometry-drift recovery path during this cycle. */
+    private boolean                             recoveryMeasurementAccepted;
+
     /**
      * Creates a new AprilTagVisionSubsystem.
      * <p>
@@ -159,7 +168,11 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                         poseFilter.getMaximumZHeightMeters(),
                         poseFilter.getIgnoredTagIds(),
                         poseFilter.getTagSwitchStdDevMultiplier(),
-                        poseFilter.getInitialPoseAcceptanceCount()),
+                        poseFilter.getInitialPoseAcceptanceCount(),
+                        poseFilter.getRecoveryMinimumTagCount(),
+                        poseFilter.getRecoveryRequiredConsecutiveFrames(),
+                        poseFilter.getRecoveryMaximumFrameTranslationMeters(),
+                        poseFilter.getRecoveryMaximumFrameRotationRadians()),
                 poseSupplier);
 
         this.tagVisibilityHoldOffSupplier = poseFilter::getTagVisibilityHoldOffSeconds;
@@ -228,6 +241,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         allAcceptedPoses.clear();
         allRejectedPoses.clear();
         allVisibleTagIds.clear();
+        maximumOdometryDeviationMeters = 0.0;
+        maximumRecoveryCandidateCount  = 0;
+        recoveryMeasurementAccepted    = false;
         for (RejectionReason reason : RejectionReason.values()) {
             rejectionCounts.put(reason, 0);
         }
@@ -365,6 +381,18 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
             var result = poseEstimator.isPoseCalibrationActive()
                     ? poseEstimator.estimateForCalibration(poseObservation, cameraName)
                     : poseEstimator.estimate(poseObservation, cameraName);
+
+            double odometryDeviationMeters = poseEstimator.getLastOdometryDeviationMeters();
+            if (Double.isFinite(odometryDeviationMeters)) {
+                maximumOdometryDeviationMeters = Math.max(
+                        maximumOdometryDeviationMeters,
+                        odometryDeviationMeters);
+            }
+            maximumRecoveryCandidateCount = Math.max(
+                    maximumRecoveryCandidateCount,
+                    poseEstimator.getLastRecoveryCandidateCount());
+            recoveryMeasurementAccepted |= poseEstimator.didLastMeasurementUseRecovery();
+
             if (result.rejectionReason().isPresent()) {
                 // Store rejected poses so we can diagnose filtering issues.
                 rejectedPoses.add(poseObservation.pose());
@@ -381,6 +409,10 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                     log.recordVerboseOutput(obsPrefix + "/Ambiguity", poseObservation.ambiguity());
                     log.recordVerboseOutput(obsPrefix + "/AvgTagDistanceMeters", poseObservation.averageTagDistance());
                     log.recordVerboseOutput(obsPrefix + "/MaxTagDistanceMeters", poseObservation.maxTagDistance());
+                    log.recordVerboseOutput(obsPrefix + "/OdometryDeviationMeters", odometryDeviationMeters);
+                    log.recordVerboseOutput(
+                            obsPrefix + "/RecoveryCandidateCount",
+                            poseEstimator.getLastRecoveryCandidateCount());
                 }
 
                 if (poseObservation.tagIds() != null) {
@@ -409,6 +441,10 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
                 log.recordVerboseOutput(obsPrefix + "/MaxTagDistanceMeters", poseObservation.maxTagDistance());
                 log.recordVerboseOutput(obsPrefix + "/LinearStdDev", measurement.standardDeviations().get(0, 0));
                 log.recordVerboseOutput(obsPrefix + "/AngularStdDev", measurement.standardDeviations().get(2, 0));
+                log.recordVerboseOutput(obsPrefix + "/OdometryDeviationMeters", odometryDeviationMeters);
+                log.recordVerboseOutput(
+                        obsPrefix + "/RecoveredFromOdometryDrift",
+                        poseEstimator.didLastMeasurementUseRecovery());
             }
 
             if (poseObservation.tagIds() != null) {
@@ -517,6 +553,9 @@ public class AprilTagVisionSubsystem extends AbstractSubsystem<AprilTagVisionSub
         log.recordOutput("Summary/InitialAcceptanceWindow", poseEstimator.isWithinInitialAcceptanceWindow());
         log.recordOutput("Summary/PoseCalibrationActive", poseEstimator.isPoseCalibrationActive());
         log.recordOutput("Summary/OdometryResetFromVision", hasResetOdometryFromVision);
+        log.recordOutput("Summary/MaximumOdometryDeviationMeters", maximumOdometryDeviationMeters);
+        log.recordOutput("Summary/RecoveryCandidateCount", maximumRecoveryCandidateCount);
+        log.recordOutput("Summary/RecoveryMeasurementAccepted", recoveryMeasurementAccepted);
         for (var entry : rejectionCounts.entrySet()) {
             log.recordOutput("Summary/Rejected/" + entry.getKey().name(), entry.getValue());
         }

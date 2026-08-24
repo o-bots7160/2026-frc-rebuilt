@@ -93,6 +93,10 @@ public class AprilTagPoseEstimator {
      * @param ignoredTagIds                tag IDs to ignore during estimation
      * @param tagSwitchStdDevMultiplier    standard deviation multiplier when tag IDs change between frames
      * @param initialPoseAcceptanceCount   number of poses to accept without odometry deviation checking at startup, or 0 to disable
+     * @param recoveryMinimumTagCount       minimum number of tags required to recover from odometry drift
+     * @param recoveryRequiredConsecutiveFrames consecutive consistent frames required before recovery
+     * @param recoveryMaxTranslationMeters maximum translation change between recovery frames in meters
+     * @param recoveryMaxRotationRadians   maximum heading change between recovery frames in radians
      */
     public record Params(
             double fieldLengthMeters,
@@ -106,7 +110,20 @@ public class AprilTagPoseEstimator {
             double maxZHeightMeters,
             int[] ignoredTagIds,
             double tagSwitchStdDevMultiplier,
-            int initialPoseAcceptanceCount) {
+            int initialPoseAcceptanceCount,
+            int recoveryMinimumTagCount,
+            int recoveryRequiredConsecutiveFrames,
+            double recoveryMaxTranslationMeters,
+            double recoveryMaxRotationRadians) {
+    }
+
+    /**
+     * Consecutive vision poses being evaluated as a possible odometry-drift recovery.
+     *
+     * @param pose  most recent candidate pose in meters and radians
+     * @param count number of mutually consistent consecutive poses
+     */
+    private record RecoveryCandidate(Pose2d pose, int count) {
     }
 
     /**
@@ -139,6 +156,8 @@ public class AprilTagPoseEstimator {
 
     private final Map<String, Set<Integer>> lastTagIdsByCamera                  = new HashMap<>();
 
+    private final Map<String, RecoveryCandidate> recoveryCandidatesByCamera     = new HashMap<>();
+
     /** Counts accepted measurements so the initial pose acceptance window can expire. */
     private int                             acceptedMeasurementCount;
 
@@ -150,6 +169,15 @@ public class AprilTagPoseEstimator {
      * </p>
      */
     private boolean                         poseCalibrationActive;
+
+    /** Translation difference between the latest vision pose and current fused pose, in meters. */
+    private double                          lastOdometryDeviationMeters         = Double.NaN;
+
+    /** Number of consistent frames in the latest camera's recovery candidate sequence. */
+    private int                             lastRecoveryCandidateCount;
+
+    /** True when the latest accepted measurement bypassed the odometry deviation filter through recovery. */
+    private boolean                         lastMeasurementUsedRecovery;
 
     /**
      * Creates a new AprilTagPoseEstimator.
@@ -203,6 +231,33 @@ public class AprilTagPoseEstimator {
     }
 
     /**
+     * Returns the latest measured translation difference between vision and the fused pose.
+     *
+     * @return latest vision-to-estimator translation difference in meters, or {@link Double#NaN} when unavailable
+     */
+    public double getLastOdometryDeviationMeters() {
+        return lastOdometryDeviationMeters;
+    }
+
+    /**
+     * Returns the current recovery sequence length for the most recently evaluated camera.
+     *
+     * @return number of consecutive, mutually consistent recovery candidate frames
+     */
+    public int getLastRecoveryCandidateCount() {
+        return lastRecoveryCandidateCount;
+    }
+
+    /**
+     * Returns whether the latest accepted measurement used the odometry-drift recovery path.
+     *
+     * @return true when recovery bypassed the normal odometry deviation limit
+     */
+    public boolean didLastMeasurementUseRecovery() {
+        return lastMeasurementUsedRecovery;
+    }
+
+    /**
      * Processes a pose observation for initial pose calibration, bypassing the odometry deviation filter.
      * <p>
      * Use this method during the disabled period to accept all geometrically valid observations regardless of how far they deviate from the current
@@ -215,7 +270,12 @@ public class AprilTagPoseEstimator {
      * @return estimation result containing the measurement or rejection reason
      */
     public EstimationResult estimateForCalibration(PoseObservation observation, String cameraName) {
-        Optional<RejectionReason> rejection = checkRejection(observation, true);
+        lastOdometryDeviationMeters = Double.NaN;
+        lastRecoveryCandidateCount  = 0;
+        lastMeasurementUsedRecovery = false;
+        recoveryCandidatesByCamera.remove(cameraName);
+
+        Optional<RejectionReason> rejection = checkRejection(observation, true, cameraName);
         if (rejection.isPresent()) {
             return EstimationResult.rejected(rejection.get());
         }
@@ -236,8 +296,15 @@ public class AprilTagPoseEstimator {
      * @return estimation result containing the measurement or rejection reason
      */
     public EstimationResult estimate(PoseObservation observation, String cameraName) {
-        Optional<RejectionReason> rejection = checkRejection(observation, false);
+        lastOdometryDeviationMeters = Double.NaN;
+        lastMeasurementUsedRecovery = false;
+        lastRecoveryCandidateCount  = 0;
+
+        Optional<RejectionReason> rejection = checkRejection(observation, false, cameraName);
         if (rejection.isPresent()) {
+            if (rejection.get() != RejectionReason.ODOMETRY_DEVIATION) {
+                recoveryCandidatesByCamera.remove(cameraName);
+            }
             return EstimationResult.rejected(rejection.get());
         }
 
@@ -286,7 +353,10 @@ public class AprilTagPoseEstimator {
      * @param skipOdometryDeviation  true to bypass the odometry deviation check (calibration mode)
      * @return the rejection reason, or empty if the observation passes all checks
      */
-    private Optional<RejectionReason> checkRejection(PoseObservation observation, boolean skipOdometryDeviation) {
+    private Optional<RejectionReason> checkRejection(
+            PoseObservation observation,
+            boolean skipOdometryDeviation,
+            String cameraName) {
         // If we see no tags, there is no useful pose to trust.
         if (observation.tagCount() == 0) {
             return Optional.of(RejectionReason.NO_TAGS);
@@ -343,13 +413,55 @@ public class AprilTagPoseEstimator {
                 Pose2d odometryPose = odometryPoseSupplier.get();
                 Pose2d visionPose2d = pose.toPose2d();
                 double deviation    = odometryPose.getTranslation().getDistance(visionPose2d.getTranslation());
-                if (deviation > params.maxPoseDeviationMeters()) {
+                lastOdometryDeviationMeters = deviation;
+                if (deviation > params.maxPoseDeviationMeters()
+                        && !isRecoveryMeasurementReady(observation, cameraName, visionPose2d)) {
                     return Optional.of(RejectionReason.ODOMETRY_DEVIATION);
+                }
+                if (deviation <= params.maxPoseDeviationMeters()) {
+                    recoveryCandidatesByCamera.remove(cameraName);
                 }
             }
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Checks whether repeated high-quality multi-tag poses can safely recover from wheel-slip odometry drift.
+     *
+     * @param observation raw vision observation being evaluated
+     * @param cameraName  camera that produced the observation
+     * @param visionPose  field-relative vision pose in meters and radians
+     * @return true when enough consecutive recovery candidates agree with each other
+     */
+    private boolean isRecoveryMeasurementReady(
+            PoseObservation observation,
+            String cameraName,
+            Pose2d visionPose) {
+        if (observation.tagCount() < params.recoveryMinimumTagCount()
+                || params.recoveryRequiredConsecutiveFrames() <= 0) {
+            recoveryCandidatesByCamera.remove(cameraName);
+            return false;
+        }
+
+        RecoveryCandidate previousCandidate = recoveryCandidatesByCamera.get(cameraName);
+        boolean consistentWithPrevious       = previousCandidate != null
+                && previousCandidate.pose().getTranslation().getDistance(visionPose.getTranslation())
+                        <= params.recoveryMaxTranslationMeters()
+                && Math.abs(previousCandidate.pose().getRotation().minus(visionPose.getRotation()).getRadians())
+                        <= params.recoveryMaxRotationRadians();
+
+        int candidateCount = consistentWithPrevious ? previousCandidate.count() + 1 : 1;
+        recoveryCandidatesByCamera.put(cameraName, new RecoveryCandidate(visionPose, candidateCount));
+        lastRecoveryCandidateCount = candidateCount;
+
+        if (candidateCount < params.recoveryRequiredConsecutiveFrames()) {
+            return false;
+        }
+
+        lastMeasurementUsedRecovery = true;
+        return true;
     }
 
     /**
