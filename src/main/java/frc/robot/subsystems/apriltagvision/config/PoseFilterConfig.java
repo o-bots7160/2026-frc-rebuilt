@@ -63,6 +63,29 @@ public class PoseFilterConfig extends AbstractConfig {
     public int initialPoseAcceptanceCount = 3;
 
     /**
+     * Minimum number of tags required to recover from a large disagreement with odometry.
+     * <p>
+     * Single-tag poses never use the recovery path because they are more likely to produce a repeated but incorrect field pose.
+     * </p>
+     */
+    public int recoveryMinimumTagCount = 2;
+
+    /**
+     * Number of consecutive, mutually consistent multi-tag poses required before bypassing the odometry deviation filter.
+     */
+    public int recoveryRequiredConsecutiveFrames = 3;
+
+    /**
+     * Maximum translation difference in meters between consecutive recovery candidate poses.
+     */
+    public double recoveryMaximumFrameTranslationMeters = 0.25;
+
+    /**
+     * Maximum heading difference in degrees between consecutive recovery candidate poses.
+     */
+    public double recoveryMaximumFrameRotationDegrees = 10.0;
+
+    /**
      * Standard deviation for linear (x/y) pose measurements at 1 meter with a single tag. Used as the baseline that is scaled by tag distance and
      * count to produce the final measurement uncertainty.
      */
@@ -151,6 +174,48 @@ public class PoseFilterConfig extends AbstractConfig {
      */
     public int getInitialPoseAcceptanceCount() {
         return initialPoseAcceptanceCount;
+    }
+
+    /**
+     * Returns the minimum tag count required for odometry-drift recovery.
+     *
+     * @return minimum number of tags that must contribute to a recovery pose
+     */
+    public int getRecoveryMinimumTagCount() {
+        return (int) Math.round(readTunableNumber("recoveryMinimumTagCount", recoveryMinimumTagCount));
+    }
+
+    /**
+     * Returns the number of consistent frames required for odometry-drift recovery.
+     *
+     * @return required number of consecutive recovery candidate frames
+     */
+    public int getRecoveryRequiredConsecutiveFrames() {
+        return (int) Math.round(readTunableNumber(
+                "recoveryRequiredConsecutiveFrames",
+                recoveryRequiredConsecutiveFrames));
+    }
+
+    /**
+     * Returns the maximum translation change allowed between recovery candidate frames.
+     *
+     * @return maximum consecutive recovery pose difference in meters
+     */
+    public double getRecoveryMaximumFrameTranslationMeters() {
+        return readTunableNumber(
+                "recoveryMaximumFrameTranslationMeters",
+                recoveryMaximumFrameTranslationMeters);
+    }
+
+    /**
+     * Returns the maximum heading change allowed between recovery candidate frames.
+     *
+     * @return maximum consecutive recovery heading difference in radians
+     */
+    public double getRecoveryMaximumFrameRotationRadians() {
+        return readTunableDegreesAsRadians(
+                "recoveryMaximumFrameRotationDegrees",
+                recoveryMaximumFrameRotationDegrees);
     }
 
     /**
