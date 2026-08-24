@@ -61,6 +61,18 @@ class AprilTagPoseEstimatorTest {
         assertFalse(estimator.didLastMeasurementUseRecovery());
     }
 
+    @Test
+    void clearsRecoverySequenceDuringCalibration() {
+        AprilTagPoseEstimator estimator = createEstimator();
+
+        assertOdometryDeviationRejected(estimator.estimate(observation(3.00, 2), CAMERA_NAME));
+        assertOdometryDeviationRejected(estimator.estimate(observation(3.08, 2), CAMERA_NAME));
+        assertTrue(estimator.estimateForCalibration(observation(3.04, 2), CAMERA_NAME).measurement().isPresent());
+
+        assertOdometryDeviationRejected(estimator.estimate(observation(3.02, 2), CAMERA_NAME));
+        assertEquals(1, estimator.getLastRecoveryCandidateCount());
+    }
+
     private AprilTagPoseEstimator createEstimator() {
         Params params = new Params(
                 16.0,

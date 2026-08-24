@@ -94,7 +94,7 @@ public class AprilTagPoseEstimator {
      * @param tagSwitchStdDevMultiplier    standard deviation multiplier when tag IDs change between frames
      * @param initialPoseAcceptanceCount   number of poses to accept without odometry deviation checking at startup, or 0 to disable
      * @param recoveryMinimumTagCount       minimum number of tags required to recover from odometry drift
-     * @param recoveryRequiredFrames        consecutive consistent frames required before recovery
+     * @param recoveryRequiredConsecutiveFrames consecutive consistent frames required before recovery
      * @param recoveryMaxTranslationMeters maximum translation change between recovery frames in meters
      * @param recoveryMaxRotationRadians   maximum heading change between recovery frames in radians
      */
@@ -112,7 +112,7 @@ public class AprilTagPoseEstimator {
             double tagSwitchStdDevMultiplier,
             int initialPoseAcceptanceCount,
             int recoveryMinimumTagCount,
-            int recoveryRequiredFrames,
+            int recoveryRequiredConsecutiveFrames,
             double recoveryMaxTranslationMeters,
             double recoveryMaxRotationRadians) {
     }
@@ -273,6 +273,7 @@ public class AprilTagPoseEstimator {
         lastOdometryDeviationMeters = Double.NaN;
         lastRecoveryCandidateCount  = 0;
         lastMeasurementUsedRecovery = false;
+        recoveryCandidatesByCamera.remove(cameraName);
 
         Optional<RejectionReason> rejection = checkRejection(observation, true, cameraName);
         if (rejection.isPresent()) {
@@ -439,7 +440,7 @@ public class AprilTagPoseEstimator {
             String cameraName,
             Pose2d visionPose) {
         if (observation.tagCount() < params.recoveryMinimumTagCount()
-                || params.recoveryRequiredFrames() <= 0) {
+                || params.recoveryRequiredConsecutiveFrames() <= 0) {
             recoveryCandidatesByCamera.remove(cameraName);
             return false;
         }
@@ -455,7 +456,7 @@ public class AprilTagPoseEstimator {
         recoveryCandidatesByCamera.put(cameraName, new RecoveryCandidate(visionPose, candidateCount));
         lastRecoveryCandidateCount = candidateCount;
 
-        if (candidateCount < params.recoveryRequiredFrames()) {
+        if (candidateCount < params.recoveryRequiredConsecutiveFrames()) {
             return false;
         }
 
