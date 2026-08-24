@@ -28,7 +28,10 @@ field position accurate for aiming, shooting, and autonomous paths.
    outside the field boundaries, rejects single-tag observations that are too
    ambiguous, and calculates a [confidence](../../GLOSSARY.md#confidence) value
    (standard deviations) based on tag distance and count.
-5. Accepted measurements are forwarded to the
+5. When wheel slip moves odometry far from the field position, the estimator
+   accepts a correction only after several consecutive multi-tag poses agree
+   with each other. Single-tag poses cannot activate this recovery path.
+6. Accepted measurements are forwarded to the
    [Robot Pose subsystem](../robotpose/README.md) through a
    `VisionMeasurementConsumer` callback wired in `RobotContainer`.
 
@@ -58,6 +61,10 @@ are [tunable](../../GLOSSARY.md#tunable).
 | `maximumAmbiguity`                 | dimensionless | Rejection threshold for single-tag observations                                                                                   |
 | `linearStandardDeviationBaseline`  | meters        | Base uncertainty for x/y at 1 m with 1 tag                                                                                        |
 | `angularStandardDeviationBaseline` | radians       | Base uncertainty for rotation at 1 m with 1 tag                                                                                   |
+| `recoveryMinimumTagCount`           | count         | Minimum tags required to recover from a large odometry error                                                                      |
+| `recoveryRequiredConsecutiveFrames` | frames        | Consistent multi-tag poses required before recovery                                                                               |
+| `recoveryMaximumFrameTranslationMeters` | meters    | Maximum translation difference between consecutive recovery poses                                                                |
+| `recoveryMaximumFrameRotationDegrees` | degrees     | Maximum heading difference between consecutive recovery poses                                                                    |
 
 ### Camera transform tips
 
@@ -86,6 +93,7 @@ are [tunable](../../GLOSSARY.md#tunable).
 - Multi-camera AprilTag pose estimation with PhotonVision.
 - Observation filtering (ambiguity, field bounds, tag count).
 - Confidence-weighted standard deviations for Kalman filter fusion.
+- Multi-frame, multi-tag recovery from wheel-slip odometry drift.
 - Simulation support with synthetic tag observations.
 - Per-camera and summary AdvantageKit logging.
 - Disconnected-camera alerts on the Driver Station.
