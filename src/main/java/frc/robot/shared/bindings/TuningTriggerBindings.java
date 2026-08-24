@@ -10,6 +10,7 @@ import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
 import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.commands.IntakeSubsystemCommandFactory;
+import frc.robot.subsystems.robotpose.commands.RobotPoseSubsystemCommandFactory;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
@@ -52,6 +53,7 @@ public class TuningTriggerBindings extends AbstractTriggerBindings {
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
+     * @param robotPoseCommandFactory     factory for creating robot pose commands such as vision-based pose resets
      */
     public TuningTriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
@@ -62,7 +64,8 @@ public class TuningTriggerBindings extends AbstractTriggerBindings {
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            GameplayStateCommandFactory gameplayStateCommandFactory) {
+            GameplayStateCommandFactory gameplayStateCommandFactory,
+            RobotPoseSubsystemCommandFactory robotPoseCommandFactory) {
         super(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
@@ -72,7 +75,8 @@ public class TuningTriggerBindings extends AbstractTriggerBindings {
                 feederCommandFactory,
                 intakeCommandFactory,
                 harvesterCommandFactory,
-                gameplayStateCommandFactory);
+                gameplayStateCommandFactory,
+                robotPoseCommandFactory);
     }
 
     /**

@@ -42,7 +42,7 @@ public class ShooterSubsystemConfig extends AbstractVelocitySubsystemConfig {
     public double             distanceRpmMultiplier      = 1.0;
 
     /** RPM amount added or subtracted when the operator uses the boost or cut triggers. */
-    public double             rpmAdjustmentAmountRpm     = 100.0;
+    public double             rpmAdjustmentAmountRpm     = 250.0;
 
     /**
      * Returns the scale factor applied to interpolated distance-based RPM, tuned via SmartDashboard.

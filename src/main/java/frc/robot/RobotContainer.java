@@ -35,6 +35,7 @@ import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.commands.IntakeSubsystemCommandFactory;
 import frc.robot.subsystems.robotpose.RobotPoseSubsystem;
+import frc.robot.subsystems.robotpose.commands.RobotPoseSubsystemCommandFactory;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -104,6 +105,9 @@ public class RobotContainer {
     /** Factory that builds harvester deploy and stow commands. */
     private final HarvesterSubsystemCommandFactory harvesterCommandFactory;
 
+    /** Factory that builds vision-based pose reset commands. */
+    private final RobotPoseSubsystemCommandFactory robotPoseCommandFactory;
+
     /** Factory that builds gameplay state transition commands. */
     private final GameplayStateCommandFactory      gameplayStateCommandFactory;
 
@@ -168,6 +172,7 @@ public class RobotContainer {
             feederCommandFactory        = new FeederSubsystemCommandFactory(feederSubsystem);
             intakeCommandFactory        = new IntakeSubsystemCommandFactory(intakeSubsystem);
             harvesterCommandFactory     = new HarvesterSubsystemCommandFactory(harvesterSubsystem);
+            robotPoseCommandFactory     = new RobotPoseSubsystemCommandFactory(robotPoseSubsystem);
             gameplayStateCommandFactory = new GameplayStateCommandFactory(
                     gameplayStateSubsystem,
                     shooterCommandFactory,
@@ -215,6 +220,8 @@ public class RobotContainer {
             // Dashboard commands (clickable buttons in Elastic Dashboard)
             SmartDashboard.putData("TurretSubsystem/ResetEncoder", turretCommandFactory.createResetEncoderCommand());
             SmartDashboard.putData("HarvesterSubsystem/ResetEncoder", harvesterCommandFactory.createResetEncoderCommand());
+            SmartDashboard.putData("RobotPoseSubsystem/ResetPoseFromVision",
+                    robotPoseCommandFactory.createResetPoseFromVisionCommand());
             SmartDashboard.putData("ResetAllEncoders", Commands.parallel(
                     turretCommandFactory.createResetEncoderCommand(),
                     harvesterCommandFactory.createResetEncoderCommand())
@@ -253,7 +260,8 @@ public class RobotContainer {
                         feederCommandFactory,
                         intakeCommandFactory,
                         harvesterCommandFactory,
-                        gameplayStateCommandFactory);
+                        gameplayStateCommandFactory,
+                        robotPoseCommandFactory);
             } else {
                 triggerBindings = new CompetitionTriggerBindings(
                         driveBaseCommandFactory,
@@ -264,7 +272,8 @@ public class RobotContainer {
                         feederCommandFactory,
                         intakeCommandFactory,
                         harvesterCommandFactory,
-                        gameplayStateCommandFactory);
+                        gameplayStateCommandFactory,
+                        robotPoseCommandFactory);
             }
         } catch (Exception e) {
             String message = "RobotContainer failed to initialize; robot will shut down.";

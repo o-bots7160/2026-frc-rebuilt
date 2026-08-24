@@ -13,6 +13,7 @@ import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
 import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.commands.IntakeSubsystemCommandFactory;
+import frc.robot.subsystems.robotpose.commands.RobotPoseSubsystemCommandFactory;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
@@ -93,6 +94,11 @@ public abstract class AbstractTriggerBindings {
      */
     protected final GameplayStateCommandFactory      gameplayStateCommandFactory;
 
+    /**
+     * Factory that creates robot pose commands, such as resetting the pose from the latest camera measurement.
+     */
+    protected final RobotPoseSubsystemCommandFactory robotPoseCommandFactory;
+
     /** Logger for controller health telemetry. */
     private final Logger                             log                              = Logger.getInstance("TriggerBindings");
 
@@ -137,6 +143,7 @@ public abstract class AbstractTriggerBindings {
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
+     * @param robotPoseCommandFactory     factory for creating robot pose commands such as vision-based pose resets
      */
     protected AbstractTriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
@@ -147,7 +154,8 @@ public abstract class AbstractTriggerBindings {
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            GameplayStateCommandFactory gameplayStateCommandFactory) {
+            GameplayStateCommandFactory gameplayStateCommandFactory,
+            RobotPoseSubsystemCommandFactory robotPoseCommandFactory) {
         this(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
@@ -158,6 +166,7 @@ public abstract class AbstractTriggerBindings {
                 intakeCommandFactory,
                 harvesterCommandFactory,
                 gameplayStateCommandFactory,
+                robotPoseCommandFactory,
                 DEFAULT_DRIVE_CONTROLLER_PORT,
                 DEFAULT_OPERATOR_CONTROLLER_PORT);
     }
@@ -174,6 +183,7 @@ public abstract class AbstractTriggerBindings {
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
+     * @param robotPoseCommandFactory     factory for creating robot pose commands such as vision-based pose resets
      * @param driverControllerPort        USB port for the driver controller
      * @param operatorControllerPort      USB port for the operator controller
      */
@@ -187,6 +197,7 @@ public abstract class AbstractTriggerBindings {
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
             GameplayStateCommandFactory gameplayStateCommandFactory,
+            RobotPoseSubsystemCommandFactory robotPoseCommandFactory,
             int driverControllerPort,
             int operatorControllerPort) {
         this.driveBaseCommandFactory     = driveBaseCommandFactory;
@@ -198,6 +209,7 @@ public abstract class AbstractTriggerBindings {
         this.intakeCommandFactory        = intakeCommandFactory;
         this.harvesterCommandFactory     = harvesterCommandFactory;
         this.gameplayStateCommandFactory = gameplayStateCommandFactory;
+        this.robotPoseCommandFactory     = robotPoseCommandFactory;
         this.driverControllerPort        = driverControllerPort;
         this.operatorControllerPort      = operatorControllerPort;
         this.driverController            = new CommandXboxController(driverControllerPort);

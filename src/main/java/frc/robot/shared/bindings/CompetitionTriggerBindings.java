@@ -6,6 +6,7 @@ import frc.robot.subsystems.gameplaystate.commands.GameplayStateCommandFactory;
 import frc.robot.subsystems.harvester.commands.HarvesterSubsystemCommandFactory;
 import frc.robot.subsystems.indexer.commands.IndexerSubsystemCommandFactory;
 import frc.robot.subsystems.intake.commands.IntakeSubsystemCommandFactory;
+import frc.robot.subsystems.robotpose.commands.RobotPoseSubsystemCommandFactory;
 import frc.robot.subsystems.shooter.commands.ShooterSubsystemCommandFactory;
 import frc.robot.subsystems.turret.commands.TurretSubsystemCommandFactory;
 
@@ -27,6 +28,7 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
      * @param intakeCommandFactory        factory for creating intake commands
      * @param harvesterCommandFactory     factory for creating harvester commands
      * @param gameplayStateCommandFactory factory for creating gameplay state transition commands
+     * @param robotPoseCommandFactory     factory for creating robot pose commands such as vision-based pose resets
      */
     public CompetitionTriggerBindings(
             DriveBaseSubsystemCommandFactory driveBaseCommandFactory,
@@ -37,7 +39,8 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
             FeederSubsystemCommandFactory feederCommandFactory,
             IntakeSubsystemCommandFactory intakeCommandFactory,
             HarvesterSubsystemCommandFactory harvesterCommandFactory,
-            GameplayStateCommandFactory gameplayStateCommandFactory) {
+            GameplayStateCommandFactory gameplayStateCommandFactory,
+            RobotPoseSubsystemCommandFactory robotPoseCommandFactory) {
         super(
                 driveBaseCommandFactory,
                 triggerBindingsConfig,
@@ -47,7 +50,8 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
                 feederCommandFactory,
                 intakeCommandFactory,
                 harvesterCommandFactory,
-                gameplayStateCommandFactory);
+                gameplayStateCommandFactory,
+                robotPoseCommandFactory);
     }
 
     /**
@@ -63,6 +67,7 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
         configureGameplayStateShortcuts();
         configureHeadingCommands();
         configureWheelLockCommand();
+        configureVisionPoseResetCommand();
         configureDpadPathfindingBindings();
     }
 
@@ -152,6 +157,19 @@ public class CompetitionTriggerBindings extends AbstractTriggerBindings {
         // One-shot command — the lock fires once and normal driving resumes with stick input.
         debounce(driverController.back()).onTrue(
                 driveBaseCommandFactory.createWheelLockCommand());
+    }
+
+    /**
+     * Maps the driver start button to a vision-based pose reset.
+     * <p>
+     * Pressing start snaps the pose estimate to the newest AprilTag camera measurement, the same reset that runs between match stages. Use this when
+     * odometry has drifted after heavy contact. Nothing happens if the cameras have not seen a tag yet.
+     * </p>
+     */
+    private void configureVisionPoseResetCommand() {
+        // Start button: reset the robot pose from the latest camera measurement.
+        debounce(driverController.start()).onTrue(
+                robotPoseCommandFactory.createResetPoseFromVisionCommand());
     }
 
     /**
