@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Sim Left Adjust"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -13,22 +19,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "sequential",
+                      "type": "wait",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "Sim Left Adjust"
-                            }
-                          },
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 5.0
-                            }
-                          }
-                        ]
+                        "waitTime": 5.0
                       }
                     },
                     {
