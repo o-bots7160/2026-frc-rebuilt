@@ -195,6 +195,8 @@ the repo.
 
 Key starting points:
 
+- [Next-season design guide](NEXT_SEASON_DESIGN_GUIDE.md) – game-agnostic
+  architecture, performance, testing, and repository initialization guidance.
 - [Glossary](src/main/java/frc/robot/GLOSSARY.md) – definitions of robotics and
   programming terms used throughout the codebase.
 - [Subsystems index](src/main/java/frc/robot/subsystems/README.md) – folder
